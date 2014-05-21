@@ -1,0 +1,7 @@
+A tool for scanning several CMSs.
+=================================
+
+Todo:
+
+- Create a modular structure, that by default, scans drupal installations.
+- Create the basic boilerplate.
