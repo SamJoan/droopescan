@@ -37,7 +37,7 @@ class BasePlugin(controller.CementBaseController):
         else:
             common.echo(("%s found:" % noun).capitalize())
             for find in finds:
-                common.echo(find, "\t- ")
+                common.echo(find, "  - ")
 
     def enumerate_users(self, url):
         raise NotImplementedError("Not implemented yet.")

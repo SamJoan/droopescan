@@ -15,4 +15,4 @@ def enumerate_validate(enumerate, valid_enumerate):
                 % valid_enumerate)
 
 def echo(msg, padding = "[+] "):
-    print("%s %s" % (padding, msg))
+    print("%s%s" % (padding, msg))
