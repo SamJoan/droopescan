@@ -13,3 +13,6 @@ def enumerate_validate(enumerate, valid_enumerate):
     if not enumerate in valid_enumerate:
         raise RuntimeError("Invalid --enumerate. Valid options are %s"
                 % valid_enumerate)
+
+def echo(msg, padding = "[+] "):
+    print("%s %s" % (padding, msg))

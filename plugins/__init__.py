@@ -22,12 +22,22 @@ class BasePlugin(controller.CementBaseController):
         common.enumerate_validate(self.app.pargs.enumerate, self.valid_enumerate)
 
         if enumerate == "p":
-            plugins = self.enumerate_plugins(url)
-            print plugins
+            finds = self.enumerate_plugins(url)
+            noun = "plugins"
         elif enumerate == "u":
             self.enumerate_users(url)
         elif enumerate == "t":
             self.enumerate_themes(url)
+
+        self.present_finds(noun, finds)
+
+    def present_finds(self, noun, finds):
+        if finds == None or len(finds) == 0:
+            common.echo("No %s found." % noun)
+        else:
+            common.echo(("%s found:" % noun).capitalize())
+            for find in finds:
+                common.echo(find, "\t- ")
 
     def enumerate_users(self, url):
         raise NotImplementedError("Not implemented yet.")
