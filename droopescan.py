@@ -18,9 +18,10 @@ class DroopeScanBase(controller.CementBaseController):
 
     @controller.expose(hide=True)
     def default(self):
-        raise RuntimeError(self.app.args.print_help())
+        raise RuntimeError(self.app.args.format_help())
 
 class DroopeScan(foundation.CementApp):
+    testing = False
     class Meta:
         label = 'droopescan'
         base_controller = DroopeScanBase
@@ -35,7 +36,7 @@ if __name__ == "__main__":
         ds.setup()
         ds.run()
     except Exception as e:
-        if not ds.debug:
+        if not ds.debug and not ds.testing:
             print(e)
         else:
             raise

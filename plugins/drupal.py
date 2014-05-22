@@ -1,15 +1,20 @@
 from cement.core import handler, controller
+from plugins import BasePlugin
+import traceback
+import mock
+import sys
 
-class DrupalScanner(controller.CementBaseController):
+class DrupalScanner(BasePlugin):
+
     class Meta:
         label = 'drupalscanner'
-        stacked_on = 'base'
 
     @controller.expose(help='drupal-related scanning tools')
     def drupal(self):
-        url = self.app.pargs.url
-        if not url:
-            raise RuntimeError("--url was not specified.")
+        self.enumerate_route()
+
+    def enumerate_plugins(self, url):
+        pass
 
 def load():
     handler.register(DrupalScanner)
