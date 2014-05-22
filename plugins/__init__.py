@@ -22,7 +22,8 @@ class BasePlugin(controller.CementBaseController):
         common.enumerate_validate(self.app.pargs.enumerate, self.valid_enumerate)
 
         if enumerate == "p":
-            self.enumerate_plugins(url)
+            plugins = self.enumerate_plugins(url)
+            print plugins
         elif enumerate == "u":
             self.enumerate_users(url)
         elif enumerate == "t":

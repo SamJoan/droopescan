@@ -14,6 +14,10 @@ class DrupalScanner(BasePlugin):
         self.enumerate_route()
 
     def enumerate_plugins(self, url):
+        # TODO: detect how directories being present is being handled.
+            # a) directory 403 -> detectable
+            # b) directory 404 -> problem, can work around by requesting other
+                # file, which one? e.g. a2dismod autoindex
         plugins = self.plugins_get()
         found_plugins = []
         for plugin in plugins:
@@ -26,7 +30,7 @@ class DrupalScanner(BasePlugin):
     def plugins_get(self):
         f = open(self.plugins_file)
         for plugin in f:
-            yield plugin
+            yield plugin.strip()
 
 def load():
     handler.register(DrupalScanner)

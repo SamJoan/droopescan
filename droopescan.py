@@ -1,11 +1,19 @@
 #!/usr/bin/python
+"""
+    |
+ ___| ___  ___  ___  ___  ___  ___  ___  ___  ___
+|   )|   )|   )|   )|   )|___)|___ |    |   )|   )
+|__/ |    |__/ |__/ |__/ |__   __/ |__  |__/||  /
+                    |
+=================================================
+"""
 from cement.core import backend, foundation, controller, handler
 import common
 
 class DroopeScanBase(controller.CementBaseController):
     class Meta:
         label = 'base'
-        description = "A general purpose CMS scanner (which only scans drupal)"
+        description = __doc__
 
         config_defaults = dict(
             url='bar',
