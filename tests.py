@@ -7,6 +7,12 @@ from mock import patch, MagicMock
 import requests
 import responses
 
+def file_len(fname):
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
+
 class BaseTest(test.CementTestCase):
     app_class = DroopeScan
     scanner = None
@@ -98,10 +104,10 @@ class DrupalTest(BaseTest):
         self.add_argv(["drupal"])
         self.scanner = DrupalScanner()
 
-    @patch.object(DrupalScanner, 'modules_get', return_value=["nonexistant1",
+    @patch.object(DrupalScanner, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
     @responses.activate
-    def test_returns_list_of_modules(self, m):
+    def test_returns_list_of_plugins(self, m):
         responses.add(responses.GET,
                 "%ssites/all/modules/supermodule/" % self.base_url,
                 body='403', status=403)
@@ -116,5 +122,17 @@ class DrupalTest(BaseTest):
 
         assert result == ["supermodule"], "Should have detected the \
                 'supermodule' module."
+
+    def test_gets_modules(self):
+        # unwrap the generator
+        plugins_generator = self.scanner.plugins_get()
+        plugins = []
+        for plugin in plugins_generator:
+            plugins.append(plugin)
+
+        l = file_len(self.scanner.plugins_file)
+
+        assert l == len(plugins), "Should have read the contents of the file."
+
 
 

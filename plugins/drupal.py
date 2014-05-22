@@ -4,6 +4,8 @@ import requests
 
 class DrupalScanner(BasePlugin):
 
+    plugins_file = "plugins/drupal/wordlists/top_1000"
+
     class Meta:
         label = 'drupalscanner'
 
@@ -12,7 +14,7 @@ class DrupalScanner(BasePlugin):
         self.enumerate_route()
 
     def enumerate_plugins(self, url):
-        plugins = self.modules_get()
+        plugins = self.plugins_get()
         found_plugins = []
         for plugin in plugins:
             r = requests.get("%ssites/all/modules/%s/" % (url, plugin))
@@ -21,8 +23,10 @@ class DrupalScanner(BasePlugin):
 
         return found_plugins
 
-    def modules_get(self):
-        return True
+    def plugins_get(self):
+        f = open(self.plugins_file)
+        for plugin in f:
+            yield plugin
 
 def load():
     handler.register(DrupalScanner)
