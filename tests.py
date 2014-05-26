@@ -1,8 +1,7 @@
 from cement.core import controller, foundation, backend
 from cement.utils import test
 from droopescan import DroopeScan
-from plugins.drupal import DrupalScanner
-from plugins.drupal import DrupalScanner
+from plugins.drupal import Drupal
 from mock import patch, MagicMock
 import requests
 import responses
@@ -89,7 +88,7 @@ class DroopeScanTest(BaseTest):
         self.add_argv(["drupal"])
         self.add_argv(self.param_plugins)
 
-        m = self.mock_controller('drupalscanner', 'enumerate_plugins')
+        m = self.mock_controller('drupal', 'enumerate_plugins')
 
         self.app.run()
         assert m.called, "enumerate_plugins should have been called given the arguments"
@@ -102,9 +101,9 @@ class DrupalTest(BaseTest):
     def setUp(self):
         super(DrupalTest, self).setUp()
         self.add_argv(["drupal"])
-        self.scanner = DrupalScanner()
+        self.scanner = Drupal()
 
-    @patch.object(DrupalScanner, 'plugins_get', return_value=["nonexistant1",
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
     @responses.activate
     def test_returns_list_of_plugins(self, m):

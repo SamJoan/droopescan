@@ -9,11 +9,7 @@ class BasePlugin(controller.CementBaseController):
         label = 'baseplugin'
         stacked_on = 'base'
 
-        arguments = [
-                (['--enumerate', '-e'], dict(action='store',
-                help="""What to enumerate. Available options are u, p and t. These
-                    ennumerate users, plugins and themes respectively.""")),
-            ]
+        arguments = []
 
     def enumerate_route(self):
         url, enumerate = self.app.pargs.url, self.app.pargs.enumerate

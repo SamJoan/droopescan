@@ -3,12 +3,13 @@ from plugins import BasePlugin
 import requests
 import common
 
-class DrupalScanner(BasePlugin):
+class Drupal(BasePlugin):
 
     plugins_file = "plugins/drupal/wordlists/top_1000"
+    base_url = "%ssites/all/modules/%s/"
 
     class Meta:
-        label = 'drupalscanner'
+        label = 'drupal'
 
     @controller.expose(help='drupal-related scanning tools')
     def drupal(self):
@@ -25,7 +26,7 @@ class DrupalScanner(BasePlugin):
         plugins = self.plugins_get()
         found_plugins = []
         for plugin in plugins:
-            r = requests.get("%ssites/all/modules/%s/" % (url, plugin))
+            r = requests.get(self.base_url % (url, plugin))
             if r.status_code == 403:
                 found_plugins.append(plugin)
 
@@ -37,5 +38,5 @@ class DrupalScanner(BasePlugin):
             yield plugin.strip()
 
 def load():
-    handler.register(DrupalScanner)
+    handler.register(Drupal)
 

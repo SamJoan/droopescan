@@ -22,6 +22,9 @@ class DroopeScanBase(controller.CementBaseController):
 
         arguments = [
                 (['--url'], dict(action='store', help='')),
+                (['--enumerate', '-e'], dict(action='store',
+                help="""What to enumerate. Available options are u, p and t. These
+                    ennumerate users, plugins and themes respectively."""))
             ]
 
     @controller.expose(hide=True)
@@ -43,7 +46,7 @@ if __name__ == "__main__":
     try:
         ds.setup()
         ds.run()
-    except Exception as e:
+    except RuntimeError as e:
         if not ds.debug and not ds.testing:
             print(e)
         else:
