@@ -24,7 +24,11 @@ class DroopeScanBase(controller.CementBaseController):
                 (['--url'], dict(action='store', help='')),
                 (['--enumerate', '-e'], dict(action='store',
                 help="""What to enumerate. Available options are u, p and t. These
-                    ennumerate users, plugins and themes respectively."""))
+                    ennumerate users, plugins and themes respectively.""")),
+                (['--method'], dict(action='store', help="""Some webservers
+                    respond with 403 when a folder exists. Others with a 404.
+                    Others with a 200. Valid options are [forbidden, not_found,
+                        ok]""")),
             ]
 
     @controller.expose(hide=True)

@@ -84,6 +84,12 @@ class DroopeScanTest(BaseTest):
         self.add_argv(self.param_base_url + ["-e", 'z'])
         self.app.run()
 
+    @test.raises(RuntimeError)
+    def test_errors_when_invalid_method(self):
+        self.add_argv(["drupal"])
+        self.add_argv(self.param_plugins + ["--method", "derpo"])
+        self.app.run()
+
     def test_calls_plugin(self):
         self.add_argv(["drupal"])
         self.add_argv(self.param_plugins)
@@ -93,35 +99,45 @@ class DroopeScanTest(BaseTest):
         self.app.run()
         assert m.called, "enumerate_plugins should have been called given the arguments"
 
-class DrupalTest(BaseTest):
+class BasePluginTest(BaseTest):
     """
         This class should contain tests specific to Drupal
     """
 
     def setUp(self):
-        super(DrupalTest, self).setUp()
+        super(BasePluginTest, self).setUp()
         self.add_argv(["drupal"])
         self.scanner = Drupal()
+
+    def respond_several(self, base_url, data_obj):
+        if 403 in data_obj:
+            for item in data_obj[403]:
+                responses.add(responses.GET, base_url % item, body="forbidden",
+                        status=403)
+
+        if 404 in data_obj:
+            for item in data_obj[404]:
+                responses.add(responses.GET, base_url % item, body="OK",
+                        status=200)
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
     @responses.activate
-    def test_returns_list_of_plugins(self, m):
-        responses.add(responses.GET,
-                "%ssites/all/modules/supermodule/" % self.base_url,
-                body='403', status=403)
-        responses.add(responses.GET,
-                "%ssites/all/modules/nonexistant1/" % self.base_url,
-                body='200', status=200)
-        responses.add(responses.GET,
-                "%ssites/all/modules/nonexistant2/" % self.base_url,
-                body='200', status=200)
+    def test_plugins_403(self, m):
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
+            404: ["nonexistant1", "nonexistant2"]})
 
         result = self.scanner.enumerate_plugins(self.base_url)
 
         assert result == ["supermodule"], "Should have detected the \
                 'supermodule' module."
 
+    # TODO: detect how directories being present is being handled.
+        # a) directory 403 -> detectable || DONE
+        # b) directory 404 -> problem, can work around by requesting other
+            # file, which one? e.g. a2dismod autoindex
+        # c) directory == 200, directory listing.
+    # TODO other module directories. (make configurable.)
     def test_gets_modules(self):
         # unwrap the generator
         plugins_generator = self.scanner.plugins_get()
@@ -132,6 +148,15 @@ class DrupalTest(BaseTest):
         l = file_len(self.scanner.plugins_file)
 
         assert l == len(plugins), "Should have read the contents of the file."
+
+    def test_override_method(self):
+        self.add_argv(self.param_plugins)
+        self.add_argv(["--method", "not_found"])
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url, self.scanner.ScanningMethod.not_found)
 
 
 
