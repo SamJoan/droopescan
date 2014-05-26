@@ -29,15 +29,8 @@ class BasePlugin(controller.CementBaseController):
         elif enumerate == "t":
             self.enumerate_themes(url)
 
-        self.present_finds(noun, finds)
-
-    def present_finds(self, noun, finds):
-        if finds == None or len(finds) == 0:
-            common.echo("No %s found." % noun)
-        else:
-            common.echo(("%s found:" % noun).capitalize())
-            for find in finds:
-                common.echo(find, "  - ")
+        print common.template("common/list_noun.tpl", {"noun":noun,
+            "items":finds, "empty":len(finds) == 0, "Noun":noun.capitalize()})
 
     def enumerate_users(self, url):
         raise NotImplementedError("Not implemented yet.")

@@ -1,5 +1,6 @@
 from cement.core import handler
 import droopescan
+import pystache
 import re
 
 def url_validate(url):
@@ -13,6 +14,12 @@ def enumerate_validate(enumerate, valid_enumerate):
     if not enumerate in valid_enumerate:
         raise RuntimeError("Invalid --enumerate. Valid options are %s"
                 % valid_enumerate)
+
+def template(template_file, variables):
+    f = open(template_file, "r")
+    template = f.read()
+
+    return pystache.render(template, variables)
 
 def echo(msg, padding = "[+] "):
     print("%s%s" % (padding, msg))
