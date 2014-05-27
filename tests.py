@@ -93,6 +93,7 @@ class DroopeScanTest(BaseTest):
     def test_calls_plugin(self):
         self.add_argv(["drupal"])
         self.add_argv(self.param_plugins)
+        self.add_argv(["--method", "forbidden"])
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
 
@@ -110,6 +111,9 @@ class BasePluginTest(BaseTest):
         self.scanner = Drupal()
 
     def respond_several(self, base_url, data_obj):
+        """
+            make sure to use the @responses.activate decorator!
+        """
         if 403 in data_obj:
             for item in data_obj[403]:
                 responses.add(responses.GET, base_url % item, body="forbidden",
@@ -117,8 +121,12 @@ class BasePluginTest(BaseTest):
 
         if 404 in data_obj:
             for item in data_obj[404]:
-                responses.add(responses.GET, base_url % item, body="OK",
-                        status=200)
+                responses.add(responses.GET, base_url % item, body="not found",
+                        status=404)
+
+        if 200 in data_obj:
+            for item in data_obj[200]:
+                responses.add(responses.GET, base_url % item, body="OK", status=200)
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
@@ -127,7 +135,7 @@ class BasePluginTest(BaseTest):
         self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
             404: ["nonexistant1", "nonexistant2"]})
 
-        result = self.scanner.enumerate_plugins(self.base_url)
+        result = self.scanner.enumerate_plugins(self.base_url, Drupal.ScanningMethod.forbidden)
 
         assert result == ["supermodule"], "Should have detected the \
                 'supermodule' module."
@@ -136,7 +144,7 @@ class BasePluginTest(BaseTest):
         # a) directory 403 -> detectable || DONE
         # b) directory 404 -> problem, can work around by requesting other
             # file, which one? e.g. a2dismod autoindex
-        # c) directory == 200, directory listing.
+        # c) directory == 200, directory listing?
     # TODO other module directories. (make configurable.)
     def test_gets_modules(self):
         # unwrap the generator
@@ -157,6 +165,27 @@ class BasePluginTest(BaseTest):
         self.app.run()
 
         m.assert_called_with(self.base_url, self.scanner.ScanningMethod.not_found)
+
+    @responses.activate
+    def test_determine_forbidden(self):
+        self.add_argv(self.param_plugins)
+
+        self.respond_several(self.base_url + "%s", {403: ["misc/"], 200:
+            ["misc/drupal.js"]})
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url, self.scanner.ScanningMethod.forbidden)
+
+    @responses.activate
+    @test.raises(RuntimeError)
+    def test_not_cms(self):
+        self.add_argv(self.param_plugins)
+
+        self.respond_several(self.base_url + "%s", {404: ["misc/", "misc/drupal.js"]})
+        self.app.run()
+
 
 
 

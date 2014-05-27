@@ -27,7 +27,7 @@ class BasePlugin(controller.CementBaseController):
         if method:
             scanning_method = common.validate_method(method, self.ScanningMethod)
         else:
-            scanning_method = self.determine_scanning_method(method)
+            scanning_method = self.determine_scanning_method(url)
 
         if enumerate == "p":
             finds = self.enumerate_plugins(url, scanning_method)
@@ -40,8 +40,16 @@ class BasePlugin(controller.CementBaseController):
         print common.template("common/list_noun.tpl", {"noun":noun,
             "items":finds, "empty":len(finds) == 0, "Noun":noun.capitalize()})
 
-    def determine_scanning_method(self, scanning_method):
-        pass
+    def determine_scanning_method(self, url):
+        folder_resp = requests.get(url + self.folder_url)
+        ok_resp = requests.get(url + self.regular_file_url)
+
+        if folder_resp.status_code == 403 and ok_resp.status_code == 200:
+            return self.ScanningMethod.forbidden
+        else:
+            raise RuntimeError("""It is possible that the website is not running
+                    %s. If you want to override this, specify a --method.""" %
+                    "")
 
     def enumerate_plugins(self, url, scanning_method):
         common.echo("Scanning...")
