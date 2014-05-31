@@ -10,6 +10,7 @@ class Drupal(BasePlugin):
 
     folder_url = "misc/"
     regular_file_url = "misc/drupal.js"
+    module_readme_file = "README.txt"
 
     class Meta:
         label = 'drupal'

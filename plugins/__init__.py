@@ -7,9 +7,9 @@ class BasePlugin(controller.CementBaseController):
 
     valid_enumerate = ['u', 'p', 't']
     class ScanningMethod():
-        not_found = 1
-        forbidden = 2
-        ok = 3
+        not_found = 404
+        forbidden = 403
+        ok = 200
 
     class Meta:
         label = 'baseplugin'
@@ -51,6 +51,8 @@ class BasePlugin(controller.CementBaseController):
         if folder_resp.status_code == 403 and ok_resp.status_code == 200:
             return self.ScanningMethod.forbidden
         if folder_resp.status_code == 404 and ok_resp.status_code == 200:
+            logger.warning("Known %s folders have returned 404 Not Found. If modules do not have a %s file they will not be detected." %
+                    (self._meta.label, self.module_readme_file))
             return self.ScanningMethod.not_found
         if folder_resp.status_code == 200 and ok_resp.status_code == 200:
             logger.warning("""Known folder names for %s are returning 200 OK. Is directory listing enabled?""" % self._meta.label)
@@ -63,15 +65,19 @@ class BasePlugin(controller.CementBaseController):
         # TODO other module directories. (make configurable.)
         common.echo("Scanning...")
         plugins = self.plugins_get()
-        if scanning_method == self.ScanningMethod.forbidden or scanning_method == self.ScanningMethod.ok:
-            found_plugins = []
-            print scanning_method
-            expected_status = 403 if scanning_method == self.ScanningMethod.forbidden else 200
-            for plugin in plugins:
-                r = requests.get(self.base_url % (url, plugin))
-                print r.status_code
-                if r.status_code == expected_status:
-                    found_plugins.append(plugin)
+        found_plugins = []
+
+        if scanning_method == self.ScanningMethod.not_found:
+            base_url = self.base_url + self.module_readme_file
+            expected_status = 200
+        else:
+            expected_status = scanning_method
+            base_url = self.base_url
+
+        for plugin in plugins:
+            r = requests.get(base_url % (url, plugin))
+            if r.status_code == expected_status:
+                found_plugins.append(plugin)
 
         return found_plugins
 

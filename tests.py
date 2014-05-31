@@ -108,20 +108,11 @@ class BasePluginTest(BaseTest):
         self.scanner = Drupal()
 
     def respond_several(self, base_url, data_obj):
-        if 403 in data_obj:
-            for item in data_obj[403]:
-                responses.add(responses.GET, base_url % item, body="forbidden",
-                        status=403)
-
-        if 404 in data_obj:
-            for item in data_obj[404]:
-                responses.add(responses.GET, base_url % item, body="not found",
-                        status=404)
-
-        if 200 in data_obj:
-            for item in data_obj[200]:
-                responses.add(responses.GET, base_url % item, body="OK",
-                        status=200)
+        for status_code in data_obj:
+            for item in data_obj[status_code]:
+                url = base_url % item
+                responses.add(responses.GET, url,
+                        body=str(status_code), status=status_code)
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
@@ -143,6 +134,19 @@ class BasePluginTest(BaseTest):
 
         result = self.scanner.enumerate_plugins(self.base_url,
                 Drupal.ScanningMethod.ok)
+
+        assert result == ["supermodule"], "Should have detected the \
+                'supermodule' module."
+
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "nonexistant2", "supermodule"])
+    def test_plugins_not_found(self, m):
+        self.respond_several(self.base_url + "sites/all/modules/%s", {200:
+            ["supermodule/README.txt"], 404: ["nonexistant1", "nonexistant2",
+                'supermodule', 'nonexistant1/README.txt', 'nonexistant2/README.txt']})
+
+        result = self.scanner.enumerate_plugins(self.base_url,
+                Drupal.ScanningMethod.not_found)
 
         assert result == ["supermodule"], "Should have detected the \
                 'supermodule' module."
