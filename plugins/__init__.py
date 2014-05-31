@@ -72,6 +72,8 @@ class BasePlugin(controller.CementBaseController):
         else:
             base_urls = self.base_url
 
+        print base_urls
+
         for base_url in base_urls:
             if scanning_method == self.ScanningMethod.not_found:
                 url_template = base_url + self.module_readme_file

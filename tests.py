@@ -107,26 +107,20 @@ class BasePluginTest(BaseTest):
         self.add_argv(["drupal"])
         self.scanner = Drupal()
 
-    def respond_several(self, base_urls, data_obj):
-
-        if isinstance(base_urls, basestring):
-            base_urls = [base_urls]
-
-        for base_url in base_urls:
-            for status_code in data_obj:
-                for item in data_obj[status_code]:
-                    url = base_url % item
-
-                    responses.add(responses.GET, url,
-                            body=str(status_code), status=status_code)
+    def respond_several(self, base_url, data_obj):
+        for status_code in data_obj:
+            for item in data_obj[status_code]:
+                url = base_url % item
+                responses.add(responses.GET, url,
+                        body=str(status_code), status=status_code)
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
     def test_plugins_forbidden(self, m):
-        self.respond_several([self.base_url +
-            "sites/all/modules/%s/",self.base_url + "sites/default/modules/%s/"],
-            {403: ["supermodule"], 404: ["nonexistant1", "nonexistant2"]})
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
+            404: ["nonexistant1", "nonexistant2"]})
 
+        self.scanner.base_url = "%ssites/all/modules/%s/"
         result = self.scanner.enumerate_plugins(self.base_url,
                 Drupal.ScanningMethod.forbidden)
 
@@ -136,10 +130,10 @@ class BasePluginTest(BaseTest):
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
     def test_plugins_ok(self, m):
-        self.respond_several([self.base_url +
-            "sites/all/modules/%s/",self.base_url + "sites/default/modules/%s/"],
-            {200: ["supermodule"], 404: ["nonexistant1", "nonexistant2"]})
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
+            404: ["nonexistant1", "nonexistant2"]})
 
+        self.scanner.base_url = "%ssites/all/modules/%s/"
         result = self.scanner.enumerate_plugins(self.base_url,
                 Drupal.ScanningMethod.ok)
 
@@ -149,12 +143,11 @@ class BasePluginTest(BaseTest):
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
     def test_plugins_not_found(self, m):
-        self.respond_several([self.base_url +
-            "sites/all/modules/%s/",self.base_url + "sites/default/modules/%s/"],
-            {200: ["supermodule/README.txt"], 404: ["nonexistant1",
-                "nonexistant2", 'supermodule', 'nonexistant1/README.txt',
-                'nonexistant2/README.txt']})
+        self.respond_several(self.base_url + "sites/all/modules/%s", {200:
+            ["supermodule/README.txt"], 404: ["nonexistant1", "nonexistant2",
+                'supermodule', 'nonexistant1/README.txt', 'nonexistant2/README.txt']})
 
+        self.scanner.base_url = "%ssites/all/modules/%s/"
         result = self.scanner.enumerate_plugins(self.base_url,
                 Drupal.ScanningMethod.not_found)
 
