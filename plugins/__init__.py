@@ -62,7 +62,6 @@ class BasePlugin(controller.CementBaseController):
                     self._meta.label)
 
     def enumerate_plugins(self, url, scanning_method):
-        # TODO other module directories. (make configurable.)
         common.echo("Scanning...")
         plugins = self.plugins_get()
         found_plugins = []
