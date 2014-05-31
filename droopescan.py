@@ -8,6 +8,7 @@
 =================================================
 """
 from cement.core import backend, foundation, controller, handler
+from cement.utils.misc import init_defaults
 import common
 
 class DroopeScanBase(controller.CementBaseController):

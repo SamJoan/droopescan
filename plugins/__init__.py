@@ -1,4 +1,5 @@
 from cement.core import handler, controller
+from common import logger
 from enum import Enum
 import common
 import requests
@@ -21,7 +22,7 @@ class BasePlugin(controller.CementBaseController):
         url, enumerate = self.app.pargs.url, self.app.pargs.enumerate
         method = self.app.pargs.method
 
-        common.validate_url(url)
+        url = common.validate_url(url)
         common.validate_enumerate(enumerate, self.valid_enumerate)
 
         if method:
@@ -44,16 +45,23 @@ class BasePlugin(controller.CementBaseController):
         folder_resp = requests.get(url + self.folder_url)
         ok_resp = requests.get(url + self.regular_file_url)
 
+        logger.debug("Server responded with %s and %s for urls %s and %s"
+                % (folder_resp.status_code, ok_resp.status_code,
+                    self.folder_url, self.regular_file_url))
+
         if folder_resp.status_code == 403 and ok_resp.status_code == 200:
             return self.ScanningMethod.forbidden
         if folder_resp.status_code == 404 and ok_resp.status_code == 200:
             return self.ScanningMethod.not_found
+        if folder_resp.status_code == 200 and ok_resp.status_code == 200:
+            logger.warning("""Known folder names for %s are returning 200 OK. Is directory listing enabled?""" % self._meta.label)
+            return self.ScanningMethod.ok
         else:
-            raise RuntimeError("""It is possible that the website is not running
-                    %s. If you want to override this, specify a --method.""" %
-                    "")
+            raise RuntimeError("""It is possible that the website is not running %s. If you want to override this, specify a --method.""" %
+                    self._meta.label)
 
     def enumerate_plugins(self, url, scanning_method):
+        # TODO other module directories. (make configurable.)
         common.echo("Scanning...")
         plugins = self.plugins_get()
         found_plugins = []

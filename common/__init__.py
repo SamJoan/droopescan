@@ -1,7 +1,11 @@
 from cement.core import handler
 import droopescan
+import logging
 import pystache
 import re
+
+logging.basicConfig(level=logging.WARN)
+logger = logging.getLogger(__name__)
 
 def validate_url(url):
     if not url:
@@ -9,6 +13,12 @@ def validate_url(url):
 
     if not re.match(r"^http", url):
         raise RuntimeError("--url parameter invalid.")
+
+    # add '/' to urls which do not end with '/' already.
+    if not url.endswith("/"):
+        return url + "/"
+    else :
+        return url
 
 def validate_enumerate(enumerate, valid_enumerate):
     if not enumerate in valid_enumerate:
