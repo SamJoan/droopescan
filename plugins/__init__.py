@@ -58,7 +58,7 @@ class BasePlugin(controller.CementBaseController):
             logger.warning("""Known folder names for %s are returning 200 OK. Is directory listing enabled?""" % self._meta.label)
             return self.ScanningMethod.ok
         else:
-            raise RuntimeError("""It is possible that the website is not running %s. If you want to override this, specify a --method.""" %
+            raise RuntimeError("""It is possible that the website is not running %s. If you disagree, please specify a --method.""" %
                     self._meta.label)
 
     def enumerate_plugins(self, url, scanning_method):
@@ -67,17 +67,24 @@ class BasePlugin(controller.CementBaseController):
         plugins = self.plugins_get()
         found_plugins = []
 
-        if scanning_method == self.ScanningMethod.not_found:
-            base_url = self.base_url + self.module_readme_file
-            expected_status = 200
+        if isinstance(self.base_url, basestring):
+            base_urls = [self.base_url]
         else:
-            expected_status = scanning_method
-            base_url = self.base_url
+            base_urls = self.base_url
 
-        for plugin in plugins:
-            r = requests.get(base_url % (url, plugin))
-            if r.status_code == expected_status:
-                found_plugins.append(plugin)
+        for base_url in base_urls:
+            if scanning_method == self.ScanningMethod.not_found:
+                url_template = base_url + self.module_readme_file
+                expected_status = 200
+            else:
+                url_template = base_url
+                expected_status = scanning_method
+
+            for plugin in plugins:
+                r = requests.get(url_template % (url, plugin))
+                if r.status_code == expected_status:
+                    print url_template % (url, plugin)
+                    found_plugins.append(plugin)
 
         return found_plugins
 
