@@ -30,7 +30,7 @@ class BasePlugin(controller.CementBaseController):
             scanning_method = self.determine_scanning_method(url)
 
         if enumerate == "p":
-            finds = self.enumerate_plugins(url, scanning_method)
+            finds = self.enumerate_plugins(url, self.plugins_base_url, scanning_method)
             noun = "plugins"
         elif enumerate == "u":
             self.enumerate_users(url, scanning_method)
@@ -44,7 +44,7 @@ class BasePlugin(controller.CementBaseController):
         folder_resp = requests.get(url + self.folder_url)
         ok_resp = requests.get(url + self.regular_file_url)
 
-        logger.debug("Server responded with %s and %s for urls %s and %s"
+        logger.debug("determine_scanning_method: Server responded with %s and %s for urls %s and %s"
                 % (folder_resp.status_code, ok_resp.status_code,
                     self.folder_url, self.regular_file_url))
 
@@ -61,15 +61,15 @@ class BasePlugin(controller.CementBaseController):
             raise RuntimeError("""It is possible that the website is not running %s. If you disagree, please specify a --method.""" %
                     self._meta.label)
 
-    def enumerate_plugins(self, url, scanning_method):
-        common.echo("Scanning...")
+    def enumerate_plugins(self, url, plugins_base_url, scanning_method):
+        common.echo("Scanning plugins...")
         plugins = self.plugins_get()
         found_plugins = []
 
-        if isinstance(self.base_url, basestring):
-            base_urls = [self.base_url]
+        if isinstance(plugins_base_url, basestring):
+            base_urls = [plugins_base_url]
         else:
-            base_urls = self.base_url
+            base_urls = plugins_base_url
 
         for base_url in base_urls:
             if scanning_method == self.ScanningMethod.not_found:
@@ -82,7 +82,6 @@ class BasePlugin(controller.CementBaseController):
             for plugin in plugins:
                 r = requests.get(url_template % (url, plugin))
                 if r.status_code == expected_status:
-                    print url_template % (url, plugin)
                     found_plugins.append(plugin)
 
         return found_plugins

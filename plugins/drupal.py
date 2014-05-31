@@ -6,7 +6,7 @@ import common
 class Drupal(BasePlugin):
 
     plugins_file = "plugins/drupal/wordlists/top_1000"
-    base_url = ["%ssites/all/modules/%s/",
+    plugins_base_url = ["%ssites/all/modules/%s/",
             "%ssites/default/modules/%s/"]
 
     folder_url = "misc/"

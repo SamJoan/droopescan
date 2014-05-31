@@ -1,9 +1,10 @@
 from cement.core import controller, foundation, backend
 from cement.utils import test
+from common.testutils import file_len, decallmethods
 from droopescan import DroopeScan
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
-from common.testutils import file_len, decallmethods
+from requests.exceptions import ConnectionError
 import requests
 import responses
 
@@ -47,7 +48,156 @@ class BaseTest(test.CementTestCase):
         self.app._meta.argv += argv
 
 @decallmethods(responses.activate)
-class DroopeScanTest(BaseTest):
+class BasePluginTest(BaseTest):
+    """
+        This class should contain tests specific to Drupal
+    """
+
+    def setUp(self):
+        super(BasePluginTest, self).setUp()
+        self.add_argv(["drupal"])
+        self.scanner = Drupal()
+
+    def respond_several(self, base_url, data_obj):
+        for status_code in data_obj:
+            for item in data_obj[status_code]:
+                url = base_url % item
+                responses.add(responses.GET, url,
+                        body=str(status_code), status=status_code)
+
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "nonexistant2", "supermodule"])
+    def test_plugins_forbidden(self, m):
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
+            404: ["nonexistant1", "nonexistant2"]})
+
+        self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
+        result = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, Drupal.ScanningMethod.forbidden)
+
+        assert result == ["supermodule"], "Should have detected the \
+                'supermodule' module."
+
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "nonexistant2", "supermodule"])
+    def test_plugins_ok(self, m):
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
+            404: ["nonexistant1", "nonexistant2"]})
+
+        self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
+        result = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
+
+        assert result == ["supermodule"], "Should have detected the \
+                'supermodule' module."
+
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "nonexistant2", "supermodule"])
+    def test_plugins_not_found(self, m):
+        self.respond_several(self.base_url + "sites/all/modules/%s", {200:
+            ["supermodule/README.txt"], 404: ["nonexistant1", "nonexistant2",
+                'supermodule', 'nonexistant1/README.txt', 'nonexistant2/README.txt']})
+
+        self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
+        result = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, Drupal.ScanningMethod.not_found)
+
+        assert result == ["supermodule"], "Should have detected the \
+                'supermodule' module."
+
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "supermodule", "supermodule2"])
+    def test_plugins_multiple_base_url(self, m):
+
+        # mock all the urls.
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
+            404: ["nonexistant1", "supermodule2"]})
+        self.respond_several(self.base_url + "sites/default/modules/%s/", {200:
+            ["supermodule2"], 404: ["nonexistant1", "supermodule"]})
+
+        result = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
+
+        assert result == ["supermodule", "supermodule2"], "Should have detected the \
+                'supermodule' module."
+
+    def test_gets_modules(self):
+        # unwrap the generator
+        plugins_generator = self.scanner.plugins_get()
+        plugins = []
+        for plugin in plugins_generator:
+            plugins.append(plugin)
+
+        l = file_len(self.scanner.plugins_file)
+
+        assert l == len(plugins), "Should have read the contents of the file."
+
+    def test_override_method(self):
+        self.add_argv(self.param_plugins)
+        self.add_argv(["--method", "not_found"])
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
+                self.scanner.ScanningMethod.not_found)
+
+    def test_add_slash_to_urls(self):
+        # remove slash from url.
+        self.add_argv(['--url', self.base_url[:-1], '--enumerate', 'p'])
+
+        m = self.mock_controller('drupal', 'determine_scanning_method')
+        self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url)
+
+    def test_determine_forbidden(self):
+        self.add_argv(self.param_plugins)
+
+        self.respond_several(self.base_url + "%s", {403: ["misc/"], 200:
+            ["misc/drupal.js"]})
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
+                self.scanner.ScanningMethod.forbidden)
+
+    def test_determine_not_found(self):
+        self.add_argv(self.param_plugins)
+
+        self.respond_several(self.base_url + "%s", {404: ["misc/"], 200:
+            ["misc/drupal.js"]})
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
+                self.scanner.ScanningMethod.not_found)
+
+    def test_determine_ok(self):
+        self.add_argv(self.param_plugins)
+
+        self.respond_several(self.base_url + "%s", {200: ["misc/",
+            "misc/drupal.js"]})
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
+                self.scanner.ScanningMethod.ok)
+
+    @test.raises(RuntimeError)
+    def test_not_cms(self):
+        self.add_argv(self.param_plugins)
+
+        self.respond_several(self.base_url + "%s", {404: ["misc/",
+            "misc/drupal.js"]})
+        self.app.run()
+
+@decallmethods(responses.activate)
+class DrupalScanTest(BaseTest):
     """
         This class should contain tests which encompass all CMSs
     """
@@ -86,162 +236,12 @@ class DroopeScanTest(BaseTest):
         self.add_argv(self.param_plugins + ["--method", "derpo"])
         self.app.run()
 
+    @test.raises(ConnectionError)
     def test_calls_plugin(self):
         self.add_argv(["drupal"])
         self.add_argv(self.param_plugins)
         self.add_argv(["--method", "forbidden"])
 
-        m = self.mock_controller('drupal', 'enumerate_plugins')
-
-        self.app.run()
-        assert m.called, "enumerate_plugins should have been called given the arguments"
-
-@decallmethods(responses.activate)
-class BasePluginTest(BaseTest):
-    """
-        This class should contain tests specific to Drupal
-    """
-
-    def setUp(self):
-        super(BasePluginTest, self).setUp()
-        self.add_argv(["drupal"])
-        self.scanner = Drupal()
-
-    def respond_several(self, base_url, data_obj):
-        for status_code in data_obj:
-            for item in data_obj[status_code]:
-                url = base_url % item
-                responses.add(responses.GET, url,
-                        body=str(status_code), status=status_code)
-
-    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
-        "nonexistant2", "supermodule"])
-    def test_plugins_forbidden(self, m):
-        self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
-            404: ["nonexistant1", "nonexistant2"]})
-
-        self.scanner.base_url = "%ssites/all/modules/%s/"
-        result = self.scanner.enumerate_plugins(self.base_url,
-                Drupal.ScanningMethod.forbidden)
-
-        assert result == ["supermodule"], "Should have detected the \
-                'supermodule' module."
-
-    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
-        "nonexistant2", "supermodule"])
-    def test_plugins_ok(self, m):
-        self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
-            404: ["nonexistant1", "nonexistant2"]})
-
-        self.scanner.base_url = "%ssites/all/modules/%s/"
-        result = self.scanner.enumerate_plugins(self.base_url,
-                Drupal.ScanningMethod.ok)
-
-        assert result == ["supermodule"], "Should have detected the \
-                'supermodule' module."
-
-    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
-        "nonexistant2", "supermodule"])
-    def test_plugins_not_found(self, m):
-        self.respond_several(self.base_url + "sites/all/modules/%s", {200:
-            ["supermodule/README.txt"], 404: ["nonexistant1", "nonexistant2",
-                'supermodule', 'nonexistant1/README.txt', 'nonexistant2/README.txt']})
-
-        self.scanner.base_url = "%ssites/all/modules/%s/"
-        result = self.scanner.enumerate_plugins(self.base_url,
-                Drupal.ScanningMethod.not_found)
-
-        assert result == ["supermodule"], "Should have detected the \
-                'supermodule' module."
-
-    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
-        "supermodule", "supermodule2"])
-    def test_plugins_multiple_base_url(self, m):
-
-        # mock all the urls.
-        self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
-            404: ["nonexistant1", "supermodule2"]})
-        self.respond_several(self.base_url + "sites/default/modules/%s/", {200:
-            ["supermodule2"], 404: ["nonexistant1", "supermodule"]})
-
-        result = self.scanner.enumerate_plugins(self.base_url,
-                Drupal.ScanningMethod.ok)
-
-        assert result == ["supermodule", "supermodule2"], "Should have detected the \
-                'supermodule' module."
-
-    def test_gets_modules(self):
-        # unwrap the generator
-        plugins_generator = self.scanner.plugins_get()
-        plugins = []
-        for plugin in plugins_generator:
-            plugins.append(plugin)
-
-        l = file_len(self.scanner.plugins_file)
-
-        assert l == len(plugins), "Should have read the contents of the file."
-
-    def test_override_method(self):
-        self.add_argv(self.param_plugins)
-        self.add_argv(["--method", "not_found"])
-
-        m = self.mock_controller('drupal', 'enumerate_plugins')
-        self.app.run()
-
-        m.assert_called_with(self.base_url, self.scanner.ScanningMethod.not_found)
-
-    def test_add_slash_to_urls(self):
-        # remove slash from url.
-        self.add_argv(['--url', self.base_url[:-1], '--enumerate', 'p'])
-
-        m = self.mock_controller('drupal', 'determine_scanning_method')
-        self.mock_controller('drupal', 'enumerate_plugins')
-        self.app.run()
-
-        m.assert_called_with(self.base_url)
-
-    def test_determine_forbidden(self):
-        self.add_argv(self.param_plugins)
-
-        self.respond_several(self.base_url + "%s", {403: ["misc/"], 200:
-            ["misc/drupal.js"]})
-
-        m = self.mock_controller('drupal', 'enumerate_plugins')
-        self.app.run()
-
-        m.assert_called_with(self.base_url,
-                self.scanner.ScanningMethod.forbidden)
-
-    def test_determine_not_found(self):
-        self.add_argv(self.param_plugins)
-
-        self.respond_several(self.base_url + "%s", {404: ["misc/"], 200:
-            ["misc/drupal.js"]})
-
-        m = self.mock_controller('drupal', 'enumerate_plugins')
-        self.app.run()
-
-        m.assert_called_with(self.base_url,
-                self.scanner.ScanningMethod.not_found)
-
-    def test_determine_ok(self):
-        self.add_argv(self.param_plugins)
-
-        self.respond_several(self.base_url + "%s", {200: ["misc/",
-            "misc/drupal.js"]})
-
-        m = self.mock_controller('drupal', 'enumerate_plugins')
-        self.app.run()
-
-        m.assert_called_with(self.base_url,
-                self.scanner.ScanningMethod.ok)
-
-    @test.raises(RuntimeError)
-    def test_not_cms(self):
-        self.add_argv(self.param_plugins)
-
-        self.respond_several(self.base_url + "%s", {404: ["misc/",
-            "misc/drupal.js"]})
         self.app.run()
 
 

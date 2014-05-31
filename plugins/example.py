@@ -29,6 +29,7 @@ class Example(BasePlugin):
 
     @controller.expose(help='example scanner')
     def example(self):
+        # this calls BasePlugin.ennumerate_route.
         self.enumerate_route()
 
 def load():
