@@ -154,6 +154,22 @@ class BasePluginTest(BaseTest):
         assert result == ["supermodule"], "Should have detected the \
                 'supermodule' module."
 
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "supermodule", "supermodule2"])
+    def test_plugins_multiple_base_url(self, m):
+
+        # mock all the urls.
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
+            404: ["nonexistant1", "supermodule2"]})
+        self.respond_several(self.base_url + "sites/default/modules/%s/", {200:
+            ["supermodule2"], 404: ["nonexistant1", "supermodule"]})
+
+        result = self.scanner.enumerate_plugins(self.base_url,
+                Drupal.ScanningMethod.ok)
+
+        assert result == ["supermodule", "supermodule2"], "Should have detected the \
+                'supermodule' module."
+
     def test_gets_modules(self):
         # unwrap the generator
         plugins_generator = self.scanner.plugins_get()
