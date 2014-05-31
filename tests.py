@@ -176,14 +176,29 @@ class BasePluginTest(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url, self.scanner.ScanningMethod.forbidden)
+        m.assert_called_with(self.base_url,
+                self.scanner.ScanningMethod.forbidden)
+
+    @responses.activate
+    def test_determine_not_found(self):
+        self.add_argv(self.param_plugins)
+
+        self.respond_several(self.base_url + "%s", {404: ["misc/"], 200:
+            ["misc/drupal.js"]})
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url,
+                self.scanner.ScanningMethod.not_found)
 
     @responses.activate
     @test.raises(RuntimeError)
     def test_not_cms(self):
         self.add_argv(self.param_plugins)
 
-        self.respond_several(self.base_url + "%s", {404: ["misc/", "misc/drupal.js"]})
+        self.respond_several(self.base_url + "%s", {404: ["misc/",
+            "misc/drupal.js"]})
         self.app.run()
 
 

@@ -46,6 +46,8 @@ class BasePlugin(controller.CementBaseController):
 
         if folder_resp.status_code == 403 and ok_resp.status_code == 200:
             return self.ScanningMethod.forbidden
+        if folder_resp.status_code == 404 and ok_resp.status_code == 200:
+            return self.ScanningMethod.not_found
         else:
             raise RuntimeError("""It is possible that the website is not running
                     %s. If you want to override this, specify a --method.""" %
