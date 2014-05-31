@@ -30,6 +30,11 @@ class DroopeScanBase(controller.CementBaseController):
                     respond with 403 when a folder exists. Others with a 404.
                     Others with a 200. Valid options are [forbidden, not_found,
                         ok]. Default is to determine.""")),
+                (['--plugins-base-url'], dict(action='store', help="""Location
+                    where the plugins are stored by the CMS. Default is the CMS'
+                    default location. First %%s in string will be replaced with
+                    the url, and the second one will be replaced with the module
+                    name. E.g. '%%ssites/all/modules/%%s/'""")),
             ]
 
     @controller.expose(hide=True)

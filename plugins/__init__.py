@@ -21,6 +21,9 @@ class BasePlugin(controller.CementBaseController):
         url, enumerate = self.app.pargs.url, self.app.pargs.enumerate
         method = self.app.pargs.method
 
+        pbu = self.app.pargs.plugins_base_url
+        plugins_base_url = pbu if pbu else self.plugins_base_url
+
         url = common.validate_url(url)
         common.validate_enumerate(enumerate, self.valid_enumerate)
 
@@ -30,7 +33,7 @@ class BasePlugin(controller.CementBaseController):
             scanning_method = self.determine_scanning_method(url)
 
         if enumerate == "p":
-            finds = self.enumerate_plugins(url, self.plugins_base_url, scanning_method)
+            finds = self.enumerate_plugins(url, plugins_base_url, scanning_method)
             noun = "plugins"
         elif enumerate == "u":
             self.enumerate_users(url, scanning_method)
@@ -63,7 +66,6 @@ class BasePlugin(controller.CementBaseController):
 
     def enumerate_plugins(self, url, plugins_base_url, scanning_method):
         common.echo("Scanning plugins...")
-        plugins = self.plugins_get()
         found_plugins = []
 
         if isinstance(plugins_base_url, basestring):
@@ -72,6 +74,8 @@ class BasePlugin(controller.CementBaseController):
             base_urls = plugins_base_url
 
         for base_url in base_urls:
+            plugins = self.plugins_get()
+
             if scanning_method == self.ScanningMethod.not_found:
                 url_template = base_url + self.module_readme_file
                 expected_status = 200

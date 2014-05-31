@@ -142,6 +142,18 @@ class BasePluginTest(BaseTest):
         m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
                 self.scanner.ScanningMethod.not_found)
 
+    def test_override_plugins_base_url(self):
+        new_base_url = "%ssites/specific/modules%s"
+        self.add_argv(self.param_plugins)
+        self.add_argv(["--method", "forbidden"])
+        self.add_argv(["--plugins-base-url", new_base_url])
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        m.assert_called_with(self.base_url, new_base_url,
+                self.scanner.ScanningMethod.forbidden)
+
     def test_add_slash_to_urls(self):
         # remove slash from url.
         self.add_argv(['--url', self.base_url[:-1], '--enumerate', 'p'])
