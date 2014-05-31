@@ -125,11 +125,24 @@ class BasePluginTest(BaseTest):
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
-    def test_plugins_403(self, m):
+    def test_plugins_forbidden(self, m):
         self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
             404: ["nonexistant1", "nonexistant2"]})
 
-        result = self.scanner.enumerate_plugins(self.base_url, Drupal.ScanningMethod.forbidden)
+        result = self.scanner.enumerate_plugins(self.base_url,
+                Drupal.ScanningMethod.forbidden)
+
+        assert result == ["supermodule"], "Should have detected the \
+                'supermodule' module."
+
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "nonexistant2", "supermodule"])
+    def test_plugins_ok(self, m):
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
+            404: ["nonexistant1", "nonexistant2"]})
+
+        result = self.scanner.enumerate_plugins(self.base_url,
+                Drupal.ScanningMethod.ok)
 
         assert result == ["supermodule"], "Should have detected the \
                 'supermodule' module."

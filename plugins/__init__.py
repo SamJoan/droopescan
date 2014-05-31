@@ -1,13 +1,12 @@
 from cement.core import handler, controller
 from common import logger
-from enum import Enum
 import common
 import requests
 
 class BasePlugin(controller.CementBaseController):
 
     valid_enumerate = ['u', 'p', 't']
-    class ScanningMethod(Enum):
+    class ScanningMethod():
         not_found = 1
         forbidden = 2
         ok = 3
@@ -64,11 +63,15 @@ class BasePlugin(controller.CementBaseController):
         # TODO other module directories. (make configurable.)
         common.echo("Scanning...")
         plugins = self.plugins_get()
-        found_plugins = []
-        for plugin in plugins:
-            r = requests.get(self.base_url % (url, plugin))
-            if r.status_code == 403:
-                found_plugins.append(plugin)
+        if scanning_method == self.ScanningMethod.forbidden or scanning_method == self.ScanningMethod.ok:
+            found_plugins = []
+            print scanning_method
+            expected_status = 403 if scanning_method == self.ScanningMethod.forbidden else 200
+            for plugin in plugins:
+                r = requests.get(self.base_url % (url, plugin))
+                print r.status_code
+                if r.status_code == expected_status:
+                    found_plugins.append(plugin)
 
         return found_plugins
 
