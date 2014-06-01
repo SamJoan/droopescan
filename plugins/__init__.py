@@ -32,16 +32,26 @@ class BasePlugin(controller.CementBaseController):
         else:
             scanning_method = self.determine_scanning_method(url)
 
+        functionality = {}
         if enumerate == "p":
-            finds = self.enumerate_plugins(url, plugins_base_url, scanning_method)
             noun = "plugins"
+            functionality[noun] = getattr(self, "enumerate_plugins")
         elif enumerate == "u":
             self.enumerate_users(url, scanning_method)
         elif enumerate == "t":
             self.enumerate_themes(url, scanning_method)
 
-        print common.template("common/list_noun.tpl", {"noun":noun,
-            "items":finds, "empty":len(finds) == 0, "Noun":noun.capitalize()})
+        common.echo(common.template("common/scan_begin.tpl", {"noun": noun, "url": url,
+            "plugins_base_url": plugins_base_url, "scanning_method": scanning_method}))
+
+        for enumerate in functionality:
+            finds = functionality[enumerate](url, plugins_base_url, scanning_method)
+
+            common.echo(common.template("common/list_noun.tpl", {"noun":noun,
+                "items":finds, "empty":len(finds) == 0, "Noun":noun.capitalize()}))
+
+        #finds = self.enumerate_plugins(url, plugins_base_url, scanning_method)
+
 
     def determine_scanning_method(self, url):
         folder_resp = requests.get(url + self.folder_url)
@@ -65,7 +75,6 @@ class BasePlugin(controller.CementBaseController):
                     self._meta.label)
 
     def enumerate_plugins(self, url, plugins_base_url, scanning_method):
-        common.echo("Scanning plugins...")
         found_plugins = []
 
         if isinstance(plugins_base_url, basestring):

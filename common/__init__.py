@@ -49,5 +49,8 @@ def template(template_file, variables):
 
     return pystache.render(template, variables)
 
-def echo(msg, padding = "[+] "):
-    print("%s%s" % (padding, msg))
+def echo(msg):
+    """
+        wrapper for print, in case we need to globally stop outputting stuff.
+    """
+    print(msg)
