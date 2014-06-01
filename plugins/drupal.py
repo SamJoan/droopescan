@@ -9,6 +9,10 @@ class Drupal(BasePlugin):
     plugins_base_url = ["%ssites/all/modules/%s/",
             "%ssites/default/modules/%s/"]
 
+    themes_file = "plugins/drupal/wordlists/themes_top_1000"
+    themes_base_url = ["%ssites/all/themes/%s/",
+            "%ssites/default/themes/%s/"]
+
     folder_url = "misc/"
     regular_file_url = "misc/drupal.js"
     module_readme_file = "README.txt"
@@ -19,11 +23,6 @@ class Drupal(BasePlugin):
     @controller.expose(help='drupal-related scanning tools')
     def drupal(self):
         self.enumerate_route()
-
-    def plugins_get(self):
-        f = open(self.plugins_file)
-        for plugin in f:
-            yield plugin.strip()
 
 def load():
     handler.register(Drupal)

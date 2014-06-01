@@ -35,6 +35,8 @@ class DroopeScanBase(controller.CementBaseController):
                     default location. First %%s in string will be replaced with
                     the url, and the second one will be replaced with the module
                     name. E.g. '%%ssites/all/modules/%%s/'""")),
+                (['--themes-base-url'], dict(action='store', help="""Same as
+                    above, but for themes.""")),
             ]
 
     @controller.expose(hide=True)

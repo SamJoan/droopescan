@@ -32,6 +32,8 @@ class Example(BasePlugin):
         # this calls BasePlugin.ennumerate_route.
         self.enumerate_route()
 
+    # there is a plethora of functions to override in BasePlugin.
+
 def load():
     handler.register(Example)
 

@@ -16,6 +16,7 @@ class BaseTest(test.CementTestCase):
 
     param_base_url = ["--url", base_url]
     param_plugins = param_base_url + ["-e", 'p']
+    param_themes = param_base_url + ["-e", 't']
 
     def setUp(self):
         super(BaseTest, self).setUp()
@@ -255,5 +256,14 @@ class DrupalScanTest(BaseTest):
         self.add_argv(["--method", "forbidden"])
 
         self.app.run()
+
+    @test.raises(ConnectionError)
+    def test_calls_theme(self):
+        self.add_argv(["drupal"])
+        self.add_argv(self.param_themes)
+        self.add_argv(["--method", "forbidden"])
+
+        self.app.run()
+
 
 

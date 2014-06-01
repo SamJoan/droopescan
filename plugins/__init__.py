@@ -1,5 +1,6 @@
 from cement.core import handler, controller
 from common import logger
+from datetime import datetime
 import common
 import requests
 
@@ -18,11 +19,15 @@ class BasePlugin(controller.CementBaseController):
         arguments = []
 
     def enumerate_route(self):
+        time_start = datetime.now()
         url, enumerate = self.app.pargs.url, self.app.pargs.enumerate
         method = self.app.pargs.method
 
         pbu = self.app.pargs.plugins_base_url
         plugins_base_url = pbu if pbu else self.plugins_base_url
+
+        tbu = self.app.pargs.themes_base_url
+        themes_base_url = tbu if tbu else self.themes_base_url
 
         url = common.validate_url(url)
         common.validate_enumerate(enumerate, self.valid_enumerate)
@@ -35,23 +40,35 @@ class BasePlugin(controller.CementBaseController):
         functionality = {}
         if enumerate == "p":
             noun = "plugins"
-            functionality[noun] = getattr(self, "enumerate_plugins")
+            functionality[noun] = {
+                    "func": getattr(self, "enumerate_plugins"),
+                    "base_url": plugins_base_url
+                    }
         elif enumerate == "u":
-            self.enumerate_users(url, scanning_method)
+            noun = "users"
+            functionality[noun] = {
+                    "func": getattr(self, "enumerate_users"),
+                    "base_url": None,
+                    }
         elif enumerate == "t":
-            self.enumerate_themes(url, scanning_method)
+            noun = "themes"
+            functionality[noun] = {
+                    "func": getattr(self, "enumerate_themes"),
+                    "base_url": themes_base_url
+                    }
 
         common.echo(common.template("common/scan_begin.tpl", {"noun": noun, "url": url,
             "plugins_base_url": plugins_base_url, "scanning_method": scanning_method}))
 
+        # The loop of enumeration.
         for enumerate in functionality:
-            finds = functionality[enumerate](url, plugins_base_url, scanning_method)
+            enum = functionality[enumerate]
+            finds = enum["func"](url, enum["base_url"], scanning_method)
 
             common.echo(common.template("common/list_noun.tpl", {"noun":noun,
                 "items":finds, "empty":len(finds) == 0, "Noun":noun.capitalize()}))
 
-        #finds = self.enumerate_plugins(url, plugins_base_url, scanning_method)
-
+        common.echo("[+] Scan finished (%s elapsed)" % str(datetime.now() - time_start))
 
     def determine_scanning_method(self, url):
         folder_resp = requests.get(url + self.folder_url)
@@ -74,16 +91,33 @@ class BasePlugin(controller.CementBaseController):
             raise RuntimeError("""It is possible that the website is not running %s. If you disagree, please specify a --method.""" %
                     self._meta.label)
 
-    def enumerate_plugins(self, url, plugins_base_url, scanning_method):
-        found_plugins = []
+    def plugins_get(self):
+        f = open(self.plugins_file)
+        for plugin in f:
+            yield plugin.strip()
 
-        if isinstance(plugins_base_url, basestring):
-            base_urls = [plugins_base_url]
+    def themes_get(self):
+        f = open(self.themes_file)
+        for theme in f:
+            yield theme.strip()
+
+    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method):
+        """
+            @param url base URL for the website.
+            @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
+            @param scanning_method see self.ScanningMethod
+            @param iterator_returning_method a function which returns an
+                element that, when iterated, will return a full list of plugins
+        """
+        found = []
+
+        if isinstance(base_url_supplied, basestring):
+            base_urls = [base_url_supplied]
         else:
-            base_urls = plugins_base_url
+            base_urls = base_url_supplied
 
         for base_url in base_urls:
-            plugins = self.plugins_get()
+            plugins = iterator_returning_method()
 
             if scanning_method == self.ScanningMethod.not_found:
                 url_template = base_url + self.module_readme_file
@@ -95,12 +129,17 @@ class BasePlugin(controller.CementBaseController):
             for plugin in plugins:
                 r = requests.get(url_template % (url, plugin))
                 if r.status_code == expected_status:
-                    found_plugins.append(plugin)
+                    found.append(plugin)
 
-        return found_plugins
+        return found
+
+    def enumerate_plugins(self, url, base_url, scanning_method):
+        iterator = getattr(self, "plugins_get")
+        return self.enumerate(url, base_url, scanning_method, iterator)
+
+    def enumerate_themes(self, url, base_url, scanning_method):
+        iterator = getattr(self, "themes_get")
+        return self.enumerate(url, base_url, scanning_method, iterator)
 
     def enumerate_users(self, url):
-        raise NotImplementedError("Not implemented yet.")
-
-    def enumerate_themes(self, url):
         raise NotImplementedError("Not implemented yet.")
