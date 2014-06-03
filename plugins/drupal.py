@@ -5,11 +5,11 @@ import common
 
 class Drupal(BasePlugin):
 
-    plugins_file = "plugins/drupal/wordlists/top_1000"
+    plugins_file = "plugins/drupal/wordlists/plugins_3500"
     plugins_base_url = ["%ssites/all/modules/%s/",
             "%ssites/default/modules/%s/"]
 
-    themes_file = "plugins/drupal/wordlists/themes_top_1000"
+    themes_file = "plugins/drupal/wordlists/themes_1250"
     themes_base_url = ["%ssites/all/themes/%s/",
             "%ssites/default/themes/%s/"]
 
