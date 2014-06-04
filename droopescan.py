@@ -37,6 +37,9 @@ class DroopeScanBase(controller.CementBaseController):
                     name. E.g. '%%ssites/all/modules/%%s/'""")),
                 (['--themes-base-url'], dict(action='store', help="""Same as
                     above, but for themes.""")),
+                (['--number', '-n'], dict(action='store', help="""Number of
+                    words to attempt from the plugin/theme dictionary. Default
+                    is top 500.""")),
             ]
 
     @controller.expose(hide=True)

@@ -48,6 +48,19 @@ class BaseTest(test.CementTestCase):
         """
         self.app._meta.argv += argv
 
+    def assert_called_contains(self, mocked_method, position, thing):
+        """
+            asserts that the parameter in position 'position' equals 'thing' in
+            the first call to mocked_method.
+            @param mocked_method
+            @param position the position the argument is. It starts at 0 and
+            discounts self. e.g. (self, a, b, c): position of b -> 1
+        """
+
+        first_call = mocked_method.call_args_list[0][0]
+        assert first_call[position] == thing, "Parameter is not as expected."
+
+
 @decallmethods(responses.activate)
 class BasePluginTest(BaseTest):
     """
@@ -133,6 +146,41 @@ class BasePluginTest(BaseTest):
 
         assert l == len(plugins), "Should have read the contents of the file."
 
+    def test_limits_by_number(self):
+        plugins_generator = self.scanner.plugins_get(3)
+
+        plugins = []
+        for plugin in plugins_generator:
+            plugins.append(plugin)
+
+        assert 3 == len(plugins)
+
+        themes_generator = self.scanner.themes_get(3)
+
+        themes = []
+        for theme in themes_generator:
+            themes.append(theme)
+
+        assert 3 == len(themes)
+
+    def test_number_param_passed_plugins(self):
+        self.add_argv(self.param_plugins)
+        self.add_argv(['--number', '30', '--method', 'forbidden'])
+
+        m = self.mock_controller('drupal', 'plugins_get')
+        self.app.run()
+
+        m.assert_called_with('30')
+
+    def test_number_param_passed_themes(self):
+        self.add_argv(self.param_themes)
+        self.add_argv(['--number', '30', '--method', 'forbidden'])
+
+        m = self.mock_controller('drupal', 'themes_get')
+        self.app.run()
+
+        m.assert_called_with('30')
+
     def test_override_method(self):
         self.add_argv(self.param_plugins)
         self.add_argv(["--method", "not_found"])
@@ -140,8 +188,7 @@ class BasePluginTest(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
-                self.scanner.ScanningMethod.not_found)
+        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.not_found)
 
     def test_override_plugins_base_url(self):
         new_base_url = "%ssites/specific/modules%s"
@@ -152,8 +199,7 @@ class BasePluginTest(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url, new_base_url,
-                self.scanner.ScanningMethod.forbidden)
+        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.forbidden)
 
     def test_add_slash_to_urls(self):
         # remove slash from url.
@@ -174,8 +220,7 @@ class BasePluginTest(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
-                self.scanner.ScanningMethod.forbidden)
+        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.forbidden)
 
     def test_determine_not_found(self):
         self.add_argv(self.param_plugins)
@@ -186,8 +231,7 @@ class BasePluginTest(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
-                self.scanner.ScanningMethod.not_found)
+        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.not_found)
 
     def test_determine_ok(self):
         self.add_argv(self.param_plugins)
@@ -198,8 +242,7 @@ class BasePluginTest(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url, self.scanner.plugins_base_url,
-                self.scanner.ScanningMethod.ok)
+        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.ok)
 
     @test.raises(RuntimeError)
     def test_not_cms(self):

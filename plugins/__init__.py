@@ -18,18 +18,19 @@ class BasePlugin(controller.CementBaseController):
 
         arguments = []
 
-    def enumerate_route(self):
-        time_start = datetime.now()
-        url, enumerate = self.app.pargs.url, self.app.pargs.enumerate
-        method = self.app.pargs.method
+    def _options(self):
+        pargs = self.app.pargs
 
-        pbu = self.app.pargs.plugins_base_url
-        plugins_base_url = pbu if pbu else self.plugins_base_url
+        url = common.validate_url(pargs.url)
+        enumerate = pargs.enumerate
+        method = pargs.method
 
-        tbu = self.app.pargs.themes_base_url
-        themes_base_url = tbu if tbu else self.themes_base_url
+        number = pargs.number if pargs.number else 500
+        plugins_base_url = pargs.plugins_base_url if pargs.plugins_base_url \
+            else self.plugins_base_url
+        themes_base_url = pargs.themes_base_url if pargs.themes_base_url \
+                else self.themes_base_url
 
-        url = common.validate_url(url)
         common.validate_enumerate(enumerate, self.valid_enumerate)
 
         if method:
@@ -37,33 +38,41 @@ class BasePlugin(controller.CementBaseController):
         else:
             scanning_method = self.determine_scanning_method(url)
 
+        # all variables here will be an option.
+        return locals()
+
+    def enumerate_route(self):
+        time_start = datetime.now()
+        opts = self._options()
+
         functionality = {}
-        if enumerate == "p":
+        if opts['enumerate'] == "p":
             noun = "plugins"
             functionality[noun] = {
                     "func": getattr(self, "enumerate_plugins"),
-                    "base_url": plugins_base_url
+                    "base_url": opts['plugins_base_url']
                     }
-        elif enumerate == "u":
+        elif opts['enumerate'] == "u":
             noun = "users"
             functionality[noun] = {
                     "func": getattr(self, "enumerate_users"),
                     "base_url": None,
                     }
-        elif enumerate == "t":
+        elif opts['enumerate'] == "t":
             noun = "themes"
             functionality[noun] = {
                     "func": getattr(self, "enumerate_themes"),
-                    "base_url": themes_base_url
+                    "base_url": opts['themes_base_url']
                     }
 
-        common.echo(common.template("common/scan_begin.tpl", {"noun": noun, "url": url,
-            "plugins_base_url": plugins_base_url, "scanning_method": scanning_method}))
+        common.echo(common.template("common/scan_begin.tpl", {"noun": noun, "url": opts['url'],
+            "plugins_base_url": opts['plugins_base_url'], "scanning_method": opts['scanning_method']}))
 
         # The loop of enumeration.
         for enumerate in functionality:
             enum = functionality[enumerate]
-            finds = enum["func"](url, enum["base_url"], scanning_method)
+            finds = enum["func"](opts['url'], enum["base_url"],
+                    opts['scanning_method'], opts['number'])
 
             common.echo(common.template("common/list_noun.tpl", {"noun":noun,
                 "items":finds, "empty":len(finds) == 0, "Noun":noun.capitalize()}))
@@ -91,23 +100,32 @@ class BasePlugin(controller.CementBaseController):
             raise RuntimeError("""It is possible that the website is not running %s. If you disagree, please specify a --method.""" %
                     self._meta.label)
 
-    def plugins_get(self):
-        f = open(self.plugins_file)
-        for plugin in f:
-            yield plugin.strip()
+    def plugins_get(self, amount=100000):
+        with open(self.plugins_file) as f:
+            i = 0
+            for plugin in f:
+                if i >= amount:
+                    break
+                yield plugin.strip()
+                i += 1
 
-    def themes_get(self):
-        f = open(self.themes_file)
-        for theme in f:
-            yield theme.strip()
+    def themes_get(self, amount=100000):
+        with open(self.themes_file) as f:
+            i = 0
+            for theme in f:
+                if i>= amount:
+                    break
+                yield theme.strip()
+                i +=1
 
-    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method):
+    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method, max_iterator=500):
         """
             @param url base URL for the website.
             @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
             @param scanning_method see self.ScanningMethod
             @param iterator_returning_method a function which returns an
                 element that, when iterated, will return a full list of plugins
+            @param max_iterator integer that will be passed unto iterator_returning_method
         """
         found = []
 
@@ -116,8 +134,9 @@ class BasePlugin(controller.CementBaseController):
         else:
             base_urls = base_url_supplied
 
+
         for base_url in base_urls:
-            plugins = iterator_returning_method()
+            plugins = iterator_returning_method(max_iterator)
 
             if scanning_method == self.ScanningMethod.not_found:
                 url_template = base_url + self.module_readme_file
@@ -133,13 +152,13 @@ class BasePlugin(controller.CementBaseController):
 
         return found
 
-    def enumerate_plugins(self, url, base_url, scanning_method):
+    def enumerate_plugins(self, url, base_url, scanning_method=403, max_plugins=500):
         iterator = getattr(self, "plugins_get")
-        return self.enumerate(url, base_url, scanning_method, iterator)
+        return self.enumerate(url, base_url, scanning_method, iterator, max_plugins)
 
-    def enumerate_themes(self, url, base_url, scanning_method):
+    def enumerate_themes(self, url, base_url, scanning_method=403, max_plugins=500):
         iterator = getattr(self, "themes_get")
-        return self.enumerate(url, base_url, scanning_method, iterator)
+        return self.enumerate(url, base_url, scanning_method, iterator, max_plugins)
 
     def enumerate_users(self, url):
         raise NotImplementedError("Not implemented yet.")
