@@ -2,7 +2,7 @@ from cement.core import handler, controller
 from common import logger
 from datetime import datetime
 import common
-import requests, grequests
+import requests
 
 class BasePlugin(controller.CementBaseController):
 
@@ -101,7 +101,6 @@ class BasePlugin(controller.CementBaseController):
                     self._meta.label)
 
     def plugins_get(self, amount=100000):
-        amount = int(amount)
         with open(self.plugins_file) as f:
             i = 0
             for plugin in f:
@@ -111,7 +110,6 @@ class BasePlugin(controller.CementBaseController):
                 i += 1
 
     def themes_get(self, amount=100000):
-        amount = int(amount)
         with open(self.themes_file) as f:
             i = 0
             for theme in f:
@@ -136,6 +134,7 @@ class BasePlugin(controller.CementBaseController):
         else:
             base_urls = base_url_supplied
 
+
         for base_url in base_urls:
             plugins = iterator_returning_method(max_iterator)
 
@@ -146,19 +145,9 @@ class BasePlugin(controller.CementBaseController):
                 url_template = base_url
                 expected_status = scanning_method
 
-            rs = []
             for plugin in plugins:
-                r = grequests.head(url_template % (url, plugin))
-                r.__dict__['plugin'] = plugin
-                print help(r)
-                rs.append(r)
-
-            threads = 12
-            responses = grequests.map(rs, size=threads)
-
-            for response in responses:
-                if response.status_code == expected_status:
-                    print response.request
+                r = requests.get(url_template % (url, plugin))
+                if r.status_code == expected_status:
                     found.append(plugin)
 
         return found
