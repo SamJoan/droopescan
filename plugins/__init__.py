@@ -103,6 +103,7 @@ class BasePlugin(controller.CementBaseController):
                     self._meta.label)
 
     def plugins_get(self, amount=100000):
+        amount = int(amount)
         with open(self.plugins_file) as f:
             i = 0
             for plugin in f:
@@ -112,6 +113,7 @@ class BasePlugin(controller.CementBaseController):
                 i += 1
 
     def themes_get(self, amount=100000):
+        amount = int(amount)
         with open(self.themes_file) as f:
             i = 0
             for theme in f:
