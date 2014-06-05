@@ -147,9 +147,10 @@ class BasePlugin(controller.CementBaseController):
                 expected_status = scanning_method
 
             rs = []
-            hname = "X-var-standard"
             for plugin in plugins:
-                r = grequests.head(url_template % (url, plugin), cookies={hname: plugin})
+                r = grequests.head(url_template % (url, plugin))
+                r.__dict__['plugin'] = plugin
+                print help(r)
                 rs.append(r)
 
             threads = 12
@@ -157,7 +158,7 @@ class BasePlugin(controller.CementBaseController):
 
             for response in responses:
                 if response.status_code == expected_status:
-                    plugin = response.request.__dict__['_cookies'][hname]
+                    print response.request
                     found.append(plugin)
 
         return found
