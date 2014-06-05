@@ -3,6 +3,8 @@ from common import logger
 from datetime import datetime
 import common
 import requests
+from requests_futures.sessions import FuturesSession
+from concurrent.futures import ThreadPoolExecutor
 
 class BasePlugin(controller.CementBaseController):
 
@@ -145,10 +147,17 @@ class BasePlugin(controller.CementBaseController):
                 url_template = base_url
                 expected_status = scanning_method
 
+            sess = FuturesSession(executor=ThreadPoolExecutor(max_workers=10))
+            futures = {}
             for plugin in plugins:
-                r = requests.get(url_template % (url, plugin))
+                f = sess.get(url_template % (url, plugin))
+                futures[plugin] = f
+
+            for plugin_name in futures:
+                # exception handling needs to go here.
+                r = futures[plugin_name].result()
                 if r.status_code == expected_status:
-                    found.append(plugin)
+                    found.append(plugin_name)
 
         return found
 
