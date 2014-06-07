@@ -138,7 +138,6 @@ class BasePlugin(controller.CementBaseController):
         else:
             base_urls = base_url_supplied
 
-
         for base_url in base_urls:
             plugins = iterator_returning_method(max_iterator)
 
