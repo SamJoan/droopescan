@@ -7,7 +7,7 @@ from requests_futures.sessions import FuturesSession
 
 class BasePlugin(controller.CementBaseController):
 
-    valid_enumerate = ['u', 'p', 't']
+    valid_enumerate = ['u', 'p', 't', 'a']
     class ScanningMethod():
         not_found = 404
         forbidden = 403
@@ -74,7 +74,7 @@ class BasePlugin(controller.CementBaseController):
 
         # The loop of enumeration.
         for enumerate in functionality:
-            common.echo(common.template("common/scan_begin.tpl", {"noun": enumerate,
+            common.echo(common.template("scan_begin.tpl", {"noun": enumerate,
                 "url": opts['url']}))
 
             enum = functionality[enumerate]

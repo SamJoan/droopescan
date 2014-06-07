@@ -21,11 +21,12 @@ class DroopeScanBase(controller.CementBaseController):
             some_other_option='my default value',
             )
 
+        argument_formatter = common.SmartFormatter
+
         arguments = [
                 (['--url'], dict(action='store', help='')),
                 (['--enumerate', '-e'], dict(action='store',
-                help="""What to enumerate. Available options are u, p and t. These
-                    ennumerate users, plugins and themes respectively.""")),
+                help='R|' + common.template("help_enumerate.tpl"))),
                 (['--method'], dict(action='store', help="""Some webservers
                     respond with 403 when a folder exists. Others with a 404.
                     Others with a 200. Valid options are [forbidden, not_found,

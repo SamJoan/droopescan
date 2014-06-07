@@ -1,5 +1,5 @@
 from cement.core import handler
-import droopescan
+import argparse
 import logging
 import pystache
 import re
@@ -21,8 +21,7 @@ def validate_url(url):
         return url
 
 def validate_enumerate(enumerate, valid_enumerate):
-    if not enumerate in valid_enumerate:
-        raise RuntimeError("Invalid --enumerate. Valid options are %s"
+    if not enumerate in valid_enumerate: raise RuntimeError("Invalid --enumerate. Valid options are %s"
                 % valid_enumerate)
 
 def validate_method(method, method_enum):
@@ -43,8 +42,8 @@ def enum_list(enum):
 
     return methods
 
-def template(template_file, variables):
-    f = open(template_file, "r")
+def template(template_file, variables={}):
+    f = open('common/template/' + template_file, 'r')
     template = f.read()
 
     return pystache.render(template, variables)
@@ -54,3 +53,12 @@ def echo(msg):
         wrapper for print, in case we need to globally stop outputting stuff.
     """
     print(msg)
+
+#class SmartFormatter(argparse.RawTextHelpFormatter):
+
+class SmartFormatter(argparse.RawDescriptionHelpFormatter):
+    def _split_lines(self, text, width):
+        # this is the RawTextHelpFormatter._split_lines
+        if text.startswith('R|'):
+            return text[2:].splitlines()
+        return argparse.HelpFormatter._split_lines(self, text, width)
