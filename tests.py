@@ -14,9 +14,9 @@ class BaseTest(test.CementTestCase):
 
     base_url = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
 
-    param_base_url = ["--url", base_url]
-    param_plugins = param_base_url + ["-e", 'p']
-    param_themes = param_base_url + ["-e", 't']
+    param_base = ["--url", base_url, '-n', '10']
+    param_plugins = param_base + ["-e", 'p']
+    param_themes = param_base + ["-e", 't']
 
     def setUp(self):
         super(BaseTest, self).setUp()
@@ -277,13 +277,13 @@ class DrupalScanTest(BaseTest):
     def test_errors_when_no_enumerate(self):
         # add url to make sure that it does not error because of the url
         self.add_argv(["drupal"])
-        self.add_argv(self.param_base_url)
+        self.add_argv(self.param_base)
         self.app.run()
 
     @test.raises(RuntimeError)
     def test_errors_when_invalid_enumerate(self):
         self.add_argv(["drupal"])
-        self.add_argv(self.param_base_url + ["-e", 'z'])
+        self.add_argv(self.param_base + ["-e", 'z'])
         self.app.run()
 
     @test.raises(RuntimeError)
@@ -304,6 +304,7 @@ class DrupalScanTest(BaseTest):
     def test_calls_theme(self):
         self.add_argv(["drupal"])
         self.add_argv(self.param_themes)
+
         self.add_argv(["--method", "forbidden"])
 
         self.app.run()
