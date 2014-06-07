@@ -43,10 +43,7 @@ class BasePlugin(controller.CementBaseController):
         # all variables here will be returned.
         return locals()
 
-    def enumerate_route(self):
-        time_start = datetime.now()
-        opts = self._options()
-
+    def _functionality(self, opts):
         functionality = {}
         if opts['enumerate'] == "p":
             noun = "plugins"
@@ -67,17 +64,25 @@ class BasePlugin(controller.CementBaseController):
                     "base_url": opts['themes_base_url']
                     }
 
-        common.echo(common.template("common/scan_begin.tpl", {"noun": noun, "url": opts['url'],
-            "plugins_base_url": opts['plugins_base_url'], "scanning_method": opts['scanning_method']}))
+        return functionality
+
+    def enumerate_route(self):
+
+        time_start = datetime.now()
+        opts = self._options()
+        functionality = self._functionality(opts)
 
         # The loop of enumeration.
         for enumerate in functionality:
+            common.echo(common.template("common/scan_begin.tpl", {"noun": enumerate,
+                "url": opts['url']}))
+
             enum = functionality[enumerate]
             finds = enum["func"](opts['url'], enum["base_url"],
                     opts['scanning_method'], opts['number'], opts['threads'])
 
-            common.echo(common.template("common/list_noun.tpl", {"noun":noun,
-                "items":finds, "empty":len(finds) == 0, "Noun":noun.capitalize()}))
+            common.echo(common.template("common/list_noun.tpl", {"noun": enumerate,
+                "items":finds, "empty":len(finds) == 0, "Noun": enumerate.capitalize()}))
 
         common.echo("[+] Scan finished (%s elapsed)" % str(datetime.now() - time_start))
 
