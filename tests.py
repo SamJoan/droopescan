@@ -147,7 +147,7 @@ class BasePluginTest(BaseTest):
         assert l == len(plugins), "Should have read the contents of the file."
 
     def test_limits_by_number(self):
-        plugins_generator = self.scanner.plugins_get(3)
+        plugins_generator = self.scanner.plugins_get("3")
 
         plugins = []
         for plugin in plugins_generator:
@@ -155,7 +155,7 @@ class BasePluginTest(BaseTest):
 
         assert 3 == len(plugins)
 
-        themes_generator = self.scanner.themes_get(3)
+        themes_generator = self.scanner.themes_get("3")
 
         themes = []
         for theme in themes_generator:

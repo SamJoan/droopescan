@@ -40,7 +40,7 @@ class BasePlugin(controller.CementBaseController):
         else:
             scanning_method = self.determine_scanning_method(url)
 
-        # all variables here will be an option.
+        # all variables here will be returned.
         return locals()
 
     def enumerate_route(self):
