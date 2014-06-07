@@ -81,7 +81,7 @@ class BasePlugin(controller.CementBaseController):
             finds = enum["func"](opts['url'], enum["base_url"],
                     opts['scanning_method'], opts['number'], opts['threads'])
 
-            common.echo(common.template("common/list_noun.tpl", {"noun": enumerate,
+            common.echo(common.template("list_noun.tpl", {"noun": enumerate,
                 "items":finds, "empty":len(finds) == 0, "Noun": enumerate.capitalize()}))
 
         common.echo("[+] Scan finished (%s elapsed)" % str(datetime.now() - time_start))
