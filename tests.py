@@ -5,6 +5,7 @@ from droopescan import DroopeScan
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
+from requests_futures.sessions import FuturesSession
 import requests
 import responses
 
@@ -162,6 +163,18 @@ class BasePluginTest(BaseTest):
             themes.append(theme)
 
         assert 3 == len(themes)
+
+    @patch.object(FuturesSession, '__init__')
+    def test_threads_gets_passed(self, ffs):
+        self.add_argv(self.param_plugins)
+        self.add_argv(['--threads', '30', '--method', 'forbidden'])
+        try:
+            self.app.run()
+        except:
+            # this will never happen. j/k this will always happen.
+            pass
+
+        ffs.assert_called_with(max_workers=30)
 
     def test_number_param_passed_plugins(self):
         self.add_argv(self.param_plugins)

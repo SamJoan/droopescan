@@ -4,7 +4,6 @@ from datetime import datetime
 import common
 import requests
 from requests_futures.sessions import FuturesSession
-from concurrent.futures import ThreadPoolExecutor
 
 class BasePlugin(controller.CementBaseController):
 
@@ -28,6 +27,7 @@ class BasePlugin(controller.CementBaseController):
         method = pargs.method
 
         number = pargs.number if pargs.number else 500
+        threads = pargs.threads if pargs.threads else 10
         plugins_base_url = pargs.plugins_base_url if pargs.plugins_base_url \
             else self.plugins_base_url
         themes_base_url = pargs.themes_base_url if pargs.themes_base_url \
@@ -74,7 +74,7 @@ class BasePlugin(controller.CementBaseController):
         for enumerate in functionality:
             enum = functionality[enumerate]
             finds = enum["func"](opts['url'], enum["base_url"],
-                    opts['scanning_method'], opts['number'])
+                    opts['scanning_method'], opts['number'], opts['threads'])
 
             common.echo(common.template("common/list_noun.tpl", {"noun":noun,
                 "items":finds, "empty":len(finds) == 0, "Noun":noun.capitalize()}))
@@ -122,7 +122,7 @@ class BasePlugin(controller.CementBaseController):
                 yield theme.strip()
                 i +=1
 
-    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method, max_iterator=500):
+    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method, max_iterator=500, threads=10):
         """
             @param url base URL for the website.
             @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
@@ -148,7 +148,7 @@ class BasePlugin(controller.CementBaseController):
                 url_template = base_url
                 expected_status = scanning_method
 
-            sess = FuturesSession(executor=ThreadPoolExecutor(max_workers=10))
+            sess = FuturesSession(max_workers=int(threads))
             futures = {}
             for plugin in plugins:
                 f = sess.get(url_template % (url, plugin))
@@ -162,13 +162,13 @@ class BasePlugin(controller.CementBaseController):
 
         return found
 
-    def enumerate_plugins(self, url, base_url, scanning_method=403, max_plugins=500):
+    def enumerate_plugins(self, url, base_url, scanning_method=403, max_plugins=500, threads=10):
         iterator = getattr(self, "plugins_get")
-        return self.enumerate(url, base_url, scanning_method, iterator, max_plugins)
+        return self.enumerate(url, base_url, scanning_method, iterator, max_plugins, threads)
 
-    def enumerate_themes(self, url, base_url, scanning_method=403, max_plugins=500):
+    def enumerate_themes(self, url, base_url, scanning_method=403, max_plugins=500, threads=10):
         iterator = getattr(self, "themes_get")
-        return self.enumerate(url, base_url, scanning_method, iterator, max_plugins)
+        return self.enumerate(url, base_url, scanning_method, iterator, max_plugins, threads)
 
     def enumerate_users(self, url):
         raise NotImplementedError("Not implemented yet.")
