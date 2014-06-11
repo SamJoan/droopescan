@@ -26,7 +26,7 @@ class BasePlugin(controller.CementBaseController):
         enumerate = pargs.enumerate
         method = pargs.method
 
-        number = pargs.number if pargs.number else 500
+        number = pargs.number if pargs.number else 1000
         threads = pargs.threads if pargs.threads else 10
         plugins_base_url = pargs.plugins_base_url if pargs.plugins_base_url \
             else self.plugins_base_url
@@ -165,7 +165,6 @@ class BasePlugin(controller.CementBaseController):
                 futures[plugin] = f
 
             for plugin_name in futures:
-                # exception handling needs to go here.
                 r = futures[plugin_name].result()
                 if r.status_code == expected_status:
                     found.append(plugin_name)
