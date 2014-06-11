@@ -257,6 +257,10 @@ class BasePluginTest(BaseTest):
 
         self.assert_called_contains(m, 2, self.scanner.ScanningMethod.ok)
 
+    def test_determine_with_multiple_ok(self):
+        # see example.url_ok list example.
+        assert False
+
     @test.raises(RuntimeError)
     def test_not_cms(self):
         self.add_argv(self.param_plugins)
