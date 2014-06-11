@@ -67,7 +67,6 @@ class BasePlugin(controller.CementBaseController):
         return functionality
 
     def enumerate_route(self):
-
         time_start = datetime.now()
         opts = self._options()
         functionality = self._functionality(opts)
@@ -88,19 +87,25 @@ class BasePlugin(controller.CementBaseController):
 
     def determine_scanning_method(self, url):
         folder_resp = requests.get(url + self.folder_url)
-        ok_resp = requests.get(url + self.regular_file_url)
 
-        logger.debug("determine_scanning_method: Server responded with %s and %s for urls %s and %s"
-                % (folder_resp.status_code, ok_resp.status_code,
-                    self.folder_url, self.regular_file_url))
+        if isinstance(self.regular_file_url, basestring):
+            ok_resp = requests.get(url + self.regular_file_url)
+            ok_200 = ok_resp.status_code == 200
+        else:
+            ok_200 = False
+            for path in self.regular_file_url:
+                ok_resp = requests.get(url + path)
+                if ok_resp.status_code == 200:
+                    ok_200 = True
+                    break
 
-        if folder_resp.status_code == 403 and ok_resp.status_code == 200:
+        if folder_resp.status_code == 403 and ok_200:
             return self.ScanningMethod.forbidden
-        if folder_resp.status_code == 404 and ok_resp.status_code == 200:
+        if folder_resp.status_code == 404 and ok_200:
             logger.warning("Known %s folders have returned 404 Not Found. If modules do not have a %s file they will not be detected." %
                     (self._meta.label, self.module_readme_file))
             return self.ScanningMethod.not_found
-        if folder_resp.status_code == 200 and ok_resp.status_code == 200:
+        if folder_resp.status_code == 200 and ok_200:
             logger.warning("""Known folder names for %s are returning 200 OK. Is directory listing enabled?""" % self._meta.label)
             return self.ScanningMethod.ok
         else:

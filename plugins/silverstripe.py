@@ -5,14 +5,14 @@ import common
 
 class SilverStripe(BasePlugin):
 
-    plugins_file = "plugins/drupal/wordlists/plugins"
+    plugins_file = "plugins/silverstripe/wordlists/plugins"
     plugins_base_url = '%s/'
 
-    themes_file = "plugins/drupal/wordlists/themes_1250"
-    themes_base_url = '%s/'
+    themes_file = "plugins/silverstripe/wordlists/themes"
+    themes_base_url = 'themes/%s/'
 
-    folder_url = "misc/"
-    regular_file_url = "misc/drupal.js"
+    folder_url = "framework/"
+    regular_file_url = ["cms/css/layout.css", "framework/css/UploadField.css"]
     module_readme_file = "README.txt"
 
     class Meta:

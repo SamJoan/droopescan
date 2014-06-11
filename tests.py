@@ -258,8 +258,13 @@ class BasePluginTest(BaseTest):
         self.assert_called_contains(m, 2, self.scanner.ScanningMethod.ok)
 
     def test_determine_with_multiple_ok(self):
-        # see example.url_ok list example.
-        assert False
+        self.scanner.regular_file_url = ["misc/drupal_old.js", "misc/drupal.js"]
+        self.respond_several(self.base_url + "%s", {200: ["misc/",
+            "misc/drupal.js"], 404: ["misc/drupal_old.js"]})
+
+        scanning_method = self.scanner.determine_scanning_method(self.base_url)
+
+        assert scanning_method == self.scanner.ScanningMethod.ok
 
     @test.raises(RuntimeError)
     def test_not_cms(self):
