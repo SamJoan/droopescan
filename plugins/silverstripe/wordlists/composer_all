@@ -1,6 +1,7 @@
 silverstripe/framework
 silverstripe/cms
 silverstripe/sqlite3
+silverstripe-themes/simple
 silverstripe/postgresql
 undefinedoffset/sortablegridfield
 silverstripe/userforms
@@ -28,6 +29,7 @@ silverstripe/versionedfiles
 silverstripe/docsviewer
 silverstripe/queuedjobs
 heyday/silverstripe-hashpath
+silverstripe-themes/module_bootstrap
 unclecheese/display-logic
 silverstripe/buildtools
 silverstripe/tagfield
@@ -84,6 +86,7 @@ silverstripe/fulltextsearch-localsolr
 hafriedlander/silverstripe-phockito
 silverstripe/external-content
 heyday/silverstripe-versioneddataobjects
+silverstripe-themes/blackcandy
 silverstripe/event-calendar
 heyday/silverstripe-dataobjectpreview
 sheadawson/silverstripe-editlock
@@ -104,6 +107,7 @@ unclecheese/mock-dataobjects
 burnbright/silverstripe-shop-comparison
 silverstripe/memberprofiles
 silverstripe/staticpublisher
+rywa/silverstripe-foundation
 burnbright/silverstripe-shop-coloredvariations
 jonom/focuspoint
 swipestripe/swipestripe-category
@@ -139,8 +143,10 @@ frankmullenger/payment-cheque
 swipestripe/swipestripe-coupon
 frankmullenger/underconstruction
 silverstripe/contact-form
+silverstripe-themes/express
 tractorcow/silverstripe-twitter
 heyday/silverstripe-flexibledataformatters
+jeffwhitfield/silverstripe-bootstrap-theme
 silverstripe/quickaddnew
 swipestripe/swipestripe-currency
 silverstripe/meta-languages
@@ -214,6 +220,7 @@ weboftalent/silverstripe-shortcode-youtube
 sktzoootech/link-field
 kinglozzer/silverstripegmapsobject
 silverstripe/commandpattern
+tractorcow/silverstripe-metro
 markguinn/silverstripe-deploytools
 normann/gridfieldpaginatorwithshowall
 swipestripe/swipestripe-gallery
@@ -227,6 +234,7 @@ andrewhoule/silverstripe-staffpage
 ajshort/silverstripe-elastica
 tractorcow/silverstripe-facebook-sdk
 ajshort/silverstripe-eventmanagement
+titledk/cloudy
 axyr/silverstripe-adminlogin
 silverstripe/frameworktest
 mediadevils/silverstripe-smtp
@@ -256,6 +264,7 @@ axllent/silverstripe-enquiry-page
 azt3k/abc-silverstripe-taggable
 micmania1/sstwitter
 axllent/silverstripe-cms-tweaks
+gpmd/ss-bootstrap
 oddnoc/silverstripe-artefactcleaner
 i-lateral/silverstripe-compactnavigator
 axllent/silverstripe-scaled-uploads
@@ -263,12 +272,16 @@ axyr/silverstripe-metamanager
 sunnysideup/dataobjectsorter
 colymba/silverstripe-restfulapi
 webbuilders-group/silverstripe-gridfielditemtype
+p7media/silverplate
 axllent/silverstripe-intelligent-404
 silverstripe/securityextras
+burnbright/bootstrap
 axllent/silverstripe-less
 sheadawson/silverstripe-timednotices
 silverstripesk/silverstripe-disqus
+entidi/silverstrap
 adrexia/definitions
+maldicore-themes/aidp
 purplespider/basic-calendar
 silverstripe/drupal-connector
 markguinn/silverstripe-livepub
@@ -302,6 +315,7 @@ lpalmieri/widgetify
 nathancox/codeeditorfield
 cwsoft/silverstripe-cwsoft-foldergallery
 adrexia/staticsearch
+micmania1/simple_blog
 burnbright/silverstripe-sociallinks
 silvermax/maxphotos
 sunnysideup/ecommerce_tax
@@ -327,6 +341,7 @@ undefinedoffset/silverstripe-markdown
 unisolutions/silverstripe-i18nenum
 nobrainerweb/silverstripe-robots-noindex
 tractorcow/silverstripe-securetest
+priithansen/silverstripe-foundation-boilerplate
 unclecheese/meta-languages
 andrewlowther/mediamanager
 sheadawson/silverstripe-rateable
@@ -340,6 +355,8 @@ simonwelsh/hasoneedit
 firesphere/social
 richardsjoqvist/silverstripe-blocks
 swipestripe/swipestripe-downloadable
+entidi/silverstrap-cerulean
+tractorcow/silverstripe-metro-blog
 webmaxsk/maxsocial
 webmaxsk/maximages
 silverstripe/silverstripecms-lite
@@ -352,6 +369,7 @@ weboftalent/indexlastedited
 weboftalent/cachekeyhelper
 dnadesign/silverstripe-fulltextsearchdefault
 i-lateral/silverstripe-auth-username
+silverstripe-themes/simple_blog
 richardsjoqvist/silverstripe-news
 christopherdarling/silverstripe-gridfieldsitetree
 burnbright/silverstripe-hyperlinks
@@ -379,6 +397,7 @@ sunnysideup/sharethis
 tractorcow/silverstripe-datelink
 tractorcow/silverstripe-lessphp
 mparkhill/sitequicklinks
+mandrew/hardyakka
 i-lateral/silverstripe-sessionmessenger
 webbuilders-group/silverstripe-metapreview
 silverstripe/sakemore
@@ -401,6 +420,7 @@ nobrainerweb/silverstripe-section-module
 arnhoe/metakeywords
 silverstripe/retina-images
 silverstripe/zenmessage
+rywa/silverstripe-skeleton-theme
 mparkhill/ss-tcpdf
 silverstripe-springboard/angular-app
 silverstripe-springboard/content-api
@@ -411,6 +431,7 @@ markguinn/silverstripe-fb-comments
 markguinn/silverstripe-sync
 sheadawson/userswitcher
 maldicore/advancedreports
+tractorcow/silverstripe-metro-comments
 svandragt/silverstripe-hiddenfields
 jonshutt/silverstripe-gallery
 tylerkidd/silverstripe-shop-google-base
@@ -423,6 +444,8 @@ axyr/silverstripe-modulefolder
 micmania1/silverstripe-nivoslider
 mrkdevelopment/silverstripe-mailgun
 roave/silverstripe-callfire
+undefinedoffset/silverstripe-codebank-theme
+mouseketeers/silverstripe-foundation
 zucchi/metatags
 studiobonito/silverstripe-queue
 webbuilders-group/silverstripe-cmspreviewpreference
@@ -447,6 +470,7 @@ titledk/silverstripe-businessinfo
 cwsoft/silverstripe-cwsoft-shortcode
 sunnysideup/userforms_paypal
 micmania1/silverstripe-facebook
+nguyer/cwp-gumby-theme
 silverstripe/frontend-dashboards
 macka601/caroufredsel
 zucchi/geotags
@@ -476,7 +500,9 @@ meerware/browser-information
 ryanpotter/ss_boilerplate
 betterbrief/silverstripe-betterdatetimefield
 maldicore/sortablegridfield
+tractorcow/silverstripe-metro-memberprofiles
 ivoba/silverstripe-simple-pdf-preview
+xplore/bootstripe
 zucchi/blogaggregator
 silverstripe/zenautocompletefield
 burnbright/silverstripe-directory
@@ -517,6 +543,7 @@ dospuntocero/cycle2slider
 sunnysideup/staffprofiles
 svandragt/silverstripe-pagerequirements
 silvermax/maxskitter
+silverstripe-themes/blackcandymobile
 silverstripe/timeline
 lekoala/silverstripe-mandrill
 i-lateral/silverstripe-siteconfig
@@ -723,6 +750,7 @@ sheerwater/ss-hmac-restful-authenticator
 vikas-srivastava/extensionmanager
 thomaspaulson/silverstripe-event-footer
 wilr/silverstripe-googlemapselectionfield
+silverstripe-themes/jquerymobile
 camspiers/silverstripe-csp-logging
 bummzack/translatable-dataobject
 svandragt/silverstripe-description

@@ -6,10 +6,10 @@ import common
 class SilverStripe(BasePlugin):
 
     plugins_file = "plugins/silverstripe/wordlists/plugins"
-    plugins_base_url = '%s/'
+    plugins_base_url = '%s%s/'
 
     themes_file = "plugins/silverstripe/wordlists/themes"
-    themes_base_url = 'themes/%s/'
+    themes_base_url = '%sthemes/%s/'
 
     folder_url = "framework/"
     regular_file_url = ["cms/css/layout.css", "framework/css/UploadField.css"]

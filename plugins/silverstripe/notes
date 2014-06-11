@@ -28,4 +28,17 @@ information about the packages can be found at
     from there, you can get the installer_name
 
 
+Further; even though it seems that the SS addon store has two categories, it
+has a third one (uncategorized)
 
+    Themes: 26
+    Modules: 447
+    Without filtering by type: 778
+
+    Total uncategorized: 305
+
+Process for getting all modules is, then
+    - Get all, 
+    - Get themes,
+    - get modules by grep -v -x -f wordlists/composer_themes wordlists/composer_all
+    - convert modules using convert-to-folder.py.

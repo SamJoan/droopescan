@@ -5,11 +5,13 @@ This is not very simple, it is done by a request to
 https://packagist.org/p/{package-name}.json, see notes
 """
 
-import sys, os
+import sys
 sys.path.append("../../")
 
-import requests
 from pprint import pprint
+from requests_futures.sessions import FuturesSession
+import os
+import requests
 
 try:
     composer_file = sys.argv[1]
@@ -21,9 +23,15 @@ f = open(composer_file)
 
 url = 'https://packagist.org/p/%s.json'
 
+sess = FuturesSession(max_workers=4)
+reqs = {}
 for line in f:
     module_name = line.strip()
-    r = requests.get(url % module_name)
+    req = sess.get(url % module_name)
+    reqs[module_name] = req
+
+for module_name in reqs:
+    r = reqs[module_name].result()
     response = r.json()
 
     try:

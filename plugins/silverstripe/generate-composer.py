@@ -12,9 +12,12 @@ import requests
 try:
     what = sys.argv[1]
 except IndexError:
-    print("Generates ONLY the module names to import from composer.")
-    print("Usage: %s (module|theme)" % sys.argv[0])
+    print("Generates ONLY the module names to import from composer. See notes \
+        for getting modules")
+    print("Usage: %s (all|theme)" % sys.argv[0])
     sys.exit()
+
+what = "" if what == "all" else what
 
 # SS displays 16 modules per page :P
 per_page = 16
