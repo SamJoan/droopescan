@@ -5,17 +5,15 @@ import common
 
 class SilverStripe(BasePlugin):
 
-    # a file containing a list of plugins, one per line.
-    plugins_file = "plugins/silverstripe/wordlists/top_1000"
+    plugins_file = "plugins/drupal/wordlists/plugins"
+    plugins_base_url = '%s/'
 
-    # plugins are in the root.
-    base_url = "%s/"
+    themes_file = "plugins/drupal/wordlists/themes_1250"
+    themes_base_url = '%s/'
 
-    module_readme_file = "README.md"
-
-    folder_url = "framework/"
-
-    regular_file_url = ["framework/css/UploadField.css", "cms/css/layout.css"]
+    folder_url = "misc/"
+    regular_file_url = "misc/drupal.js"
+    module_readme_file = "README.txt"
 
     class Meta:
         label = 'silverstripe'

@@ -1,0 +1,31 @@
+# some plugins get extracted to their filename
+
+e.g. silverstripe/userforms -> userforms.
+
+others:
+    - translatable
+    - widgets
+    - fulltextsearch
+    - timepickerfield
+    - minify
+    - dms
+    - silverstripe-colorpallete
+    - silverstripe-phockito 
+    - messagequeue
+
+# others get extracted according to configuration in composer.json (in particular extra.installer-name) :@
+
+e.g. burnbright/silverstripe-omnipay -> omnipay
+
+others like this:
+    silverstripe/event-calendar -> event_calendar
+    sheadawson/silverstripe-editlock -> editlock
+
+
+information about the packages can be found at
+    https://packagist.org/p/silverstripe/translatable.json
+
+    from there, you can get the installer_name
+
+
+
