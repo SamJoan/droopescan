@@ -179,5 +179,5 @@ class BasePlugin(controller.CementBaseController):
         iterator = getattr(self, "themes_get")
         return self.enumerate(url, base_url, scanning_method, iterator, max_plugins, threads)
 
-    def enumerate_users(self, url):
+    def enumerate_users(self, url, base_url, scanning_method=403, max_plugins=500, threads=10):
         raise NotImplementedError("Not implemented yet.")
