@@ -40,7 +40,7 @@ class DroopeScanBase(controller.CementBaseController):
                     above, but for themes.""")),
                 (['--number', '-n'], dict(action='store', help="""Number of
                     words to attempt from the plugin/theme dictionary. Default
-                    is top 500.""")),
+                    is 1000.""")),
                 (['--threads', '-t'], dict(action='store', help="""Number of
                     threads.""")),
             ]
