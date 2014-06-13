@@ -1,1 +1,1 @@
-[+] Scanning for {{noun}} in {{url}}
+{{header}}[+] Scanning for {{noun}} in {{url}}{{endc}}

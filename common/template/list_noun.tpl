@@ -1,10 +1,9 @@
 {{#empty}}
-[+] No {{noun}} found.
+{{fail}}[+] No {{noun}} found.{{endc}}
 {{/empty}}
 {{^empty}}
-[+] {{Noun}} found:
+{{blue}}[+] {{Noun}} found:{{endc}}
 {{/empty}}
 {{#items}}
-    {{name}}:
-        url: {{url}}
+    {{name}} {{url}}
 {{/items}}

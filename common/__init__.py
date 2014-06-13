@@ -43,6 +43,16 @@ def enum_list(enum):
     return methods
 
 def template(template_file, variables={}):
+    colors = {
+            #'green': '\033[92m',
+            #'warn': '\033[93m',
+            'header': '\033[95m',
+            'blue': '\033[94m',
+            'fail': '\033[91m',
+            'endc': '\033[0m',
+        }
+
+    variables.update(colors)
     f = open('common/template/' + template_file, 'r')
     template = f.read()
 

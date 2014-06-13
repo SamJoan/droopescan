@@ -136,6 +136,7 @@ class BasePluginTest(BaseTest):
         result = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
 
+        # handle difference in notation.
         base_1 = base_1.replace(self.base_url, '%s')
         base_2 = base_2.replace(self.base_url, '%s')
         assert result == {base_1: ["supermodule"], base_2: ['supermodule2']}, "Should have detected the \

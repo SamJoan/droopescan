@@ -66,10 +66,10 @@ class BasePlugin(controller.CementBaseController):
         functionality = {}
         if opts['enumerate'] == "p":
             functionality['plugins'] = all['plugins']
-        elif opts['enumerate'] == "u":
-            functionality['users'] = all['users']
         elif opts['enumerate'] == "t":
             functionality['themes'] = all['themes']
+        elif opts['enumerate'] == "u":
+            functionality['users'] = all['users']
         elif opts['enumerate'] == "a":
             functionality = all
 
@@ -82,7 +82,8 @@ class BasePlugin(controller.CementBaseController):
 
         enumerating_all = opts['enumerate'] == 'a'
         if enumerating_all:
-            common.echo("[+] Enumerating all in %s\n" % opts['url'])
+            common.echo(common.template('scan_begin.tpl', {'noun': 'all', 'url':
+                opts['url']}))
 
         # The loop of enumeration.
         for enumerate in functionality:
@@ -112,7 +113,7 @@ class BasePlugin(controller.CementBaseController):
                 else:
                     raise
 
-        common.echo("[+] Scan finished (%s elapsed)" % str(datetime.now() - time_start))
+        common.echo("\033[95m[+] Scan finished (%s elapsed)\033[0m" % str(datetime.now() - time_start))
 
     def determine_scanning_method(self, url):
         folder_resp = requests.get(url + self.folder_url)
