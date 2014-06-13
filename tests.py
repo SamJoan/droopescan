@@ -18,6 +18,7 @@ class BaseTest(test.CementTestCase):
     param_base = ["--url", base_url, '-n', '10']
     param_plugins = param_base + ["-e", 'p']
     param_themes = param_base + ["-e", 't']
+    param_all = param_base + ["-e", 'a']
 
     def setUp(self):
         super(BaseTest, self).setUp()
@@ -31,7 +32,7 @@ class BaseTest(test.CementTestCase):
     def tearDown(self):
         self.app.close()
 
-    def mock_controller(self, plugin_label, method, return_value = None):
+    def mock_controller(self, plugin_label, method, return_value = None, side_effect = None):
         """
             Mocks controller by label. Can only be used to test controllers
             that get instantiated automatically by cement.
@@ -39,6 +40,9 @@ class BaseTest(test.CementTestCase):
         m = MagicMock()
         if return_value:
             m.return_value = return_value
+
+        if side_effect:
+            m.side_effect = side_effect
 
         setattr(backend.__handlers__['controller'][plugin_label], method, m)
         return m
@@ -64,9 +68,6 @@ class BaseTest(test.CementTestCase):
 
 @decallmethods(responses.activate)
 class BasePluginTest(BaseTest):
-    """
-        This class should contain tests specific to Drupal
-    """
 
     def setUp(self):
         super(BasePluginTest, self).setUp()
@@ -296,13 +297,6 @@ class DrupalScanTest(BaseTest):
         self.app.run()
 
     @test.raises(RuntimeError)
-    def test_errors_when_no_enumerate(self):
-        # add url to make sure that it does not error because of the url
-        self.add_argv(["drupal"])
-        self.add_argv(self.param_base)
-        self.app.run()
-
-    @test.raises(RuntimeError)
     def test_errors_when_invalid_enumerate(self):
         self.add_argv(["drupal"])
         self.add_argv(self.param_base + ["-e", 'z'])
@@ -328,6 +322,32 @@ class DrupalScanTest(BaseTest):
         self.add_argv(self.param_themes)
 
         self.add_argv(["--method", "forbidden"])
+
+        self.app.run()
+
+    def test_calls_all(self):
+        self.add_argv(["drupal"])
+        self.add_argv(self.param_all)
+        self.add_argv(["--method", "forbidden"])
+
+        p = self.mock_controller("drupal", 'enumerate_plugins')
+        t = self.mock_controller("drupal", 'enumerate_themes')
+        u = self.mock_controller("drupal", 'enumerate_users')
+
+        self.app.run()
+
+        assert p.called
+        assert t.called
+        assert u.called
+
+    def test_doesnt_crash_on_runtimeerror(self):
+        self.add_argv(["drupal"])
+        self.add_argv(self.param_all)
+        self.add_argv(["--method", "forbidden"])
+
+        p = self.mock_controller("drupal", 'enumerate_plugins')
+        t = self.mock_controller("drupal", 'enumerate_themes')
+        u = self.mock_controller("drupal", 'enumerate_users', side_effect=RuntimeError("derp!"))
 
         self.app.run()
 

@@ -26,7 +26,7 @@ class DroopeScanBase(controller.CementBaseController):
         arguments = [
                 (['--url'], dict(action='store', help='')),
                 (['--enumerate', '-e'], dict(action='store',
-                help='R|' + common.template("help_enumerate.tpl"))),
+                    help='R|' + common.template("help_enumerate.tpl"))),
                 (['--method'], dict(action='store', help="""Some webservers
                     respond with 403 when a folder exists. Others with a 404.
                     Others with a 200. Valid options are [forbidden, not_found,

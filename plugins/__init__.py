@@ -23,7 +23,6 @@ class BasePlugin(controller.CementBaseController):
         pargs = self.app.pargs
 
         url = common.validate_url(pargs.url)
-        enumerate = pargs.enumerate
         method = pargs.method
 
         number = pargs.number if pargs.number else 1000
@@ -33,7 +32,11 @@ class BasePlugin(controller.CementBaseController):
         themes_base_url = pargs.themes_base_url if pargs.themes_base_url \
                 else self.themes_base_url
 
-        common.validate_enumerate(enumerate, self.valid_enumerate)
+        enumerate = pargs.enumerate
+        if enumerate:
+            common.validate_enumerate(enumerate, self.valid_enumerate)
+        else:
+            enumerate = 'a'
 
         if method:
             scanning_method = common.validate_method(method, self.ScanningMethod)
@@ -44,25 +47,31 @@ class BasePlugin(controller.CementBaseController):
         return locals()
 
     def _functionality(self, opts):
-        functionality = {}
-        if opts['enumerate'] == "p":
-            noun = "plugins"
-            functionality[noun] = {
+
+        all = {
+                "plugins":  {
                     "func": getattr(self, "enumerate_plugins"),
                     "base_url": opts['plugins_base_url']
-                    }
-        elif opts['enumerate'] == "u":
-            noun = "users"
-            functionality[noun] = {
+                },
+                "users": {
                     "func": getattr(self, "enumerate_users"),
                     "base_url": None,
-                    }
-        elif opts['enumerate'] == "t":
-            noun = "themes"
-            functionality[noun] = {
+                },
+                "themes": {
                     "func": getattr(self, "enumerate_themes"),
                     "base_url": opts['themes_base_url']
-                    }
+                }
+            }
+
+        functionality = {}
+        if opts['enumerate'] == "p":
+            functionality['plugins'] = all['plugins']
+        elif opts['enumerate'] == "u":
+            functionality['users'] = all['users']
+        elif opts['enumerate'] == "t":
+            functionality['themes'] = all['themes']
+        elif opts['enumerate'] == "a":
+            functionality = all
 
         return functionality
 
@@ -71,17 +80,28 @@ class BasePlugin(controller.CementBaseController):
         opts = self._options()
         functionality = self._functionality(opts)
 
+        enumerating_all = opts['enumerate'] == 'a'
+        if enumerating_all:
+            common.echo("[+] Scanning %s\n" % opts['url'])
+
         # The loop of enumeration.
         for enumerate in functionality:
-            common.echo(common.template("scan_begin.tpl", {"noun": enumerate,
-                "url": opts['url']}))
+            try:
+                if not enumerating_all:
+                    common.echo(common.template("scan_begin.tpl", {"noun": enumerate,
+                        "url": opts['url']}))
 
-            enum = functionality[enumerate]
-            finds = enum["func"](opts['url'], enum["base_url"],
-                    opts['scanning_method'], opts['number'], opts['threads'])
+                enum = functionality[enumerate]
+                finds = enum["func"](opts['url'], enum["base_url"],
+                        opts['scanning_method'], opts['number'], opts['threads'])
 
-            common.echo(common.template("list_noun.tpl", {"noun": enumerate,
-                "items":finds, "empty":len(finds) == 0, "Noun": enumerate.capitalize()}))
+                common.echo(common.template("list_noun.tpl", {"noun": enumerate,
+                    "items": finds, "empty": len(finds) == 0, "Noun": enumerate.capitalize()}))
+            except RuntimeError, e:
+                if enumerating_all:
+                    pass
+                else:
+                    raise
 
         common.echo("[+] Scan finished (%s elapsed)" % str(datetime.now() - time_start))
 
