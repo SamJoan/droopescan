@@ -16,11 +16,6 @@ class DroopeScanBase(controller.CementBaseController):
         label = 'base'
         description = __doc__
 
-        config_defaults = dict(
-            url='bar',
-            some_other_option='my default value',
-            )
-
         argument_formatter = common.SmartFormatter
 
         arguments = [
