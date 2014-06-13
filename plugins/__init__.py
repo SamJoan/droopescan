@@ -82,7 +82,7 @@ class BasePlugin(controller.CementBaseController):
 
         enumerating_all = opts['enumerate'] == 'a'
         if enumerating_all:
-            common.echo("[+] Scanning %s\n" % opts['url'])
+            common.echo("[+] Enumerating all in %s\n" % opts['url'])
 
         # The loop of enumeration.
         for enumerate in functionality:
@@ -95,9 +95,18 @@ class BasePlugin(controller.CementBaseController):
                 finds = enum["func"](opts['url'], enum["base_url"],
                         opts['scanning_method'], opts['number'], opts['threads'])
 
-                common.echo(common.template("list_noun.tpl", {"noun": enumerate,
-                    "items": finds, "empty": len(finds) == 0, "Noun": enumerate.capitalize()}))
+                template_params = {
+                        "noun": enumerate,
+                        "Noun": enumerate.capitalize(),
+                        "items": self.finds_process(opts['url'], finds),
+                        "empty": len(finds) == 0,
+                    }
+
+                common.echo(common.template("list_noun.tpl", template_params))
+
             except RuntimeError, e:
+                # some kinds of enumeration might not be available for this
+                # plugin.
                 if enumerating_all:
                     pass
                 else:
@@ -108,7 +117,7 @@ class BasePlugin(controller.CementBaseController):
     def determine_scanning_method(self, url):
         folder_resp = requests.get(url + self.folder_url)
 
-        if isinstance(self.regular_file_url, basestring):
+        if common.is_string(self.regular_file_url):
             ok_resp = requests.get(url + self.regular_file_url)
             ok_200 = ok_resp.status_code == 200
         else:
@@ -161,14 +170,14 @@ class BasePlugin(controller.CementBaseController):
                 element that, when iterated, will return a full list of plugins
             @param max_iterator integer that will be passed unto iterator_returning_method
         """
-        found = []
-
-        if isinstance(base_url_supplied, basestring):
+        if common.is_string(base_url_supplied):
             base_urls = [base_url_supplied]
         else:
             base_urls = base_url_supplied
 
+        found = {}
         for base_url in base_urls:
+            found[base_url] = []
             plugins = iterator_returning_method(max_iterator)
 
             if scanning_method == self.ScanningMethod.not_found:
@@ -187,7 +196,7 @@ class BasePlugin(controller.CementBaseController):
             for plugin_name in futures:
                 r = futures[plugin_name].result()
                 if r.status_code == expected_status:
-                    found.append(plugin_name)
+                    found[base_url].append(plugin_name)
 
         return found
 
@@ -201,3 +210,14 @@ class BasePlugin(controller.CementBaseController):
 
     def enumerate_users(self, url, base_url, scanning_method=403, max_plugins=500, threads=10):
         raise NotImplementedError("Not implemented yet.")
+
+    def finds_process(self, url, finds):
+        final = []
+        for path in finds:
+            for module in finds[path]:
+                final.append({
+                        'name': module,
+                        'url': path % (url, module),
+                    })
+
+        return final

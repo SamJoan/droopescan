@@ -91,7 +91,7 @@ class BasePluginTest(BaseTest):
         result = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.forbidden)
 
-        assert result == ["supermodule"], "Should have detected the \
+        assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
                 'supermodule' module."
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
@@ -104,7 +104,7 @@ class BasePluginTest(BaseTest):
         result = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
 
-        assert result == ["supermodule"], "Should have detected the \
+        assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
                 'supermodule' module."
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
@@ -118,7 +118,7 @@ class BasePluginTest(BaseTest):
         result = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.not_found)
 
-        assert result == ["supermodule"], "Should have detected the \
+        assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
                 'supermodule' module."
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
@@ -126,15 +126,19 @@ class BasePluginTest(BaseTest):
     def test_plugins_multiple_base_url(self, m):
 
         # mock all the urls.
-        self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
+        base_1 = self.base_url + "sites/all/modules/%s/"
+        base_2 = self.base_url + "sites/default/modules/%s/"
+        self.respond_several(base_1, {200: ["supermodule"],
             404: ["nonexistant1", "supermodule2"]})
-        self.respond_several(self.base_url + "sites/default/modules/%s/", {200:
+        self.respond_several(base_2, {200:
             ["supermodule2"], 404: ["nonexistant1", "supermodule"]})
 
         result = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
 
-        assert result == ["supermodule", "supermodule2"], "Should have detected the \
+        base_1 = base_1.replace(self.base_url, '%s')
+        base_2 = base_2.replace(self.base_url, '%s')
+        assert result == {base_1: ["supermodule"], base_2: ['supermodule2']}, "Should have detected the \
                 'supermodule' module."
 
     def test_gets_modules(self):

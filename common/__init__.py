@@ -54,7 +54,8 @@ def echo(msg):
     """
     print(msg)
 
-#class SmartFormatter(argparse.RawTextHelpFormatter):
+def is_string(var):
+    return isinstance(var, basestring)
 
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):
