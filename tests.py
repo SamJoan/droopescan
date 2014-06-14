@@ -36,10 +36,20 @@ class BaseTest(test.CementTestCase):
         """
             Mocks controller by label. Can only be used to test controllers
             that get instantiated automatically by cement.
+            @param plugin_label e.g. 'drupal'
+            @param method e.g. 'enumerate_plugins'
+            @param return_value what to return. Default is None, unless the
+                method starts with enumerate_*, in which case the result is a
+                tuple as expected by BasePlugin.
+            @param side_effect if set to an exception, it will raise an
+                exception.
         """
         m = MagicMock()
         if return_value:
             m.return_value = return_value
+        else:
+            if method.startswith("enumerate_"):
+                m.return_value = ({"a":[]}, True)
 
         if side_effect:
             m.side_effect = side_effect
@@ -61,10 +71,11 @@ class BaseTest(test.CementTestCase):
             @param position the position the argument is. It starts at 0 and
             discounts self. e.g. (self, a, b, c): position of b -> 1
         """
-
-        first_call = mocked_method.call_args_list[0][0]
+        try:
+            first_call = mocked_method.call_args_list[0][0]
+        except:
+            assert False, 'Method not called.'
         assert first_call[position] == thing, "Parameter is not as expected."
-
 
 @decallmethods(responses.activate)
 class BasePluginTest(BaseTest):
@@ -88,7 +99,7 @@ class BasePluginTest(BaseTest):
             404: ["nonexistant1", "nonexistant2"]})
 
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
-        result = self.scanner.enumerate_plugins(self.base_url,
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.forbidden)
 
         assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
@@ -101,7 +112,7 @@ class BasePluginTest(BaseTest):
             404: ["nonexistant1", "nonexistant2"]})
 
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
-        result = self.scanner.enumerate_plugins(self.base_url,
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
 
         assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
@@ -115,7 +126,7 @@ class BasePluginTest(BaseTest):
                 'supermodule', 'nonexistant1/README.txt', 'nonexistant2/README.txt']})
 
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
-        result = self.scanner.enumerate_plugins(self.base_url,
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.not_found)
 
         assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
@@ -133,7 +144,7 @@ class BasePluginTest(BaseTest):
         self.respond_several(base_2, {200:
             ["supermodule2"], 404: ["nonexistant1", "supermodule"]})
 
-        result = self.scanner.enumerate_plugins(self.base_url,
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
 
         # handle difference in notation.
@@ -276,9 +287,20 @@ class BasePluginTest(BaseTest):
     def test_not_cms(self):
         self.add_argv(self.param_plugins)
 
-        self.respond_several(self.base_url + "%s", {404: ["misc/",
-            "misc/drupal.js"]})
+        self.respond_several(self.base_url + "%s", {404:
+            [self.scanner.folder_url, self.scanner.regular_file_url]})
         self.app.run()
+
+    def test_passes_method(self):
+        self.add_argv(self.param_plugins)
+        self.add_argv(["--method", "forbidden"])
+        self.add_argv(['--verb', 'get'])
+
+        p = self.mock_controller('drupal', 'enumerate_plugins')
+
+        self.app.run()
+
+        self.assert_called_contains(p, 5, 'get')
 
 @decallmethods(responses.activate)
 class DrupalScanTest(BaseTest):
@@ -355,6 +377,7 @@ class DrupalScanTest(BaseTest):
         u = self.mock_controller("drupal", 'enumerate_users', side_effect=RuntimeError("derp!"))
 
         self.app.run()
+
 
 
 

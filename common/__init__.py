@@ -31,6 +31,13 @@ def validate_method(method, method_enum):
     else:
         return getattr(method_enum, method)
 
+def validate_verb(verb, verb_enum):
+    if not in_enum(verb, verb_enum):
+        raise RuntimeError("Invalid --verb. Valid options are %s" %
+                enum_list(verb_enum))
+    else:
+        return getattr(verb_enum, verb)
+
 def in_enum(string, enum):
     return string in enum.__dict__
 
@@ -44,11 +51,11 @@ def enum_list(enum):
 
 def template(template_file, variables={}):
     colors = {
-            #'green': '\033[92m',
-            #'warn': '\033[93m',
+            'warn': '\033[93m',
+            'green': '\033[92m',
             'header': '\033[95m',
             'blue': '\033[94m',
-            'fail': '\033[91m',
+            'red': '\033[91m',
             'endc': '\033[0m',
         }
 

@@ -13,6 +13,10 @@ class BasePlugin(controller.CementBaseController):
         forbidden = 403
         ok = 200
 
+    class Verb():
+        head = 'head'
+        get = 'get'
+
     class Meta:
         label = 'baseplugin'
         stacked_on = 'base'
@@ -23,10 +27,9 @@ class BasePlugin(controller.CementBaseController):
         pargs = self.app.pargs
 
         url = common.validate_url(pargs.url)
-        method = pargs.method
+        number = pargs.number
+        threads = pargs.threads
 
-        number = pargs.number if pargs.number else 1000
-        threads = pargs.threads if pargs.threads else 10
         plugins_base_url = pargs.plugins_base_url if pargs.plugins_base_url \
             else self.plugins_base_url
         themes_base_url = pargs.themes_base_url if pargs.themes_base_url \
@@ -38,10 +41,17 @@ class BasePlugin(controller.CementBaseController):
         else:
             enumerate = 'a'
 
+        method = pargs.method
         if method:
             scanning_method = common.validate_method(method, self.ScanningMethod)
         else:
             scanning_method = self.determine_scanning_method(url)
+
+        verb = pargs.verb
+        if verb:
+            verb = common.validate_verb(verb, self.Verb)
+        else:
+            verb = self.Verb.head
 
         # all variables here will be returned.
         return locals()
@@ -93,18 +103,18 @@ class BasePlugin(controller.CementBaseController):
                         "url": opts['url']}))
 
                 enum = functionality[enumerate]
-                finds = enum["func"](opts['url'], enum["base_url"],
-                        opts['scanning_method'], opts['number'], opts['threads'])
+                finds, no_results = enum["func"](opts['url'], enum['base_url'],
+                        opts['scanning_method'], opts['number'],
+                        opts['threads'], opts['verb'])
 
                 template_params = {
                         "noun": enumerate,
                         "Noun": enumerate.capitalize(),
                         "items": self.finds_process(opts['url'], finds),
-                        "empty": len(finds) == 0,
+                        "empty": no_results,
                     }
 
                 common.echo(common.template("list_noun.tpl", template_params))
-
             except RuntimeError, e:
                 # some kinds of enumeration might not be available for this
                 # plugin.
@@ -177,6 +187,7 @@ class BasePlugin(controller.CementBaseController):
             base_urls = base_url_supplied
 
         found = {}
+        no_results = True
         for base_url in base_urls:
             found[base_url] = []
             plugins = iterator_returning_method(max_iterator)
@@ -197,19 +208,22 @@ class BasePlugin(controller.CementBaseController):
             for plugin_name in futures:
                 r = futures[plugin_name].result()
                 if r.status_code == expected_status:
+                    no_results = False
                     found[base_url].append(plugin_name)
 
-        return found
+        return found, no_results
 
-    def enumerate_plugins(self, url, base_url, scanning_method=403, max_plugins=500, threads=10):
+    def enumerate_plugins(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
         iterator = getattr(self, "plugins_get")
-        return self.enumerate(url, base_url, scanning_method, iterator, max_plugins, threads)
+        return self.enumerate(url, base_url, scanning_method, iterator,
+                max_plugins, threads)
 
-    def enumerate_themes(self, url, base_url, scanning_method=403, max_plugins=500, threads=10):
+    def enumerate_themes(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
         iterator = getattr(self, "themes_get")
-        return self.enumerate(url, base_url, scanning_method, iterator, max_plugins, threads)
+        return self.enumerate(url, base_url, scanning_method, iterator,
+                max_plugins, threads)
 
-    def enumerate_users(self, url, base_url, scanning_method=403, max_plugins=500, threads=10):
+    def enumerate_users(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
         raise NotImplementedError("Not implemented yet.")
 
     def finds_process(self, url, finds):

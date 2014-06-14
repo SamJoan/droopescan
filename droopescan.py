@@ -22,10 +22,11 @@ class DroopeScanBase(controller.CementBaseController):
                 (['--url'], dict(action='store', help='')),
                 (['--enumerate', '-e'], dict(action='store',
                     help='R|' + common.template("help_enumerate.tpl"))),
-                (['--method'], dict(action='store', help="""Some webservers
-                    respond with 403 when a folder exists. Others with a 404.
-                    Others with a 200. Valid options are [forbidden, not_found,
-                        ok]. Default is to determine.""")),
+                (['--method'], dict(action='store', help="R|" +
+                    common.template("help_method.tpl"))),
+                (['--number', '-n'], dict(action='store', help="""Number of
+                    words to attempt from the plugin/theme dictionary. Default
+                    is 1000.""", default=1000)),
                 (['--plugins-base-url'], dict(action='store', help="""Location
                     where the plugins are stored by the CMS. Default is the CMS'
                     default location. First %%s in string will be replaced with
@@ -33,11 +34,11 @@ class DroopeScanBase(controller.CementBaseController):
                     name. E.g. '%%ssites/all/modules/%%s/'""")),
                 (['--themes-base-url'], dict(action='store', help="""Same as
                     above, but for themes.""")),
-                (['--number', '-n'], dict(action='store', help="""Number of
-                    words to attempt from the plugin/theme dictionary. Default
-                    is 1000.""")),
                 (['--threads', '-t'], dict(action='store', help="""Number of
-                    threads.""")),
+                    threads.""", default=10)),
+                (['--verb'], dict(action='store', help="""HTTP verb to use.
+                    Valid options are 'head' and 'get'; the default option is
+                    head""")),
             ]
 
     @controller.expose(hide=True)
@@ -51,7 +52,6 @@ class DroopeScan(foundation.CementApp):
         base_controller = DroopeScanBase
 
 if __name__ == "__main__":
-    # create the app
     ds = DroopeScan("DroopeScan",
             plugin_config_dir="./plugins.d",
             plugin_dir="./plugins")
