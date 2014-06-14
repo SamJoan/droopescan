@@ -1,4 +1,13 @@
 
+0.4.1
+=====
+
+* Fixed 404 fingerprinting for SilverStripe.
+* Improved output & colours.
+* Made HEAD the default HTTP verb.
+* Added an option to choose the HTTP verb.
+* Improved threading.
+
 0.4
 ===
 
