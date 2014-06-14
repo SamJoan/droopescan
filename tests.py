@@ -135,7 +135,6 @@ class BasePluginTest(BaseTest):
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "supermodule", "supermodule2"])
     def test_plugins_multiple_base_url(self, m):
-
         # mock all the urls.
         base_1 = self.base_url + "sites/all/modules/%s/"
         base_2 = self.base_url + "sites/default/modules/%s/"
@@ -150,7 +149,6 @@ class BasePluginTest(BaseTest):
         # handle difference in notation.
         base_1 = base_1.replace(self.base_url, '%s')
         base_2 = base_2.replace(self.base_url, '%s')
-        print result
         assert result == {base_1: ["supermodule"], base_2: ['supermodule2']}, "Should have detected the \
                 'supermodule' module."
 
@@ -240,7 +238,7 @@ class BasePluginTest(BaseTest):
         self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url)
+        m.assert_called_with(self.base_url, 'head')
 
     def test_determine_forbidden(self):
         self.add_argv(self.param_plugins)
@@ -280,7 +278,8 @@ class BasePluginTest(BaseTest):
         self.respond_several(self.base_url + "%s", {200: ["misc/",
             "misc/drupal.js"], 404: ["misc/drupal_old.js"]})
 
-        scanning_method = self.scanner.determine_scanning_method(self.base_url)
+        scanning_method = self.scanner.determine_scanning_method(self.base_url,
+                'head')
 
         assert scanning_method == self.scanner.ScanningMethod.ok
 
@@ -309,12 +308,20 @@ class BasePluginTest(BaseTest):
         responses.add(responses.GET, url)
 
         base_url = "%ssites/all/modules/%s/"
-        # this theoretically will exception if a head request is made.
+        # will exception if not get
         self.scanner.enumerate_plugins(self.base_url,
                 base_url, verb='get')
 
     def test_determine_respects_verb(self):
-        assert False
+        self.add_argv(self.param_plugins)
+        self.add_argv(['--verb', 'get'])
+
+        responses.add(responses.GET, self.base_url + "misc/")
+        responses.add(responses.GET, self.base_url + "misc/drupal.js")
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        # will exception if not get
+        self.app.run()
 
 @decallmethods(responses.activate)
 class DrupalScanTest(BaseTest):

@@ -41,17 +41,17 @@ class BasePlugin(controller.CementBaseController):
         else:
             enumerate = 'a'
 
-        method = pargs.method
-        if method:
-            scanning_method = common.validate_method(method, self.ScanningMethod)
-        else:
-            scanning_method = self.determine_scanning_method(url)
-
         verb = pargs.verb
         if verb:
             verb = common.validate_verb(verb, self.Verb)
         else:
             verb = self.Verb.head
+
+        method = pargs.method
+        if method:
+            scanning_method = common.validate_method(method, self.ScanningMethod)
+        else:
+            scanning_method = self.determine_scanning_method(url, verb)
 
         # all variables here will be returned.
         return locals()
@@ -125,16 +125,17 @@ class BasePlugin(controller.CementBaseController):
 
         common.echo("\033[95m[+] Scan finished (%s elapsed)\033[0m" % str(datetime.now() - time_start))
 
-    def determine_scanning_method(self, url):
-        folder_resp = requests.head(url + self.folder_url)
+    def determine_scanning_method(self, url, verb):
+        requests_method = getattr(requests, verb)
+        folder_resp = requests_method(url + self.folder_url)
 
         if common.is_string(self.regular_file_url):
-            ok_resp = requests.head(url + self.regular_file_url)
+            ok_resp = requests_method(url + self.regular_file_url)
             ok_200 = ok_resp.status_code == 200
         else:
             ok_200 = False
             for path in self.regular_file_url:
-                ok_resp = requests.head(url + path)
+                ok_resp = requests_method(url + path)
                 if ok_resp.status_code == 200:
                     ok_200 = True
                     break
@@ -189,6 +190,7 @@ class BasePlugin(controller.CementBaseController):
             base_urls = base_url_supplied
 
         sess = FuturesSession(max_workers=int(threads))
+        sess_verb = getattr(sess, verb)
         futures = []
         for base_url in base_urls:
             plugins = iterator_returning_method(max_iterator)
@@ -201,7 +203,7 @@ class BasePlugin(controller.CementBaseController):
                 expected_status = scanning_method
 
             for plugin_name in plugins:
-                future = sess.head(url_template % (url, plugin_name))
+                future = sess_verb(url_template % (url, plugin_name))
                 futures.append({
                     'future': future,
                     'base_url': base_url,
