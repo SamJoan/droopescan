@@ -103,7 +103,7 @@ class BasePlugin(controller.CementBaseController):
                         "url": opts['url']}))
 
                 enum = functionality[enumerate]
-                finds, no_results = enum["func"](opts['url'], enum['base_url'],
+                finds, empty = enum["func"](opts['url'], enum['base_url'],
                         opts['scanning_method'], opts['number'],
                         opts['threads'], opts['verb'])
 
@@ -111,7 +111,7 @@ class BasePlugin(controller.CementBaseController):
                         "noun": enumerate,
                         "Noun": enumerate.capitalize(),
                         "items": self.finds_process(opts['url'], finds),
-                        "empty": no_results,
+                        "empty": empty,
                     }
 
                 common.echo(common.template("list_noun.tpl", template_params))
@@ -123,7 +123,8 @@ class BasePlugin(controller.CementBaseController):
                 else:
                     raise
 
-        common.echo("\033[95m[+] Scan finished (%s elapsed)\033[0m" % str(datetime.now() - time_start))
+        common.echo("\033[95m[+] Scan finished (%s elapsed)\033[0m" %
+                str(datetime.now() - time_start))
 
     def determine_scanning_method(self, url, verb):
         requests_method = getattr(requests, verb)
@@ -143,14 +144,16 @@ class BasePlugin(controller.CementBaseController):
         if folder_resp.status_code == 403 and ok_200:
             return self.ScanningMethod.forbidden
         if folder_resp.status_code == 404 and ok_200:
-            logger.warning("Known %s folders have returned 404 Not Found. If modules do not have a %s file they will not be detected." %
+            common.warn("""Known %s folders have returned 404 Not Found. If a
+                    module does not have a %s file it will not be detected.""" %
                     (self._meta.label, self.module_readme_file))
             return self.ScanningMethod.not_found
         if folder_resp.status_code == 200 and ok_200:
-            logger.warning("""Known folder names for %s are returning 200 OK. Is directory listing enabled?""" % self._meta.label)
+            common.warn("""Known folder names for %s are returning 200 OK. Is
+                    directory listing enabled?""" % self._meta.label)
             return self.ScanningMethod.ok
         else:
-            raise RuntimeError("""It is possible that the website is not running %s. If you disagree, please specify a --method.""" %
+            common.fatal("""It is possible that the website is not running %s. If you disagree, please specify a --method.""" %
                     self._meta.label)
 
     def plugins_get(self, amount=100000):

@@ -3,16 +3,26 @@ import argparse
 import logging
 import pystache
 import re
+import textwrap
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
+colors = {
+        'warn': '\033[93m',
+        'green': '\033[92m',
+        'header': '\033[95m',
+        'blue': '\033[94m',
+        'red': '\033[91m',
+        'endc': '\033[0m',
+    }
+
 def validate_url(url):
     if not url:
-        raise RuntimeError("--url was not specified.")
+        fatal("--url was not specified.")
 
     if not re.match(r"^http", url):
-        raise RuntimeError("--url parameter invalid.")
+        fatal("--url parameter invalid.")
 
     # add '/' to urls which do not end with '/' already.
     if not url.endswith("/"):
@@ -21,19 +31,20 @@ def validate_url(url):
         return url
 
 def validate_enumerate(enumerate, valid_enumerate):
-    if not enumerate in valid_enumerate: raise RuntimeError("Invalid --enumerate. Valid options are %s"
+    if not enumerate in valid_enumerate:
+       fatal("Invalid --enumerate. Valid options are %s"
                 % valid_enumerate)
 
 def validate_method(method, method_enum):
     if not in_enum(method, method_enum):
-        raise RuntimeError("Invalid --method. Valid options are %s" %
+        fatal("Invalid --method. Valid options are %s" %
                 enum_list(method_enum))
     else:
         return getattr(method_enum, method)
 
 def validate_verb(verb, verb_enum):
     if not in_enum(verb, verb_enum):
-        raise RuntimeError("Invalid --verb. Valid options are %s" %
+        fatal("Invalid --verb. Valid options are %s" %
                 enum_list(verb_enum))
     else:
         return getattr(verb_enum, verb)
@@ -50,15 +61,6 @@ def enum_list(enum):
     return methods
 
 def template(template_file, variables={}):
-    colors = {
-            'warn': '\033[93m',
-            'green': '\033[92m',
-            'header': '\033[95m',
-            'blue': '\033[94m',
-            'red': '\033[91m',
-            'endc': '\033[0m',
-        }
-
     variables.update(colors)
     f = open('common/template/' + template_file, 'r')
     template = f.read()
@@ -66,10 +68,14 @@ def template(template_file, variables={}):
     return pystache.render(template, variables)
 
 def echo(msg):
-    """
-        wrapper for print, in case we need to globally stop outputting stuff.
-    """
     print(msg)
+
+def warn(msg):
+    print textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79)
+
+def fatal(msg):
+    msg = textwrap.fill(colors['red'] + "[+] " + msg + colors['endc'], 79)
+    raise RuntimeError(msg)
 
 def is_string(var):
     return isinstance(var, basestring)
