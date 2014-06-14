@@ -13,7 +13,7 @@ class SilverStripe(BasePlugin):
 
     folder_url = "framework/"
     regular_file_url = ["cms/css/layout.css", "framework/css/UploadField.css"]
-    module_readme_file = "README.txt"
+    module_readme_file = "README.md"
 
     class Meta:
         label = 'silverstripe'

@@ -1,5 +1,5 @@
 {{#empty}}
-{{red}}[+] No {{noun}} found.{{endc}}
+[+] No {{noun}} found.
 {{/empty}}
 {{^empty}}
 {{green}}[+] {{Noun}} found:{{endc}}
