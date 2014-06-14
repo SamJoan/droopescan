@@ -89,7 +89,7 @@ class BasePluginTest(BaseTest):
         for status_code in data_obj:
             for item in data_obj[status_code]:
                 url = base_url % item
-                responses.add(responses.GET, url,
+                responses.add(responses.HEAD, url,
                         body=str(status_code), status=status_code)
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
@@ -150,6 +150,7 @@ class BasePluginTest(BaseTest):
         # handle difference in notation.
         base_1 = base_1.replace(self.base_url, '%s')
         base_2 = base_2.replace(self.base_url, '%s')
+        print result
         assert result == {base_1: ["supermodule"], base_2: ['supermodule2']}, "Should have detected the \
                 'supermodule' module."
 
@@ -291,7 +292,7 @@ class BasePluginTest(BaseTest):
             [self.scanner.folder_url, self.scanner.regular_file_url]})
         self.app.run()
 
-    def test_passes_method(self):
+    def test_passes_verb(self):
         self.add_argv(self.param_plugins)
         self.add_argv(["--method", "forbidden"])
         self.add_argv(['--verb', 'get'])
@@ -302,12 +303,21 @@ class BasePluginTest(BaseTest):
 
         self.assert_called_contains(p, 5, 'get')
 
+    @patch.object(Drupal, 'plugins_get', return_value=["supermodule"])
+    def test_verb_works(self, m):
+        url = self.base_url + "sites/all/modules/supermodule/"
+        responses.add(responses.GET, url)
+
+        base_url = "%ssites/all/modules/%s/"
+        # this theoretically will exception if a head request is made.
+        self.scanner.enumerate_plugins(self.base_url,
+                base_url, verb='get')
+
+    def test_determine_respects_verb(self):
+        assert False
+
 @decallmethods(responses.activate)
 class DrupalScanTest(BaseTest):
-    """
-        This class should contain tests which encompass all CMSs
-    """
-
     @test.raises(RuntimeError)
     def test_errors_when_no_module(self):
         self.app.run()

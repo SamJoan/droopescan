@@ -126,15 +126,15 @@ class BasePlugin(controller.CementBaseController):
         common.echo("\033[95m[+] Scan finished (%s elapsed)\033[0m" % str(datetime.now() - time_start))
 
     def determine_scanning_method(self, url):
-        folder_resp = requests.get(url + self.folder_url)
+        folder_resp = requests.head(url + self.folder_url)
 
         if common.is_string(self.regular_file_url):
-            ok_resp = requests.get(url + self.regular_file_url)
+            ok_resp = requests.head(url + self.regular_file_url)
             ok_200 = ok_resp.status_code == 200
         else:
             ok_200 = False
             for path in self.regular_file_url:
-                ok_resp = requests.get(url + path)
+                ok_resp = requests.head(url + path)
                 if ok_resp.status_code == 200:
                     ok_200 = True
                     break
@@ -172,7 +172,7 @@ class BasePlugin(controller.CementBaseController):
                 yield theme.strip()
                 i +=1
 
-    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method, max_iterator=500, threads=10):
+    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method, max_iterator=500, threads=10, verb='head'):
         """
             @param url base URL for the website.
             @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
@@ -180,16 +180,17 @@ class BasePlugin(controller.CementBaseController):
             @param iterator_returning_method a function which returns an
                 element that, when iterated, will return a full list of plugins
             @param max_iterator integer that will be passed unto iterator_returning_method
+            @param threads number of threads
+            @param verb what HTTP verb. Valid options are 'get' and 'head'.
         """
         if common.is_string(base_url_supplied):
             base_urls = [base_url_supplied]
         else:
             base_urls = base_url_supplied
 
-        found = {}
-        no_results = True
+        sess = FuturesSession(max_workers=int(threads))
+        futures = []
         for base_url in base_urls:
-            found[base_url] = []
             plugins = iterator_returning_method(max_iterator)
 
             if scanning_method == self.ScanningMethod.not_found:
@@ -199,29 +200,39 @@ class BasePlugin(controller.CementBaseController):
                 url_template = base_url
                 expected_status = scanning_method
 
-            sess = FuturesSession(max_workers=int(threads))
-            futures = {}
-            for plugin in plugins:
-                f = sess.get(url_template % (url, plugin))
-                futures[plugin] = f
+            for plugin_name in plugins:
+                future = sess.head(url_template % (url, plugin_name))
+                futures.append({
+                    'future': future,
+                    'base_url': base_url,
+                    'plugin_name': plugin_name
+                })
 
-            for plugin_name in futures:
-                r = futures[plugin_name].result()
-                if r.status_code == expected_status:
-                    no_results = False
-                    found[base_url].append(plugin_name)
+        no_results = True
+        found = {}
+        for future_array in futures:
+            r = future_array['future'].result()
+            if r.status_code == expected_status:
+                base_url = future_array['base_url']
+                plugin_name = future_array['plugin_name']
+
+                no_results = False
+                if not base_url in found:
+                    found[base_url] = []
+
+                found[base_url].append(plugin_name)
 
         return found, no_results
 
     def enumerate_plugins(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
         iterator = getattr(self, "plugins_get")
         return self.enumerate(url, base_url, scanning_method, iterator,
-                max_plugins, threads)
+                max_plugins, threads, verb)
 
     def enumerate_themes(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
         iterator = getattr(self, "themes_get")
         return self.enumerate(url, base_url, scanning_method, iterator,
-                max_plugins, threads)
+                max_plugins, threads, verb)
 
     def enumerate_users(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
         raise NotImplementedError("Not implemented yet.")
