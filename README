@@ -1,7 +1,22 @@
-A tool for scanning several CMSs.
-=================================
+# A tool for scanning several CMSs.
 
-Todo:
+Usage:
 
-- Create a modular structure, that by default, scans drupal installations.
-- Create the basic boilerplate.
+<pre>
+python droopescan drupal --url http://localhost/drupal-7.28
+python droopescan silverstripe --url http://localhost/silverstripe
+</pre>
+
+# Installation
+
+<pre>
+pip install requirements.txt
+</pre>
+
+# Testing
+
+<pre>
+apt-get install python-dev libxslt1-dev libxml2-dev
+pip install requirements_test.txt
+nosetests
+</pre>
