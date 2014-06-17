@@ -150,7 +150,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.not_found)
+        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.not_found)
 
     def test_override_plugins_base_url(self):
         new_base_url = "%ssites/specific/modules%s"
@@ -161,7 +161,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.forbidden)
+        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.forbidden)
 
     def test_add_slash_to_urls(self):
         # remove slash from url.
@@ -182,7 +182,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.forbidden)
+        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.forbidden)
 
     def test_determine_not_found(self):
         self.add_argv(self.param_plugins)
@@ -193,7 +193,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.not_found)
+        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.not_found)
 
     def test_determine_ok(self):
         self.add_argv(self.param_plugins)
@@ -204,7 +204,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 2, self.scanner.ScanningMethod.ok)
+        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.ok)
 
     def test_determine_with_multiple_ok(self):
         self.scanner.regular_file_url = ["misc/drupal_old.js", "misc/drupal.js"]
@@ -233,7 +233,17 @@ class BaseHttpTests(BaseTest):
 
         self.app.run()
 
-        self.assert_called_contains(p, 5, 'get')
+        self.assert_called_contains(p, 'verb', self.scanner.Verb.get)
+
+    def test_default_verb_is_head(self):
+        self.add_argv(self.param_plugins)
+        self.add_argv(["--method", "forbidden"])
+
+        p = self.mock_controller('drupal', 'enumerate_plugins')
+
+        self.app.run()
+
+        self.assert_called_contains(p, 'verb', self.scanner.Verb.head)
 
     @patch.object(Drupal, 'plugins_get', return_value=["supermodule"])
     def test_verb_works(self, m):

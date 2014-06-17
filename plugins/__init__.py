@@ -7,7 +7,7 @@ from requests_futures.sessions import FuturesSession
 
 class BasePlugin(controller.CementBaseController):
 
-    valid_enumerate = ['u', 'p', 't', 'a']
+    valid_enumerate = ['u', 'p', 't', 'a', 'v']
     class ScanningMethod():
         not_found = 404
         forbidden = 403
@@ -58,20 +58,35 @@ class BasePlugin(controller.CementBaseController):
 
     def _functionality(self, opts):
 
+        kwargs_plugins = {
+            'url': opts['url'],
+            'base_url': opts['plugins_base_url'],
+            'scanning_method': opts['scanning_method'],
+            'max_plugins': opts['number'],
+            'threads': opts['threads'],
+            'verb': opts['verb'],
+        }
+        kwargs_themes = kwargs_plugins
+        kwargs_themes['base_url'] = opts['themes_base_url']
+
         all = {
-                "plugins":  {
-                    "func": getattr(self, "enumerate_plugins"),
-                    "base_url": opts['plugins_base_url']
-                },
-                "users": {
-                    "func": getattr(self, "enumerate_users"),
-                    "base_url": None,
-                },
-                "themes": {
-                    "func": getattr(self, "enumerate_themes"),
-                    "base_url": opts['themes_base_url']
-                }
+            'plugins':  {
+                'func': getattr(self, "enumerate_plugins"),
+                'kwargs': kwargs_plugins
+            },
+            'users': {
+                'func': getattr(self, 'enumerate_users'),
+                'kwargs': {}
+            },
+            'themes': {
+                'func': getattr(self, 'enumerate_themes'),
+                'kwargs': kwargs_themes
+            },
+            'version': {
+                'func': getattr(self, 'enumerate_version'),
+                'kwargs': {}
             }
+        }
 
         functionality = {}
         if opts['enumerate'] == "p":
@@ -80,6 +95,8 @@ class BasePlugin(controller.CementBaseController):
             functionality['themes'] = all['themes']
         elif opts['enumerate'] == "u":
             functionality['users'] = all['users']
+        elif opts['enumerate'] == "v":
+            functionality['version'] = all['version']
         elif opts['enumerate'] == "a":
             functionality = all
 
@@ -103,9 +120,7 @@ class BasePlugin(controller.CementBaseController):
                         "url": opts['url']}))
 
                 enum = functionality[enumerate]
-                finds, empty = enum["func"](opts['url'], enum['base_url'],
-                        opts['scanning_method'], opts['number'],
-                        opts['threads'], opts['verb'])
+                finds, empty = enum["func"](**enum["kwargs"])
 
                 template_params = {
                         "noun": enumerate,
@@ -240,6 +255,9 @@ class BasePlugin(controller.CementBaseController):
                 max_plugins, threads, verb)
 
     def enumerate_users(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
+        raise NotImplementedError("Not implemented yet.")
+
+    def enumerate_version(self, *args, **kwargs):
         raise NotImplementedError("Not implemented yet.")
 
     def finds_process(self, url, finds):

@@ -14,6 +14,7 @@ class BaseTest(test.CementTestCase):
     param_base = ["--url", base_url, '-n', '10']
     param_plugins = param_base + ["-e", 'p']
     param_themes = param_base + ["-e", 't']
+    param_version = param_base + ["-e", 'v']
     param_all = param_base + ["-e", 'a']
 
     def setUp(self):
@@ -59,19 +60,9 @@ class BaseTest(test.CementTestCase):
         """
         self.app._meta.argv += argv
 
-    def assert_called_contains(self, mocked_method, position, thing):
-        """
-            asserts that the parameter in position 'position' equals 'thing' in
-            the first call to mocked_method.
-            @param mocked_method
-            @param position the position the argument is. It starts at 0 and
-            discounts self. e.g. (self, a, b, c): position of b -> 1
-        """
-        try:
-            first_call = mocked_method.call_args_list[0][0]
-        except:
-            assert False, 'Method not called.'
-        assert first_call[position] == thing, "Parameter is not as expected."
+    def assert_called_contains(self, mocked_method, kwarg_name, kwarg_value):
+        args, kwargs = mocked_method.call_args
+        assert kwargs[kwarg_name] == kwarg_value, "Parameter is not as expected."
 
     def respond_several(self, base_url, data_obj):
         for status_code in data_obj:

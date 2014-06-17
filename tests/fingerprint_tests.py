@@ -1,5 +1,7 @@
+from cement.utils import test
 from common.testutils import decallmethods, xml_validate
 from plugins.drupal import Drupal
+from requests.exceptions import ConnectionError
 from tests import BaseTest
 import responses
 
@@ -18,3 +20,14 @@ class FingerprintTests(BaseTest):
         drupal = Drupal()
 
         xml_validate(drupal.versions_file, self.versions_xsd)
+
+    def test_determines_version(self):
+        assert False
+
+    @test.raises(ConnectionError)
+    def test_calls_version(self):
+        self.add_argv(["drupal"])
+        self.add_argv(self.param_version)
+        self.add_argv(["--method", "forbidden"])
+
+        self.app.run()
