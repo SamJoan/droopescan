@@ -254,11 +254,12 @@ class BasePlugin(controller.CementBaseController):
         return self.enumerate(url, base_url, scanning_method, iterator,
                 max_plugins, threads, verb)
 
-    def enumerate_users(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
+    def enumerate_users(self, *args, **kwargs):
         raise NotImplementedError("Not implemented yet.")
 
-    def enumerate_version(self, *args, **kwargs):
-        raise NotImplementedError("Not implemented yet.")
+    def enumerate_version(self, url):
+        requests.get(url)
+        #raise NotImplementedError("Not implemented yet.")
 
     def finds_process(self, url, finds):
         final = []

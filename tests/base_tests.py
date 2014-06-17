@@ -58,24 +58,19 @@ class BaseTests(BaseTest):
         self.add_argv(self.param_all)
         self.add_argv(["--method", "forbidden"])
 
-        p = self.mock_controller("drupal", 'enumerate_plugins')
-        t = self.mock_controller("drupal", 'enumerate_themes')
-        u = self.mock_controller("drupal", 'enumerate_users')
+        all_mocks = self.mock_all_enumerate('drupal')
 
         self.app.run()
 
-        assert p.called
-        assert t.called
-        assert u.called
+        for m in all_mocks:
+            assert m .called, "module %s" % m
 
     def test_doesnt_crash_on_runtimeerror(self):
         self.add_argv(["drupal"])
         self.add_argv(self.param_all)
         self.add_argv(["--method", "forbidden"])
 
-        p = self.mock_controller("drupal", 'enumerate_plugins')
-        t = self.mock_controller("drupal", 'enumerate_themes')
-        u = self.mock_controller("drupal", 'enumerate_users', side_effect=RuntimeError("derp!"))
+        all_mocks = self.mock_all_enumerate('drupal', side_effect_on_one=True)
 
         self.app.run()
 

@@ -31,3 +31,5 @@ class FingerprintTests(BaseTest):
         self.add_argv(["--method", "forbidden"])
 
         self.app.run()
+
+
