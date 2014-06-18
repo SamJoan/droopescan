@@ -9,6 +9,8 @@
 """
 from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
+from plugins import Verb, ScanningMethod, Enumerate
+from common import template, enum_list
 import common
 
 class DroopeScanBase(controller.CementBaseController):
@@ -18,12 +20,16 @@ class DroopeScanBase(controller.CementBaseController):
 
         argument_formatter = common.SmartFormatter
 
+        epilog = template("help_epilog.tpl")
+
         arguments = [
-                (['--url'], dict(action='store', help='')),
+                (['--url'], dict(action='store', help='', required=True)),
                 (['--enumerate', '-e'], dict(action='store',
-                    help='R|' + common.template("help_enumerate.tpl"))),
+                    help='R|' + template("help_enumerate.tpl"),
+                    choices=enum_list(Enumerate), required=True,
+                    default="a")),
                 (['--method'], dict(action='store', help="R|" +
-                    common.template("help_method.tpl"))),
+                    template("help_method.tpl"), choices=enum_list(ScanningMethod))),
                 (['--number', '-n'], dict(action='store', help="""Number of
                     words to attempt from the plugin/theme dictionary. Default
                     is 1000.""", default=1000)),
@@ -36,9 +42,8 @@ class DroopeScanBase(controller.CementBaseController):
                     above, but for themes.""")),
                 (['--threads', '-t'], dict(action='store', help="""Number of
                     threads.""", default=10)),
-                (['--verb'], dict(action='store', help="""HTTP verb to use.
-                    Valid options are 'head' and 'get'; the default option is
-                    head""")),
+                (['--verb'], dict(action='store', help="""The HTTP verb to use;
+                    the default option is head""", default='head', choices=enum_list(Verb))),
             ]
 
     @controller.expose(hide=True)

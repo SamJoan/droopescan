@@ -1,21 +1,25 @@
 from cement.core import handler, controller
-from common import logger
 from datetime import datetime
 import common
 import requests
 from requests_futures.sessions import FuturesSession
 
+class Enumerate():
+    a = 'a'
+    t = 't'
+    p = 'p'
+    v = 'v'
+
+class ScanningMethod():
+    not_found = 'not_found'
+    forbidden = 'forbidden'
+    ok = 'ok'
+
+class Verb():
+    head = 'head'
+    get = 'get'
+
 class BasePlugin(controller.CementBaseController):
-
-    valid_enumerate = ['u', 'p', 't', 'a', 'v']
-    class ScanningMethod():
-        not_found = 404
-        forbidden = 403
-        ok = 200
-
-    class Verb():
-        head = 'head'
-        get = 'get'
 
     class Meta:
         label = 'baseplugin'
@@ -29,28 +33,16 @@ class BasePlugin(controller.CementBaseController):
         url = common.validate_url(pargs.url)
         number = pargs.number
         threads = pargs.threads
+        enumerate = pargs.enumerate
+        verb = pargs.verb
 
         plugins_base_url = pargs.plugins_base_url if pargs.plugins_base_url \
             else self.plugins_base_url
         themes_base_url = pargs.themes_base_url if pargs.themes_base_url \
                 else self.themes_base_url
 
-        enumerate = pargs.enumerate
-        if enumerate:
-            common.validate_enumerate(enumerate, self.valid_enumerate)
-        else:
-            enumerate = 'a'
-
-        verb = pargs.verb
-        if verb:
-            verb = common.validate_verb(verb, self.Verb)
-        else:
-            verb = self.Verb.head
-
-        method = pargs.method
-        if method:
-            scanning_method = common.validate_method(method, self.ScanningMethod)
-        else:
+        scanning_method = pargs.method
+        if not scanning_method:
             scanning_method = self.determine_scanning_method(url, verb)
 
         # all variables here will be returned.
@@ -84,7 +76,9 @@ class BasePlugin(controller.CementBaseController):
             },
             'version': {
                 'func': getattr(self, 'enumerate_version'),
-                'kwargs': {}
+                'kwargs': {
+                    'url': opts['url']
+                }
             }
         }
 
@@ -157,16 +151,16 @@ class BasePlugin(controller.CementBaseController):
                     break
 
         if folder_resp.status_code == 403 and ok_200:
-            return self.ScanningMethod.forbidden
+            return ScanningMethod.forbidden
         if folder_resp.status_code == 404 and ok_200:
             common.warn("""Known %s folders have returned 404 Not Found. If a
                     module does not have a %s file it will not be detected.""" %
                     (self._meta.label, self.module_readme_file))
-            return self.ScanningMethod.not_found
+            return ScanningMethod.not_found
         if folder_resp.status_code == 200 and ok_200:
             common.warn("""Known folder names for %s are returning 200 OK. Is
                     directory listing enabled?""" % self._meta.label)
-            return self.ScanningMethod.ok
+            return ScanningMethod.ok
         else:
             common.fatal("""It is possible that the website is not running %s. If you disagree, please specify a --method.""" %
                     self._meta.label)
@@ -195,7 +189,7 @@ class BasePlugin(controller.CementBaseController):
         """
             @param url base URL for the website.
             @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
-            @param scanning_method see self.ScanningMethod
+            @param scanning_method see ScanningMethod
             @param iterator_returning_method a function which returns an
                 element that, when iterated, will return a full list of plugins
             @param max_iterator integer that will be passed unto iterator_returning_method
@@ -213,12 +207,12 @@ class BasePlugin(controller.CementBaseController):
         for base_url in base_urls:
             plugins = iterator_returning_method(max_iterator)
 
-            if scanning_method == self.ScanningMethod.not_found:
+            if scanning_method == ScanningMethod.not_found:
                 url_template = base_url + self.module_readme_file
                 expected_status = 200
             else:
                 url_template = base_url
-                expected_status = scanning_method
+                expected_status = common.scan_http_status(scanning_method)
 
             for plugin_name in plugins:
                 future = sess_verb(url_template % (url, plugin_name))
@@ -232,6 +226,7 @@ class BasePlugin(controller.CementBaseController):
         found = {}
         for future_array in futures:
             r = future_array['future'].result()
+            print future_array['base_url'], r.status_code, expected_status
             if r.status_code == expected_status:
                 base_url = future_array['base_url']
                 plugin_name = future_array['plugin_name']
@@ -244,12 +239,12 @@ class BasePlugin(controller.CementBaseController):
 
         return found, no_results
 
-    def enumerate_plugins(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
+    def enumerate_plugins(self, url, base_url, scanning_method='forbidden', max_plugins=500, threads=10, verb='head'):
         iterator = getattr(self, "plugins_get")
         return self.enumerate(url, base_url, scanning_method, iterator,
                 max_plugins, threads, verb)
 
-    def enumerate_themes(self, url, base_url, scanning_method=403, max_plugins=500, threads=10, verb='head'):
+    def enumerate_themes(self, url, base_url, scanning_method='forbidden', max_plugins=500, threads=10, verb='head'):
         iterator = getattr(self, "themes_get")
         return self.enumerate(url, base_url, scanning_method, iterator,
                 max_plugins, threads, verb)

@@ -4,6 +4,7 @@ from mock import patch
 from plugins.drupal import Drupal
 from requests_futures.sessions import FuturesSession
 from tests import BaseTest
+from plugins import ScanningMethod, Verb, Enumerate
 import requests
 import responses
 
@@ -33,7 +34,7 @@ class BaseHttpTests(BaseTest):
 
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,
-                self.scanner.plugins_base_url, Drupal.ScanningMethod.forbidden)
+                self.scanner.plugins_base_url, ScanningMethod.forbidden)
 
         assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
                 'supermodule' module."
@@ -46,7 +47,7 @@ class BaseHttpTests(BaseTest):
 
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,
-                self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
+                self.scanner.plugins_base_url, ScanningMethod.ok)
 
         assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
                 'supermodule' module."
@@ -60,7 +61,7 @@ class BaseHttpTests(BaseTest):
 
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,
-                self.scanner.plugins_base_url, Drupal.ScanningMethod.not_found)
+                self.scanner.plugins_base_url, ScanningMethod.not_found)
 
         assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
                 'supermodule' module."
@@ -77,7 +78,7 @@ class BaseHttpTests(BaseTest):
             ["supermodule2"], 404: ["nonexistant1", "supermodule"]})
 
         result, empty = self.scanner.enumerate_plugins(self.base_url,
-                self.scanner.plugins_base_url, Drupal.ScanningMethod.ok)
+                self.scanner.plugins_base_url, ScanningMethod.ok)
 
         # handle difference in notation.
         base_1 = base_1.replace(self.base_url, '%s')
@@ -150,7 +151,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.not_found)
+        self.assert_called_contains(m, 'scanning_method', ScanningMethod.not_found)
 
     def test_override_plugins_base_url(self):
         new_base_url = "%ssites/specific/modules%s"
@@ -161,7 +162,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.forbidden)
+        self.assert_called_contains(m, 'scanning_method', ScanningMethod.forbidden)
 
     def test_add_slash_to_urls(self):
         # remove slash from url.
@@ -182,7 +183,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.forbidden)
+        self.assert_called_contains(m, 'scanning_method', ScanningMethod.forbidden)
 
     def test_determine_not_found(self):
         self.add_argv(self.param_plugins)
@@ -193,7 +194,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.not_found)
+        self.assert_called_contains(m, 'scanning_method', ScanningMethod.not_found)
 
     def test_determine_ok(self):
         self.add_argv(self.param_plugins)
@@ -204,7 +205,7 @@ class BaseHttpTests(BaseTest):
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        self.assert_called_contains(m, 'scanning_method', self.scanner.ScanningMethod.ok)
+        self.assert_called_contains(m, 'scanning_method', ScanningMethod.ok)
 
     def test_determine_with_multiple_ok(self):
         self.scanner.regular_file_url = ["misc/drupal_old.js", "misc/drupal.js"]
@@ -214,7 +215,7 @@ class BaseHttpTests(BaseTest):
         scanning_method = self.scanner.determine_scanning_method(self.base_url,
                 'head')
 
-        assert scanning_method == self.scanner.ScanningMethod.ok
+        assert scanning_method == ScanningMethod.ok
 
     @test.raises(RuntimeError)
     def test_not_cms(self):
@@ -233,7 +234,7 @@ class BaseHttpTests(BaseTest):
 
         self.app.run()
 
-        self.assert_called_contains(p, 'verb', self.scanner.Verb.get)
+        self.assert_called_contains(p, 'verb', Verb.get)
 
     def test_default_verb_is_head(self):
         self.add_argv(self.param_plugins)
@@ -243,7 +244,7 @@ class BaseHttpTests(BaseTest):
 
         self.app.run()
 
-        self.assert_called_contains(p, 'verb', self.scanner.Verb.head)
+        self.assert_called_contains(p, 'verb', Verb.head)
 
     @patch.object(Drupal, 'plugins_get', return_value=["supermodule"])
     def test_verb_works(self, m):

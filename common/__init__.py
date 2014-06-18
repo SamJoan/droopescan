@@ -1,4 +1,5 @@
 from cement.core import handler
+from plugins import ScanningMethod
 import argparse
 import logging
 import pystache
@@ -18,9 +19,6 @@ colors = {
     }
 
 def validate_url(url):
-    if not url:
-        fatal("--url was not specified.")
-
     if not re.match(r"^http", url):
         fatal("--url parameter invalid.")
 
@@ -29,25 +27,6 @@ def validate_url(url):
         return url + "/"
     else :
         return url
-
-def validate_enumerate(enumerate, valid_enumerate):
-    if not enumerate in valid_enumerate:
-       fatal("Invalid --enumerate. Valid options are %s"
-                % valid_enumerate)
-
-def validate_method(method, method_enum):
-    if not in_enum(method, method_enum):
-        fatal("Invalid --method. Valid options are %s" %
-                enum_list(method_enum))
-    else:
-        return getattr(method_enum, method)
-
-def validate_verb(verb, verb_enum):
-    if not in_enum(verb, verb_enum):
-        fatal("Invalid --verb. Valid options are %s" %
-                enum_list(verb_enum))
-    else:
-        return getattr(verb_enum, verb)
 
 def in_enum(string, enum):
     return string in enum.__dict__
@@ -59,6 +38,16 @@ def enum_list(enum):
             methods.append(method)
 
     return methods
+
+def scan_http_status(scanning_method):
+    if scanning_method == ScanningMethod.not_found:
+        return 404
+    elif scanning_method == ScanningMethod.forbidden:
+       return 403
+    elif scanning_method == ScanningMethod.ok:
+        return 200
+
+    raise RuntimeError("Unexpected argument to common.scan_method")
 
 def template(template_file, variables={}):
     variables.update(colors)

@@ -9,11 +9,7 @@ class BaseTests(BaseTest):
     """
         Basic tests, and generic tests.
     """
-    @test.raises(RuntimeError)
-    def test_errors_when_no_module(self):
-        self.app.run()
-
-    @test.raises(RuntimeError)
+    @test.raises(SystemExit)
     def test_errors_when_no_url(self):
         self.add_argv(["drupal"])
         self.app.run()
@@ -21,16 +17,17 @@ class BaseTests(BaseTest):
     @test.raises(RuntimeError)
     def test_errors_when_invalid_url(self):
         self.add_argv(["drupal"])
+        self.add_argv(self.param_plugins)
         self.add_argv(["--url", "invalidurl"])
         self.app.run()
 
-    @test.raises(RuntimeError)
+    @test.raises(SystemExit)
     def test_errors_when_invalid_enumerate(self):
         self.add_argv(["drupal"])
         self.add_argv(self.param_base + ["-e", 'z'])
         self.app.run()
 
-    @test.raises(RuntimeError)
+    @test.raises(SystemExit)
     def test_errors_when_invalid_method(self):
         self.add_argv(["drupal"])
         self.add_argv(self.param_plugins + ["--method", "derpo"])
