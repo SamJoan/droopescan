@@ -17,6 +17,7 @@ class Drupal(BasePlugin):
     regular_file_url = "misc/drupal.js"
     module_readme_file = "README.txt"
 
+    changelog = "CHANGELOG.txt"
     versions_file = "plugins/drupal/versions.xml"
 
     class Meta:

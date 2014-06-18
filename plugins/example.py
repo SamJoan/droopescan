@@ -23,6 +23,9 @@ class Example(BasePlugin):
     regular_file_url = "misc/drupal.js"
     # a file which always exists in the modules.
     module_readme_file = "README.txt"
+
+    # the CMS' changelog file.
+    changelog = "CHANGELOG.txt"
     # a file which validates against common/versions.xsd for version
     # fingerprinting.
     versions_file = "plugins/drupal/versions.xml"

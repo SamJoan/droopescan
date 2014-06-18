@@ -13,18 +13,10 @@ class BaseHttpTests(BaseTest):
     """
         Basic, generic tests that involve HTTP requests.
     """
-
     def setUp(self):
         super(BaseHttpTests, self).setUp()
         self.add_argv(["drupal"])
         self.scanner = Drupal()
-
-    def respond_several(self, base_url, data_obj):
-        for status_code in data_obj:
-            for item in data_obj[status_code]:
-                url = base_url % item
-                responses.add(responses.HEAD, url,
-                        body=str(status_code), status=status_code)
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])

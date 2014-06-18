@@ -13,6 +13,13 @@ class BasePlugin(controller.CementBaseController):
 
         arguments = []
 
+    def getattr(self, pargs, attr_name):
+        val = getattr(pargs, attr_name)
+        if val:
+            return val
+        else:
+            return getattr(self, attr_name)
+
     def _options(self):
         pargs = self.app.pargs
 
@@ -22,10 +29,8 @@ class BasePlugin(controller.CementBaseController):
         enumerate = pargs.enumerate
         verb = pargs.verb
 
-        plugins_base_url = pargs.plugins_base_url if pargs.plugins_base_url \
-            else self.plugins_base_url
-        themes_base_url = pargs.themes_base_url if pargs.themes_base_url \
-                else self.themes_base_url
+        plugins_base_url = self.getattr(pargs, 'plugins_base_url')
+        themes_base_url = self.getattr(pargs, 'themes_base_url')
 
         scanning_method = pargs.method
         if not scanning_method:
@@ -63,7 +68,11 @@ class BasePlugin(controller.CementBaseController):
             'version': {
                 'func': getattr(self, 'enumerate_version'),
                 'kwargs': {
-                    'url': opts['url']
+                    'url': opts['url'],
+                    'changelog': self.changelog,
+                    'versions_file': self.versions_file,
+                    'verb': opts['verb'],
+                    'threads': opts['threads'],
                 }
             }
         }
@@ -237,9 +246,15 @@ class BasePlugin(controller.CementBaseController):
     def enumerate_users(self, *args, **kwargs):
         raise NotImplementedError("Not implemented yet.")
 
-    def enumerate_version(self, url):
-        requests.get(url)
-        raise NotImplementedError("Not implemented yet.")
+    def enumerate_version(self, url, versions_file, changelog, threads=10, verb='head'):
+        request_verb = getattr(requests, verb)
+        changelog_url = url + changelog
+        r = request_verb(changelog_url)
+
+        if r.status_code == 200:
+            common.warn("The CMS's changelog seems to be present at %s." % changelog_url)
+
+        return {}, True
 
     def finds_process(self, url, finds):
         final = []
