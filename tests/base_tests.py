@@ -2,6 +2,7 @@ from cement.utils import test
 from common.testutils import file_len, decallmethods
 from requests.exceptions import ConnectionError
 from tests import BaseTest
+from plugins.drupal import Drupal
 import responses
 
 @decallmethods(responses.activate)
@@ -70,6 +71,34 @@ class BaseTests(BaseTest):
         all_mocks = self.mock_all_enumerate('drupal', side_effect_on_one=True)
 
         self.app.run()
+
+    def test_fix_dereference_bug(self):
+        """
+            test for annoying dereference that made the app fail even though
+            all tests were passing.
+        """
+
+        plugins_base_url = "plugins_base_url"
+        themes_base_url = "themes_base_url"
+        opts_p = {
+            'url': self.base_url,
+            'plugins_base_url': plugins_base_url,
+            'themes_base_url': themes_base_url,
+            'scanning_method': 'a',
+            'number': 'a',
+            'threads': 'a',
+            'verb': 'a',
+            'enumerate': 'p',
+        }
+        opts_t = dict(opts_p)
+        opts_t['enumerate'] = 't'
+
+        drupal = Drupal()
+        kwargs_p = drupal._functionality(opts_p)['plugins']['kwargs']
+        kwargs_t = drupal._functionality(opts_t)['themes']['kwargs']
+
+        # these should not be equal
+        assert not kwargs_p == kwargs_t
 
 
 
