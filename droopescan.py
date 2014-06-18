@@ -24,10 +24,9 @@ class DroopeScanBase(controller.CementBaseController):
 
         arguments = [
                 (['--url'], dict(action='store', help='', required=True)),
-                (['--enumerate', '-e'], dict(action='store',
-                    help='R|' + template("help_enumerate.tpl"),
-                    choices=enum_list(Enumerate), required=True,
-                    default="a")),
+                (['--enumerate', '-e'], dict(action='store', help='R|' +
+                    template("help_enumerate.tpl"),
+                    choices=enum_list(Enumerate), default="a")),
                 (['--method'], dict(action='store', help="R|" +
                     template("help_method.tpl"), choices=enum_list(ScanningMethod))),
                 (['--number', '-n'], dict(action='store', help="""Number of

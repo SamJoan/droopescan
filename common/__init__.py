@@ -1,5 +1,4 @@
 from cement.core import handler
-from plugins import ScanningMethod
 import argparse
 import logging
 import pystache
@@ -17,6 +16,21 @@ colors = {
         'red': '\033[91m',
         'endc': '\033[0m',
     }
+
+class Enumerate():
+    a = 'a'
+    t = 't'
+    p = 'p'
+    v = 'v'
+
+class ScanningMethod():
+    not_found = 'not_found'
+    forbidden = 'forbidden'
+    ok = 'ok'
+
+class Verb():
+    head = 'head'
+    get = 'get'
 
 def validate_url(url):
     if not re.match(r"^http", url):

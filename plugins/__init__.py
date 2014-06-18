@@ -1,23 +1,9 @@
 from cement.core import handler, controller
+from common import Verb, ScanningMethod, Enumerate
 from datetime import datetime
+from requests_futures.sessions import FuturesSession
 import common
 import requests
-from requests_futures.sessions import FuturesSession
-
-class Enumerate():
-    a = 'a'
-    t = 't'
-    p = 'p'
-    v = 'v'
-
-class ScanningMethod():
-    not_found = 'not_found'
-    forbidden = 'forbidden'
-    ok = 'ok'
-
-class Verb():
-    head = 'head'
-    get = 'get'
 
 class BasePlugin(controller.CementBaseController):
 
@@ -58,7 +44,7 @@ class BasePlugin(controller.CementBaseController):
             'threads': opts['threads'],
             'verb': opts['verb'],
         }
-        kwargs_themes = kwargs_plugins
+        kwargs_themes = dict(kwargs_plugins)
         kwargs_themes['base_url'] = opts['themes_base_url']
 
         all = {
@@ -114,13 +100,13 @@ class BasePlugin(controller.CementBaseController):
                         "url": opts['url']}))
 
                 enum = functionality[enumerate]
-                finds, empty = enum["func"](**enum["kwargs"])
+                finds, is_empty = enum["func"](**enum["kwargs"])
 
                 template_params = {
                         "noun": enumerate,
                         "Noun": enumerate.capitalize(),
                         "items": self.finds_process(opts['url'], finds),
-                        "empty": empty,
+                        "empty": is_empty,
                     }
 
                 common.echo(common.template("list_noun.tpl", template_params))
@@ -219,14 +205,13 @@ class BasePlugin(controller.CementBaseController):
                 futures.append({
                     'future': future,
                     'base_url': base_url,
-                    'plugin_name': plugin_name
+                    'plugin_name': plugin_name,
                 })
 
         no_results = True
         found = {}
         for future_array in futures:
             r = future_array['future'].result()
-            print future_array['base_url'], r.status_code, expected_status
             if r.status_code == expected_status:
                 base_url = future_array['base_url']
                 plugin_name = future_array['plugin_name']
@@ -254,7 +239,7 @@ class BasePlugin(controller.CementBaseController):
 
     def enumerate_version(self, url):
         requests.get(url)
-        #raise NotImplementedError("Not implemented yet.")
+        raise NotImplementedError("Not implemented yet.")
 
     def finds_process(self, url, finds):
         final = []
