@@ -64,11 +64,11 @@ class BaseTest(test.CementTestCase):
         args, kwargs = mocked_method.call_args
         assert kwargs[kwarg_name] == kwarg_value, "Parameter is not as expected."
 
-    def respond_several(self, base_url, data_obj):
+    def respond_several(self, base_url, data_obj, verb=responses.HEAD):
         for status_code in data_obj:
             for item in data_obj[status_code]:
                 url = base_url % item
-                responses.add(responses.HEAD, url,
+                responses.add(verb, url,
                         body=str(status_code), status=status_code)
 
     def mock_all_enumerate(self, plugin_name, side_effect_on_one=False):

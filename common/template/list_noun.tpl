@@ -5,5 +5,5 @@
 {{green}}[+] {{Noun}} found:{{endc}}
 {{/empty}}
 {{#items}}
-    {{name}} {{blue}}{{url}}{{endc}}
+    {{key}} {{blue}}{{value}}{{endc}}
 {{/items}}

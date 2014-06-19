@@ -1,10 +1,12 @@
 from cement.utils import test
 from common.testutils import decallmethods, xml_validate
+from lxml import etree
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
 from tests import BaseTest
-from lxml import etree
+import hashlib
+import requests
 import responses
 
 @decallmethods(responses.activate)
@@ -54,15 +56,27 @@ class FingerprintTests(BaseTest):
 
         return mock
 
-    @patch('common.warn')
-    def test_fingerprint_warns_if_changelog(self, m):
-        self.respond_several(self.base_url + "%s", {200: ["CHANGELOG.txt"]})
+    @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
+    def test_calls_version(self, m):
+        self.respond_several(self.base_url + "%s", {200: ["misc/drupal.js",
+            self.scanner.changelog]})
+        # with no mocked calls, any HTTP req will cause a ConnectionError.
         self.app.run()
 
-        assert m.called, "should have warned about changelog being present."
+    @test.raises(ConnectionError)
+    def test_calls_version_no_mock(self):
+        # with no mocked calls, any HTTP req will cause a ConnectionError.
+        self.app.run()
 
-    def test_fingerprint_respects_verb(self):
-        assert False
+    @patch('common.warn')
+    @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
+    def test_fingerprint_warns_if_changelog(self, m, warn):
+        self.respond_several(self.base_url + "%s", {200: ["misc/drupal.js",
+            self.scanner.changelog]})
+
+        self.app.run()
+
+        assert warn.called, "should have warned about changelog being present."
 
     def test_xml_validates_drupal(self):
         drupal = Drupal()
@@ -74,12 +88,28 @@ class FingerprintTests(BaseTest):
         real_version = "7.26"
         self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, real_version)
 
-        version, certainty = self.scanner.enumerate_version(self.base_url, self.xml_file)
+        version, is_empty = self.scanner.enumerate_version(self.base_url, self.xml_file)
 
-        assert version == real_version
+        assert version[0] == real_version
+        assert is_empty == False
 
-    @test.raises(ConnectionError)
-    def test_calls_version(self):
-        self.app.run()
+    def test_enumerate_hash(self):
+        file_url = "/misc/drupal.js"
+        body = "zjyzjy2076"
+        responses.add(responses.HEAD, self.base_url + file_url, body=body)
 
+        actual_md5 = hashlib.md5(body).hexdigest()
+
+        md5 = self.scanner.enumerate_file_hash(requests.head, self.base_url, file_url)
+
+        assert md5 == actual_md5
+
+    @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
+    def test_fingerprint_respects_verb(self, patch):
+        self.respond_several(self.base_url + "%s", {200: ["misc/drupal.js",
+            self.scanner.changelog]}, verb=responses.GET)
+
+        # will exception if attempts to HEAD
+        self.scanner.enumerate_version(self.base_url,
+                self.scanner.versions_file, self.scanner.changelog, verb='get')
 

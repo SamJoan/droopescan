@@ -114,9 +114,11 @@ class VersionsFile():
                     else:
                         matches[version_nb] += 1
 
-        version = max(matches.iterkeys(), key=(lambda key: matches[key]))
+        if len(matches) == 0:
+            return []
 
-        return version
+        version = max(matches.iterkeys(), key=(lambda key: matches[key]))
+        return [version]
 
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):

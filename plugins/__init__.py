@@ -5,6 +5,7 @@ from datetime import datetime
 from requests_futures.sessions import FuturesSession
 import common
 import requests
+import hashlib
 
 class BasePlugin(controller.CementBaseController):
 
@@ -266,10 +267,11 @@ class BasePlugin(controller.CementBaseController):
 
         version = vf.version_get(hashes)
 
-        return version, ""
+        return version, len(version) == 0
 
     def enumerate_file_hash(self, requests_verb, url, file_url):
-        return file_url
+        r = requests_verb(url + file_url)
+        return hashlib.md5(r.text).hexdigest()
 
     def enumerate_version_changelog(self, requests_verb, url, changelog):
         if not changelog:
@@ -283,11 +285,18 @@ class BasePlugin(controller.CementBaseController):
 
     def finds_process(self, url, finds):
         final = []
-        for path in finds:
-            for module in finds[path]:
+        if isinstance(finds, dict):
+            for path in finds:
+                for module in finds[path]:
+                    final.append({
+                        'key': module,
+                        'value': path % (url, module),
+                    })
+        else:
+            for version in finds:
                 final.append({
-                    'name': module,
-                    'url': path % (url, module),
+                    'key': 'Possible version',
+                    'value': version
                 })
 
         return final
