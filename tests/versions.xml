@@ -3,7 +3,7 @@
   <files>
     <file url="misc/drupal.js">
       <version nb="7.26" md5="0bb055ea361b208072be45e8e004117b"/>
-      <version nb="7.27" md5="0bb055ea361b208072be45e8e004117b"/>
+      <version nb="7.27" md5="5d41402abc4b2a76b9719d911017c592"/>
       <version nb="7.28" md5="0bb055ea361b208072be45e8e004117b"/>
     </file>
     <file url="misc/tabledrag.js">

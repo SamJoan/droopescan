@@ -1,5 +1,6 @@
 from cement.core import handler, controller
-from common import Verb, ScanningMethod, Enumerate
+from common import Verb, ScanningMethod, Enumerate, VersionsFile
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from requests_futures.sessions import FuturesSession
 import common
@@ -246,23 +247,47 @@ class BasePlugin(controller.CementBaseController):
     def enumerate_users(self, *args, **kwargs):
         raise NotImplementedError("Not implemented yet.")
 
-    def enumerate_version(self, url, versions_file, changelog, threads=10, verb='head'):
-        request_verb = getattr(requests, verb)
+    def enumerate_version(self, url, versions_file, changelog=None, threads=10, verb='head'):
+        requests_verb = getattr(requests, verb)
+        self.enumerate_version_changelog(requests_verb, url, changelog)
+
+        vf = VersionsFile(versions_file)
+
+        hashes = {}
+        futures = {}
+        files = vf.files_get()
+        with ThreadPoolExecutor(max_workers=threads) as executor:
+            for file_url in files:
+                futures[file_url] = executor.submit(self.enumerate_file_hash,
+                        requests_verb, url, file_url=file_url)
+
+            for file_url in futures:
+                hashes[file_url] = futures[file_url].result()
+
+        version = vf.version_get(hashes)
+
+        return version, ""
+
+    def enumerate_file_hash(self, requests_verb, url, file_url):
+        return file_url
+
+    def enumerate_version_changelog(self, requests_verb, url, changelog):
+        if not changelog:
+            return
+
         changelog_url = url + changelog
-        r = request_verb(changelog_url)
+        r = requests_verb(changelog_url)
 
         if r.status_code == 200:
             common.warn("The CMS's changelog seems to be present at %s." % changelog_url)
-
-        return {}, True
 
     def finds_process(self, url, finds):
         final = []
         for path in finds:
             for module in finds[path]:
                 final.append({
-                        'name': module,
-                        'url': path % (url, module),
-                    })
+                    'name': module,
+                    'url': path % (url, module),
+                })
 
         return final

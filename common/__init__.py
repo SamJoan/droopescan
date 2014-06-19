@@ -4,6 +4,7 @@ import logging
 import pystache
 import re
 import textwrap
+import xml.etree.ElementTree as ET
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
@@ -82,6 +83,40 @@ def fatal(msg):
 
 def is_string(var):
     return isinstance(var, basestring)
+
+class VersionsFile():
+    et = None
+    root = None
+    def __init__(self, xml_file):
+        self.et = ET.parse(xml_file)
+        self.root = self.et.getroot()
+
+    def files_get(self):
+        files = []
+        for file in self.root.iter('file'):
+            files.append(file.attrib['url'])
+
+        return files
+
+    def version_get(self, url_hash):
+        matches = {}
+        for url in url_hash:
+            actual_hash = url_hash[url]
+
+            xpath = "./files/file[@url='%s']/version"
+            versions = self.root.findall(xpath % url)
+
+            for version in versions:
+                if version.attrib['md5'] == actual_hash:
+                    version_nb = version.attrib['nb']
+                    if not version_nb in matches:
+                        matches[version_nb] = 1
+                    else:
+                        matches[version_nb] += 1
+
+        version = max(matches.iterkeys(), key=(lambda key: matches[key]))
+
+        return version
 
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):
