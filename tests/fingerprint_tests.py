@@ -58,8 +58,8 @@ class FingerprintTests(BaseTest):
 
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
     def test_calls_version(self, m):
-        self.respond_several(self.base_url + "%s", {200: ["misc/drupal.js",
-            self.scanner.changelog]})
+        responses.add(responses.HEAD, self.base_url + self.scanner.changelog)
+        responses.add(responses.GET, self.base_url + 'misc/drupal.js')
         # with no mocked calls, any HTTP req will cause a ConnectionError.
         self.app.run()
 
@@ -71,8 +71,8 @@ class FingerprintTests(BaseTest):
     @patch('common.warn')
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
     def test_fingerprint_warns_if_changelog(self, m, warn):
-        self.respond_several(self.base_url + "%s", {200: ["misc/drupal.js",
-            self.scanner.changelog]})
+        responses.add(responses.HEAD, self.base_url + self.scanner.changelog)
+        responses.add(responses.GET, self.base_url + 'misc/drupal.js')
 
         self.app.run()
 
@@ -96,20 +96,21 @@ class FingerprintTests(BaseTest):
     def test_enumerate_hash(self):
         file_url = "/misc/drupal.js"
         body = "zjyzjy2076"
-        responses.add(responses.HEAD, self.base_url + file_url, body=body)
+        responses.add(responses.GET, self.base_url + file_url, body=body)
 
         actual_md5 = hashlib.md5(body).hexdigest()
 
-        md5 = self.scanner.enumerate_file_hash(requests.head, self.base_url, file_url)
+        md5 = self.scanner.enumerate_file_hash(self.base_url, file_url)
 
         assert md5 == actual_md5
 
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
-    def test_fingerprint_respects_verb(self, patch):
-        self.respond_several(self.base_url + "%s", {200: ["misc/drupal.js",
-            self.scanner.changelog]}, verb=responses.GET)
+    def test_fingerprint_correct_verb(self, patch):
+        responses.add(responses.HEAD, self.base_url + self.scanner.changelog)
+        # this needs to be a get, otherwise, how are going to get the request body?
+        responses.add(responses.GET, self.base_url + 'misc/drupal.js')
 
         # will exception if attempts to HEAD
         self.scanner.enumerate_version(self.base_url,
-                self.scanner.versions_file, self.scanner.changelog, verb='get')
+                self.scanner.versions_file, self.scanner.changelog, verb='head')
 

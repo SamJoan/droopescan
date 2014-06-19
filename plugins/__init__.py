@@ -260,7 +260,7 @@ class BasePlugin(controller.CementBaseController):
         with ThreadPoolExecutor(max_workers=threads) as executor:
             for file_url in files:
                 futures[file_url] = executor.submit(self.enumerate_file_hash,
-                        requests_verb, url, file_url=file_url)
+                        url, file_url=file_url)
 
             for file_url in futures:
                 hashes[file_url] = futures[file_url].result()
@@ -269,8 +269,8 @@ class BasePlugin(controller.CementBaseController):
 
         return version, len(version) == 0
 
-    def enumerate_file_hash(self, requests_verb, url, file_url):
-        r = requests_verb(url + file_url)
+    def enumerate_file_hash(self, url, file_url):
+        r = requests.get(url + file_url)
         return hashlib.md5(r.text).hexdigest()
 
     def enumerate_version_changelog(self, requests_verb, url, changelog):

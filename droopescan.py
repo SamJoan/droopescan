@@ -42,7 +42,9 @@ class DroopeScanBase(controller.CementBaseController):
                 (['--threads', '-t'], dict(action='store', help="""Number of
                     threads.""", default=10)),
                 (['--verb'], dict(action='store', help="""The HTTP verb to use;
-                    the default option is head""", default='head', choices=enum_list(Verb))),
+                the default option is head, except for version enumeration
+                requests, which are always get for obvious reasons""",
+                default='head', choices=enum_list(Verb))),
             ]
 
     @controller.expose(hide=True)
