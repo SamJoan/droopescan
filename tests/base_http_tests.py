@@ -47,9 +47,10 @@ class BaseHttpTests(BaseTest):
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
     def test_plugins_not_found(self, m):
+        module_file = self.scanner.module_readme_file
         self.respond_several(self.base_url + "sites/all/modules/%s", {200:
-            ["supermodule/README.txt"], 404: ["nonexistant1", "nonexistant2",
-                'supermodule', 'nonexistant1/README.txt', 'nonexistant2/README.txt']})
+            ["supermodule/%s" % module_file], 404: ["nonexistant1", "nonexistant2",
+                'supermodule', 'nonexistant1/%s' % module_file, 'nonexistant2/%s' % module_file]})
 
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,

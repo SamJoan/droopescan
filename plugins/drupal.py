@@ -15,7 +15,7 @@ class Drupal(BasePlugin):
 
     folder_url = "misc/"
     regular_file_url = "misc/drupal.js"
-    module_readme_file = "README.txt"
+    module_readme_file = "LICENSE.txt"
 
     changelog = "CHANGELOG.txt"
     versions_file = "plugins/drupal/versions.xml"

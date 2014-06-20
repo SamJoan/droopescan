@@ -1,3 +1,10 @@
+0.5.0
+=====
+
+* Add version fingerprinting to drupal.
+* Improved argument handling.
+* Internal improvements which users don't care about.
+* Add version fingerprinting infrastructure.
 
 0.4.1
 =====

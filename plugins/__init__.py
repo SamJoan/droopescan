@@ -67,7 +67,10 @@ class BasePlugin(controller.CementBaseController):
                 'func': getattr(self, 'enumerate_themes'),
                 'kwargs': kwargs_themes
             },
-            'version': {
+        }
+
+        try:
+            all['version'] = {
                 'func': getattr(self, 'enumerate_version'),
                 'kwargs': {
                     'url': opts['url'],
@@ -77,7 +80,9 @@ class BasePlugin(controller.CementBaseController):
                     'threads': opts['threads'],
                 }
             }
-        }
+        except AttributeError:
+            # module does not support version enumeration
+            pass
 
         functionality = {}
         if opts['enumerate'] == "p":
