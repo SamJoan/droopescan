@@ -1,9 +1,22 @@
 from cement.utils import test
 from common.testutils import file_len, decallmethods
-from requests.exceptions import ConnectionError
-from tests import BaseTest
+from contextlib import contextmanager
 from plugins.drupal import Drupal
+from requests.exceptions import ConnectionError
+from StringIO import StringIO
+from tests import BaseTest
 import responses
+import sys
+
+@contextmanager
+def capture_sys_output():
+    caputure_out, capture_err = StringIO(), StringIO()
+    current_out, current_err = sys.stdout, sys.stderr
+    try:
+        sys.stdout, sys.stderr = caputure_out, capture_err
+        yield caputure_out, capture_err
+    finally:
+        sys.stdout, sys.stderr = current_out, current_err
 
 @decallmethods(responses.activate)
 class BaseTests(BaseTest):
@@ -12,8 +25,9 @@ class BaseTests(BaseTest):
     """
     @test.raises(SystemExit)
     def test_errors_when_no_url(self):
-        self.add_argv(["drupal"])
-        self.app.run()
+        with capture_sys_output() as (stdout, stderr):
+            self.add_argv(["drupal"])
+            self.app.run()
 
     @test.raises(RuntimeError)
     def test_errors_when_invalid_url(self):
@@ -24,15 +38,17 @@ class BaseTests(BaseTest):
 
     @test.raises(SystemExit)
     def test_errors_when_invalid_enumerate(self):
-        self.add_argv(["drupal"])
-        self.add_argv(self.param_base + ["-e", 'z'])
-        self.app.run()
+        with capture_sys_output() as (stdout, stderr):
+            self.add_argv(["drupal"])
+            self.add_argv(self.param_base + ["-e", 'z'])
+            self.app.run()
 
     @test.raises(SystemExit)
     def test_errors_when_invalid_method(self):
-        self.add_argv(["drupal"])
-        self.add_argv(self.param_plugins + ["--method", "derpo"])
-        self.app.run()
+        with capture_sys_output() as (stdout, stderr):
+            self.add_argv(["drupal"])
+            self.add_argv(self.param_plugins + ["--method", "derpo"])
+            self.app.run()
 
     @test.raises(ConnectionError)
     def test_calls_plugin(self):
