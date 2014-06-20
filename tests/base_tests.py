@@ -116,6 +116,8 @@ class BaseTests(BaseTest):
         # these should not be equal
         assert not kwargs_p == kwargs_t
 
+    def test_can_disable_func_at_plugin_level(self):
+        assert False
 
 
 

@@ -26,7 +26,7 @@ class BasePlugin(controller.CementBaseController):
         pargs = self.app.pargs
 
         url = common.validate_url(pargs.url)
-        number = pargs.number
+        number = pargs.number if not pargs.number == "all" else 100000
         threads = pargs.threads
         enumerate = pargs.enumerate
         verb = pargs.verb
@@ -98,7 +98,7 @@ class BasePlugin(controller.CementBaseController):
 
         return functionality
 
-    def enumerate_route(self):
+    def enumerate_route(self, options={}):
         time_start = datetime.now()
         opts = self._options()
         functionality = self._functionality(opts)
@@ -298,9 +298,10 @@ class BasePlugin(controller.CementBaseController):
                         'value': path % (url, module),
                     })
         else:
+            adj = "Likely" if len(finds) == 1 else "Possible"
             for version in finds:
                 final.append({
-                    'key': 'Possible version',
+                    'key': '%s version' % adj,
                     'value': version
                 })
 

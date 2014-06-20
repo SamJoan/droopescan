@@ -31,7 +31,7 @@ class DroopeScanBase(controller.CementBaseController):
                     template("help_method.tpl"), choices=enum_list(ScanningMethod))),
                 (['--number', '-n'], dict(action='store', help="""Number of
                     words to attempt from the plugin/theme dictionary. Default
-                    is 1000.""", default=1000)),
+                    is 1000. Use -n 'all' to use all available..""", default=1000)),
                 (['--plugins-base-url'], dict(action='store', help="""Location
                     where the plugins are stored by the CMS. Default is the CMS'
                     default location. First %%s in string will be replaced with

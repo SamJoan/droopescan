@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<cms>
+  <files>
+    <file url="Portals/_default/default.css">
+      <version nb="05.06.04" md5="621653870c35f7eb431b9679b39155ee"/>
+      <version nb="05.06.05" md5="621653870c35f7eb431b9679b39155ee"/>
+      <version nb="05.06.06" md5="621653870c35f7eb431b9679b39155ee"/>
+      <version nb="05.06.07" md5="621653870c35f7eb431b9679b39155ee"/>
+      <version nb="05.06.08" md5="621653870c35f7eb431b9679b39155ee"/>
+      <version nb="06.00.02" md5="e69946858f8e210c0e78bb4b8c45ee2f"/>
+      <version nb="06.01.00" md5="3e2097fdc7bb717ed9f560ffc7930fbb"/>
+      <version nb="06.01.01" md5="3e2097fdc7bb717ed9f560ffc7930fbb"/>
+      <version nb="06.01.02" md5="da3990e75233883064b5adde3387ed3c"/>
+      <version nb="06.01.03" md5="e4c0494ba357ec864000d1aad72296bb"/>
+      <version nb="06.01.04" md5="a66cc13a301c91d86169b85dfaa8feca"/>
+      <version nb="06.01.05" md5="39d8b4f0877e737abe5dfa5d77ac26f4"/>
+      <version nb="06.02.00" md5="d2064a8bd52f2da618d733c840e60a8e"/>
+      <version nb="06.02.01" md5="d2064a8bd52f2da618d733c840e60a8e"/>
+      <version nb="06.02.02" md5="1eceb4ed64b7b18c0fbd2840b355f3b4"/>
+      <version nb="06.02.03" md5="1eceb4ed64b7b18c0fbd2840b355f3b4"/>
+      <version nb="06.02.04" md5="eaee4aeeb1324a5bacdacba754d0098a"/>
+      <version nb="06.02.05" md5="eaee4aeeb1324a5bacdacba754d0098a"/>
+      <version nb="06.02.06" md5="eaee4aeeb1324a5bacdacba754d0098a"/>
+      <version nb="06.02.07" md5="eaee4aeeb1324a5bacdacba754d0098a"/>
+      <version nb="06.02.08" md5="eaee4aeeb1324a5bacdacba754d0098a"/>
+      <version nb="06.02.09" md5="eaee4aeeb1324a5bacdacba754d0098a"/>
+      <version nb="07.00.00" md5="d12dd9e07108d0034098caf54c374e11"/>
+      <version nb="07.00.01" md5="ddf088fc649e684315bb6c52a125c588"/>
+      <version nb="07.00.02" md5="ddf088fc649e684315bb6c52a125c588"/>
+      <version nb="07.00.03" md5="b2a0f31d8daff09a10ebbbbdef84186b"/>
+      <version nb="07.00.04" md5="923507367030d1a5476c79d44a04e06d"/>
+      <version nb="07.00.05" md5="68b3eee241236ef9e28dc93638eb7a96"/>
+      <version nb="07.00.06" md5="68b3eee241236ef9e28dc93638eb7a96"/>
+      <version nb="07.01.00" md5="5aaf509259a8d3b399ebec913622ddbb"/>
+      <version nb="07.01.01" md5="13b1624483406fa1a3d08f425f4d9cef"/>
+      <version nb="07.01.02" md5="45b02f15f4ffd181f0b7f23c00b4c285"/>
+      <version nb="07.02.00" md5="8f89cfb76352d48e46f2e85bedd83b72"/>
+      <version nb="07.02.01" md5="d8e5817c53c8f45b952a7026c30176b2"/>
+      <version nb="07.02.02" md5="dfba80f7700262768ab7341c86fa1c86"/>
+    </file>
+    <file url="js/Debug/dnncore.js">
+      <version nb="06.00.02" md5="2ce987d184050815c0214a72ad6bbc32"/>
+      <version nb="06.01.00" md5="2ce987d184050815c0214a72ad6bbc32"/>
+      <version nb="06.01.01" md5="2ce987d184050815c0214a72ad6bbc32"/>
+      <version nb="06.01.02" md5="2ce987d184050815c0214a72ad6bbc32"/>
+      <version nb="06.01.03" md5="065b0515b58277e381ff8b5e788a15c7"/>
+      <version nb="06.01.04" md5="909086a04259d01baafbba4cbbf15456"/>
+      <version nb="06.01.05" md5="909086a04259d01baafbba4cbbf15456"/>
+      <version nb="06.02.00" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.01" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.02" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.03" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.04" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.05" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.06" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.07" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.08" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="06.02.09" md5="cf5a1ffa3adc5393155129e5df3b1e59"/>
+      <version nb="07.00.00" md5="a12580074341ae84dfbd1f28c025ebd3"/>
+      <version nb="07.00.01" md5="a12580074341ae84dfbd1f28c025ebd3"/>
+      <version nb="07.00.02" md5="a12580074341ae84dfbd1f28c025ebd3"/>
+      <version nb="07.00.03" md5="a12580074341ae84dfbd1f28c025ebd3"/>
+      <version nb="07.00.04" md5="a12580074341ae84dfbd1f28c025ebd3"/>
+      <version nb="07.00.05" md5="a12580074341ae84dfbd1f28c025ebd3"/>
+      <version nb="07.00.06" md5="a12580074341ae84dfbd1f28c025ebd3"/>
+      <version nb="07.01.00" md5="06d1c09a2130ede2d63330487004157c"/>
+      <version nb="07.01.01" md5="a7e22fa5f29ac45fa4ad0f883b9a646d"/>
+      <version nb="07.01.02" md5="51817ce8467c78fff821d73b1cb054c6"/>
+      <version nb="07.02.00" md5="51817ce8467c78fff821d73b1cb054c6"/>
+      <version nb="07.02.01" md5="a7e22fa5f29ac45fa4ad0f883b9a646d"/>
+      <version nb="07.02.02" md5="a7e22fa5f29ac45fa4ad0f883b9a646d"/>
+    </file>
+    <file url="admin/Menus/ModuleActions/ModuleActions.js">
+      <version nb="07.00.00" md5="7b98402ead6695f283481957780b5604"/>
+      <version nb="07.00.01" md5="7b98402ead6695f283481957780b5604"/>
+      <version nb="07.00.02" md5="7b98402ead6695f283481957780b5604"/>
+      <version nb="07.00.03" md5="7b98402ead6695f283481957780b5604"/>
+      <version nb="07.00.04" md5="8285fc2cf5068f90bd55b4e3e2e5ed4d"/>
+      <version nb="07.00.05" md5="023ee5fd0fb40159dc857024c4135da9"/>
+      <version nb="07.00.06" md5="023ee5fd0fb40159dc857024c4135da9"/>
+      <version nb="07.01.00" md5="1fe8462962517638da2ccb6d6449149b"/>
+      <version nb="07.01.01" md5="580baf3cb55fa208d8d074182101e630"/>
+      <version nb="07.01.02" md5="d8e217e66186a2a3ba91fec7702a88de"/>
+      <version nb="07.02.00" md5="d8e217e66186a2a3ba91fec7702a88de"/>
+      <version nb="07.02.01" md5="98277db6964fcd627a7864143e926ddd"/>
+      <version nb="07.02.02" md5="98277db6964fcd627a7864143e926ddd"/>
+    </file>
+    <file url="Portals/_default/Skins/Gravity/skin.css">
+      <version nb="07.00.00" md5="d8c286cd45c317b7421ea23047e6db7d"/>
+      <version nb="07.00.01" md5="459c9e1bad3c1f41f837f2fe49bf3086"/>
+      <version nb="07.00.02" md5="459c9e1bad3c1f41f837f2fe49bf3086"/>
+      <version nb="07.00.03" md5="459c9e1bad3c1f41f837f2fe49bf3086"/>
+      <version nb="07.00.04" md5="459c9e1bad3c1f41f837f2fe49bf3086"/>
+      <version nb="07.00.05" md5="4ece356287d34733d5339b67cf1e932e"/>
+      <version nb="07.00.06" md5="4ece356287d34733d5339b67cf1e932e"/>
+      <version nb="07.01.00" md5="593c2d549f4d84b55af78f6e82dd8a1b"/>
+      <version nb="07.01.01" md5="593c2d549f4d84b55af78f6e82dd8a1b"/>
+      <version nb="07.01.02" md5="c3b94b06b928e0190a0c53ad9b11a2b1"/>
+      <version nb="07.02.00" md5="bd3478f118d58a5b7a4e524b2b2365b1"/>
+      <version nb="07.02.01" md5="1c1a9675f3e8ab754c932b5c3ec62765"/>
+      <version nb="07.02.02" md5="6140110855fd50d5ba3d48ee31599866"/>
+    </file>
+  </files>
+</cms>

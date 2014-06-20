@@ -15,6 +15,10 @@ class SilverStripe(BasePlugin):
     regular_file_url = ["cms/css/layout.css", "framework/css/UploadField.css"]
     module_readme_file = "README.md"
 
+    # no changelog file for SS
+    changelog = None
+    versions_file = "plugins/silverstripe/versions.xml"
+
     class Meta:
         label = 'silverstripe'
 
