@@ -9,6 +9,12 @@ import hashlib
 
 class BasePlugin(controller.CementBaseController):
 
+    base_avail = {
+        'p': True,
+        't': True,
+        'v': True
+    }
+
     class Meta:
         label = 'baseplugin'
         stacked_on = 'base'
@@ -20,7 +26,10 @@ class BasePlugin(controller.CementBaseController):
         if val:
             return val
         else:
-            return getattr(self, attr_name)
+            try:
+                return getattr(self, attr_name)
+            except AttributeError:
+                return None
 
     def _options(self):
         pargs = self.app.pargs
@@ -41,7 +50,7 @@ class BasePlugin(controller.CementBaseController):
         # all variables here will be returned.
         return locals()
 
-    def _functionality(self, opts):
+    def _functionality(self, opts, available):
 
         kwargs_plugins = {
             'url': opts['url'],
@@ -55,21 +64,25 @@ class BasePlugin(controller.CementBaseController):
         kwargs_themes['base_url'] = opts['themes_base_url']
 
         all = {
-            'plugins':  {
-                'func': getattr(self, "enumerate_plugins"),
-                'kwargs': kwargs_plugins
-            },
             'users': {
                 'func': getattr(self, 'enumerate_users'),
                 'kwargs': {}
-            },
-            'themes': {
-                'func': getattr(self, 'enumerate_themes'),
-                'kwargs': kwargs_themes
-            },
+            }
         }
 
-        try:
+        if available['p']:
+            all['plugins'] = {
+                'func': getattr(self, "enumerate_plugins"),
+                'kwargs': kwargs_plugins
+            }
+
+        if available['t']:
+            all['themes'] = {
+                'func': getattr(self, 'enumerate_themes'),
+                'kwargs': kwargs_themes
+            }
+
+        if available['v']:
             all['version'] = {
                 'func': getattr(self, 'enumerate_version'),
                 'kwargs': {
@@ -80,9 +93,6 @@ class BasePlugin(controller.CementBaseController):
                     'threads': opts['threads'],
                 }
             }
-        except AttributeError:
-            # module does not support version enumeration
-            pass
 
         functionality = {}
         if opts['enumerate'] == "p":
@@ -98,10 +108,14 @@ class BasePlugin(controller.CementBaseController):
 
         return functionality
 
-    def enumerate_route(self, options={}):
+    def enumerate_route(self, plugin_avail={}):
+
+        avail = dict(self.base_avail)
+        avail.update(plugin_avail)
+
         time_start = datetime.now()
         opts = self._options()
-        functionality = self._functionality(opts)
+        functionality = self._functionality(opts, avail)
 
         enumerating_all = opts['enumerate'] == 'a'
         if enumerating_all:

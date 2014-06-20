@@ -73,14 +73,14 @@ class BaseTest(test.CementTestCase):
 
     def mock_all_enumerate(self, plugin_name, side_effect_on_one=False):
         all = []
-        all.append(self.mock_controller("drupal", 'enumerate_plugins'))
-        all.append(self.mock_controller("drupal", 'enumerate_themes'))
+        all.append(self.mock_controller(plugin_name, 'enumerate_plugins'))
+        all.append(self.mock_controller(plugin_name, 'enumerate_themes'))
         if not side_effect_on_one:
-            all.append(self.mock_controller("drupal", 'enumerate_users'))
+            all.append(self.mock_controller(plugin_name, 'enumerate_users'))
         else :
-            all.append(self.mock_controller("drupal", 'enumerate_users',
+            all.append(self.mock_controller(plugin_name, 'enumerate_users',
                 side_effect=RuntimeError("derp!")))
-        all.append(self.mock_controller("drupal", 'enumerate_version'))
+        all.append(self.mock_controller(plugin_name, 'enumerate_version'))
 
         return all
 

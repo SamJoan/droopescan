@@ -77,7 +77,7 @@ class BaseTests(BaseTest):
         self.app.run()
 
         for m in all_mocks:
-            assert m .called, "module %s" % m
+            assert m.called, "module %s" % m
 
     def test_doesnt_crash_on_runtimeerror(self):
         self.add_argv(["drupal"])
@@ -88,9 +88,26 @@ class BaseTests(BaseTest):
 
         self.app.run()
 
+    def test_dnn_does_not_enumerate(self):
+        self.add_argv(["dnn"])
+        self.add_argv(self.param_all)
+        self.add_argv(['--method', 'forbidden'])
+
+        all_mocks = self.mock_all_enumerate('dnn')
+
+        self.app.run()
+
+        # expect two calls, might have to re-do this test in the future.
+        i = 0
+        for mock in all_mocks:
+            if mock.called == True:
+                i += 1
+
+        assert i == 2
+
     def test_fix_dereference_bug(self):
         """
-            test for annoying dereference that made the app fail even though
+            test for dereference that made the app fail even though
             all tests were passing.
         """
 
@@ -110,14 +127,11 @@ class BaseTests(BaseTest):
         opts_t['enumerate'] = 't'
 
         drupal = Drupal()
-        kwargs_p = drupal._functionality(opts_p)['plugins']['kwargs']
-        kwargs_t = drupal._functionality(opts_t)['themes']['kwargs']
+        kwargs_p = drupal._functionality(opts_p, drupal.base_avail)['plugins']['kwargs']
+        kwargs_t = drupal._functionality(opts_t, drupal.base_avail)['themes']['kwargs']
 
         # these should not be equal
         assert not kwargs_p == kwargs_t
-
-    def test_can_disable_func_at_plugin_level(self):
-        assert False
 
 
 
