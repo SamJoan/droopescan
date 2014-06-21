@@ -21,7 +21,7 @@ class BasePlugin(controller.CementBaseController):
 
         arguments = []
 
-    def getattr(self, pargs, attr_name):
+    def getattr(self, pargs, attr_name, default=None):
         val = getattr(pargs, attr_name)
         if val:
             return val
@@ -29,9 +29,9 @@ class BasePlugin(controller.CementBaseController):
             try:
                 return getattr(self, attr_name)
             except AttributeError:
-                return None
+                return default
 
-    def _options(self):
+    def _options(self, avail):
         pargs = self.app.pargs
 
         url = common.validate_url(pargs.url)
@@ -43,9 +43,12 @@ class BasePlugin(controller.CementBaseController):
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
         themes_base_url = self.getattr(pargs, 'themes_base_url')
 
-        scanning_method = pargs.method
-        if not scanning_method:
-            scanning_method = self.determine_scanning_method(url, verb)
+        if avail['p'] or avail['t']:
+            scanning_method = pargs.method
+            if not scanning_method:
+                scanning_method = self.determine_scanning_method(url, verb)
+        else:
+            scanning_method = None
 
         # all variables here will be returned.
         return locals()
@@ -114,7 +117,7 @@ class BasePlugin(controller.CementBaseController):
         avail.update(plugin_avail)
 
         time_start = datetime.now()
-        opts = self._options()
+        opts = self._options(avail)
         functionality = self._functionality(opts, avail)
 
         enumerating_all = opts['enumerate'] == 'a'
@@ -290,7 +293,7 @@ class BasePlugin(controller.CementBaseController):
 
     def enumerate_file_hash(self, url, file_url):
         r = requests.get(url + file_url)
-        return hashlib.md5(r.text).hexdigest()
+        return hashlib.md5(r.content).hexdigest()
 
     def enumerate_version_changelog(self, requests_verb, url, changelog):
         if not changelog:

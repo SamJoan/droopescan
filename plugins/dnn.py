@@ -26,7 +26,7 @@ class Dnn(BasePlugin):
     def dnn(self):
         available = {
             'p': False,
-            't': False,
+            't': False
         }
         self.enumerate_route(available)
 

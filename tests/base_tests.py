@@ -91,9 +91,9 @@ class BaseTests(BaseTest):
     def test_dnn_does_not_enumerate(self):
         self.add_argv(["dnn"])
         self.add_argv(self.param_all)
-        self.add_argv(['--method', 'forbidden'])
 
         all_mocks = self.mock_all_enumerate('dnn')
+        dsv = self.mock_controller("dnn", 'determine_scanning_method')
 
         self.app.run()
 
@@ -104,6 +104,8 @@ class BaseTests(BaseTest):
                 i += 1
 
         assert i == 2
+
+        assert not dsv.called
 
     def test_fix_dereference_bug(self):
         """
