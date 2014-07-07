@@ -3,17 +3,48 @@
 Usage:
 
 <pre>
-python droopescan drupal --url http://localhost/drupal-7.28
-python droopescan silverstripe --url http://localhost/silverstripe
+python droopescan.py drupal --url http://localhost/drupal-7.28
+python droopescan.py silverstripe --url http://localhost/silverstripe
 </pre>
 
-# Installation
+You can get a full list of options by running:
+
+<pre>
+python droopescan.py --help
+</pre>
+
+# Dependencies.
+
+In order to run this tool you need to install a few dependencies. These can be
+installed by running the following command:
 
 <pre>
 pip install requirements.txt
 </pre>
 
+# Authentication
+
+The application fully supports `.netrc` files and `http_proxy` environment
+variables. 
+
+An example `~/.netrc` file could look as follows:
+
+<pre>
+machine secret.google.com
+    login pedro.worcel@security-assessment.com
+    password Winter01
+</pre>
+
+The above will send basic authentication along with your request.
+
+You can also set `http_proxy` and `https_proxy` variables. These allow you to
+set a parent HTTP proxy, in which you can handle more complex types of
+authentication (e.g. Fiddler)
+
 # Testing
+
+To run tests, some dependencies can be installed; running the following
+commands will result in them being installed and the tests being ran:
 
 <pre>
 apt-get install python-dev libxslt1-dev libxml2-dev

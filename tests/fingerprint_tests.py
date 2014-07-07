@@ -78,7 +78,10 @@ class FingerprintTests(BaseTest):
 
         assert warn.called, "should have warned about changelog being present."
 
-    def test_xml_validates_drupal(self):
+    def test_xml_validates_all(self):
+        assert False
+        # make it so that it searches for versions.xml and makes sure all verify
+        # against the XSD
         drupal = Drupal()
 
         xml_validate(drupal.versions_file, self.versions_xsd)
