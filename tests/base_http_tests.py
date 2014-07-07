@@ -1,10 +1,10 @@
-from common.testutils import file_len, decallmethods
 from cement.utils import test
+from common.testutils import file_len, decallmethods
+from concurrent.futures import ThreadPoolExecutor
 from mock import patch
 from plugins.drupal import Drupal
-from requests_futures.sessions import FuturesSession
-from tests import BaseTest
 from plugins import ScanningMethod, Verb, Enumerate
+from tests import BaseTest
 import requests
 import responses
 
@@ -107,7 +107,7 @@ class BaseHttpTests(BaseTest):
 
         assert 3 == len(themes)
 
-    @patch.object(FuturesSession, '__init__')
+    @patch.object(ThreadPoolExecutor, '__init__')
     def test_threads_gets_passed(self, ffs):
         self.add_argv(self.param_plugins)
         self.add_argv(['--threads', '30', '--method', 'forbidden'])

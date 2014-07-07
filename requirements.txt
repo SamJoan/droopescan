@@ -1,4 +1,4 @@
 cement==2.2.2
 requests==2.3.0
 pystache==0.5.4
-requests-futures==0.9.4
+futures==2.1.6

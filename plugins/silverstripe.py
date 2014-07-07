@@ -1,6 +1,5 @@
 from cement.core import handler, controller
 from plugins import BasePlugin
-import requests
 import common
 
 class SilverStripe(BasePlugin):

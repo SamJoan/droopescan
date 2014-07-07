@@ -27,7 +27,18 @@ pip install requirements.txt
 The application fully supports `.netrc` files and `http_proxy` environment
 variables. 
 
-An example `~/.netrc` file could look as follows:
+You can set `http_proxy` and `https_proxy` variables. These allow you to
+set a parent HTTP proxy, in which you can handle more complex types of
+authentication (e.g. Fiddler, ZAP)
+
+<pre>
+export http_proxy='localhost:8080'
+export https_proxy='localhost:8080'
+python droopescan.py drupal --url http://localhost/drupal
+</pre>
+
+Another option is to use a .netrc file. An example `~/.netrc` file could look
+as follows:
 
 <pre>
 machine secret.google.com
@@ -35,11 +46,8 @@ machine secret.google.com
     password Winter01
 </pre>
 
-The above will send basic authentication along with your request.
-
-You can also set `http_proxy` and `https_proxy` variables. These allow you to
-set a parent HTTP proxy, in which you can handle more complex types of
-authentication (e.g. Fiddler)
+*WARNING:* By design, to allow intercepting proxies, this application allows
+self-signed or otherwise invalid certificates.
 
 # Testing
 

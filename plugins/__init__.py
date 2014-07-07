@@ -2,12 +2,15 @@ from cement.core import handler, controller
 from common import Verb, ScanningMethod, Enumerate, VersionsFile
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from requests_futures.sessions import FuturesSession
+from requests import Session
 import common
 import requests
 import hashlib
 
 class BasePlugin(controller.CementBaseController):
+
+    requests = Session()
+    requests.verify = False
 
     base_avail = {
         'p': True,
@@ -155,7 +158,7 @@ class BasePlugin(controller.CementBaseController):
                 str(datetime.now() - time_start))
 
     def determine_scanning_method(self, url, verb):
-        requests_method = getattr(requests, verb)
+        requests_method = getattr(self.requests, verb)
         folder_resp = requests_method(url + self.folder_url)
 
         if common.is_string(self.regular_file_url):
@@ -220,40 +223,40 @@ class BasePlugin(controller.CementBaseController):
         else:
             base_urls = base_url_supplied
 
-        sess = FuturesSession(max_workers=int(threads))
-        sess_verb = getattr(sess, verb)
+        sess_verb = getattr(self.requests, verb)
         futures = []
-        for base_url in base_urls:
-            plugins = iterator_returning_method(max_iterator)
+        with ThreadPoolExecutor(max_workers=threads) as executor:
+            for base_url in base_urls:
+                plugins = iterator_returning_method(max_iterator)
 
-            if scanning_method == ScanningMethod.not_found:
-                url_template = base_url + self.module_readme_file
-                expected_status = 200
-            else:
-                url_template = base_url
-                expected_status = common.scan_http_status(scanning_method)
+                if scanning_method == ScanningMethod.not_found:
+                    url_template = base_url + self.module_readme_file
+                    expected_status = 200
+                else:
+                    url_template = base_url
+                    expected_status = common.scan_http_status(scanning_method)
 
-            for plugin_name in plugins:
-                future = sess_verb(url_template % (url, plugin_name))
-                futures.append({
-                    'future': future,
-                    'base_url': base_url,
-                    'plugin_name': plugin_name,
-                })
+                for plugin_name in plugins:
+                    future = executor.submit(sess_verb, url_template % (url, plugin_name))
+                    futures.append({
+                        'future': future,
+                        'base_url': base_url,
+                        'plugin_name': plugin_name,
+                    })
 
-        no_results = True
-        found = {}
-        for future_array in futures:
-            r = future_array['future'].result()
-            if r.status_code == expected_status:
-                base_url = future_array['base_url']
-                plugin_name = future_array['plugin_name']
+            no_results = True
+            found = {}
+            for future_array in futures:
+                r = future_array['future'].result()
+                if r.status_code == expected_status:
+                    base_url = future_array['base_url']
+                    plugin_name = future_array['plugin_name']
 
-                no_results = False
-                if not base_url in found:
-                    found[base_url] = []
+                    no_results = False
+                    if not base_url in found:
+                        found[base_url] = []
 
-                found[base_url].append(plugin_name)
+                    found[base_url].append(plugin_name)
 
         return found, no_results
 
@@ -271,7 +274,7 @@ class BasePlugin(controller.CementBaseController):
         raise NotImplementedError("Not implemented yet.")
 
     def enumerate_version(self, url, versions_file, changelog=None, threads=10, verb='head'):
-        requests_verb = getattr(requests, verb)
+        requests_verb = getattr(self.requests, verb)
         self.enumerate_version_changelog(requests_verb, url, changelog)
 
         vf = VersionsFile(versions_file)
@@ -292,7 +295,7 @@ class BasePlugin(controller.CementBaseController):
         return version, len(version) == 0
 
     def enumerate_file_hash(self, url, file_url):
-        r = requests.get(url + file_url)
+        r = self.requests.get(url + file_url)
         return hashlib.md5(r.content).hexdigest()
 
     def enumerate_version_changelog(self, requests_verb, url, changelog):
