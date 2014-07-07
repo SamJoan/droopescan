@@ -1,3 +1,11 @@
+0.6.0
+====
+
+* Documented support for upstream proxies, and authentication in general.
+* Disabled certificate validation so as to allow intercepting and modification
+of requests by proxies.
+* Internal improvements.
+
 0.5.1
 =====
 
