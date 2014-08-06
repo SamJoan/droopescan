@@ -1,5 +1,6 @@
 from cement.utils import test
 from common.testutils import decallmethods, xml_validate
+from glob import glob
 from lxml import etree
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
@@ -79,12 +80,8 @@ class FingerprintTests(BaseTest):
         assert warn.called, "should have warned about changelog being present."
 
     def test_xml_validates_all(self):
-        assert False
-        # make it so that it searches for versions.xml and makes sure all verify
-        # against the XSD
-        drupal = Drupal()
-
-        xml_validate(drupal.versions_file, self.versions_xsd)
+        for xml_path in glob("plugins/*/versions.xml"):
+            xml_validate(xml_path, self.versions_xsd)
 
     def test_determines_version(self):
         # mock the URLs needed
