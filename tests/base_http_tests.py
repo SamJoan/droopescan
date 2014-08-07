@@ -264,6 +264,11 @@ class BaseHttpTests(BaseTest):
         interesting_url = self.scanner.interesting_urls[0][0]
         responses.add(responses.GET, self.base_url + interesting_url)
 
+        assert False
+
+    def test_calls_enumerate_interesting(self):
+        assert False
+
 
 
 
