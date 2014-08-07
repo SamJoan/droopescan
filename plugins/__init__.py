@@ -40,9 +40,12 @@ class BasePluginInternal(controller.CementBaseController):
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
         themes_base_url = self.getattr(pargs, 'themes_base_url')
 
-        scanning_method = pargs.method
-        if not scanning_method:
-            scanning_method = self.determine_scanning_method(url, verb)
+        if self.can_enumerate_plugins or self.can_enumerate_themes:
+            scanning_method = pargs.method
+            if not scanning_method:
+                scanning_method = self.determine_scanning_method(url, verb)
+        else:
+            scanning_method = None
 
         # all variables here will be returned.
         return locals()
@@ -115,10 +118,10 @@ class BasePluginInternal(controller.CementBaseController):
         elif opts['enumerate'] == "a":
             enabled_functionality = functionality
 
-        if not can_enumerate_plugins:
+        if not self.can_enumerate_plugins:
             del enabled_functionality['plugins']
 
-        if not can_enumerate_themes:
+        if not self.can_enumerate_themes:
             del enabled_functionality['themes']
 
         return enabled_functionality
