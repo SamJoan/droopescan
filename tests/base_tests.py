@@ -79,15 +79,6 @@ class BaseTests(BaseTest):
         for m in all_mocks:
             assert m.called, "module %s" % m
 
-    def test_doesnt_crash_on_runtimeerror(self):
-        self.add_argv(["drupal"])
-        self.add_argv(self.param_all)
-        self.add_argv(["--method", "forbidden"])
-
-        all_mocks = self.mock_all_enumerate('drupal', side_effect_on_one=True)
-
-        self.app.run()
-
     def test_dnn_does_not_enumerate(self):
         self.add_argv(["dnn"])
         self.add_argv(self.param_all)
@@ -129,8 +120,8 @@ class BaseTests(BaseTest):
         opts_t['enumerate'] = 't'
 
         drupal = Drupal()
-        kwargs_p = drupal._functionality(opts_p, drupal.base_avail)['plugins']['kwargs']
-        kwargs_t = drupal._functionality(opts_t, drupal.base_avail)['themes']['kwargs']
+        kwargs_p = drupal._functionality(opts_p)['plugins']['kwargs']
+        kwargs_t = drupal._functionality(opts_t)['themes']['kwargs']
 
         # these should not be equal
         assert not kwargs_p == kwargs_t

@@ -1,5 +1,5 @@
 from cement.core import handler, controller
-from common import Verb, ScanningMethod, Enumerate, VersionsFile
+from common import Verb, ScanningMethod, Enumerate, VersionsFile, dict_combine
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from requests import Session
@@ -7,16 +7,10 @@ import common
 import requests
 import hashlib
 
-class BasePlugin(controller.CementBaseController):
+class BasePluginInternal(controller.CementBaseController):
 
     requests = Session()
     requests.verify = False
-
-    base_avail = {
-        'p': True,
-        't': True,
-        'v': True
-    }
 
     class Meta:
         label = 'baseplugin'
@@ -34,7 +28,7 @@ class BasePlugin(controller.CementBaseController):
             except AttributeError:
                 return default
 
-    def _options(self, avail):
+    def _options(self):
         pargs = self.app.pargs
 
         url = common.validate_url(pargs.url)
@@ -46,82 +40,95 @@ class BasePlugin(controller.CementBaseController):
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
         themes_base_url = self.getattr(pargs, 'themes_base_url')
 
-        if avail['p'] or avail['t']:
-            scanning_method = pargs.method
-            if not scanning_method:
-                scanning_method = self.determine_scanning_method(url, verb)
-        else:
-            scanning_method = None
+        scanning_method = pargs.method
+        if not scanning_method:
+            scanning_method = self.determine_scanning_method(url, verb)
 
         # all variables here will be returned.
         return locals()
 
-    def _functionality(self, opts, available):
-
+    def _base_kwargs(self, opts):
         kwargs_plugins = {
             'url': opts['url'],
-            'base_url': opts['plugins_base_url'],
             'scanning_method': opts['scanning_method'],
-            'max_plugins': opts['number'],
             'threads': opts['threads'],
             'verb': opts['verb'],
         }
+
+        return dict(kwargs_plugins)
+
+    def _functionality(self, opts):
+
+        kwargs_base = self._base_kwargs(opts)
+
+        kwargs_plugins = dict_combine(kwargs_base, {
+            'base_url': opts['plugins_base_url'],
+            'max_plugins': opts['number']
+        })
         kwargs_themes = dict(kwargs_plugins)
         kwargs_themes['base_url'] = opts['themes_base_url']
 
         all = {
-            'users': {
-                'func': getattr(self, 'enumerate_users'),
-                'kwargs': {}
-            }
-        }
-
-        if available['p']:
-            all['plugins'] = {
+            'plugins': {
                 'func': getattr(self, "enumerate_plugins"),
                 'kwargs': kwargs_plugins
-            }
-
-        if available['t']:
-            all['themes'] = {
+            },
+            'themes': {
                 'func': getattr(self, 'enumerate_themes'),
                 'kwargs': kwargs_themes
-            }
-
-        if available['v']:
-            all['version'] = {
+            },
+            'version': {
                 'func': getattr(self, 'enumerate_version'),
                 'kwargs': {
                     'url': opts['url'],
-                    'changelog': self.changelog,
                     'versions_file': self.versions_file,
                     'verb': opts['verb'],
                     'threads': opts['threads'],
                 }
-            }
+            },
+            'interesting': {
+                'func': getattr(self, 'enumerate_interesting'),
+                'kwargs': {
+                    'url': opts['url'],
+                    'verb': opts['verb'],
+                    'interesting_urls': self.interesting_urls,
+                    'threads': opts['threads']
+                }
+            },
+        }
 
-        functionality = {}
+        return all
+
+    def _enabled_functionality(self, functionality, opts):
+
+        enabled_functionality = {}
         if opts['enumerate'] == "p":
-            functionality['plugins'] = all['plugins']
+            enabled_functionality['plugins'] = functionality['plugins']
         elif opts['enumerate'] == "t":
-            functionality['themes'] = all['themes']
+            enabled_functionality['themes'] = functionality['themes']
         elif opts['enumerate'] == "u":
-            functionality['users'] = all['users']
+            enabled_functionality['users'] = functionality['users']
         elif opts['enumerate'] == "v":
-            functionality['version'] = all['version']
+            enabled_functionality['version'] = functionality['version']
+        elif opts['enumerate'] == 'i':
+            enabled_functionality['interesting'] = functionality['interesting']
         elif opts['enumerate'] == "a":
-            functionality = all
+            enabled_functionality = functionality
 
-        return functionality
+        if not can_enumerate_plugins:
+            del enabled_functionality['plugins']
 
-    def enumerate_route(self, plugin_avail={}):
+        if not can_enumerate_themes:
+            del enabled_functionality['themes']
 
-        avail = dict(self.base_avail)
-        avail.update(plugin_avail)
+        return enabled_functionality
+
+    def enumerate_route(self):
 
         time_start = datetime.now()
-        opts = self._options(avail)
-        functionality = self._functionality(opts, avail)
+        opts = self._options()
+        functionality = self._functionality(opts)
+        enabled_functionality = self._enabled_functionality(functionality, opts)
 
         enumerating_all = opts['enumerate'] == 'a'
         if enumerating_all:
@@ -129,30 +136,23 @@ class BasePlugin(controller.CementBaseController):
                 opts['url']}))
 
         # The loop of enumeration.
-        for enumerate in functionality:
-            try:
-                if not enumerating_all:
-                    common.echo(common.template("scan_begin.tpl", {"noun": enumerate,
-                        "url": opts['url']}))
+        for enumerate in enabled_functionality:
+            if not enumerating_all:
+                common.echo(common.template("scan_begin.tpl", {"noun": enumerate,
+                    "url": opts['url']}))
 
-                enum = functionality[enumerate]
-                finds, is_empty = enum["func"](**enum["kwargs"])
+            # Call to the respective functions occurs here.
+            enum = functionality[enumerate]
+            finds, is_empty = enum["func"](**enum["kwargs"])
 
-                template_params = {
-                        "noun": enumerate,
-                        "Noun": enumerate.capitalize(),
-                        "items": self.finds_process(opts['url'], finds),
-                        "empty": is_empty,
-                    }
+            template_params = {
+                    "noun": enumerate,
+                    "Noun": enumerate.capitalize(),
+                    "items": self.finds_process(opts['url'], finds),
+                    "empty": is_empty,
+                }
 
-                common.echo(common.template("list_noun.tpl", template_params))
-            except RuntimeError, e:
-                # some kinds of enumeration might not be available for this
-                # plugin.
-                if enumerating_all:
-                    pass
-                else:
-                    raise
+            common.echo(common.template("list_noun.tpl", template_params))
 
         common.echo("\033[95m[+] Scan finished (%s elapsed)\033[0m" %
                 str(datetime.now() - time_start))
@@ -270,12 +270,11 @@ class BasePlugin(controller.CementBaseController):
         return self.enumerate(url, base_url, scanning_method, iterator,
                 max_plugins, threads, verb)
 
-    def enumerate_users(self, *args, **kwargs):
-        raise NotImplementedError("Not implemented yet.")
+    def enumerate_interesting(self, url, threads=10, verb='head'):
+        return RuntimeError()
 
-    def enumerate_version(self, url, versions_file, changelog=None, threads=10, verb='head'):
+    def enumerate_version(self, url, versions_file, threads=10, verb='head'):
         requests_verb = getattr(self.requests, verb)
-        self.enumerate_version_changelog(requests_verb, url, changelog)
 
         vf = VersionsFile(versions_file)
 
@@ -298,16 +297,6 @@ class BasePlugin(controller.CementBaseController):
         r = self.requests.get(url + file_url)
         return hashlib.md5(r.content).hexdigest()
 
-    def enumerate_version_changelog(self, requests_verb, url, changelog):
-        if not changelog:
-            return
-
-        changelog_url = url + changelog
-        r = requests_verb(changelog_url)
-
-        if r.status_code == 200:
-            common.warn("The CMS's changelog seems to be present at %s." % changelog_url)
-
     def finds_process(self, url, finds):
         final = []
         if isinstance(finds, dict):
@@ -326,3 +315,19 @@ class BasePlugin(controller.CementBaseController):
                 })
 
         return final
+
+class BasePlugin(BasePluginInternal):
+    changelog = None
+    folder_url = None
+    module_readme_file = None
+    plugins_base_url = None
+    plugins_file = None
+    regular_file_url = None
+    themes_base_url = None
+    themes_file = None
+    versions_file = None
+    interesting_urls = None
+
+    can_enumerate_plugins = True
+    can_enumerate_themes = True
+    can_enumerate_version = True

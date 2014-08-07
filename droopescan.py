@@ -7,6 +7,7 @@
                     |
 =================================================
 """
+
 from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
 from plugins import Verb, ScanningMethod, Enumerate
@@ -40,7 +41,7 @@ class DroopeScanBase(controller.CementBaseController):
                 (['--themes-base-url'], dict(action='store', help="""Same as
                     above, but for themes.""")),
                 (['--threads', '-t'], dict(action='store', help="""Number of
-                    threads.""", default=10, type=int)),
+                    threads. Default 1.""", default=1, type=int)),
                 (['--verb'], dict(action='store', help="""The HTTP verb to use;
                     the default option is head, except for version enumeration
                     requests, which are always get because we need to get the hash

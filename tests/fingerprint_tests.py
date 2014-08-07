@@ -59,7 +59,6 @@ class FingerprintTests(BaseTest):
 
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
     def test_calls_version(self, m):
-        responses.add(responses.HEAD, self.base_url + self.scanner.changelog)
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
         # with no mocked calls, any HTTP req will cause a ConnectionError.
         self.app.run()
@@ -68,16 +67,6 @@ class FingerprintTests(BaseTest):
     def test_calls_version_no_mock(self):
         # with no mocked calls, any HTTP req will cause a ConnectionError.
         self.app.run()
-
-    @patch('common.warn')
-    @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
-    def test_fingerprint_warns_if_changelog(self, m, warn):
-        responses.add(responses.HEAD, self.base_url + self.scanner.changelog)
-        responses.add(responses.GET, self.base_url + 'misc/drupal.js')
-
-        self.app.run()
-
-        assert warn.called, "should have warned about changelog being present."
 
     def test_xml_validates_all(self):
         for xml_path in glob("plugins/*/versions.xml"):
@@ -106,11 +95,10 @@ class FingerprintTests(BaseTest):
 
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
     def test_fingerprint_correct_verb(self, patch):
-        responses.add(responses.HEAD, self.base_url + self.scanner.changelog)
         # this needs to be a get, otherwise, how are going to get the request body?
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
 
         # will exception if attempts to HEAD
         self.scanner.enumerate_version(self.base_url,
-                self.scanner.versions_file, self.scanner.changelog, verb='head')
+                self.scanner.versions_file, verb='head')
 

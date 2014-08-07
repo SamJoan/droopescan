@@ -84,6 +84,11 @@ def fatal(msg):
 def is_string(var):
     return isinstance(var, basestring)
 
+def dict_combine(x, y):
+    z = x.copy()
+    z.update(y)
+    return z
+
 class VersionsFile():
     et = None
     root = None

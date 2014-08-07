@@ -3,7 +3,6 @@ from plugins import BasePlugin
 import common
 
 class Example(BasePlugin):
-
     # a file containing a list of plugins, one per line.
     plugins_file = "plugins/drupal/wordlists/plugins_3500"
     # the location of the plugins. If there are multiple locations, such as in
@@ -23,8 +22,10 @@ class Example(BasePlugin):
     # a file which always exists in the modules.
     module_readme_file = "README.txt"
 
-    # the CMS' changelog file.
-    changelog = "CHANGELOG.txt"
+    # a list of tuples that contain on the index 0 a url, and on 1 a description
+    # to be shown to the user if the URL replies with 200 found
+    interesting_urls = [("CHANGELOG", "This CMS' default changelog 200 OK.")]
+
     # a file which validates against common/versions.xsd for version
     # fingerprinting.
     versions_file = "plugins/drupal/versions.xml"

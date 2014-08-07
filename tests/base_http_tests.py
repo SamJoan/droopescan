@@ -260,4 +260,10 @@ class BaseHttpTests(BaseTest):
         # will exception if not get
         self.app.run()
 
+    def test_finds_interesting_urls(self):
+        interesting_url = self.scanner.interesting_urls[0][0]
+        responses.add(responses.GET, self.base_url + interesting_url)
+
+
+
 

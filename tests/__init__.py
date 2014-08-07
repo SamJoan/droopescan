@@ -71,15 +71,11 @@ class BaseTest(test.CementTestCase):
                 responses.add(verb, url,
                         body=str(status_code), status=status_code)
 
-    def mock_all_enumerate(self, plugin_name, side_effect_on_one=False):
+    def mock_all_enumerate(self, plugin_name):
         all = []
         all.append(self.mock_controller(plugin_name, 'enumerate_plugins'))
         all.append(self.mock_controller(plugin_name, 'enumerate_themes'))
-        if not side_effect_on_one:
-            all.append(self.mock_controller(plugin_name, 'enumerate_users'))
-        else :
-            all.append(self.mock_controller(plugin_name, 'enumerate_users',
-                side_effect=RuntimeError("derp!")))
+        all.append(self.mock_controller(plugin_name, 'enumerate_interesting'))
         all.append(self.mock_controller(plugin_name, 'enumerate_version'))
 
         return all
