@@ -273,8 +273,9 @@ class BasePluginInternal(controller.CementBaseController):
         return self.enumerate(url, base_url, scanning_method, iterator,
                 max_plugins, threads, verb)
 
-    def enumerate_interesting(self, url, threads=10, verb='head'):
-        return RuntimeError()
+    def enumerate_interesting(self, url, interesting_urls, threads=10, verb='head'):
+        # return empty, empty
+        return [], True
 
     def enumerate_version(self, url, versions_file, threads=10, verb='head'):
         requests_verb = getattr(self.requests, verb)
