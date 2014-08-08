@@ -21,7 +21,7 @@ class SilverStripe(BasePlugin):
 
     @controller.expose(help='silverstripe related scanning tools')
     def silverstripe(self):
-        self.enumerate_route()
+        self.plugin_init()
 
 
 def load():

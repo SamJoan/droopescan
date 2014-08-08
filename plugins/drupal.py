@@ -24,7 +24,7 @@ class Drupal(BasePlugin):
 
     @controller.expose(help='drupal-related scanning tools')
     def drupal(self):
-        self.enumerate_route()
+        self.plugin_init()
 
 def load():
     handler.register(Drupal)

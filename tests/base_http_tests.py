@@ -261,14 +261,36 @@ class BaseHttpTests(BaseTest):
         self.app.run()
 
     def test_finds_interesting_urls(self):
-        interesting_url = self.scanner.interesting_urls[0][0]
-        responses.add(responses.GET, self.base_url + interesting_url)
+        path = self.scanner.interesting_urls[0][0]
+        description = self.scanner.interesting_urls[0][1]
+        interesting_url = self.base_url + path
 
-        assert False
+        responses.add(responses.HEAD, interesting_url)
+
+        found, empty = self.scanner.enumerate_interesting(self.base_url,
+                self.scanner.interesting_urls)
+
+        assert not empty
+        assert found[interesting_url] == description
 
     def test_calls_enumerate_interesting(self):
-        assert False
+        self.add_argv(self.param_interesting)
+        self.add_argv(["--method", "forbidden"])
 
+        p = self.mock_controller('drupal', 'enumerate_interesting')
+        self.app.run()
 
+        assert p.called
 
+    def test_interesting_respects_verb(self):
+        self.add_argv(self.param_interesting)
+        self.add_argv(["--method", "forbidden"])
+        self.add_argv(["--verb", "get"])
 
+        path = self.scanner.interesting_urls[0][0]
+        description = self.scanner.interesting_urls[0][1]
+        interesting_url = self.base_url + path
+
+        responses.add(responses.GET, interesting_url)
+
+        self.app.run()

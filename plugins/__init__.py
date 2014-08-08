@@ -74,14 +74,17 @@ class BasePluginInternal(controller.CementBaseController):
         all = {
             'plugins': {
                 'func': getattr(self, "enumerate_plugins"),
+                'template': "enumerate_plugins.tpl",
                 'kwargs': kwargs_plugins
             },
             'themes': {
                 'func': getattr(self, 'enumerate_themes'),
+                'template': "enumerate_plugins.tpl",
                 'kwargs': kwargs_themes
             },
             'version': {
                 'func': getattr(self, 'enumerate_version'),
+                'template': "enumerate_version.tpl",
                 'kwargs': {
                     'url': opts['url'],
                     'versions_file': self.versions_file,
@@ -89,8 +92,9 @@ class BasePluginInternal(controller.CementBaseController):
                     'threads': opts['threads'],
                 }
             },
-            'interesting': {
+            'interesting urls': {
                 'func': getattr(self, 'enumerate_interesting'),
+                'template': "list_noun.tpl",
                 'kwargs': {
                     'url': opts['url'],
                     'verb': opts['verb'],
@@ -114,7 +118,7 @@ class BasePluginInternal(controller.CementBaseController):
         elif opts['enumerate'] == "v":
             enabled_functionality['version'] = functionality['version']
         elif opts['enumerate'] == 'i':
-            enabled_functionality['interesting'] = functionality['interesting']
+            enabled_functionality['interesting urls'] = functionality['interesting urls']
         elif opts['enumerate'] == "a":
             enabled_functionality = functionality
 
@@ -126,7 +130,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return enabled_functionality
 
-    def enumerate_route(self):
+    def plugin_init(self):
 
         time_start = datetime.now()
         opts = self._options()
@@ -138,7 +142,6 @@ class BasePluginInternal(controller.CementBaseController):
             common.echo(common.template('scan_begin.tpl', {'noun': 'all', 'url':
                 opts['url']}))
 
-        # The loop of enumeration.
         for enumerate in enabled_functionality:
             if not enumerating_all:
                 common.echo(common.template("scan_begin.tpl", {"noun": enumerate,
@@ -151,11 +154,11 @@ class BasePluginInternal(controller.CementBaseController):
             template_params = {
                     "noun": enumerate,
                     "Noun": enumerate.capitalize(),
-                    "items": self.finds_process(opts['url'], finds),
+                    "items": finds,
                     "empty": is_empty,
                 }
 
-            common.echo(common.template("list_noun.tpl", template_params))
+            common.echo(common.template(enum['template'], template_params))
 
         common.echo("\033[95m[+] Scan finished (%s elapsed)\033[0m" %
                 str(datetime.now() - time_start))
@@ -240,26 +243,28 @@ class BasePluginInternal(controller.CementBaseController):
                     expected_status = common.scan_http_status(scanning_method)
 
                 for plugin_name in plugins:
-                    future = executor.submit(sess_verb, url_template % (url, plugin_name))
+                    plugin_url = url_template % (url, plugin_name)
+                    future = executor.submit(sess_verb, plugin_url)
                     futures.append({
-                        'future': future,
                         'base_url': base_url,
+                        'future': future,
                         'plugin_name': plugin_name,
+                        'plugin_url': plugin_url,
                     })
 
             no_results = True
-            found = {}
+            found = []
             for future_array in futures:
                 r = future_array['future'].result()
                 if r.status_code == expected_status:
-                    base_url = future_array['base_url']
+                    plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']
 
                     no_results = False
-                    if not base_url in found:
-                        found[base_url] = []
-
-                    found[base_url].append(plugin_name)
+                    found.append({
+                        'name': plugin_name,
+                        'url': plugin_url
+                    })
 
         return found, no_results
 
@@ -274,8 +279,16 @@ class BasePluginInternal(controller.CementBaseController):
                 max_plugins, threads, verb)
 
     def enumerate_interesting(self, url, interesting_urls, threads=10, verb='head'):
-        # return empty, empty
-        return [], True
+        requests_verb = getattr(self.requests, verb)
+
+        found = {}
+        for path, description in interesting_urls:
+            interesting_url = url + path
+            resp = requests_verb(interesting_url)
+            if resp.status_code == 200:
+                found[interesting_url] = description
+
+        return found, len(found) == 0
 
     def enumerate_version(self, url, versions_file, threads=10, verb='head'):
         requests_verb = getattr(self.requests, verb)
@@ -300,25 +313,6 @@ class BasePluginInternal(controller.CementBaseController):
     def enumerate_file_hash(self, url, file_url):
         r = self.requests.get(url + file_url)
         return hashlib.md5(r.content).hexdigest()
-
-    def finds_process(self, url, finds):
-        final = []
-        if isinstance(finds, dict):
-            for path in finds:
-                for module in finds[path]:
-                    final.append({
-                        'key': module,
-                        'value': path % (url, module),
-                    })
-        else:
-            adj = "Likely" if len(finds) == 1 else "Possible"
-            for version in finds:
-                final.append({
-                    'key': '%s version' % adj,
-                    'value': version
-                })
-
-        return final
 
 class BasePlugin(BasePluginInternal):
     changelog = None

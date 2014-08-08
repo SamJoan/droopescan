@@ -37,7 +37,7 @@ class Example(BasePlugin):
     @controller.expose(help='example scanner')
     def example(self):
         # this calls BasePlugin.ennumerate_route.
-        self.enumerate_route()
+        self.plugin_init()
 
     # there is a plethora of functions to override in BasePlugin.
 

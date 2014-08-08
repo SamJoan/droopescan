@@ -14,7 +14,7 @@ class Dnn(BasePlugin):
 
     @controller.expose(help='dnn related scanning tools')
     def dnn(self):
-        self.enumerate_route()
+        self.plugin_init()
 
 def load():
     handler.register(Dnn)

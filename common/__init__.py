@@ -23,6 +23,7 @@ class Enumerate():
     t = 't'
     p = 'p'
     v = 'v'
+    i = 'i'
 
 class ScanningMethod():
     not_found = 'not_found'
