@@ -94,7 +94,7 @@ class BasePluginInternal(controller.CementBaseController):
             },
             'interesting urls': {
                 'func': getattr(self, 'enumerate_interesting'),
-                'template': "list_noun.tpl",
+                'template': "enumerate_interesting.tpl",
                 'kwargs': {
                     'url': opts['url'],
                     'verb': opts['verb'],
@@ -281,12 +281,15 @@ class BasePluginInternal(controller.CementBaseController):
     def enumerate_interesting(self, url, interesting_urls, threads=10, verb='head'):
         requests_verb = getattr(self.requests, verb)
 
-        found = {}
+        found = []
         for path, description in interesting_urls:
             interesting_url = url + path
             resp = requests_verb(interesting_url)
             if resp.status_code == 200:
-                found[interesting_url] = description
+                found.append({
+                    'url': interesting_url,
+                    'description': description,
+                })
 
         return found, len(found) == 0
 
