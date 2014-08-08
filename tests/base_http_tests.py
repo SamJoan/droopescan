@@ -28,7 +28,11 @@ class BaseHttpTests(BaseTest):
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.forbidden)
 
-        assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
+        module_name = 'supermodule'
+        expected_module_url = self.scanner.plugins_base_url % (self.base_url,
+                module_name)
+        expected_result = [{'url': expected_module_url, 'name': module_name}]
+        assert result == expected_result, "Should have detected the \
                 'supermodule' module."
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
@@ -41,7 +45,11 @@ class BaseHttpTests(BaseTest):
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.ok)
 
-        assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
+        module_name = 'supermodule'
+        expected_module_url = self.scanner.plugins_base_url % (self.base_url,
+                module_name)
+        expected_result = [{'url': expected_module_url, 'name': module_name}]
+        assert result == expected_result, "Should have detected the \
                 'supermodule' module."
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
@@ -56,7 +64,11 @@ class BaseHttpTests(BaseTest):
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.not_found)
 
-        assert result == {self.scanner.plugins_base_url: ["supermodule"]}, "Should have detected the \
+        module_name = 'supermodule'
+        expected_module_url = (self.scanner.plugins_base_url % (self.base_url,
+                module_name)) + self.scanner.module_readme_file
+        expected_result = [{'url': expected_module_url, 'name': module_name}]
+        assert result == expected_result, "Should have detected the \
                 'supermodule' module."
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
@@ -73,10 +85,14 @@ class BaseHttpTests(BaseTest):
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.ok)
 
-        # handle difference in notation.
-        base_1 = base_1.replace(self.base_url, '%s')
-        base_2 = base_2.replace(self.base_url, '%s')
-        assert result == {base_1: ["supermodule"], base_2: ['supermodule2']}, "Should have detected the \
+        expected_1 = {'url': self.scanner.plugins_base_url % (self.base_url, 'supermodule'), 'name': 'supermodule'}
+        expected_2 = {'url': self.scanner.plugins_base_url % (self.base_url,
+            'supermodule2'), 'name': 'supermodule2'}
+
+        expected_result = [expected_1, expected_2]
+        print result, expected_result
+
+        assert result == expected_result, "Should have detected the \
                 'supermodule' module."
 
     def test_gets_modules(self):
@@ -270,8 +286,11 @@ class BaseHttpTests(BaseTest):
         found, empty = self.scanner.enumerate_interesting(self.base_url,
                 self.scanner.interesting_urls)
 
+        expected_result = [{'url': self.base_url + path, 'description':
+                description}]
+
         assert not empty
-        assert found[interesting_url] == description
+        assert found == expected_result
 
     def test_calls_enumerate_interesting(self):
         self.add_argv(self.param_interesting)
