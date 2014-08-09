@@ -90,6 +90,12 @@ def dict_combine(x, y):
     z.update(y)
     return z
 
+def file_len(fname):
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
+
 class VersionsFile():
     et = None
     root = None

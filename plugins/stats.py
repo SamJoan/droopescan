@@ -1,6 +1,5 @@
 from cement.core import handler, controller
-from plugins import BasePlugin
-import common
+from common.plugins_util import Plugin, plugins_get
 
 class Stats(controller.CementBaseController):
 
@@ -9,7 +8,8 @@ class Stats(controller.CementBaseController):
 
     @controller.expose(help='shows scanner status & capabilities')
     def stats(self):
-        pass
+       plugins = plugins_get()
+       print plugins
 
 def load():
     handler.register(Stats)

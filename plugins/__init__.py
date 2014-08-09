@@ -384,17 +384,22 @@ class BasePluginInternal(controller.CementBaseController):
         return hashlib.md5(r.content).hexdigest()
 
 class BasePlugin(BasePluginInternal):
-    changelog = None
+    """
+        For documentation regarding these variables, please see
+        example.py
+    """
     folder_url = None
-    module_readme_file = None
+    regular_file_url = None
+
     plugins_base_url = None
     plugins_file = None
-    regular_file_url = None
+    module_readme_file = None
     themes_base_url = None
     themes_file = None
+
     versions_file = None
+
     interesting_urls = None
 
     can_enumerate_plugins = True
     can_enumerate_themes = True
-    can_enumerate_version = True

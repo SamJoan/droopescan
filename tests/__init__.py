@@ -1,6 +1,6 @@
 from cement.core import controller, foundation, backend, handler
 from cement.utils import test
-from common.testutils import file_len, decallmethods
+from common.testutils import decallmethods
 from plugins import AbstractArgumentController
 from droopescan import DroopeScan
 from mock import patch, MagicMock

@@ -1,5 +1,6 @@
 from cement.utils import test
-from common.testutils import file_len, decallmethods
+from common.testutils import decallmethods
+from common import file_len
 from contextlib import contextmanager
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError

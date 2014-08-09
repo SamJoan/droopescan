@@ -1,5 +1,6 @@
 from cement.utils import test
-from common.testutils import file_len, decallmethods
+from common import file_len
+from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor
 from mock import patch
 from plugins.drupal import Drupal
