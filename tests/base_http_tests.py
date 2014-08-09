@@ -85,12 +85,10 @@ class BaseHttpTests(BaseTest):
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.ok)
 
-        expected_1 = {'url': self.scanner.plugins_base_url % (self.base_url, 'supermodule'), 'name': 'supermodule'}
-        expected_2 = {'url': self.scanner.plugins_base_url % (self.base_url,
-            'supermodule2'), 'name': 'supermodule2'}
+        expected_1 = {'url': base_1 % 'supermodule', 'name': 'supermodule'}
+        expected_2 = {'url': base_2 % 'supermodule2', 'name': 'supermodule2'}
 
         expected_result = [expected_1, expected_2]
-        print result, expected_result
 
         assert result == expected_result, "Should have detected the \
                 'supermodule' module."
