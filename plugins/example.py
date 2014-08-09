@@ -1,3 +1,6 @@
+"""
+    A sample base plugin. Do not forget to add an init file in plugins.d
+"""
 from cement.core import handler, controller
 from plugins import BasePlugin
 import common
@@ -36,10 +39,9 @@ class Example(BasePlugin):
 
     @controller.expose(help='example scanner')
     def example(self):
-        # this calls BasePlugin.ennumerate_route.
         self.plugin_init()
 
-    # there is a plethora of functions to override in BasePlugin.
+    # there is a plethora of functions to override in BasePlugin and BaseInternalPlugin.
 
 def load():
     handler.register(Example)

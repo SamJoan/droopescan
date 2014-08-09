@@ -4,7 +4,6 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from requests import Session
 import common
-import requests
 import hashlib
 
 class BasePluginInternal(controller.CementBaseController):
