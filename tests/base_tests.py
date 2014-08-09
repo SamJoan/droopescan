@@ -20,71 +20,71 @@ def capture_sys_output():
 
 @decallmethods(responses.activate)
 class BaseTests(BaseTest):
-    """
+    '''
         Basic tests, and generic tests.
-    """
+    '''
     @test.raises(SystemExit)
     def test_errors_when_no_url(self):
         with capture_sys_output() as (stdout, stderr):
-            self.add_argv(["drupal"])
+            self.add_argv(['cms', 'drupal'])
             self.app.run()
 
     @test.raises(RuntimeError)
     def test_errors_when_invalid_url(self):
-        self.add_argv(["drupal"])
+        self.add_argv(['cms', 'drupal'])
         self.add_argv(self.param_plugins)
-        self.add_argv(["--url", "invalidurl"])
+        self.add_argv(['--url', 'invalidurl'])
         self.app.run()
 
     @test.raises(SystemExit)
     def test_errors_when_invalid_enumerate(self):
         with capture_sys_output() as (stdout, stderr):
-            self.add_argv(["drupal"])
-            self.add_argv(self.param_base + ["-e", 'z'])
+            self.add_argv(['cms', 'drupal'])
+            self.add_argv(self.param_base + ['-e', 'z'])
             self.app.run()
 
     @test.raises(SystemExit)
     def test_errors_when_invalid_method(self):
         with capture_sys_output() as (stdout, stderr):
-            self.add_argv(["drupal"])
-            self.add_argv(self.param_plugins + ["--method", "derpo"])
+            self.add_argv(['cms', 'drupal'])
+            self.add_argv(self.param_plugins + ['--method', 'derpo'])
             self.app.run()
 
     @test.raises(ConnectionError)
     def test_calls_plugin(self):
-        self.add_argv(["drupal"])
+        self.add_argv(['cms', 'drupal'])
         self.add_argv(self.param_plugins)
-        self.add_argv(["--method", "forbidden"])
+        self.add_argv(['--method', 'forbidden'])
 
         self.app.run()
 
     @test.raises(ConnectionError)
     def test_calls_theme(self):
-        self.add_argv(["drupal"])
+        self.add_argv(['cms', 'drupal'])
         self.add_argv(self.param_themes)
 
-        self.add_argv(["--method", "forbidden"])
+        self.add_argv(['--method', 'forbidden'])
 
         self.app.run()
 
     def test_calls_all(self):
-        self.add_argv(["drupal"])
+        self.add_argv(['cms', 'drupal'])
         self.add_argv(self.param_all)
-        self.add_argv(["--method", "forbidden"])
+        self.add_argv(['--method', 'forbidden'])
 
         all_mocks = self.mock_all_enumerate('drupal')
 
         self.app.run()
 
         for m in all_mocks:
-            assert m.called, "module %s" % m
+            assert m.called, 'module %s' % m
 
     def test_dnn_does_not_enumerate(self):
-        self.add_argv(["dnn"])
+        self.add_argv(['cms', 'dnn'])
         self.add_argv(self.param_all)
 
         all_mocks = self.mock_all_enumerate('dnn')
-        dsv = self.mock_controller("dnn", 'determine_scanning_method')
+        dsv = self.mock_controller('dnn', 'determine_scanning_method')
 
         self.app.run()
 
@@ -99,13 +99,13 @@ class BaseTests(BaseTest):
         assert not dsv.called
 
     def test_fix_dereference_bug(self):
-        """
+        '''
             test for dereference that made the app fail even though
             all tests were passing.
-        """
+        '''
 
-        plugins_base_url = "plugins_base_url"
-        themes_base_url = "themes_base_url"
+        plugins_base_url = 'plugins_base_url'
+        themes_base_url = 'themes_base_url'
         opts_p = {
             'url': self.base_url,
             'plugins_base_url': plugins_base_url,

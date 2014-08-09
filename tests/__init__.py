@@ -1,6 +1,7 @@
-from cement.core import controller, foundation, backend
+from cement.core import controller, foundation, backend, handler
 from cement.utils import test
 from common.testutils import file_len, decallmethods
+from plugins import AbstractArgumentController
 from droopescan import DroopeScan
 from mock import patch, MagicMock
 import responses
@@ -24,6 +25,7 @@ class BaseTest(test.CementTestCase):
         self.app = DroopeScan(argv=[],
             plugin_config_dir="./plugins.d",
             plugin_dir="./plugins")
+        handler.register(AbstractArgumentController)
         self.app.testing = True
         self.app.setup()
 

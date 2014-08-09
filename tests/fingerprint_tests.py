@@ -12,12 +12,12 @@ import responses
 
 @decallmethods(responses.activate)
 class FingerprintTests(BaseTest):
-    """
+    '''
         Tests related to version fingerprinting for all plugins.
-    """
+    '''
 
-    versions_xsd = "common/versions.xsd"
-    xml_file = "tests/versions.xml"
+    versions_xsd = 'common/versions.xsd'
+    xml_file = 'tests/versions.xml'
 
     class MockHash():
         files = None
@@ -27,26 +27,26 @@ class FingerprintTests(BaseTest):
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
-        self.add_argv(["drupal"])
-        self.add_argv(["--method", "forbidden"])
+        self.add_argv(['cms', 'drupal'])
+        self.add_argv(['--method', 'forbidden'])
         self.add_argv(self.param_version)
         self.scanner = Drupal()
 
     def mock_xml(self, xml_file, version_to_mock):
-        """
+        '''
             generates all mock data, and patches Drupal.get_hash
-        """
+        '''
         with open(xml_file) as f:
             doc = etree.fromstring(f.read())
-            files_xml = doc.xpath("//cms/files/file")
+            files_xml = doc.xpath('//cms/files/file')
 
             files = {}
             for file in files_xml:
-                url = file.get("url")
-                versions = file.xpath("version")
+                url = file.get('url')
+                versions = file.xpath('version')
                 for file_version in versions:
-                    version_number = file_version.get("nb")
-                    md5 = file_version.get("md5")
+                    version_number = file_version.get('nb')
+                    md5 = file_version.get('md5')
 
                     if version_number == version_to_mock:
                         files[url] = md5
@@ -69,12 +69,12 @@ class FingerprintTests(BaseTest):
         self.app.run()
 
     def test_xml_validates_all(self):
-        for xml_path in glob("plugins/*/versions.xml"):
+        for xml_path in glob('plugins/*/versions.xml'):
             xml_validate(xml_path, self.versions_xsd)
 
     def test_determines_version(self):
         # mock the URLs needed
-        real_version = "7.26"
+        real_version = '7.26'
         self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, real_version)
 
         version, is_empty = self.scanner.enumerate_version(self.base_url, self.xml_file)
@@ -83,8 +83,8 @@ class FingerprintTests(BaseTest):
         assert is_empty == False
 
     def test_enumerate_hash(self):
-        file_url = "/misc/drupal.js"
-        body = "zjyzjy2076"
+        file_url = '/misc/drupal.js'
+        body = 'zjyzjy2076'
         responses.add(responses.GET, self.base_url + file_url, body=body)
 
         actual_md5 = hashlib.md5(body).hexdigest()
