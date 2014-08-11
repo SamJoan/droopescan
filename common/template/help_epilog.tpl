@@ -1,6 +1,6 @@
 examples:
-  droopescan.py cms drupal --url http://localhost/drupal-7.28/
-  droopescan.py cms drupal --url http://localhost/drupal-7.28/ -e p -n 3000
+  ./droopescan.py scan drupal --url http://localhost/drupal-7.28/
+  ./droopescan.py scan --help
 
 Please see the README file for information regarding proxies.
     

@@ -27,12 +27,12 @@ class BaseTests(BaseTest):
     @test.raises(SystemExit)
     def test_errors_when_no_url(self):
         with capture_sys_output() as (stdout, stderr):
-            self.add_argv(['cms', 'drupal'])
+            self.add_argv(['scan', 'drupal'])
             self.app.run()
 
     @test.raises(RuntimeError)
     def test_errors_when_invalid_url(self):
-        self.add_argv(['cms', 'drupal'])
+        self.add_argv(['scan', 'drupal'])
         self.add_argv(self.param_plugins)
         self.add_argv(['--url', 'invalidurl'])
         self.app.run()
@@ -40,20 +40,20 @@ class BaseTests(BaseTest):
     @test.raises(SystemExit)
     def test_errors_when_invalid_enumerate(self):
         with capture_sys_output() as (stdout, stderr):
-            self.add_argv(['cms', 'drupal'])
+            self.add_argv(['scan', 'drupal'])
             self.add_argv(self.param_base + ['-e', 'z'])
             self.app.run()
 
     @test.raises(SystemExit)
     def test_errors_when_invalid_method(self):
         with capture_sys_output() as (stdout, stderr):
-            self.add_argv(['cms', 'drupal'])
+            self.add_argv(['scan', 'drupal'])
             self.add_argv(self.param_plugins + ['--method', 'derpo'])
             self.app.run()
 
     @test.raises(ConnectionError)
     def test_calls_plugin(self):
-        self.add_argv(['cms', 'drupal'])
+        self.add_argv(['scan', 'drupal'])
         self.add_argv(self.param_plugins)
         self.add_argv(['--method', 'forbidden'])
 
@@ -61,7 +61,7 @@ class BaseTests(BaseTest):
 
     @test.raises(ConnectionError)
     def test_calls_theme(self):
-        self.add_argv(['cms', 'drupal'])
+        self.add_argv(['scan', 'drupal'])
         self.add_argv(self.param_themes)
 
         self.add_argv(['--method', 'forbidden'])
@@ -69,7 +69,7 @@ class BaseTests(BaseTest):
         self.app.run()
 
     def test_calls_all(self):
-        self.add_argv(['cms', 'drupal'])
+        self.add_argv(['scan', 'drupal'])
         self.add_argv(self.param_all)
         self.add_argv(['--method', 'forbidden'])
 
@@ -81,7 +81,7 @@ class BaseTests(BaseTest):
             assert m.called, 'module %s' % m
 
     def test_dnn_does_not_enumerate(self):
-        self.add_argv(['cms', 'dnn'])
+        self.add_argv(['scan', 'dnn'])
         self.add_argv(self.param_all)
 
         all_mocks = self.mock_all_enumerate('dnn')

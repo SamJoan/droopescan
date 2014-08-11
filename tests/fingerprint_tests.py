@@ -27,7 +27,7 @@ class FingerprintTests(BaseTest):
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
-        self.add_argv(['cms', 'drupal'])
+        self.add_argv(['scan', 'drupal'])
         self.add_argv(['--method', 'forbidden'])
         self.add_argv(self.param_version)
         self.scanner = Drupal()

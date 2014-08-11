@@ -16,7 +16,7 @@ class BaseHttpTests(BaseTest):
     """
     def setUp(self):
         super(BaseHttpTests, self).setUp()
-        self.add_argv(["cms", "drupal"])
+        self.add_argv(["scan", "drupal"])
         self.scanner = Drupal()
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
