@@ -1,3 +1,8 @@
+0.6.2
+=====
+
+* Fix exception on non-git.
+
 0.6.1
 =====
 
