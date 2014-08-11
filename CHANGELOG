@@ -1,3 +1,11 @@
+0.6.1
+=====
+
+* Added stats so users can quickly get an overview of how up to date the plugin
+database is.
+* Added functionality for the finding of interesting URLs.
+* Reduced the number of default threads.
+
 0.6.0
 ====
 
