@@ -8,6 +8,7 @@ class Dnn(BasePlugin):
 
     can_enumerate_themes = False
     can_enumerate_plugins = False
+    can_enumerate_interesting = False
 
     class Meta:
         label = 'dnn'

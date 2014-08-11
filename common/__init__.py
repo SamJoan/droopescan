@@ -132,6 +132,20 @@ class VersionsFile():
         version = max(matches.iterkeys(), key=(lambda key: matches[key]))
         return [version]
 
+    def highest_version(self):
+        '''
+            Returns the highest version number in the XML file.
+        '''
+        xpath = './files/file/version'
+        versions = self.root.findall(xpath)
+        highest = 0
+        for version_elem in versions:
+            version = version_elem.attrib['nb']
+            if version > highest:
+                highest = version
+
+        return version
+
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):
         # this is the RawTextHelpFormatter._split_lines

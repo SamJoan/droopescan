@@ -168,6 +168,12 @@ class BasePluginInternal(controller.CementBaseController):
         if not self.can_enumerate_themes:
             del enabled_functionality['themes']
 
+        if not self.can_enumerate_interesting:
+            del enabled_functionality['interesting urls']
+
+        if not self.can_enumerate_version:
+            del enabled_functionality['version']
+
         return enabled_functionality
 
     def plugin_init(self):
@@ -377,3 +383,5 @@ class BasePlugin(BasePluginInternal):
 
     can_enumerate_plugins = True
     can_enumerate_themes = True
+    can_enumerate_interesting = True
+    can_enumerate_version = True

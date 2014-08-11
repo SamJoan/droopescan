@@ -16,6 +16,8 @@ class SilverStripe(BasePlugin):
 
     versions_file = "plugins/silverstripe/versions.xml"
 
+    can_enumerate_interesting = False
+
     class Meta:
         label = 'silverstripe'
 

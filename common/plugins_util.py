@@ -1,6 +1,7 @@
 from cement.core import handler
+from common import file_len, VersionsFile
 from plugins import BasePlugin
-from common import file_len
+import subprocess
 
 def plugins_get():
     controllers = handler.list('controller')
@@ -13,19 +14,23 @@ def plugins_get():
 
     return return_plugins
 
-class Plugin():
+class Plugin(object):
+
+    name = None
 
     plugins_can_enumerate = False
     plugins_wordlist_size = None
+    plugins_mtime = None
 
     themes_can_enumerate = False
     themes_wordlist_size = None
+    themes_mtime = None
 
     interesting_can_enumerate = False
     interesting_urls_size = None
 
     version_can_enumerate = False
-    version_highest_known = None
+    version_highest = None
 
     def __init__(self, plugin=None):
         """
@@ -33,9 +38,36 @@ class Plugin():
                 extend BasePlugin.
         """
         if plugin:
+
+            self.name = plugin.__name__
+
             if plugin.can_enumerate_plugins:
                 self.plugins_can_enumerate = True
                 self.plugins_wordlist_size = file_len(plugin.plugins_file)
+                self.plugins_mtime = self.file_mtime(plugin.plugins_file)
+
+            if plugin.can_enumerate_themes:
+                self.themes_can_enumerate = True
+                self.themes_wordlist_size = file_len(plugin.themes_file)
+                self.themes_mtime = self.file_mtime(plugin.themes_file)
+
+            if plugin.can_enumerate_interesting:
+                self.interesting_can_enumerate = True
+                self.interesting_url_size = len(plugin.interesting_urls)
+
+            if plugin.can_enumerate_version:
+                versions_file = VersionsFile(plugin.versions_file)
+
+                self.version_can_enumerate = True
+                self.version_highest = versions_file.highest_version()
+
+    def file_mtime(self, file_path):
+        out = subprocess.check_output(['git', 'log', '-1', '--format=%cr',
+            file_path]).strip()
+
+        return out
+
+
 
 
 
