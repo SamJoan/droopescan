@@ -9,8 +9,12 @@ CHANGELOG = 'CHANGELOG'
 
 class Release(controller.CementBaseController):
 
+    test_runs_base = ['./droopescan']
+
+    test_runs_append = ['-n', '100', '-t', '4']
+
     test_runs = [
-            ['scan', 'drupal', '--url', 'https://drupal.org'],
+            ['scan', 'drupal', '--url', 'https://www.drupal.org'],
             ['scan', 'silverstripe', '--url', 'http://demo.silverstripe.org'],
             ['scan', 'dnn', '--url', 'http://www.dnnsoftware.com'],
         ]
@@ -48,10 +52,14 @@ class Release(controller.CementBaseController):
     def scan_external(self):
         all_ok = True
         for run in self.test_runs:
-            args = ['./droopescan'] + run
+            args = self.test_runs_base + run + self.test_runs_append
+            print args
             ret_code = call(args)
             if ret_code != 0:
                 all_ok = False
+                break
+            else:
+                print "OK"
 
         return all_ok
 
@@ -93,7 +101,7 @@ class Release(controller.CementBaseController):
 
             final = self.changelog(version_nb)
 
-            print "The following will be prepended to the CHANGELOG:\n---%s\n---" % final
+            print "The following will be prepended to the CHANGELOG:\n---\n%s---" % final
 
             ok = self.confirm("Is that OK?")
             if ok:

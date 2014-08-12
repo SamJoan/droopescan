@@ -1,3 +1,11 @@
+0.6.3
+=====
+
+* Added release functionality.
+* Changed user agent.
+* Got rid of global plugin session state which could have caused issues in the
+future.
+
 0.6.2
 =====
 
