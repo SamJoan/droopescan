@@ -1,9 +1,10 @@
 from cement.utils import test
-from common.testutils import decallmethods
 from common import file_len
+from common.testutils import decallmethods
 from contextlib import contextmanager
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
+from requests import Session
 from StringIO import StringIO
 from tests import BaseTest
 import responses
@@ -126,5 +127,16 @@ class BaseTests(BaseTest):
 
         # these should not be equal
         assert not kwargs_p == kwargs_t
+
+    def test_default_ua(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(self.param_all)
+
+        print m.called
+
+        assert False
+
+    def test_no_verify(self):
+        assert False
 
 

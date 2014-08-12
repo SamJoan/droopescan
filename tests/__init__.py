@@ -1,9 +1,10 @@
 from cement.core import controller, foundation, backend, handler
 from cement.utils import test
 from common.testutils import decallmethods
-from plugins import AbstractArgumentController
 from droopescan import DroopeScan
 from mock import patch, MagicMock
+from plugins.drupal import Drupal
+from plugins import AbstractArgumentController
 import responses
 
 class BaseTest(test.CementTestCase):
@@ -28,6 +29,10 @@ class BaseTest(test.CementTestCase):
         handler.register(AbstractArgumentController)
         self.app.testing = True
         self.app.setup()
+
+    def _init_scanner(self):
+        self.scanner = Drupal()
+        self.scanner._session_init("user agent")
 
     def tearDown(self):
         self.app.close()

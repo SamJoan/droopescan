@@ -30,7 +30,7 @@ class FingerprintTests(BaseTest):
         self.add_argv(['scan', 'drupal'])
         self.add_argv(['--method', 'forbidden'])
         self.add_argv(self.param_version)
-        self.scanner = Drupal()
+        self._init_scanner()
 
     def mock_xml(self, xml_file, version_to_mock):
         '''

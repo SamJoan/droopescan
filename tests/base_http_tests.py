@@ -17,7 +17,7 @@ class BaseHttpTests(BaseTest):
     def setUp(self):
         super(BaseHttpTests, self).setUp()
         self.add_argv(["scan", "drupal"])
-        self.scanner = Drupal()
+        self._init_scanner()
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
