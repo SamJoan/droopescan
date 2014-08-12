@@ -43,13 +43,12 @@ class AbstractArgumentController(controller.CementBaseController):
                     requests, which are always get because we need to get the hash
                     from the file's contents""",
                 default='head', choices=enum_list(Verb))),
-                (['--user-agent'], dict(action='store', help='''User agent.''',
-                    default='Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36')),
             ]
 
 class BasePluginInternal(controller.CementBaseController):
 
     requests = None
+    DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
 
     class Meta:
         label = 'baseplugin'
@@ -72,6 +71,7 @@ class BasePluginInternal(controller.CementBaseController):
     def _session_init(self, user_agent):
         self.session = Session()
         self.session.verify = False
+        self.session.headers['User-Agent'] = user_agent
 
     def _options_and_session_init(self):
         pargs = self.app.pargs
@@ -81,12 +81,10 @@ class BasePluginInternal(controller.CementBaseController):
         threads = pargs.threads
         enumerate = pargs.enumerate
         verb = pargs.verb
-        user_agent = pargs.user_agent
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
         themes_base_url = self.getattr(pargs, 'themes_base_url')
 
-        self._session_init(user_agent)
         if self.can_enumerate_plugins or self.can_enumerate_themes:
             scanning_method = pargs.method
             if not scanning_method:
@@ -186,6 +184,7 @@ class BasePluginInternal(controller.CementBaseController):
     def plugin_init(self):
 
         time_start = datetime.now()
+        self._session_init(self.DEFAULT_UA)
         opts = self._options_and_session_init()
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)

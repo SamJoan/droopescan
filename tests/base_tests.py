@@ -25,6 +25,11 @@ class BaseTests(BaseTest):
     '''
         Basic tests, and generic tests.
     '''
+
+    def setUp(self):
+        super(BaseTests, self).setUp()
+        self._init_scanner()
+
     @test.raises(SystemExit)
     def test_errors_when_no_url(self):
         with capture_sys_output() as (stdout, stderr):
@@ -128,15 +133,15 @@ class BaseTests(BaseTest):
         # these should not be equal
         assert not kwargs_p == kwargs_t
 
-    def test_default_ua(self):
-        self.add_argv(['scan', 'drupal'])
-        self.add_argv(self.param_all)
+    def test_user_agent(self):
+        user_agent = "user_agent_string"
+        self.scanner._session_init(user_agent)
 
-        print m.called
-
-        assert False
+        assert self.scanner.session.headers['User-Agent'] == user_agent
 
     def test_no_verify(self):
-        assert False
+        self.scanner._session_init("")
+
+        assert self.scanner.session.verify == False
 
 
