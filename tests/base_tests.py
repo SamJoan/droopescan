@@ -95,7 +95,7 @@ class BaseTests(BaseTest):
             if mock.called == True:
                 i += 1
 
-        assert i == 2
+        assert i == 1
 
         assert not dsv.called
 
