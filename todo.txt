@@ -1,0 +1,36 @@
+
+Add;
+    
+    Work on plugins:
+        -> Update database with checksums, see if automate?
+        -> Silverstripe:
+            -> add http://ss/framework/docs/en/changelogs/index.md to interesting URLs.
+            -> _config.php for SS instead of readme?
+        -> DNN
+            -> add interesting urls (installation dir)
+        -> Find administrative interfaces
+    
+    Generic UI improvements:
+        -> updates on progress.
+        -> Detect sporadic 500 due to congestion/host overload, recommend reducing threads.
+
+Done:
+
+    -> add release functionality.
+    -> Custom user-agent! 
+    -> fix hack on plugin_utils.py
+
+---------------------------
+
+    -> reduce number of default threads.    
+    -> add stats.
+    -> add interesting URL functionality.
+
+---------------------------------
+    -> Add notes in the readme regarding authentication.
+        -> .netrc for basic authentication
+        -> http_proxy will be respected.
+            -> add http proxy, prevent SSL checking in this case.       
+    
+    -> refactor futures-requests and use futures instead
+        -> remove dependency for futures-requests and use futures instead.
