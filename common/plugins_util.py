@@ -44,6 +44,8 @@ class Plugin(object):
             if plugin.can_enumerate_plugins:
                 self.plugins_can_enumerate = True
                 self.plugins_wordlist_size = file_len(plugin.plugins_file)
+                # this can fail due to git not being installed on the system or
+                # this not being a git repository.
                 try:
                     self.plugins_mtime = self.file_mtime(plugin.plugins_file)
                 except:
