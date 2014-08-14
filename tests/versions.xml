@@ -3,14 +3,16 @@
   <files>
     <file url="misc/drupal.js">
       <version nb="6.15" md5="b1946ac92492d2347c6235b4d2611184"/>
-      <version nb="6.13" md5="b1946ac92492d2347c6235b4d2611184"/>
+      <version nb="6.9" md5="b1946ac92492d2347c6235b4d2611184"/>
+      <version nb="7.9" md5="b1946ac92492d2347c6235b4d2611184"/>
       <version nb="7.26" md5="0bb055ea361b208072be45e8e004117b"/>
       <version nb="7.28" md5="0bb055ea361b208072be45e8e004117b"/>
       <version nb="7.27" md5="5d41402abc4b2a76b9719d911017c592"/>
     </file>
     <file url="misc/tabledrag.js">
       <version nb="6.15" md5="b1946ac92492d2347c6235b4d2611184"/>
-      <version nb="6.13" md5="b1946ac92492d2347c6235b4d2611184"/>
+      <version nb="6.9" md5="b1946ac92492d2347c6235b4d2611184"/>
+      <version nb="7.9" md5="b1946ac92492d2347c6235b4d2611184"/>
       <version nb="7.26" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
       <version nb="7.28" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
       <version nb="7.27" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
@@ -18,6 +20,7 @@
     <file url="misc/ajax.js">
       <version nb="6.15" md5="b1946ac92492d2347c6235b4d2611184"/>
       <version nb="6.13" md5="b1946ac92492d2347c6235b4d2611184"/>
+      <version nb="7.9" md5="b1946ac92492d2347c6235b4d2611184"/>
       <version nb="7.26" md5="8a57a01ad28f72fedf5bf83dab4f1ece"/>
       <version nb="7.28" md5="d7a1d3b0e4468342268058e23fa71059"/>
       <version nb="7.27" md5="fb2f42e93aa34d26a48c415b46fb2468"/>

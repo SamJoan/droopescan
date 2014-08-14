@@ -141,13 +141,13 @@ class VersionsFile():
         highest = 0
         for version_elem in versions:
             version = version_elem.attrib['nb']
-            if version > highest:
+            if self.version_gt(version, highest):
                 highest = version
 
         return highest
 
     def _strip_letters(self, string):
-        return ''.join([c for c in string if c in '1234567890.'])
+        return ''.join([c for c in str(string) if c in '1234567890.'])
 
     def version_gt(self, version, gt):
         """
@@ -204,7 +204,7 @@ class VersionsFile():
             if major not in highest:
                 highest[major] = version
 
-            if version > highest[major]:
+            if self.version_gt(version, highest[major]):
                 highest[major] = version
 
         return highest
