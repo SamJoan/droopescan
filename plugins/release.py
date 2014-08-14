@@ -81,9 +81,17 @@ class Release(HumanBasePlugin):
             ok = self.confirm("Is that OK?")
             if ok:
                 self.prepend_to_file(CHANGELOG, final)
+
+                # commit changelog.
+                call(['git', 'add', '.'])
+                call(['git', 'commit', '-m', 'Tagging version \'%s\'' %
+                    version_nb])
+
+                # tag & push.
                 call(['git', 'tag', version_nb])
                 call(['git', 'push'])
                 call(['git', 'push', '--tags'])
+
             else:
                 self.error('Canceled by user')
 
