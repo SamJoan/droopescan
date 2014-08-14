@@ -144,7 +144,70 @@ class VersionsFile():
             if version > highest:
                 highest = version
 
-        return version
+        return highest
+
+    def _strip_letters(self, string):
+        return ''.join([c for c in string if c in '1234567890.'])
+
+    def version_gt(self, version, gt):
+        """
+            Fuck parsing versions, man.
+        """
+        version_split = self._strip_letters(version).split('.')
+        gt_split = self._strip_letters(gt).split('.')
+
+        v_len = len(version_split)
+        g_len = len(gt_split)
+        if v_len > g_len:
+            longest = version_split
+            shortest_len = len(gt_split)
+            l = v_len
+        else:
+            longest = gt_split
+            shortest_len = len(version_split)
+            l = g_len
+
+        # in case of equality, return False
+        gt = False
+        for i in range(l):
+            overcame_shortest = i >= shortest_len
+
+            if not overcame_shortest:
+                v = int(version_split[i])
+                g = int(gt_split[i])
+                if v > g:
+                    gt = True
+                    break
+                elif g < v:
+                    break
+            else:
+                if int(longest[i]) > 0:
+                    if longest == version_split:
+                        gt = True
+                        break
+                    else:
+                        break
+
+        return gt
+
+    def highest_version_major(self):
+        """
+        returns highest version per major release
+        """
+        xpath = './files/file/version'
+        versions = self.root.findall(xpath)
+        highest = {}
+        for version_elem in versions:
+            version = version_elem.attrib['nb']
+            major = version.split('.')[0]
+
+            if major not in highest:
+                highest[major] = version
+
+            if version > highest[major]:
+                highest[major] = version
+
+        return highest
 
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):

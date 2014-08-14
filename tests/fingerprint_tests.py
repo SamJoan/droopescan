@@ -1,5 +1,6 @@
 from cement.utils import test
 from common.testutils import decallmethods, xml_validate
+from common import VersionsFile
 from glob import glob
 from lxml import etree
 from mock import patch, MagicMock
@@ -101,4 +102,44 @@ class FingerprintTests(BaseTest):
         # will exception if attempts to HEAD
         self.scanner.enumerate_version(self.base_url,
                 self.scanner.versions_file, verb='head')
+
+    def test_version_gt(self):
+        v = VersionsFile(self.xml_file)
+
+        assert v.version_gt("10.1", "9.1")
+        assert v.version_gt("5.23", "5.9")
+        assert v.version_gt("5.23.10", "5.23.9")
+
+        assert v.version_gt("10.1", "10.1") == False
+        assert v.version_gt("9.1", "10.1") == False
+        assert v.version_gt("5.9", "5.23") == False
+        assert v.version_gt("5.23.8", "5.23.9") == False
+
+    def test_version_gt_different_length(self):
+        v = VersionsFile(self.xml_file)
+
+        v.version_gt("10.0.0.0.0", "10")
+        v.version_gt("10", "10.0.0.0.0.0")
+
+        assert v.version_gt("10.0.0.0.0", "10") == False
+        assert v.version_gt("10.0.0.0.1", "10") == True
+
+    def test_version_gt_ascii(self):
+        "strips all letters?"
+        v = VersionsFile(self.xml_file)
+        assert v.version_gt('1.0a', '2.0a') == False
+        assert v.version_gt('4.0a', '2.0a')
+
+    def test_version_highest(self):
+        v = VersionsFile(self.xml_file)
+
+        assert v.highest_version() == '7.28'
+
+    def test_version_highest_major(self):
+        v = VersionsFile(self.xml_file)
+
+        res = v.highest_version_major()
+
+        assert res['6'] == '6.15'
+        assert res['7'] == '7.28'
 

@@ -3,9 +3,10 @@ from common import template, enum_list, dict_combine
 from common import Verb, ScanningMethod, Enumerate, VersionsFile
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from distutils.util import strtobool
 from requests import Session
-import common
-import hashlib
+import common, hashlib
+import sys, tempfile, os
 
 class AbstractArgumentController(controller.CementBaseController):
 
@@ -391,3 +392,33 @@ class BasePlugin(BasePluginInternal):
     can_enumerate_themes = True
     can_enumerate_interesting = True
     can_enumerate_version = True
+
+class HumanBasePlugin(controller.CementBaseController):
+
+    def error(self, msg):
+        #'red': '\033[91m',
+        #'endc': '\033[0m',
+        print '\033[91m%s\033[0m' % msg
+
+    def prepend_to_file(self, filename, prepend_text):
+        f = open(filename,'r')
+        temp = f.read()
+        f.close()
+
+        f = open(filename, 'w')
+        f.write(prepend_text)
+
+        f.write(temp)
+        f.close()
+
+    def confirm(self, question):
+        sys.stdout.write('%s [y/n]\n' % question)
+        while True:
+            try:
+                return strtobool(raw_input().lower())
+            except ValueError:
+                sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
+
+    def get_input(self, question):
+        print question,
+        return raw_input()

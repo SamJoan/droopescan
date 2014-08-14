@@ -2,12 +2,13 @@ from cement.core import handler, controller
 from common import template
 from common.plugins_util import Plugin, plugins_get
 from distutils.util import strtobool
+from plugins import HumanBasePlugin
 from subprocess import call
 import sys, tempfile, os
 
 CHANGELOG = 'CHANGELOG'
 
-class Release(controller.CementBaseController):
+class Release(HumanBasePlugin):
 
     test_runs_base = ['./droopescan']
 
@@ -21,18 +22,6 @@ class Release(controller.CementBaseController):
 
     class Meta:
         label = 'release'
-
-    def confirm(self, question):
-        sys.stdout.write('%s [y/n]\n' % question)
-        while True:
-            try:
-                return strtobool(raw_input().lower())
-            except ValueError:
-                sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
-
-    def get_input(self, question):
-        print question,
-        return raw_input()
 
     def read_first_line(self, file):
         with open(file, 'r') as f:
@@ -62,22 +51,6 @@ class Release(controller.CementBaseController):
                 print "OK"
 
         return all_ok
-
-    def error(self, msg):
-        #'red': '\033[91m',
-        #'endc': '\033[0m',
-        print '\033[91m%s\033[0m' % msg
-
-    def prepend_to_file(self, filename, prepend_text):
-        f = open(filename,'r')
-        temp = f.read()
-        f.close()
-
-        f = open(filename, 'w')
-        f.write(prepend_text)
-
-        f.write(temp)
-        f.close()
 
     @controller.expose(help='', hide=True)
     def release(self):
