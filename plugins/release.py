@@ -87,11 +87,13 @@ class Release(controller.CementBaseController):
             self.error("Unit tests failed... abort.")
             return
 
+        # external sanity checks.
         external_passed = self.scan_external()
         if not external_passed:
             self.error("External scans failed... abort.")
             return
 
+        # final sanity check.
         human_approves = self.confirm("Does that look OK for you?")
 
         if human_approves:
@@ -106,6 +108,9 @@ class Release(controller.CementBaseController):
             ok = self.confirm("Is that OK?")
             if ok:
                 self.prepend_to_file(CHANGELOG, final)
+                call(['git', 'tag', version_nb])
+                call(['git', 'push'])
+                call(['git', 'push', '--tags'])
             else:
                 self.error('Canceled by user')
 
