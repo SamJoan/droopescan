@@ -57,5 +57,11 @@ commands will result in them being installed and the tests being ran:
 <pre>
 apt-get install python-dev libxslt1-dev libxml2-dev
 pip install requirements_test.txt
-nosetests
+./droopescan test
+</pre>
+
+Tests which interact with the internet can be ran w/ 
+
+<pre>
+./droopescan test -i
 </pre>

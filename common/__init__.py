@@ -5,6 +5,7 @@ import pystache
 import re
 import textwrap
 import xml.etree.ElementTree as ET
+import hashlib
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
@@ -140,6 +141,9 @@ def version_gt(version, gt):
 
     return gt
 
+def md5_file(filename):
+    return hashlib.md5(open(filename).read()).hexdigest()
+
 class VersionsFile():
     et = None
     root = None
@@ -195,7 +199,7 @@ class VersionsFile():
 
     def highest_version_major(self):
         """
-        returns highest version per major release
+            Returns highest version per major release.
         """
         xpath = './files/file/version'
         versions = self.root.findall(xpath)
@@ -211,6 +215,23 @@ class VersionsFile():
                 highest[major] = version
 
         return highest
+
+    def update(self, sums):
+        """
+            Update self.et with the sums as returned by VersionsX.sums_get
+        """
+        file_elements = {}
+        for version in sums:
+            hashes = sums[version]
+            for filename in hashes:
+                if filename not in file_elements:
+                    file_xpath = './files/file[@url="%s"]' % filename
+                    try:
+                        file_elements[filename] = self.root.findall(file_xpath)[0]
+                    except IndexError:
+                        raise ValueError("Attempted to update element '%s' which doesn't exist" % filename)
+
+                file_element
 
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):

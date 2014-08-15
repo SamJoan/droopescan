@@ -32,6 +32,7 @@ class FingerprintTests(BaseTest):
         self.add_argv(['--method', 'forbidden'])
         self.add_argv(self.param_version)
         self._init_scanner()
+        self.v = VersionsFile(self.xml_file)
 
     def mock_xml(self, xml_file, version_to_mock):
         '''
@@ -78,6 +79,7 @@ class FingerprintTests(BaseTest):
         real_version = '7.26'
         self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, real_version)
 
+        print self.base_url, self.xml_file
         version, is_empty = self.scanner.enumerate_version(self.base_url, self.xml_file)
 
         assert version[0] == real_version
@@ -104,42 +106,56 @@ class FingerprintTests(BaseTest):
                 self.scanner.versions_file, verb='head')
 
     def test_version_gt(self):
-        v = VersionsFile(self.xml_file)
+        assert self.v.version_gt("10.1", "9.1")
+        assert self.v.version_gt("5.23", "5.9")
+        assert self.v.version_gt("5.23.10", "5.23.9")
 
-        assert v.version_gt("10.1", "9.1")
-        assert v.version_gt("5.23", "5.9")
-        assert v.version_gt("5.23.10", "5.23.9")
-
-        assert v.version_gt("10.1", "10.1") == False
-        assert v.version_gt("9.1", "10.1") == False
-        assert v.version_gt("5.9", "5.23") == False
-        assert v.version_gt("5.23.8", "5.23.9") == False
+        assert self.v.version_gt("10.1", "10.1") == False
+        assert self.v.version_gt("9.1", "10.1") == False
+        assert self.v.version_gt("5.9", "5.23") == False
+        assert self.v.version_gt("5.23.8", "5.23.9") == False
 
     def test_version_gt_different_length(self):
-        v = VersionsFile(self.xml_file)
+        self.v.version_gt("10.0.0.0.0", "10")
+        self.v.version_gt("10", "10.0.0.0.0.0")
 
-        v.version_gt("10.0.0.0.0", "10")
-        v.version_gt("10", "10.0.0.0.0.0")
-
-        assert v.version_gt("10.0.0.0.0", "10") == False
-        assert v.version_gt("10.0.0.0.1", "10") == True
+        assert self.v.version_gt("10.0.0.0.0", "10") == False
+        assert self.v.version_gt("10.0.0.0.1", "10") == True
 
     def test_version_gt_ascii(self):
         "strips all letters?"
-        v = VersionsFile(self.xml_file)
-        assert v.version_gt('1.0a', '2.0a') == False
-        assert v.version_gt('4.0a', '2.0a')
+        assert self.v.version_gt('1.0a', '2.0a') == False
+        assert self.v.version_gt('4.0a', '2.0a')
 
     def test_version_highest(self):
-        v = VersionsFile(self.xml_file)
-
-        assert v.highest_version() == '7.28'
+        assert self.v.highest_version() == '7.28'
 
     def test_version_highest_major(self):
-        v = VersionsFile(self.xml_file)
-
-        res = v.highest_version_major()
+        res = self.v.highest_version_major()
 
         assert res['6'] == '6.15'
         assert res['7'] == '7.28'
+
+    def test_add_to_xml(self):
+        add_versions = {'6.32': {'misc/drupal.js': '1904f6fd4a4fe747d6b53ca9fd81f848',
+            'misc/tabledrag.js': '50ebbc8dc949d7cb8d4cc5e6e0a6c1ca',
+            'misc/tableheader.js': '570b3f821441cd8f75395224fc43a0ea'}, '7.30':
+            {'misc/ajax.js': '30d9e08baa11f3836eca00425b550f82',
+                'misc/drupal.js': '0bb055ea361b208072be45e8e004117b',
+                'misc/tabledrag.js': 'caaf444bbba2811b4fa0d5aecfa837e5',
+                'misc/tableheader.js': 'bd98fa07941364726469e7666b91d14d'},
+            '7.31': {'misc/ajax.js': '30d9e08baa11f3836eca00425b550f82',
+                'misc/drupal.js': '0bb055ea361b208072be45e8e004117b',
+                'misc/tabledrag.js': 'caaf444bbba2811b4fa0d5aecfa837e5',
+                'misc/tableheader.js': 'bd98fa07941364726469e7666b91d14d'},
+            '7.29': {'misc/ajax.js': '30d9e08baa11f3836eca00425b550f82',
+                'misc/drupal.js': '0bb055ea361b208072be45e8e004117b',
+                'misc/tabledrag.js': 'caaf444bbba2811b4fa0d5aecfa837e5',
+                'misc/tableheader.js': 'bd98fa07941364726469e7666b91d14d'},
+            '6.33': {'misc/drupal.js': '1904f6fd4a4fe747d6b53ca9fd81f848',
+                'misc/tabledrag.js': '50ebbc8dc949d7cb8d4cc5e6e0a6c1ca',
+                'misc/tableheader.js': '570b3f821441cd8f75395224fc43a0ea'}}
+
+        assert False
+        self.v.update(add_versions)
 

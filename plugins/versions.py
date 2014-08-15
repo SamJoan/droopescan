@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from cement.core import handler, controller
-from common import VersionsFile, version_gt
+from common import VersionsFile, version_gt, md5_file
 from plugins.drupal import Drupal
 from plugins import HumanBasePlugin
 from subprocess import call
@@ -72,9 +72,24 @@ class DrupalVersions():
             extract_folder = os.path.commonprefix(tar.getnames())
             tar.extractall(path=location)
 
-            extracted.append((version, location + extract_folder))
+            extracted.append((version, location + extract_folder + "/"))
 
         return extracted
+
+    def sums_get(self, extracted, files_to_hash):
+        sums = {}
+        for version, directory in extracted:
+            sums[version] = {}
+            for filename in files_to_hash:
+                try:
+                    sums[version][filename] = md5_file(directory + filename)
+                except IOError:
+                    # file doesn't exist.
+                    pass
+
+        return sums
+
+
 
 class Versions(HumanBasePlugin):
     class Meta:
@@ -82,7 +97,6 @@ class Versions(HumanBasePlugin):
 
     @controller.expose(help='', hide=True)
     def versions(self):
-
         dv = DrupalVersions()
         versions_file = VersionsFile(Drupal.versions_file)
 
@@ -98,6 +112,10 @@ class Versions(HumanBasePlugin):
             new = dv.newer_get(majors)
             dl_files = dv.download(new, BASE_FOLDER)
             extracted_dirs = dv.extract(dl_files, BASE_FOLDER)
+
+            file_sums = dv.sums_get(extracted_dirs, versions_file.files_get())
+
+            versions_file.update(file_sums)
 
         else:
             self.error('Canceled by user.')
