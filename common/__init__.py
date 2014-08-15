@@ -96,6 +96,50 @@ def file_len(fname):
             pass
     return i + 1
 
+def strip_letters(string):
+    return ''.join([c for c in str(string) if c in '1234567890.'])
+
+def version_gt(version, gt):
+    """
+        Fuck parsing versions, man.
+    """
+    version_split = strip_letters(version).split('.')
+    gt_split = strip_letters(gt).split('.')
+
+    v_len = len(version_split)
+    g_len = len(gt_split)
+    if v_len > g_len:
+        longest = version_split
+        shortest_len = len(gt_split)
+        l = v_len
+    else:
+        longest = gt_split
+        shortest_len = len(version_split)
+        l = g_len
+
+    # in case of equality, return False
+    gt = False
+    for i in range(l):
+        overcame_shortest = i >= shortest_len
+
+        if not overcame_shortest:
+            v = int(version_split[i])
+            g = int(gt_split[i])
+            if v > g:
+                gt = True
+                break
+            elif g < v:
+                break
+        else:
+            if int(longest[i]) > 0:
+                if longest == version_split:
+                    gt = True
+                    break
+                else:
+                    break
+
+    return gt
+
 class VersionsFile():
     et = None
     root = None
@@ -146,49 +190,8 @@ class VersionsFile():
 
         return highest
 
-    def _strip_letters(self, string):
-        return ''.join([c for c in str(string) if c in '1234567890.'])
-
     def version_gt(self, version, gt):
-        """
-            Fuck parsing versions, man.
-        """
-        version_split = self._strip_letters(version).split('.')
-        gt_split = self._strip_letters(gt).split('.')
-
-        v_len = len(version_split)
-        g_len = len(gt_split)
-        if v_len > g_len:
-            longest = version_split
-            shortest_len = len(gt_split)
-            l = v_len
-        else:
-            longest = gt_split
-            shortest_len = len(version_split)
-            l = g_len
-
-        # in case of equality, return False
-        gt = False
-        for i in range(l):
-            overcame_shortest = i >= shortest_len
-
-            if not overcame_shortest:
-                v = int(version_split[i])
-                g = int(gt_split[i])
-                if v > g:
-                    gt = True
-                    break
-                elif g < v:
-                    break
-            else:
-                if int(longest[i]) > 0:
-                    if longest == version_split:
-                        gt = True
-                        break
-                    else:
-                        break
-
-        return gt
+        return version_gt(version, gt)
 
     def highest_version_major(self):
         """

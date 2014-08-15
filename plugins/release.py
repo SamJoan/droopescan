@@ -74,7 +74,7 @@ class Release(HumanBasePlugin):
             version_nb = self.get_input("Version number (prev %s):" %
                     prev_version_nb)
 
-            final = self.changelog(version_nb)
+            final = self.changelog(version_nb).strip() + "\n"
 
             print "The following will be prepended to the CHANGELOG:\n---\n%s---" % final
 
