@@ -9,6 +9,7 @@ Add;
         -> DNN
             -> add interesting urls (installation dir)
         -> Find administrative interfaces
+        -> drupal 7.23 gets detected as 7.28
     
     Generic UI improvements:
         -> updates on progress.
