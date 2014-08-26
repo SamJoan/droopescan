@@ -1,4 +1,10 @@
-from bs4 import BeautifulSoup
+# we really don't want to crash the whole software for this
+# functionality.
+try:
+    from bs4 import BeautifulSoup
+except:
+    pass
+
 from cement.core import handler, controller
 from common import VersionsFile, version_gt, md5_file
 from plugins.drupal import Drupal
