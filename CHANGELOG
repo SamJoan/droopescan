@@ -1,11 +1,12 @@
 0.6.5
 =====
 
-- Updated database file.
-- Handled non-cms urls in a more verbose way.
-- Automated drupal version gathering.
-- Added support for multiple, undistinguishable versions.
-- Made dependency optional for standard run.
+* Updated database file.
+* Handled non-cms urls in a more verbose way.
+* Automated drupal version gathering.
+* Added support for multiple, undistinguishable versions.
+* Made dependency optional for standard run.
+
 0.6.4
 =====
 
