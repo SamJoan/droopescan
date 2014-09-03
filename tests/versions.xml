@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <cms>
+    <!-- For future reference: modifying this file can cause issues with tests,
+             it is best to create another one. -->
   <files>
     <file url="misc/drupal.js">
       <version nb="6.15" md5="b1946ac92492d2347c6235b4d2611184"/>

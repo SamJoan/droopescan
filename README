@@ -3,14 +3,15 @@
 Usage:
 
 <pre>
-python droopescan.py drupal --url http://localhost/drupal-7.28
-python droopescan.py silverstripe --url http://localhost/silverstripe
+python droopescan.py scan drupal --url http://localhost/drupal-7.28
+python droopescan.py scan silverstripe --url http://localhost/silverstripe
 </pre>
 
 You can get a full list of options by running:
 
 <pre>
 python droopescan.py --help
+python droopescan.py scan --help
 </pre>
 
 # Dependencies.
@@ -22,7 +23,7 @@ installed by running the following command:
 pip install requirements.txt
 </pre>
 
-# Authentication
+# Authentication.
 
 The application fully supports `.netrc` files and `http_proxy` environment
 variables. 
@@ -55,13 +56,13 @@ To run tests, some dependencies can be installed; running the following
 commands will result in them being installed and the tests being ran:
 
 <pre>
-apt-get install python-dev libxslt1-dev libxml2-dev
-pip install requirements_test.txt
-./droopescan test
+    apt-get install python-dev libxslt1-dev libxml2-dev
+    pip install requirements_test.txt
+    ./droopescan test
 </pre>
 
-Tests which interact with the internet can be ran w/ 
+Tests which interact with the internet can be ran with the following command:
 
 <pre>
-./droopescan test -i
+    ./droopescan test -i
 </pre>

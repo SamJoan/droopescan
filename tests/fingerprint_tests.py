@@ -37,6 +37,11 @@ class FingerprintTests(BaseTest):
     def mock_xml(self, xml_file, version_to_mock):
         '''
             generates all mock data, and patches Drupal.get_hash
+
+            @param xml_file a file, which contains the XML to mock.
+            @param version_to_mock the version which we will pretend to be.
+            @return a function which can be used to mock
+                BasePlugin.enumerate_file_hash
         '''
         with open(xml_file) as f:
             doc = etree.fromstring(f.read())
@@ -78,14 +83,21 @@ class FingerprintTests(BaseTest):
             xml_validate(xml_path, self.versions_xsd)
 
     def test_determines_version(self):
-        # mock the URLs needed
         real_version = '7.26'
         self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, real_version)
 
-        print self.base_url, self.xml_file
         version, is_empty = self.scanner.enumerate_version(self.base_url, self.xml_file)
 
         assert version[0] == real_version
+        assert is_empty == False
+
+    def test_determines_version_similar(self):
+        real_version = '6.15'
+        self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, real_version)
+        returned_version, is_empty = self.scanner.enumerate_version(self.base_url, self.xml_file)
+
+        assert len(returned_version) == 2
+        assert real_version in returned_version
         assert is_empty == False
 
     def test_enumerate_hash(self):
