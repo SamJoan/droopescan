@@ -1,11 +1,11 @@
 from cement.core import handler
 import argparse
+import hashlib
 import logging
 import pystache
 import re
 import textwrap
 import xml.etree.ElementTree as ET
-import hashlib
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
@@ -220,18 +220,42 @@ class VersionsFile():
         """
             Update self.et with the sums as returned by VersionsX.sums_get
         """
-        file_elements = {}
         for version in sums:
             hashes = sums[version]
             for filename in hashes:
-                if filename not in file_elements:
-                    file_xpath = './files/file[@url="%s"]' % filename
-                    try:
-                        file_elements[filename] = self.root.findall(file_xpath)[0]
-                    except IndexError:
-                        raise ValueError("Attempted to update element '%s' which doesn't exist" % filename)
+                hsh = hashes[filename]
+                file_xpath = './files/file[@url="%s"]' % filename
+                try:
+                    file_add = self.root.findall(file_xpath)[0]
+                except IndexError:
+                    raise ValueError("Attempted to update element '%s' which doesn't exist" % filename)
 
-                file_element
+                new_ver = ET.SubElement(file_add, 'version')
+                new_ver.attrib = {
+                        'md5': hsh,
+                        'nb': version
+                }
+
+    def indent(self, elem, level=0):
+        # imported as a backport for python < 3.5
+        # @see http://effbot.org/zone/element-lib.htm#prettyprint
+        i = "\n" + level*"  "
+        if len(elem):
+            if not elem.text or not elem.text.strip():
+                elem.text = i + "  "
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+            for elem in elem:
+                self.indent(elem, level+1)
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+        else:
+            if level and (not elem.tail or not elem.tail.strip()):
+                elem.tail = i
+
+    def str_pretty(self):
+        self.indent(self.root)
+        return ET.dump(self.root)
 
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):

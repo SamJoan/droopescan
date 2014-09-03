@@ -53,6 +53,9 @@ class FingerprintTests(BaseTest):
                     if version_number == version_to_mock:
                         files[url] = md5
 
+                if not url in files:
+                    files[url] = '5d41402abc4b2a76b9719d911017c592'
+
         mock_hash = self.MockHash()
         mock_hash.files = files
         mock = MagicMock(side_effect=mock_hash.mock_func)
@@ -123,7 +126,7 @@ class FingerprintTests(BaseTest):
         assert self.v.version_gt("10.0.0.0.1", "10") == True
 
     def test_version_gt_ascii(self):
-        "strips all letters?"
+        # strips all letters?
         assert self.v.version_gt('1.0a', '2.0a') == False
         assert self.v.version_gt('4.0a', '2.0a')
 
@@ -137,25 +140,23 @@ class FingerprintTests(BaseTest):
         assert res['7'] == '7.28'
 
     def test_add_to_xml(self):
-        add_versions = {'6.32': {'misc/drupal.js': '1904f6fd4a4fe747d6b53ca9fd81f848',
-            'misc/tabledrag.js': '50ebbc8dc949d7cb8d4cc5e6e0a6c1ca',
-            'misc/tableheader.js': '570b3f821441cd8f75395224fc43a0ea'}, '7.30':
-            {'misc/ajax.js': '30d9e08baa11f3836eca00425b550f82',
+        add_versions = {
+            '7.31': {
+                'misc/ajax.js': '30d9e08baa11f3836eca00425b550f82',
                 'misc/drupal.js': '0bb055ea361b208072be45e8e004117b',
                 'misc/tabledrag.js': 'caaf444bbba2811b4fa0d5aecfa837e5',
-                'misc/tableheader.js': 'bd98fa07941364726469e7666b91d14d'},
-            '7.31': {'misc/ajax.js': '30d9e08baa11f3836eca00425b550f82',
-                'misc/drupal.js': '0bb055ea361b208072be45e8e004117b',
-                'misc/tabledrag.js': 'caaf444bbba2811b4fa0d5aecfa837e5',
-                'misc/tableheader.js': 'bd98fa07941364726469e7666b91d14d'},
-            '7.29': {'misc/ajax.js': '30d9e08baa11f3836eca00425b550f82',
-                'misc/drupal.js': '0bb055ea361b208072be45e8e004117b',
-                'misc/tabledrag.js': 'caaf444bbba2811b4fa0d5aecfa837e5',
-                'misc/tableheader.js': 'bd98fa07941364726469e7666b91d14d'},
-            '6.33': {'misc/drupal.js': '1904f6fd4a4fe747d6b53ca9fd81f848',
+                'misc/tableheader.js': 'bd98fa07941364726469e7666b91d14d'
+            },
+            '6.33': {
+                'misc/drupal.js': '1904f6fd4a4fe747d6b53ca9fd81f848',
                 'misc/tabledrag.js': '50ebbc8dc949d7cb8d4cc5e6e0a6c1ca',
-                'misc/tableheader.js': '570b3f821441cd8f75395224fc43a0ea'}}
+                'misc/tableheader.js': '570b3f821441cd8f75395224fc43a0ea'
+            }
+        }
 
-        assert False
         self.v.update(add_versions)
 
+        highest = self.v.highest_version_major()
+
+        assert highest['6'] == '6.33'
+        assert highest['7'] == '7.31'
