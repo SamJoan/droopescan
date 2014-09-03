@@ -177,8 +177,22 @@ class VersionsFile():
         if len(matches) == 0:
             return []
 
-        version = max(matches.iterkeys(), key=(lambda key: matches[key]))
-        return [version]
+        # version = max(matches.iterkeys(), key=(lambda key: matches[key]))
+        # Get highest match number.
+        highest_nb = 0
+        for match in matches:
+            nb_similar = matches[match]
+            if nb_similar > highest_nb:
+                highest_nb = nb_similar
+
+        # Get those who have the highest match number.
+        final_matches = []
+        for match in matches:
+            nb_similar = matches[match]
+            if nb_similar == highest_nb:
+                final_matches.append(match)
+
+        return final_matches
 
     def highest_version(self):
         '''
