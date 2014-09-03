@@ -255,7 +255,7 @@ class VersionsFile():
 
     def str_pretty(self):
         self.indent(self.root)
-        return ET.dump(self.root)
+        return ET.tostring(self.root, encoding='utf-8')
 
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):
