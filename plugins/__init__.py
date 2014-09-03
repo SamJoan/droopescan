@@ -221,29 +221,32 @@ class BasePluginInternal(controller.CementBaseController):
         folder_resp = requests_method(url + self.folder_url)
 
         if common.is_string(self.regular_file_url):
+            reg = url + self.regular_file_url
             ok_resp = requests_method(url + self.regular_file_url)
             ok_200 = ok_resp.status_code == 200
         else:
             ok_200 = False
+            reg = url + self.regular_file_url[-1]
             for path in self.regular_file_url:
                 ok_resp = requests_method(url + path)
                 if ok_resp.status_code == 200:
                     ok_200 = True
                     break
 
+        if not ok_200:
+            common.warn("Known regular file '%s' returned status code %s instead of 200 as expected." % (reg, ok_resp.status_code))
+
         if folder_resp.status_code == 403 and ok_200:
             return ScanningMethod.forbidden
         if folder_resp.status_code == 404 and ok_200:
-            common.warn('''Known %s folders have returned 404 Not Found. If a
-                    module does not have a %s file it will not be detected.''' %
+            common.warn('Known %s folders have returned 404 Not Found. If a module does not have a %s file it will not be detected.' %
                     (self._meta.label, self.module_readme_file))
             return ScanningMethod.not_found
         if folder_resp.status_code == 200 and ok_200:
-            common.warn('''Known folder names for %s are returning 200 OK. Is
-                    directory listing enabled?''' % self._meta.label)
+            common.warn('Known folder names for %s are returning 200 OK. Is directory listing enabled?' % self._meta.label)
             return ScanningMethod.ok
         else:
-            common.fatal('''It is possible that the website is not running %s. If you disagree, please specify a --method.''' %
+            common.fatal('It is possible that the website is not running %s. If you disagree, please specify a --method.' %
                     self._meta.label)
 
     def plugins_get(self, amount=100000):
