@@ -192,7 +192,7 @@ class VersionsFile():
             if nb_similar == highest_nb:
                 final_matches.append(match)
 
-        return final_matches
+        return sorted(final_matches)
 
     def highest_version(self):
         '''

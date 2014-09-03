@@ -2,7 +2,7 @@
 [+] No {{noun}} found.
 {{/empty}}
 {{^empty}}
-{{green}}[+] Maximum version {{noun}} possible:{{endc}}
+{{green}}[+] Possible version(s):{{endc}}
 {{/empty}}
 {{#items}}
     {{.}}
