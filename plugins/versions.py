@@ -11,6 +11,7 @@ from plugins.drupal import Drupal
 from plugins import HumanBasePlugin
 from subprocess import call
 from tempfile import NamedTemporaryFile
+from time import sleep
 import os
 import requests
 import shutil
@@ -118,8 +119,12 @@ class Versions(HumanBasePlugin):
             all_majors = versions_file.highest_version_major()
             majors = {key: all_majors[key] for key in UPDATE_MAJORS}
 
-            # Download files and get sums.
+            # Download files.
             new = dv.newer_get(majors)
+            if len(new) == 0:
+                self.error("No new version found, versions.xml is up to date.")
+
+            # Get hashes.
             dl_files = dv.download(new, BASE_FOLDER)
             extracted_dirs = dv.extract(dl_files, BASE_FOLDER)
             file_sums = dv.sums_get(extracted_dirs, versions_file.files_get())
@@ -127,10 +132,12 @@ class Versions(HumanBasePlugin):
             versions_file.update(file_sums)
             xml = versions_file.str_pretty()
 
-            f_temp = NamedTemporaryFile()
+            # Final sanity checks.
+            f_temp = NamedTemporaryFile(delete=False)
             f_temp.write(xml)
-
-            call(['diff', f_temp.name, Drupal.versions_file])
+            f_temp.close()
+            call(['diff', '-s', f_temp.name, Drupal.versions_file])
+            os.remove(f_temp)
 
             ok = self.confirm('Overwrite %s with the new file?' %
                     Drupal.versions_file)
@@ -141,10 +148,10 @@ class Versions(HumanBasePlugin):
 
                 call(['git', 'status'])
             else:
-                print 'Canceled by user.'
+                self.error('Aborted.')
 
         else:
-            self.error('Canceled by user.')
+            self.error('Aborted.')
 
 def load():
     handler.register(Versions)

@@ -398,7 +398,7 @@ class HumanBasePlugin(controller.CementBaseController):
     def error(self, msg):
         #'red': '\033[91m',
         #'endc': '\033[0m',
-        print '\033[91m%s\033[0m' % msg
+        raise RuntimeError('\033[91m%s\033[0m' % msg)
 
     def prepend_to_file(self, filename, prepend_text):
         f = open(filename,'r')
