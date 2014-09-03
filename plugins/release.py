@@ -30,7 +30,7 @@ class Release(HumanBasePlugin):
         return first_line.strip()
 
     def changelog(self, version):
-        header = '%s\n%s\n\n' % (version, ('='*len(version)))
+        header = '%s\n%s\n\n*' % (version, ('='*len(version)))
         with tempfile.NamedTemporaryFile(suffix=".tmp") as temp:
           temp.write(header)
           temp.flush()
@@ -74,7 +74,7 @@ class Release(HumanBasePlugin):
             version_nb = self.get_input("Version number (prev %s):" %
                     prev_version_nb)
 
-            final = self.changelog(version_nb).strip() + "\n"
+            final = self.changelog(version_nb).strip() + "\n\n"
 
             print "The following will be prepended to the CHANGELOG:\n---\n%s---" % final
 
