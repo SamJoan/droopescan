@@ -131,11 +131,18 @@ class FingerprintTests(BaseTest):
         assert self.v.version_gt("5.23.8", "5.23.9") == False
 
     def test_version_gt_different_length(self):
-        self.v.version_gt("10.0.0.0.0", "10")
-        self.v.version_gt("10", "10.0.0.0.0.0")
-
         assert self.v.version_gt("10.0.0.0.0", "10") == False
+        assert self.v.version_gt("10", "10.0.0.0.0.0") == False
         assert self.v.version_gt("10.0.0.0.1", "10") == True
+
+    def test_version_gt_diff_minor(self):
+        # added after failures parsing SS versions.
+        assert self.v.version_gt("3.0.9", "3.1.5") == False
+        assert self.v.version_gt("3.0.11", "3.1.5") == False
+        assert self.v.version_gt("3.0.10", "3.1.5") == False
+        assert self.v.version_gt("3.0.8", "3.1.5") == False
+        assert self.v.version_gt("3.0.7", "3.1.5") == False
+        assert self.v.version_gt("3.0.6", "3.1.5") == False
 
     def test_version_gt_ascii(self):
         # strips all letters?
@@ -146,7 +153,7 @@ class FingerprintTests(BaseTest):
         assert self.v.highest_version() == '7.28'
 
     def test_version_highest_major(self):
-        res = self.v.highest_version_major()
+        res = self.v.highest_version_major(['6', '7'])
 
         assert res['6'] == '6.15'
         assert res['7'] == '7.28'
@@ -168,7 +175,7 @@ class FingerprintTests(BaseTest):
 
         self.v.update(add_versions)
 
-        highest = self.v.highest_version_major()
+        highest = self.v.highest_version_major(['6', '7'])
 
         assert highest['6'] == '6.33'
         assert highest['7'] == '7.31'

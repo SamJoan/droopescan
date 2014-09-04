@@ -1,5 +1,5 @@
 from cement.utils import test
-from plugins.versions import DrupalVersions
+from plugins.versions import DrupalVersions, SSVersions
 from tempfile import mkdtemp
 from tests import BaseTest
 import os
@@ -16,6 +16,11 @@ class IntegrationTests(BaseTest):
 
     def test_get_newer_versions_by_major(self):
         sample_majors = {'7': '7.28', '6': '6.31'}
+        higher = self.dv.newer_get(sample_majors)
+
+    def test_get_newer_ss(self):
+        self.dv = SSVersions()
+        sample_majors = {'3': '3.1.5'}
         higher = self.dv.newer_get(sample_majors)
 
     def test_download_and_extract(self):

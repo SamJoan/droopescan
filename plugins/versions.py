@@ -8,6 +8,7 @@ except:
 from cement.core import handler, controller
 from common import VersionsFile, version_gt, md5_file
 from plugins.drupal import Drupal
+from plugins.silverstripe import SilverStripe
 from plugins import HumanBasePlugin
 from subprocess import call
 from tempfile import NamedTemporaryFile, mkdtemp
@@ -18,11 +19,15 @@ import shutil
 import sys
 import tarfile
 
-UPDATE_MAJORS = ['6', '7']
-
 class VersionGetterBase():
     def newer_get(self, majors):
-        raise NotImplementedError("Parent class should override 'newer_get' method.")
+        """
+            get all versions higher than those provided, by major
+            @param majors as returned by VersionsFile.latest_by_major
+            @return newer {'7': [('7.31', 'http://ftp.drupal.org/files/projects/drupal-7.31.tar.gz')],
+                '6': [('6.33', 'http://ftp.drupal.org/files/projects/drupal-6.33.tar.gz')]}
+        """
+        raise ReferenceError("Parent class should override 'newer_get' method.")
 
     def download(self, newer, location):
         """
@@ -68,12 +73,15 @@ class VersionGetterBase():
         return sums
 
 class DrupalVersions(VersionGetterBase):
+
+    update_majors = ['6', '7']
+
     def newer_get(self, majors):
         """
-            get all versions higher than those provided, by major
-            @param majors as returned by VersionsFile.latest_by_major
+            @see VersionGetterBase.newer_get
         """
         api_version = {'7': '103', '6': '87'}
+
         base_url = 'https://www.drupal.org/node/3060/release?api_version[]=%s'
         newer = {}
         for major in majors:
@@ -85,6 +93,7 @@ class DrupalVersions(VersionGetterBase):
 
             download_links = soup.select('.views-row-first .file a')
 
+            assert len(download_links) > 0
             for a in download_links:
                 dl_url = a['href']
                 if dl_url.endswith('.tar.gz'):
@@ -100,36 +109,87 @@ class DrupalVersions(VersionGetterBase):
         return newer
 
 class SSVersions(VersionGetterBase):
+    update_majors = ['3']
+
     def newer_get(self, majors):
-        pass
+        """
+            @see VersionGetterBase.newer_get
+        """
+        base_url = 'http://www.silverstripe.org/release-archive/'
+        resp = requests.get(base_url)
+        soup = BeautifulSoup(resp.text)
+
+        download_links = soup.select('.download-releases a.noicon')
+        newer = {}
+        assert len(download_links) > 0
+        for dl_link in download_links:
+            if dl_link.text == 'cms.tar.gz':
+                url = dl_link.get('href')
+                prefix = 'SilverStripe-cms-v'
+                v_start = url.index(prefix) + len(prefix)
+                v_end = url.index('.tar.gz')
+
+                version = url[v_start:v_end]
+                major = version[:version.index('.')]
+                is_release_candidate = '-' in version
+
+                if not is_release_candidate:
+                    if not major in majors:
+                        continue
+
+                    if not version_gt(version, majors[major]):
+                        continue
+
+                    if not major in newer:
+                        newer[major] = []
+
+                    newer[major].append((version, 'http://www.silverstripe.org'
+                        + url))
+
+        print newer
+        return newer
+
 
 class Versions(HumanBasePlugin):
     class Meta:
         label = 'versions'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        hide = True
+
+        arguments = [
+                (['--cms', '-c'], dict(action='store', required=True,
+                    help='Which CMS to generate the XML for', choices=['drupal',
+                        'ss'])),
+            ]
 
     @controller.expose(help='', hide=True)
     def versions(self):
-
-        dv = DrupalVersions()
-        versions_file = VersionsFile(Drupal.versions_file)
+        # Get the VersionGetter.
+        cms = self.app.pargs.cms
+        if cms == "drupal":
+            vg = DrupalVersions()
+            versions_file = VersionsFile(Drupal.versions_file)
+        elif cms == "ss":
+            vg = SSVersions()
+            versions_file = VersionsFile(SilverStripe.versions_file)
 
         ok = self.confirm('This will download a whole bunch of stuff. OK?')
         if ok:
             base_folder = mkdtemp() + "/"
 
             # Get information needed.
-            all_majors = versions_file.highest_version_major()
-            majors = {key: all_majors[key] for key in UPDATE_MAJORS}
+            majors = versions_file.highest_version_major(vg.update_majors)
 
             # Download files.
-            new = dv.newer_get(majors)
+            new = vg.newer_get(majors)
             if len(new) == 0:
                 self.error("No new version found, versions.xml is up to date.")
 
             # Get hashes.
-            dl_files = dv.download(new, base_folder)
-            extracted_dirs = dv.extract(dl_files, base_folder)
-            file_sums = dv.sums_get(extracted_dirs, versions_file.files_get())
+            dl_files = vg.download(new, base_folder)
+            extracted_dirs = vg.extract(dl_files, base_folder)
+            file_sums = vg.sums_get(extracted_dirs, versions_file.files_get())
 
             versions_file.update(file_sums)
             xml = versions_file.str_pretty()

@@ -102,7 +102,8 @@ def strip_letters(string):
 
 def version_gt(version, gt):
     """
-        Fuck parsing versions, man.
+        Code for parsing simple, numeric versions. Letters will be stripped
+        prior to comparison.
     """
     version_split = strip_letters(version).split('.')
     gt_split = strip_letters(gt).split('.')
@@ -129,7 +130,7 @@ def version_gt(version, gt):
             if v > g:
                 gt = True
                 break
-            elif g < v:
+            elif v < g:
                 break
         else:
             if int(longest[i]) > 0:
@@ -211,9 +212,11 @@ class VersionsFile():
     def version_gt(self, version, gt):
         return version_gt(version, gt)
 
-    def highest_version_major(self):
+    def highest_version_major(self, majors_include):
         """
             Returns highest version per major release.
+            @majors_include a list of majors. if present, returns only majors
+                that are included in that list
         """
         xpath = './files/file/version'
         versions = self.root.findall(xpath)
@@ -228,7 +231,9 @@ class VersionsFile():
             if self.version_gt(version, highest[major]):
                 highest[major] = version
 
-        return highest
+        majors = {key: highest[key] for key in majors_include}
+
+        return majors
 
     def update(self, sums):
         """
