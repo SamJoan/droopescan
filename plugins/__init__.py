@@ -168,16 +168,16 @@ class BasePluginInternal(controller.CementBaseController):
         elif opts['enumerate'] == 'a':
             enabled_functionality = functionality
 
-        if not self.can_enumerate_plugins:
+        if not self.can_enumerate_plugins and 'plugins' in enabled_functionality:
             del enabled_functionality['plugins']
 
-        if not self.can_enumerate_themes:
+        if not self.can_enumerate_themes and 'themes' in enabled_functionality:
             del enabled_functionality['themes']
 
-        if not self.can_enumerate_interesting:
+        if not self.can_enumerate_interesting and 'interesting urls' in enabled_functionality:
             del enabled_functionality['interesting urls']
 
-        if not self.can_enumerate_version:
+        if not self.can_enumerate_version and 'version' in enabled_functionality:
             del enabled_functionality['version']
 
         return enabled_functionality

@@ -230,9 +230,6 @@
       <version md5="3cedd331b876ec30980aa595964b647c" nb="6.30" />
       <version md5="d236b109c1f8fae45cf40586cc40e9c2" nb="6.31" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.32" />
-      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.30" />
-      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.31" />
-      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.29" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.33" />
     </file>
     <file url="misc/ajax.js">

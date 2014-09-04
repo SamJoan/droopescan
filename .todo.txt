@@ -1,5 +1,18 @@
 Add;
     Work on plugins:
+        -> Drupal fails hard after updating with auto updater of versions.xml
+
+            This is because misc/tableheader.js had newer versions and not older versions of the 7.x branch.
+            I've removed these manually, but if this is not auto fixed, then it
+                opens up some extremely buggy-looking behaviour.
+
+            So, in conclusion, each version should have the same number of
+            files (as defined in versions.xml file) as all other versions in
+            the same major branch.
+
+            E.g. All drupal 7.x versions should reference 3 files. If one of
+            them has more than 3, the detection algorithm will fail.
+
         -> Silverstripe:
             -> add http://ss/framework/docs/en/changelogs/index.md to interesting URLs.
             -> _config.php for SS instead of readme?
