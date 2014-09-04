@@ -10,7 +10,7 @@ from common import VersionsFile, version_gt, md5_file
 from plugins.drupal import Drupal
 from plugins import HumanBasePlugin
 from subprocess import call
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, mkdtemp
 from time import sleep
 import os
 import requests
@@ -18,41 +18,11 @@ import shutil
 import sys
 import tarfile
 
-BASE_FOLDER = '/var/www/drupal/'
 UPDATE_MAJORS = ['6', '7']
 
-class DrupalVersions():
-
+class VersionGetterBase():
     def newer_get(self, majors):
-        """
-            get all versions higher than those provided, by major
-            @param majors as returned by VersionsFile.latest_by_major
-        """
-        api_version = {'7': '103', '6': '87'}
-        base_url = 'https://www.drupal.org/node/3060/release?api_version[]=%s'
-        newer = {}
-        for major in majors:
-            max_avail = majors[major]
-            api_ver = api_version[major]
-
-            resp = requests.get(base_url % api_ver)
-            soup = BeautifulSoup(resp.text)
-
-            download_links = soup.select('.views-row-first .file a')
-
-            for a in download_links:
-                dl_url = a['href']
-                if dl_url.endswith('.tar.gz'):
-                    version = '.'.join(dl_url.split('-')[1].split('.')[0:-2])
-                    if not version_gt(version, max_avail):
-                        break
-
-                    if not major in newer:
-                        newer[major] = []
-
-                    newer[major].append((version, dl_url))
-
-        return newer
+        raise NotImplementedError("Parent class should override 'newer_get' method.")
 
     def download(self, newer, location):
         """
@@ -97,7 +67,41 @@ class DrupalVersions():
 
         return sums
 
+class DrupalVersions(VersionGetterBase):
+    def newer_get(self, majors):
+        """
+            get all versions higher than those provided, by major
+            @param majors as returned by VersionsFile.latest_by_major
+        """
+        api_version = {'7': '103', '6': '87'}
+        base_url = 'https://www.drupal.org/node/3060/release?api_version[]=%s'
+        newer = {}
+        for major in majors:
+            max_avail = majors[major]
+            api_ver = api_version[major]
 
+            resp = requests.get(base_url % api_ver)
+            soup = BeautifulSoup(resp.text)
+
+            download_links = soup.select('.views-row-first .file a')
+
+            for a in download_links:
+                dl_url = a['href']
+                if dl_url.endswith('.tar.gz'):
+                    version = '.'.join(dl_url.split('-')[1].split('.')[0:-2])
+                    if not version_gt(version, max_avail):
+                        break
+
+                    if not major in newer:
+                        newer[major] = []
+
+                    newer[major].append((version, dl_url))
+
+        return newer
+
+class SSVersions(VersionGetterBase):
+    def newer_get(self, majors):
+        pass
 
 class Versions(HumanBasePlugin):
     class Meta:
@@ -109,13 +113,11 @@ class Versions(HumanBasePlugin):
         dv = DrupalVersions()
         versions_file = VersionsFile(Drupal.versions_file)
 
-        ok = self.confirm('This will delete the contents of "%s"' % BASE_FOLDER)
+        ok = self.confirm('This will download a whole bunch of stuff. OK?')
         if ok:
-            if os.path.isdir(BASE_FOLDER):
-                shutil.rmtree(BASE_FOLDER)
+            base_folder = mkdtemp() + "/"
 
             # Get information needed.
-            os.makedirs(BASE_FOLDER)
             all_majors = versions_file.highest_version_major()
             majors = {key: all_majors[key] for key in UPDATE_MAJORS}
 
@@ -125,8 +127,8 @@ class Versions(HumanBasePlugin):
                 self.error("No new version found, versions.xml is up to date.")
 
             # Get hashes.
-            dl_files = dv.download(new, BASE_FOLDER)
-            extracted_dirs = dv.extract(dl_files, BASE_FOLDER)
+            dl_files = dv.download(new, base_folder)
+            extracted_dirs = dv.extract(dl_files, base_folder)
             file_sums = dv.sums_get(extracted_dirs, versions_file.files_get())
 
             versions_file.update(file_sums)

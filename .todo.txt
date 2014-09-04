@@ -1,38 +1,18 @@
-
 Add;
-    
     Work on plugins:
-        -> Update database with checksums, see if automate?
         -> Silverstripe:
             -> add http://ss/framework/docs/en/changelogs/index.md to interesting URLs.
             -> _config.php for SS instead of readme?
+                -> verify with a bunch of plugins
         -> DNN
             -> add interesting urls (installation dir)
         -> Find administrative interfaces
         -> drupal 7.23 gets detected as 7.28
+        -> Automate gathering of SS versions.
     
     Generic UI improvements:
         -> updates on progress.
         -> Detect sporadic 500 due to congestion/host overload, recommend reducing threads.
         -> Detect redirects. If redirected to https, or from non-www to www, or viceversa.
 
-Done:
-
-    -> add release functionality.
-    -> Custom user-agent! 
-    -> fix hack on plugin_utils.py
-
----------------------------
-
-    -> reduce number of default threads.    
-    -> add stats.
-    -> add interesting URL functionality.
-
----------------------------------
-    -> Add notes in the readme regarding authentication.
-        -> .netrc for basic authentication
-        -> http_proxy will be respected.
-            -> add http proxy, prevent SSL checking in this case.       
-    
-    -> refactor futures-requests and use futures instead
-        -> remove dependency for futures-requests and use futures instead.
+    After all the above is done, up version to 1.x
