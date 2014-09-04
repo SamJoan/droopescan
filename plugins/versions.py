@@ -146,7 +146,6 @@ class SSVersions(VersionGetterBase):
                     newer[major].append((version, 'http://www.silverstripe.org'
                         + url))
 
-        print newer
         return newer
 
 
@@ -164,22 +163,24 @@ class Versions(HumanBasePlugin):
             ]
 
     @controller.expose(help='', hide=True)
-    def versions(self):
+    def default(self):
         # Get the VersionGetter.
         cms = self.app.pargs.cms
         if cms == "drupal":
             vg = DrupalVersions()
-            versions_file = VersionsFile(Drupal.versions_file)
+            versions_file = versions_file
         elif cms == "ss":
             vg = SSVersions()
-            versions_file = VersionsFile(SilverStripe.versions_file)
+            versions_file = SilverStripe.versions_file
+
+        versions = VersionsFile(versions_file)
 
         ok = self.confirm('This will download a whole bunch of stuff. OK?')
         if ok:
             base_folder = mkdtemp() + "/"
 
             # Get information needed.
-            majors = versions_file.highest_version_major(vg.update_majors)
+            majors = versions.highest_version_major(vg.update_majors)
 
             # Download files.
             new = vg.newer_get(majors)
@@ -189,24 +190,27 @@ class Versions(HumanBasePlugin):
             # Get hashes.
             dl_files = vg.download(new, base_folder)
             extracted_dirs = vg.extract(dl_files, base_folder)
-            file_sums = vg.sums_get(extracted_dirs, versions_file.files_get())
+            file_sums = vg.sums_get(extracted_dirs, versions.files_get())
 
-            versions_file.update(file_sums)
-            xml = versions_file.str_pretty()
+            versions.update(file_sums)
+            xml = versions.str_pretty()
 
             # Final sanity checks.
             f_temp = NamedTemporaryFile(delete=False)
             f_temp.write(xml)
             f_temp.close()
-            call(['diff', '-s', f_temp.name, Drupal.versions_file])
-            os.remove(f_temp)
+            call(['diff', '-s', f_temp.name, versions_file])
+            os.remove(f_temp.name)
 
             ok = self.confirm('Overwrite %s with the new file?' %
-                    Drupal.versions_file)
+                    versions_file)
 
             if ok:
-                f_real = open(Drupal.versions_file, 'w')
+                f_real = open(versions_file, 'w')
                 f_real.write(xml)
+                f_real.close()
+
+                print "Done."
 
                 call(['git', 'status'])
             else:
