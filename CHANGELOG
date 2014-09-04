@@ -1,3 +1,10 @@
+0.7.0
+=====
+
+* Added new version information to the database information.
+* Improved version detection.
+* Automated gathering of versions for SS.
+
 0.6.5
 =====
 
