@@ -1,7 +1,6 @@
 Add;
     Work on plugins:
         -> Drupal fails hard after updating with auto updater of versions.xml
-
             This is because misc/tableheader.js had newer versions and not older versions of the 7.x branch.
             I've removed these manually, but if this is not auto fixed, then it
                 opens up some extremely buggy-looking behaviour.

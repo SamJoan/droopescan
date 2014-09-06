@@ -31,3 +31,19 @@ def xml_validate(xml_file, xsd_file):
 
     return _validate(xmlparser, xml_file)
 
+class MockBuffer():
+
+    string = ""
+
+    def write(self, data):
+        self.string += data
+
+    def flush(self):
+        pass
+
+    def __repr__(self):
+        return self.string
+
+    def get(self):
+        return self.string
+

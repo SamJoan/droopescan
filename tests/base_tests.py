@@ -1,6 +1,6 @@
 from cement.utils import test
-from common import file_len
-from common.testutils import decallmethods
+from common import file_len, ProgressBar
+from common.testutils import decallmethods, MockBuffer
 from contextlib import contextmanager
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
@@ -144,4 +144,14 @@ class BaseTests(BaseTest):
 
         assert self.scanner.session.verify == False
 
+    def test_progressbar(self):
+        u = MockBuffer()
+        p = ProgressBar(u)
+        p.set(10, 100)
+
+        a = u.get()[-4:]
+        print a, u
+
+        assert a == '10%)'
+        assert " ===== " in u.get()
 

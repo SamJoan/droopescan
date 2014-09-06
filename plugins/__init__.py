@@ -1,6 +1,6 @@
 from cement.core import handler, controller
 from common import template, enum_list, dict_combine
-from common import Verb, ScanningMethod, Enumerate, VersionsFile
+from common import Verb, ScanningMethod, Enumerate, VersionsFile, ProgressBar
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from distutils.util import strtobool
@@ -308,9 +308,16 @@ class BasePluginInternal(controller.CementBaseController):
                         'plugin_url': plugin_url,
                     })
 
+
+            p = ProgressBar(sys.stdout)
+            items_progressed = 0
+            items_total = len(base_urls) * max_iterator
+
             no_results = True
             found = []
             for future_array in futures:
+                items_progressed += 1
+                p.set(items_progressed, items_total)
                 r = future_array['future'].result()
                 if r.status_code == expected_status:
                     plugin_url = future_array['plugin_url']
@@ -321,6 +328,8 @@ class BasePluginInternal(controller.CementBaseController):
                         'name': plugin_name,
                         'url': plugin_url
                     })
+
+            p.hide()
 
         return found, no_results
 

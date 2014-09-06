@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import logging
 import pystache
+import sys
 import re
 import textwrap
 import xml.etree.ElementTree as ET
@@ -282,3 +283,27 @@ class SmartFormatter(argparse.RawDescriptionHelpFormatter):
         if text.startswith('R|'):
             return text[2:].splitlines()
         return argparse.HelpFormatter._split_lines(self, text, width)
+
+class ProgressBar():
+    def __init__(self, stream):
+        self.stream = stream
+
+    def set(self, items_processed, items_total, barLen = 50):
+        percent = (items_processed * 100) / items_total
+        self.stream.write("\r")
+
+        real_percent = percent / 2
+        progress = ""
+        for i in range(barLen):
+            if i < real_percent:
+                progress += "="
+            else:
+                progress += " "
+
+        self.stream.write("[ %s ] %d/%d (%d%%)" % (progress, items_processed, items_total, percent))
+        self.stream.flush()
+
+    def hide(self):
+        self.stream.write("\r")
+        self.stream.write(" " * 80)
+        self.stream.write("\r")
