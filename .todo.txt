@@ -18,13 +18,12 @@ Add;
                 -> verify with a bunch of plugins
         -> DNN
             -> add interesting urls (installation dir)
+
         -> Find administrative interfaces
-        -> drupal 7.23 gets detected as 7.28
-        -> Automate gathering of SS versions.
     
     Generic UI improvements:
-        -> updates on progress.
         -> Detect sporadic 500 due to congestion/host overload, recommend reducing threads.
         -> Detect redirects. If redirected to https, or from non-www to www, or viceversa.
+        -> Reduce default theme queue to something smaller, it is not that important.
 
     After all the above is done, up version to 1.x

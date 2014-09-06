@@ -328,6 +328,8 @@ class BasePluginInternal(controller.CementBaseController):
                         'name': plugin_name,
                         'url': plugin_url
                     })
+                elif r.status_code >= 500:
+                    common.warn('Got a 500 error. Is the server overloaded?')
 
             p.hide()
 

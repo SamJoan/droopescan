@@ -8,6 +8,7 @@ from plugins import ScanningMethod, Verb, Enumerate
 from tests import BaseTest
 import requests
 import responses
+import common
 
 @decallmethods(responses.activate)
 class BaseHttpTests(BaseTest):
@@ -312,3 +313,23 @@ class BaseHttpTests(BaseTest):
         responses.add(responses.GET, interesting_url)
 
         self.app.run()
+
+    @patch.object(Drupal, 'plugins_get', return_value=['supermodule',
+        'nonexistant1', 'nonexistant2', 'supermodule', 'intermitent'])
+    @patch.object(common, 'warn')
+    def test_warns_on_500(self, warn, mock):
+        r_200 = ['supermodule/']
+        r_404 = ['nonexistant1/', 'nonexistant2/', 'supermodule/']
+        r_500 = ['intermitent/']
+        self.respond_several(self.base_url + 'sites/all/modules/%s', {200:
+            r_200, 404: r_404, 500: r_500})
+
+        self.scanner.plugins_base_url = '%ssites/all/modules/%s/'
+        self.mock_controller('drupal', 'enumerate_interesting')
+
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, ScanningMethod.forbidden)
+
+        assert warn.called
+
+
