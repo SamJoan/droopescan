@@ -16,13 +16,13 @@ Add;
             -> add http://ss/framework/docs/en/changelogs/index.md to interesting URLs.
             -> _config.php for SS instead of readme?
                 -> verify with a bunch of plugins
+
         -> DNN
             -> add interesting urls (installation dir)
 
         -> Find administrative interfaces
     
     Generic UI improvements:
-        -> Detect sporadic 500 due to congestion/host overload, recommend reducing threads.
         -> Detect redirects. If redirected to https, or from non-www to www, or viceversa.
         -> Reduce default theme queue to something smaller, it is not that important.
 
