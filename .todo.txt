@@ -11,15 +11,10 @@ Add;
 
             E.g. All drupal 7.x versions should reference 3 files. If one of
             them has more than 3, the detection algorithm will fail.
-
-        -> Silverstripe:
-            -> _config.php for SS instead of readme?
-                -> verify with a bunch of plugins
-
-        -> Find administrative interfaces
     
     Generic UI improvements:
         -> Detect redirects. If redirected to https, or from non-www to www, or viceversa.
         -> Reduce default theme queue to something smaller, it is not that important.
+        -> Find administrative interfaces
 
     After all the above is done, up version to 1.x
