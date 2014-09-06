@@ -17,9 +17,6 @@ Add;
             -> _config.php for SS instead of readme?
                 -> verify with a bunch of plugins
 
-        -> DNN
-            -> add interesting urls (installation dir)
-
         -> Find administrative interfaces
     
     Generic UI improvements:
