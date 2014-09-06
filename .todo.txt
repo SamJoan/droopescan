@@ -15,6 +15,5 @@ Add;
     Generic UI improvements:
         -> Detect redirects. If redirected to https, or from non-www to www, or viceversa.
         -> Reduce default theme queue to something smaller, it is not that important.
-        -> Find administrative interfaces
 
     After all the above is done, up version to 1.x

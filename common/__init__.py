@@ -289,6 +289,8 @@ class ProgressBar():
         self.stream = stream
 
     def set(self, items_processed, items_total, barLen = 50):
+        items_processed = int(items_processed)
+        items_total = int(items_total)
         percent = (items_processed * 100) / items_total
         self.stream.write("\r")
 

@@ -86,25 +86,6 @@ class BaseTests(BaseTest):
         for m in all_mocks:
             assert m.called, 'module %s' % m
 
-    def test_dnn_does_not_enumerate(self):
-        self.add_argv(['scan', 'dnn'])
-        self.add_argv(self.param_all)
-
-        all_mocks = self.mock_all_enumerate('dnn')
-        dsv = self.mock_controller('dnn', 'determine_scanning_method')
-
-        self.app.run()
-
-        # expect two calls, might have to re-do this test in the future.
-        i = 0
-        for mock in all_mocks:
-            if mock.called == True:
-                i += 1
-
-        assert i == 1
-
-        assert not dsv.called
-
     def test_fix_dereference_bug(self):
         '''
             test for dereference that made the app fail even though

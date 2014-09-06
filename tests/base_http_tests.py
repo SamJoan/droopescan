@@ -279,9 +279,11 @@ class BaseHttpTests(BaseTest):
     def test_finds_interesting_urls(self):
         path = self.scanner.interesting_urls[0][0]
         description = self.scanner.interesting_urls[0][1]
-        interesting_url = self.base_url + path
 
-        responses.add(responses.HEAD, interesting_url)
+        self.respond_several(self.base_url + "%s", {
+            200: [self.scanner.interesting_urls[0][0]],
+            404: [self.scanner.interesting_urls[1][0]],
+        })
 
         found, empty = self.scanner.enumerate_interesting(self.base_url,
                 self.scanner.interesting_urls)
@@ -310,7 +312,9 @@ class BaseHttpTests(BaseTest):
         description = self.scanner.interesting_urls[0][1]
         interesting_url = self.base_url + path
 
-        responses.add(responses.GET, interesting_url)
+        urls_200 = map(lambda x: x[0], self.scanner.interesting_urls)
+        self.respond_several(self.base_url + "%s", {200:
+            urls_200}, verb=responses.GET)
 
         self.app.run()
 
