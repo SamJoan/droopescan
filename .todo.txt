@@ -13,7 +13,6 @@ Add;
             them has more than 3, the detection algorithm will fail.
 
         -> Silverstripe:
-            -> add http://ss/framework/docs/en/changelogs/index.md to interesting URLs.
             -> _config.php for SS instead of readme?
                 -> verify with a bunch of plugins
 
