@@ -16,7 +16,10 @@ class Drupal(BasePlugin):
     regular_file_url = "misc/drupal.js"
     module_readme_file = "LICENSE.txt"
 
-    interesting_urls = [("CHANGELOG.txt", "Default changelog file.")]
+    interesting_urls = [
+            ("CHANGELOG.txt", "Default changelog file."),
+            ("user/login", "Default admin."),
+        ]
     versions_file = "plugins/drupal/versions.xml"
 
     class Meta:

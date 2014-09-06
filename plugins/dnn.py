@@ -6,7 +6,9 @@ class Dnn(BasePlugin):
 
     interesting_urls = [
             ("Install/UpgradeWizard.aspx", "Upgrade wizard, version disclosure."),
-            ("Install/InstallWizard.aspx", "Install wizard.")
+            ("Install/InstallWizard.aspx", "Install wizard."),
+            ('Home/tabid/36/ctl/Login/Default.aspx', 'Admin page.'),
+            ('login', 'Admin page.')
         ]
 
     versions_file = "plugins/dnn/versions.xml"

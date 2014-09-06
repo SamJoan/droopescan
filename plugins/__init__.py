@@ -352,7 +352,7 @@ class BasePluginInternal(controller.CementBaseController):
         for path, description in interesting_urls:
             interesting_url = url + path
             resp = requests_verb(interesting_url)
-            if resp.status_code == 200:
+            if resp.status_code == 200 or resp.status_code == 301:
                 found.append({
                     'url': interesting_url,
                     'description': description,
