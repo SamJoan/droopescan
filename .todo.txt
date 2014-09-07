@@ -1,6 +1,7 @@
 Add;
     Work on plugins:
-        -> Drupal fails hard after updating with auto updater of versions.xml
+        -> 
+            Drupal fails hard after updating with auto updater of versions.xml
             This is because misc/tableheader.js had newer versions and not older versions of the 7.x branch.
             I've removed these manually, but if this is not auto fixed, then it
                 opens up some extremely buggy-looking behaviour.
@@ -14,6 +15,6 @@ Add;
     
     Generic UI improvements:
         -> Detect redirects. If redirected to https, or from non-www to www, or viceversa.
-        -> Reduce default theme queue to something smaller, it is not that important.
+        -> Reduce default theme number to something smaller, it is not that important.
 
     After all the above is done, up version to 1.x

@@ -179,3 +179,38 @@ class FingerprintTests(BaseTest):
 
         assert highest['6'] == '6.33'
         assert highest['7'] == '7.31'
+
+    def test_equal_number_per_major(self):
+        """
+            Drupal fails hard after updating with auto updater of versions.xml
+            This is because misc/tableheader.js had newer versions and not older versions of the 7.x branch.
+            I've removed these manually, but if this is not auto fixed, then it
+                opens up some extremely buggy-looking behaviour.
+
+            So, in conclusion, each version should have the same number of
+            files (as defined in versions.xml file) as all other versions in
+            the same major branch.
+
+            E.g. All drupal 7.x versions should reference 3 files. If one of
+            them has more than 3, the detection algorithm will fail.
+        """
+        for xml_path in glob('plugins/*/versions.xml'):
+           vf = VersionsFile(xml_path)
+           fpvm = vf.files_per_version_major()
+
+           number = 0
+           for major in fpvm:
+              for version in fpvm[major]:
+                  nb = len(fpvm[major][version])
+                  if number == 0:
+                      number = nb
+
+                  if nb != number:
+                      assert False, """All majors should have the same number of
+                          files, and version %s has %s, versus %s on other
+                          files.""" % (version, nb, number)
+
+              number = 0
+
+
+        assert False

@@ -107,13 +107,12 @@ class BasePluginInternal(controller.CementBaseController):
         return dict(kwargs_plugins)
 
     def _functionality(self, opts):
-
         kwargs_base = self._base_kwargs(opts)
-
         kwargs_plugins = dict_combine(kwargs_base, {
             'base_url': opts['plugins_base_url'],
             'max_plugins': opts['number']
         })
+
         kwargs_themes = dict(kwargs_plugins)
         kwargs_themes['base_url'] = opts['themes_base_url']
 
@@ -153,7 +152,6 @@ class BasePluginInternal(controller.CementBaseController):
         return all
 
     def _enabled_functionality(self, functionality, opts):
-
         enabled_functionality = {}
         if opts['enumerate'] == 'p':
             enabled_functionality['plugins'] = functionality['plugins']
@@ -183,7 +181,6 @@ class BasePluginInternal(controller.CementBaseController):
         return enabled_functionality
 
     def plugin_init(self):
-
         time_start = datetime.now()
         self._session_init(self.DEFAULT_UA)
         opts = self._options_and_session_init()

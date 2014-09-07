@@ -160,6 +160,34 @@ class VersionsFile():
 
         return files
 
+    def files_per_version(self):
+        xpath = './files/file'
+        files = self.root.findall(xpath)
+
+        versions = {}
+        for file in files:
+            vfile = file.findall('version')
+            for version in vfile:
+                nb = version.attrib['nb']
+                if not nb in versions:
+                    versions[nb] = []
+
+                versions[nb].append(file.attrib['url'])
+
+        return versions
+
+    def files_per_version_major(self):
+        fpv = self.files_per_version()
+        majors = {}
+        for version in fpv:
+            major = version.split(".")[0]
+            if not major in majors:
+                majors[major] = {}
+
+            majors[major][version] = fpv[version]
+
+        return majors
+
     def version_get(self, url_hash):
         matches = {}
         for url in url_hash:
