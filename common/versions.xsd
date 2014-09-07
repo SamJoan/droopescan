@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns:tns="http://droopescan.com/test">
   <xs:element name="cms">
     <xs:complexType>
       <xs:sequence>
@@ -21,11 +21,15 @@
       </xs:sequence>
       <xs:attribute name="url" use="required"/>
     </xs:complexType>
+    <xs:unique name="uniqueHashId">
+        <xs:selector xpath="version"/>
+        <xs:field xpath="@nb"/>
+    </xs:unique>
   </xs:element>
   <xs:element name="version">
     <xs:complexType>
       <xs:attribute name="md5" use="required"/>
-      <xs:attribute name="nb" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="nb" use="required" type="xs:string"/>
     </xs:complexType>
   </xs:element>
 </xs:schema>

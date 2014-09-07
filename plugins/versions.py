@@ -72,8 +72,27 @@ class VersionGetterBase():
 
         return sums
 
-class DrupalVersions(VersionGetterBase):
+class DrupalVersionsSelect(VersionGetterBase):
+    update_majors = ['6', '7']
 
+    def newer_get(self, majors, versions_string):
+        """
+            @see VersionGetterBase.newer_get
+        """
+        url = 'http://ftp.drupal.org/files/projects/drupal-%s.tar.gz'
+        versions = versions_string.split(",")
+
+        ret = {}
+        for version in versions:
+            major = str(version).split('.')[0]
+            if not major in ret:
+                ret[major] = []
+
+            ret[major].append((version, url % version))
+
+        return ret
+
+class DrupalVersions(VersionGetterBase):
     update_majors = ['6', '7']
 
     def newer_get(self, majors):
@@ -159,7 +178,9 @@ class Versions(HumanBasePlugin):
         arguments = [
                 (['--cms', '-c'], dict(action='store', required=True,
                     help='Which CMS to generate the XML for', choices=['drupal',
-                        'ss'])),
+                        'ss', 'drupal_select'])),
+                (['--selection', '-s'], dict(action='store',
+                    help='Comma separated list of versions for DrupalSelectVersions'))
             ]
 
     @controller.expose(help='', hide=True)
@@ -172,6 +193,12 @@ class Versions(HumanBasePlugin):
         elif cms == "ss":
             vg = SSVersions()
             versions_file = SilverStripe.versions_file
+        elif cms == "drupal_select":
+            vg = DrupalVersionsSelect()
+            versions_file = Drupal.versions_file
+            additional_params = self.app.pargs.selection
+            if additional_params == None:
+                self.error("Selection (-s) should be set for drupal_select.")
 
         versions = VersionsFile(versions_file)
 
@@ -183,7 +210,11 @@ class Versions(HumanBasePlugin):
             majors = versions.highest_version_major(vg.update_majors)
 
             # Download files.
-            new = vg.newer_get(majors)
+            if additional_params == None:
+                new = vg.newer_get(majors)
+            else:
+                new = vg.newer_get(majors, additional_params)
+
             if len(new) == 0:
                 self.error("No new version found, versions.xml is up to date.")
 

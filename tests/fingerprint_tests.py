@@ -194,6 +194,7 @@ class FingerprintTests(BaseTest):
             E.g. All drupal 7.x versions should reference 3 files. If one of
             them has more than 3, the detection algorithm will fail.
         """
+        fails = []
         for xml_path in glob('plugins/*/versions.xml'):
            vf = VersionsFile(xml_path)
            fpvm = vf.files_per_version_major()
@@ -206,11 +207,18 @@ class FingerprintTests(BaseTest):
                       number = nb
 
                   if nb != number:
-                      assert False, """All majors should have the same number of
+                      msg = """All majors should have the same number of
                           files, and version %s has %s, versus %s on other
                           files.""" % (version, nb, number)
 
+                      fails.append(" ".join(msg.split()))
+
               number = 0
 
+        if len(fails) > 0:
+            for fail in fails:
+                print fail
 
-        assert False
+            assert False
+
+
