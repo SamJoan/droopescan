@@ -1,20 +1,8 @@
 Add;
-    Work on plugins:
-        -> 
-            Drupal fails hard after updating with auto updater of versions.xml
-            This is because misc/tableheader.js had newer versions and not older versions of the 7.x branch.
-            I've removed these manually, but if this is not auto fixed, then it
-                opens up some extremely buggy-looking behaviour.
-
-            So, in conclusion, each version should have the same number of
-            files (as defined in versions.xml file) as all other versions in
-            the same major branch.
-
-            E.g. All drupal 7.x versions should reference 3 files. If one of
-            them has more than 3, the detection algorithm will fail.
     
     Generic UI improvements:
         -> Detect redirects. If redirected to https, or from non-www to www, or viceversa.
         -> Reduce default theme number to something smaller, it is not that important.
+        -> scanning drupal.org sometimes says 100100 instead of 100 in progress bar.
 
     After all the above is done, up version to 1.x

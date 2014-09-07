@@ -1,3 +1,9 @@
+1.7.2-beta
+==========
+
+* Released beta of version 1.x.
+* Vastly improved version detection and database handling.
+
 0.7.1
 =====
 
