@@ -69,8 +69,21 @@ class BaseTest(test.CementTestCase):
         self.app._meta.argv += argv
 
     def assert_called_contains(self, mocked_method, kwarg_name, kwarg_value):
+        """
+            Assert kwarg_name equals kwarg name in call to mocked_method.
+            @param mocked_method mock to check the call to.
+            @param kwarg_name name of the param. E.g. 'url'
+            @param kwarg_value expected value. E.g. 'https://www.drupal.org/'
+        """
         args, kwargs = mocked_method.call_args
         assert kwargs[kwarg_name] == kwarg_value, "Parameter is not as expected."
+
+    def assert_args_contains(self, mocked_method, position, expected_value):
+        """
+            Assert that the call contains this argument in the args at position position.
+        """
+        args, kwargs = mocked_method.call_args
+        assert args[position] == expected_value
 
     def respond_several(self, base_url, data_obj, verb=responses.HEAD):
         for status_code in data_obj:

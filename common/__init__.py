@@ -57,6 +57,13 @@ def enum_list(enum):
 
     return methods
 
+def base_url(url):
+    """
+        Returns the protocol, domain and port of a URL.
+    """
+    url_split = url.split("/")
+    return url_split[0] + "//" + url_split[2] + "/"
+
 def scan_http_status(scanning_method):
     if scanning_method == ScanningMethod.not_found:
         return 404

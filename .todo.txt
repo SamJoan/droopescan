@@ -5,7 +5,5 @@ Add;
             viceversa.
         -> Reduce default theme number to something smaller, it is not that
             important.
-        -> scanning drupal.org sometimes says 100100 instead of 100 in progress
-            bar.
 
     After all the above is done, up version to 1.x

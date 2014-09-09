@@ -1,5 +1,5 @@
 from cement.core import handler, controller
-from common import template, enum_list, dict_combine
+from common import template, enum_list, dict_combine, base_url
 from common import Verb, ScanningMethod, Enumerate, VersionsFile, ProgressBar
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -90,6 +90,12 @@ class BasePluginInternal(controller.CementBaseController):
             scanning_method = pargs.method
             if not scanning_method:
                 scanning_method = self.determine_scanning_method(url, verb)
+
+                redirected = scanning_method not in enum_list(ScanningMethod)
+                if redirected:
+                    pargs.url = scanning_method
+                    return self._options_and_session_init()
+
         else:
             scanning_method = None
 
@@ -229,6 +235,12 @@ class BasePluginInternal(controller.CementBaseController):
                 if ok_resp.status_code == 200:
                     ok_200 = True
                     break
+
+        # Detect redirects.
+        folder_redirect = 300 <= folder_resp.status_code < 400
+        if not ok_200 and folder_redirect:
+            redirect_url = folder_resp.headers['Location']
+            return base_url(redirect_url)
 
         if not ok_200:
             common.warn("Known regular file '%s' returned status code %s instead of 200 as expected." % (reg, ok_resp.status_code))

@@ -1,14 +1,15 @@
 from cement.utils import test
-from common import file_len
+from common import file_len, base_url
 from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor
 from mock import patch
 from plugins.drupal import Drupal
 from plugins import ScanningMethod, Verb, Enumerate
+from requests.exceptions import ConnectionError
 from tests import BaseTest
+import common
 import requests
 import responses
-import common
 
 @decallmethods(responses.activate)
 class BaseHttpTests(BaseTest):
@@ -174,10 +175,13 @@ class BaseHttpTests(BaseTest):
         self.assert_called_contains(m, 'scanning_method', ScanningMethod.forbidden)
 
     def test_add_slash_to_urls(self):
-        # remove slash from url.
+        # Remove slash from URL.
         self.add_argv(['--url', self.base_url[:-1], '--enumerate', 'p'])
 
-        m = self.mock_controller('drupal', 'determine_scanning_method')
+        # Mock return value so as not to trigger redirects.
+        m = self.mock_controller('drupal', 'determine_scanning_method',
+                side_effect=lambda x,a: "forbidden")
+
         self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
@@ -336,4 +340,15 @@ class BaseHttpTests(BaseTest):
 
         assert warn.called
 
+    def test_redirect_changes_url(self):
+        self.add_argv(['--url', self.base_url, '--enumerate', 'p'])
 
+        # Trigger redirect:
+        base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
+        m = self.mock_controller('drupal', 'determine_scanning_method',
+                side_effect=[base_url_https, 'forbidden'])
+
+        enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
+        self.app.run()
+
+        self.assert_args_contains(enum, 0, base_url_https)
