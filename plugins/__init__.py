@@ -308,7 +308,7 @@ class BasePluginInternal(controller.CementBaseController):
 
             p = ProgressBar(sys.stdout)
             items_progressed = 0
-            items_total = len(base_urls) * max_iterator
+            items_total = len(base_urls) * int(max_iterator)
 
             no_results = True
             found = []
