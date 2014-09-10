@@ -85,12 +85,13 @@ class BaseTest(test.CementTestCase):
         args, kwargs = mocked_method.call_args
         assert args[position] == expected_value
 
-    def respond_several(self, base_url, data_obj, verb=responses.HEAD):
+    def respond_several(self, base_url, data_obj, verb=responses.HEAD, headers=[]):
         for status_code in data_obj:
             for item in data_obj[status_code]:
                 url = base_url % item
                 responses.add(verb, url,
-                        body=str(status_code), status=status_code)
+                        body=str(status_code), status=status_code,
+                        adding_headers=headers)
 
     def mock_all_enumerate(self, plugin_name):
         all = []

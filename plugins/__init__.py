@@ -243,7 +243,8 @@ class BasePluginInternal(controller.CementBaseController):
             return base_url(redirect_url)
 
         if not ok_200:
-            common.warn("Known regular file '%s' returned status code %s instead of 200 as expected." % (reg, ok_resp.status_code))
+            common.warn("Known regular file '%s' returned status code %s instead of 200 as expected." %
+                    (reg, ok_resp.status_code))
 
         if folder_resp.status_code == 403 and ok_200:
             return ScanningMethod.forbidden

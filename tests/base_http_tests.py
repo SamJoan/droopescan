@@ -352,3 +352,15 @@ class BaseHttpTests(BaseTest):
         self.app.run()
 
         self.assert_args_contains(enum, 0, base_url_https)
+
+    def test_redirect_is_detected(self):
+        base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
+
+        self.respond_several(self.base_url + "%s", {301: ["misc/",
+            "misc/drupal.js"]}, headers={'location': base_url_https})
+
+        result = self.scanner.determine_scanning_method(self.base_url,
+                Verb.head)
+
+        assert result == base_url_https
+
