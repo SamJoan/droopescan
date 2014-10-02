@@ -1,9 +1,10 @@
 Add;
     
     Generic UI improvements:
-        -> Detect redirects. If redirected to https, or from non-www to www, or
-            viceversa.
-        -> Reduce default theme number to something smaller, it is not that
-            important.
+        - Update SS updating procedure.
+        - Update SS & Drupal.
+
+    NTH:
+        - Remove DNN? Fix DNN using some crazy mechanism involving JS?
 
     After all the above is done, up version to 1.x
