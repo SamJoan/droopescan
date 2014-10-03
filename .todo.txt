@@ -8,3 +8,52 @@ Add;
         - Remove DNN? Fix DNN using some crazy mechanism involving JS?
 
     After all the above is done, up version to 1.x
+
+
+    ---
+
+    http://2013.kiwicon.org/the-con/talks.1#e113
+    http://2013.kiwicon.org/the-con/talks.1#e116
+    
+
+We all know about WordPress and it's (in)security. What about other CMSes? What about NZ made? Introducing DroopeScan, "the WhatWeb for SilverStripe and Drupal". In this talk, we will see how effective the tool is in 
+identifying versions and plugins. We will also see what the landscape looks like for Drupal and Silverstripe installations in two countries.
+
+
+Name/Handle: droope
+---
+Talk Title: CMS Hell
+Abstract: We all know about Wordpress and its (in)security. What about other CMSes? What
+about NZ made ones? Introducing Droopescan, the WhatWeb for SilverStripe and
+Drupal. In this talk we will see how effective the tool is in identifying
+versions and plugins. We will also see what the landscape looks like for Drupal
+and SilverStripe in two countries.
+--
+Talk Title: CMS Hell
+Abstract: What would happen if we went ahead and scanned the whole IP range of China and
+New Zealand in order to find outdated CMS installations? With the use of a new
+tool for scanning Drupal and SilverStripe installations, we'll find out during
+this talk.
+--
+Talk Title: Communist Mass Scan (CMS) Hell
+Abstract: We use various tools to scan China's IP range in search of
+vulnerabilities which would allow us to attack several Wordpress and
+SilverStripe installations. We also take this opportunity to present an
+extensible in-house tool for the scanning of SilverStripe and Drupal.
+--
+Talk Title: Hacking Drupal & Silverstripe || CMS Hell
+Abstract: We all know about Wordpress and its (in)security. What about other
+CMSes? What about NZ made ones? What would happen if we scanned the whole IP
+range of China and New Zealand in an attempt to find outdated versions and
+outdated plugins and themes? 
+
+Introducing 'droopescan', the wp-scan for Drupal and SilverStripe. In this talk
+we will see how effective the tool is in identifying versions and plugins. We
+will also see how the landscape looks like for installations of these CMSs in
+two countries.
+---
+Duration: 30 mins
+Bio: Originally from SA (South America), I've come to NZ and ended up working
+    for SA (Security-Assessment.com). New to penetration testing, but have a
+    background in development in several languages.
+Origin: Uruguay
