@@ -12,13 +12,6 @@ Add;
 
     ---
 
-    http://2013.kiwicon.org/the-con/talks.1#e113
-    http://2013.kiwicon.org/the-con/talks.1#e116
-    
-
-We all know about WordPress and it's (in)security. What about other CMSes? What about NZ made? Introducing DroopeScan, "the WhatWeb for SilverStripe and Drupal". In this talk, we will see how effective the tool is in 
-identifying versions and plugins. We will also see what the landscape looks like for Drupal and Silverstripe installations in two countries.
-
 Name/Handle: droope
 Talk Title: CMS Hell
 Abstract: We all know about Wordpress and its (in)security. What about other

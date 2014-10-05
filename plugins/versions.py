@@ -134,16 +134,20 @@ class SSVersions(VersionGetterBase):
         """
             @see VersionGetterBase.newer_get
         """
-        base_url = 'http://www.silverstripe.org/release-archive/'
+        base_url = 'http://www.silverstripe.org/software/download/release-archive/'
         resp = requests.get(base_url)
         soup = BeautifulSoup(resp.text)
 
-        download_links = soup.select('.download-releases a.noicon')
+        download_links = soup.select('ul.download-links.list-unstyled a')
         newer = {}
         assert len(download_links) > 0
         for dl_link in download_links:
-            if dl_link.text == 'cms.tar.gz':
-                url = dl_link.get('href')
+            url = dl_link.get('href')
+
+            is_tar = url.endswith('.tar.gz')
+            is_cms = "SilverStripe-cms-" in url
+
+            if is_tar and is_cms:
                 prefix = 'SilverStripe-cms-v'
                 v_start = url.index(prefix) + len(prefix)
                 v_end = url.index('.tar.gz')
@@ -180,16 +184,17 @@ class Versions(HumanBasePlugin):
                     help='Which CMS to generate the XML for', choices=['drupal',
                         'ss', 'drupal_select'])),
                 (['--selection', '-s'], dict(action='store',
-                    help='Comma separated list of versions for DrupalSelectVersions'))
+                    help='Comma separated list of versions for drupal_select.'))
             ]
 
     @controller.expose(help='', hide=True)
     def default(self):
         # Get the VersionGetter.
         cms = self.app.pargs.cms
+        additional_params = None
         if cms == "drupal":
             vg = DrupalVersions()
-            versions_file = versions_file
+            versions_file = Drupal.versions_file
         elif cms == "ss":
             vg = SSVersions()
             versions_file = SilverStripe.versions_file
