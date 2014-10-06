@@ -17,7 +17,6 @@ class Release(HumanBasePlugin):
     test_runs = [
             ['scan', 'drupal', '--url', 'https://www.drupal.org'],
             ['scan', 'silverstripe', '--url', 'http://demo.silverstripe.org'],
-            ['scan', 'dnn', '--url', 'http://www.dnnsoftware.com'],
         ]
 
     class Meta:

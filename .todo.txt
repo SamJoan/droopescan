@@ -1,14 +1,6 @@
 Add;
-    
-    Generic UI improvements:
-        - Update SS updating procedure.
-        - Update SS & Drupal.
-
-    NTH:
-        - Remove DNN? Fix DNN using some crazy mechanism involving JS?
 
     After all the above is done, up version to 1.x
-
 
     ---
 
