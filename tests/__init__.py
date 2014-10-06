@@ -76,6 +76,7 @@ class BaseTest(test.CementTestCase):
             @param kwarg_value expected value. E.g. 'https://www.drupal.org/'
         """
         args, kwargs = mocked_method.call_args
+        print kwargs, kwarg_name, kwarg_value
         assert kwargs[kwarg_name] == kwarg_value, "Parameter is not as expected."
 
     def assert_args_contains(self, mocked_method, position, expected_value):

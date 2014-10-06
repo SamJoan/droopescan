@@ -30,10 +30,17 @@ class BaseTests(BaseTest):
         super(BaseTests, self).setUp()
         self._init_scanner()
 
-    @test.raises(SystemExit)
+    @test.raises(RuntimeError)
     def test_errors_when_no_url(self):
         with capture_sys_output() as (stdout, stderr):
             self.add_argv(['scan', 'drupal'])
+            self.app.run()
+
+    @test.raises(IOError)
+    def test_fails_io_when_url_file(self):
+        with capture_sys_output() as (stdout, stderr):
+            self.add_argv(['scan', 'drupal'])
+            self.add_argv(['--url-file', '/tmp/NONEXISTANTFILE'])
             self.app.run()
 
     @test.raises(RuntimeError)
@@ -135,4 +142,3 @@ class BaseTests(BaseTest):
 
         assert a == '10%)'
         assert " ===== " in u.get()
-

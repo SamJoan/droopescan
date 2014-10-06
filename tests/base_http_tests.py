@@ -364,3 +364,6 @@ class BaseHttpTests(BaseTest):
 
         assert result == base_url_https
 
+    def test_invalid_url_file_warns(self):
+        assert False
+

@@ -37,6 +37,9 @@ class Verb():
     get = 'get'
 
 def validate_url(url):
+    if not url:
+        fatal("--url parameter is required.")
+
     if not re.match(r"^http", url):
         fatal("--url parameter invalid.")
 

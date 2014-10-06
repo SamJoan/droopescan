@@ -21,7 +21,9 @@ class AbstractArgumentController(controller.CementBaseController):
         argument_formatter = common.SmartFormatter
 
         arguments = [
-                (['--url'], dict(action='store', help='', required=True)),
+                (['--url'], dict(action='store', help='')),
+                (['--url-file'], dict(action='store', help='''A file which
+                    contains a list of URLs.''')),
                 (['--enumerate', '-e'], dict(action='store', help='R|' +
                     template('help_enumerate.tpl'),
                     choices=enum_list(Enumerate), default='a')),
@@ -77,35 +79,26 @@ class BasePluginInternal(controller.CementBaseController):
     def _options_and_session_init(self):
         pargs = self.app.pargs
 
-        url = common.validate_url(pargs.url)
-        number = pargs.number if not pargs.number == 'all' else 100000
+        if pargs.url_file != None:
+            url_file = pargs.url_file
+        else:
+            url = common.validate_url(pargs.url)
+
         threads = pargs.threads
         enumerate = pargs.enumerate
         verb = pargs.verb
+        method = pargs.method
+        number = pargs.number if not pargs.number == 'all' else 100000
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
         themes_base_url = self.getattr(pargs, 'themes_base_url')
 
-        if self.can_enumerate_plugins or self.can_enumerate_themes:
-            scanning_method = pargs.method
-            if not scanning_method:
-                scanning_method = self.determine_scanning_method(url, verb)
-
-                redirected = scanning_method not in enum_list(ScanningMethod)
-                if redirected:
-                    pargs.url = scanning_method
-                    return self._options_and_session_init()
-
-        else:
-            scanning_method = None
 
         # all variables here will be returned.
         return locals()
 
     def _base_kwargs(self, opts):
         kwargs_plugins = {
-            'url': opts['url'],
-            'scanning_method': opts['scanning_method'],
             'threads': opts['threads'],
             'verb': opts['verb'],
         }
@@ -137,7 +130,6 @@ class BasePluginInternal(controller.CementBaseController):
                 'func': getattr(self, 'enumerate_version'),
                 'template': 'enumerate_version.tpl',
                 'kwargs': {
-                    'url': opts['url'],
                     'versions_file': self.versions_file,
                     'verb': opts['verb'],
                     'threads': opts['threads'],
@@ -147,7 +139,6 @@ class BasePluginInternal(controller.CementBaseController):
                 'func': getattr(self, 'enumerate_interesting'),
                 'template': 'enumerate_interesting.tpl',
                 'kwargs': {
-                    'url': opts['url'],
                     'verb': opts['verb'],
                     'interesting_urls': self.interesting_urls,
                     'threads': opts['threads']
@@ -193,6 +184,33 @@ class BasePluginInternal(controller.CementBaseController):
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)
 
+        if 'url_file' in opts:
+            url_file = open(opts['url_file'])
+            urls = url_file.readline()
+            for url in urls:
+                url = common.validate_url(url.strip('\n'))
+                self.url_scan(url, opts, functionality, enabled_functionality)
+
+            url_file.close()
+        else:
+            self.url_scan(opts['url'], opts, functionality, enabled_functionality)
+
+        common.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
+                str(datetime.now() - time_start))
+
+    def url_scan(self, url, opts, functionality, enabled_functionality):
+        if self.can_enumerate_plugins or self.can_enumerate_themes:
+            scanning_method = opts['method']
+            if not scanning_method:
+                scanning_method = self.determine_scanning_method(url, opts['verb'])
+
+                redirected = scanning_method not in enum_list(ScanningMethod)
+                if redirected:
+                    new_url = scanning_method
+                    return self.url_scan(new_url, opts, functionality, enabled_functionality)
+        else:
+            scanning_method = None
+
         enumerating_all = opts['enumerate'] == 'a'
         if enumerating_all:
             common.echo(common.template('scan_begin.tpl', {'noun': 'all', 'url':
@@ -205,7 +223,13 @@ class BasePluginInternal(controller.CementBaseController):
 
             # Call to the respective functions occurs here.
             enum = functionality[enumerate]
-            finds, is_empty = enum['func'](**enum['kwargs'])
+
+            kwargs = dict(enum['kwargs'])
+            kwargs['url'] = url
+            if enumerate in ['themes', 'plugins']:
+                kwargs['scanning_method'] = scanning_method
+
+            finds, is_empty = enum['func'](**kwargs)
 
             template_params = {
                     'noun': enumerate,
@@ -215,9 +239,6 @@ class BasePluginInternal(controller.CementBaseController):
                 }
 
             common.echo(common.template(enum['template'], template_params))
-
-        common.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
-                str(datetime.now() - time_start))
 
     def determine_scanning_method(self, url, verb):
         requests_method = getattr(self.session, verb)

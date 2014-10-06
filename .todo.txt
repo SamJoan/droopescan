@@ -1,6 +1,9 @@
 Add;
 
-    After all the above is done, up version to 1.x
+    For 1.8:
+        - Accept input from file.
+        - Thread that per-site.
+        - Output as JSON.
 
     ---
 
