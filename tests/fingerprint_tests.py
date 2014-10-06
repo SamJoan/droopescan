@@ -18,7 +18,7 @@ class FingerprintTests(BaseTest):
     '''
 
     versions_xsd = 'common/versions.xsd'
-    xml_file = 'tests/versions.xml'
+    xml_file = 'tests/resources/versions.xml'
 
     class MockHash():
         files = None

@@ -364,6 +364,49 @@ class BaseHttpTests(BaseTest):
 
         assert result == base_url_https
 
-    def test_invalid_url_file_warns(self):
-        assert False
+    @test.raises(RuntimeError)
+    @patch.object(common, 'warn')
+    def test_invalid_url_file_warns(self, warn):
+        """
+            Test that when using a URL file, instead of throwing a fatal
+            exception, a warning is given.
 
+            Temporarilly test that an exception is thrown.
+        """
+        self.add_argv(['--url-file', 'tests/resources/url_file_invalid.txt'])
+
+        self.app.run()
+
+    def test_url_file_calls_all(self):
+        self.add_argv(['--url-file', self.valid_file])
+
+        url_scan = self.mock_controller('drupal', 'url_scan')
+        self.app.run()
+
+        assert url_scan.call_count == 3
+
+    def test_url_file_calls_properly(self):
+        self.add_argv(['--url-file', self.valid_file, '-n', '0'])
+
+        all_mocks = self.mock_all_enumerate('drupal')
+        self.mock_all_url_file(self.valid_file)
+
+        self.app.run()
+
+        for mock in all_mocks:
+            assert mock.call_count == 3
+
+    def test_url_file_respects_enumerate(self):
+        self.add_argv(['--url-file', self.valid_file, '-n', '0', '-e', 'v'])
+
+        ev = self.mock_controller('drupal', 'enumerate_version')
+        self.mock_all_url_file(self.valid_file)
+
+        self.app.run()
+
+        assert ev.call_count == 3
+
+    def test_url_file_exceptions_are_caught(self):
+        self.add_argv(['--url-file', 'tests/resources/url_file_invalid.txt'])
+
+        self.app.run()

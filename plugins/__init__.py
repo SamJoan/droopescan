@@ -21,8 +21,8 @@ class AbstractArgumentController(controller.CementBaseController):
         argument_formatter = common.SmartFormatter
 
         arguments = [
-                (['--url'], dict(action='store', help='')),
-                (['--url-file'], dict(action='store', help='''A file which
+                (['-u', '--url'], dict(action='store', help='')),
+                (['-U', '--url-file'], dict(action='store', help='''A file which
                     contains a list of URLs.''')),
                 (['--enumerate', '-e'], dict(action='store', help='R|' +
                     template('help_enumerate.tpl'),
@@ -186,12 +186,26 @@ class BasePluginInternal(controller.CementBaseController):
 
         if 'url_file' in opts:
             url_file = open(opts['url_file'])
-            urls = url_file.readline()
-            for url in urls:
-                url = common.validate_url(url.strip('\n'))
-                self.url_scan(url, opts, functionality, enabled_functionality)
+            try:
+                with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
+                    results = []
+                    for url in url_file:
+                        args = [url, opts, functionality, enabled_functionality]
 
-            url_file.close()
+                        future = executor.submit(self.url_scan, *args)
+
+                        results.append({
+                            'future': future,
+                            'url': url,
+                        })
+
+                    for result in results:
+                        try:
+                            result['future'].result()
+                        except:
+                            pass
+            finally:
+                url_file.close()
         else:
             self.url_scan(opts['url'], opts, functionality, enabled_functionality)
 
@@ -199,6 +213,7 @@ class BasePluginInternal(controller.CementBaseController):
                 str(datetime.now() - time_start))
 
     def url_scan(self, url, opts, functionality, enabled_functionality):
+        url = common.validate_url(url.strip('\n'))
         if self.can_enumerate_plugins or self.can_enumerate_themes:
             scanning_method = opts['method']
             if not scanning_method:
@@ -214,12 +229,12 @@ class BasePluginInternal(controller.CementBaseController):
         enumerating_all = opts['enumerate'] == 'a'
         if enumerating_all:
             common.echo(common.template('scan_begin.tpl', {'noun': 'all', 'url':
-                opts['url']}))
+                url}))
 
         for enumerate in enabled_functionality:
             if not enumerating_all:
                 common.echo(common.template('scan_begin.tpl', {'noun': enumerate,
-                    'url': opts['url']}))
+                    'url': url}))
 
             # Call to the respective functions occurs here.
             enum = functionality[enumerate]

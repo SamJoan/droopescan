@@ -12,6 +12,7 @@ class BaseTest(test.CementTestCase):
     scanner = None
 
     base_url = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
+    valid_file = 'tests/resources/url_file_valid.txt'
 
     param_base = ["--url", base_url, '-n', '10']
     param_plugins = param_base + ["-e", 'p']
@@ -76,7 +77,6 @@ class BaseTest(test.CementTestCase):
             @param kwarg_value expected value. E.g. 'https://www.drupal.org/'
         """
         args, kwargs = mocked_method.call_args
-        print kwargs, kwarg_name, kwarg_value
         assert kwargs[kwarg_name] == kwarg_value, "Parameter is not as expected."
 
     def assert_args_contains(self, mocked_method, position, expected_value):
@@ -102,5 +102,11 @@ class BaseTest(test.CementTestCase):
         all.append(self.mock_controller(plugin_name, 'enumerate_version'))
 
         return all
+
+    def mock_all_url_file(self, url_file):
+        with open(url_file) as f:
+            for url in f:
+                self.respond_several(url.strip('\n') + '%s', {200: ['misc/',
+                    'misc/drupal.js']})
 
 
