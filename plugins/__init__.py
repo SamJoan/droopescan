@@ -203,6 +203,7 @@ class BasePluginInternal(controller.CementBaseController):
                         try:
                             result['future'].result()
                         except:
+                            raise
                             exc = traceback.format_exc()
                             common.warn(exc)
 
@@ -216,15 +217,11 @@ class BasePluginInternal(controller.CementBaseController):
 
     def url_scan(self, url, opts, functionality, enabled_functionality):
         url = common.validate_url(url.strip('\n'))
+
         if self.can_enumerate_plugins or self.can_enumerate_themes:
             scanning_method = opts['method']
             if not scanning_method:
                 scanning_method = self.determine_scanning_method(url, opts['verb'])
-
-                redirected = scanning_method not in enum_list(ScanningMethod)
-                if redirected:
-                    new_url = scanning_method
-                    return self.url_scan(new_url, opts, functionality, enabled_functionality)
         else:
             scanning_method = None
 
@@ -258,6 +255,16 @@ class BasePluginInternal(controller.CementBaseController):
             common.echo(common.template(enum['template'], template_params))
 
     def determine_scanning_method(self, url, verb):
+        scanning_method = self._determine_scanning_method(url, verb)
+
+        redirected = scanning_method not in enum_list(ScanningMethod)
+        if redirected:
+            new_url = scanning_method
+            return self.determine_scanning_method(new_url, verb)
+
+        return scanning_method
+
+    def _determine_scanning_method(self, url, verb):
         requests_method = getattr(self.session, verb)
         folder_resp = requests_method(url + self.folder_url)
 
@@ -294,8 +301,18 @@ class BasePluginInternal(controller.CementBaseController):
             common.warn('Known folder names for %s are returning 200 OK. Is directory listing enabled?' % self._meta.label)
             return ScanningMethod.ok
         else:
-            common.fatal('It is possible that the website is not running %s. If you disagree, please specify a --method.' %
-                    self._meta.label)
+            self._error_determine_scanning(folder_resp, folder_redirect, ok_200)
+
+    def _error_determine_scanning(self, folder_resp, folder_redirect, ok_200):
+        loc = folder_resp.headers['location'] if folder_redirect else 'not present as not a redirect'
+        ok_human = '200 status' if ok_200 else 'non-200 status.'
+        info = '''Expected folder returned status '%s' (location header
+            %s), expected file returned %s.''' % (folder_resp.status_code,
+            loc, ok_human)
+
+        common.warn(info)
+        common.fatal('It is possible that the website is not running %s. If you disagree, please specify a --method.' %
+                self._meta.label)
 
     def plugins_get(self, amount=100000):
         amount = int(amount)
