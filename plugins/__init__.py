@@ -6,7 +6,7 @@ from datetime import datetime
 from distutils.util import strtobool
 from requests import Session
 import common, hashlib
-import sys, tempfile, os
+import sys, tempfile, os, traceback
 
 class AbstractArgumentController(controller.CementBaseController):
 
@@ -203,7 +203,9 @@ class BasePluginInternal(controller.CementBaseController):
                         try:
                             result['future'].result()
                         except:
-                            pass
+                            exc = traceback.format_exc()
+                            common.warn(exc)
+
             finally:
                 url_file.close()
         else:

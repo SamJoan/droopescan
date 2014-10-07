@@ -106,7 +106,7 @@ class BaseTest(test.CementTestCase):
     def mock_all_url_file(self, url_file):
         with open(url_file) as f:
             for url in f:
-                self.respond_several(url.strip('\n') + '%s', {200: ['misc/',
-                    'misc/drupal.js']})
+                self.respond_several(url.strip('\n') + '%s', {403: ['misc/'],
+                    200: [ 'misc/drupal.js']})
 
 

@@ -364,7 +364,6 @@ class BaseHttpTests(BaseTest):
 
         assert result == base_url_https
 
-    @test.raises(RuntimeError)
     @patch.object(common, 'warn')
     def test_invalid_url_file_warns(self, warn):
         """
@@ -373,9 +372,14 @@ class BaseHttpTests(BaseTest):
 
             Temporarilly test that an exception is thrown.
         """
-        self.add_argv(['--url-file', 'tests/resources/url_file_invalid.txt'])
+        invalid_url_file = 'tests/resources/url_file_invalid.txt'
+        self.add_argv(['--url-file', invalid_url_file])
 
+        all_mocks = self.mock_all_enumerate('drupal')
+        self.mock_all_url_file(invalid_url_file)
         self.app.run()
+
+        assert warn.call_count == 2
 
     def test_url_file_calls_all(self):
         self.add_argv(['--url-file', self.valid_file])
