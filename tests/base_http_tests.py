@@ -351,6 +351,7 @@ class BaseHttpTests(BaseTest):
         enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
         self.app.run()
 
+        print enum.call_args_list
         self.assert_args_contains(enum, 0, base_url_https)
 
     def test_redirect_is_detected(self):

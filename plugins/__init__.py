@@ -203,7 +203,6 @@ class BasePluginInternal(controller.CementBaseController):
                         try:
                             result['future'].result()
                         except:
-                            raise
                             exc = traceback.format_exc()
                             common.warn(exc)
 
@@ -260,7 +259,7 @@ class BasePluginInternal(controller.CementBaseController):
         redirected = scanning_method not in enum_list(ScanningMethod)
         if redirected:
             new_url = scanning_method
-            return self.determine_scanning_method(new_url, verb)
+            return self._determine_scanning_method(new_url, verb)
 
         return scanning_method
 
