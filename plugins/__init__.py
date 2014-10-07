@@ -220,7 +220,7 @@ class BasePluginInternal(controller.CementBaseController):
         if self.can_enumerate_plugins or self.can_enumerate_themes:
             scanning_method = opts['method']
             if not scanning_method:
-                scanning_method = self.determine_scanning_method(url, opts['verb'])
+                scanning_method, url = self.determine_scanning_method(url, opts['verb'])
         else:
             scanning_method = None
 
@@ -254,14 +254,22 @@ class BasePluginInternal(controller.CementBaseController):
             common.echo(common.template(enum['template'], template_params))
 
     def determine_scanning_method(self, url, verb):
+        """
+            @param url the URL to determine scanning based on.
+            @param verb the verb, e.g. head, or get.
+            @return scanning_method, url. This is because in case of redirects,
+                a new URL may be returned.
+        """
         scanning_method = self._determine_scanning_method(url, verb)
 
         redirected = scanning_method not in enum_list(ScanningMethod)
         if redirected:
             new_url = scanning_method
-            return self._determine_scanning_method(new_url, verb)
+            scanning_method = self._determine_scanning_method(new_url, verb)
+        else:
+            new_url = url
 
-        return scanning_method
+        return scanning_method, new_url
 
     def _determine_scanning_method(self, url, verb):
         requests_method = getattr(self.session, verb)

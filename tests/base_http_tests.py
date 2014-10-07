@@ -179,8 +179,8 @@ class BaseHttpTests(BaseTest):
         self.add_argv(['--url', self.base_url[:-1], '--enumerate', 'p'])
 
         # Mock return value so as not to trigger redirects.
-        m = self.mock_controller('drupal', 'determine_scanning_method',
-                side_effect=lambda x,a: "forbidden")
+        m = self.mock_controller('drupal', '_determine_scanning_method',
+                side_effect=["forbidden"])
 
         self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
@@ -225,7 +225,7 @@ class BaseHttpTests(BaseTest):
         self.respond_several(self.base_url + "%s", {200: ["misc/",
             "misc/drupal.js"], 404: ["misc/drupal_old.js"]})
 
-        scanning_method = self.scanner.determine_scanning_method(self.base_url,
+        scanning_method = self.scanner._determine_scanning_method(self.base_url,
                 'head')
 
         assert scanning_method == ScanningMethod.ok
@@ -345,7 +345,7 @@ class BaseHttpTests(BaseTest):
 
         # Trigger redirect:
         base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
-        m = self.mock_controller('drupal', 'determine_scanning_method',
+        m = self.mock_controller('drupal', '_determine_scanning_method',
                 side_effect=[base_url_https, 'forbidden'])
 
         enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
@@ -360,7 +360,7 @@ class BaseHttpTests(BaseTest):
         self.respond_several(self.base_url + "%s", {301: ["misc/",
             "misc/drupal.js"]}, headers={'location': base_url_https})
 
-        result = self.scanner.determine_scanning_method(self.base_url,
+        result = self.scanner._determine_scanning_method(self.base_url,
                 Verb.head)
 
         assert result == base_url_https
