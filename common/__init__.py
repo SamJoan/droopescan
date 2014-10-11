@@ -2,6 +2,7 @@ from __future__ import print_function
 from cement.core import handler
 import argparse
 import hashlib
+import json
 import logging
 import pystache
 import re
@@ -32,6 +33,10 @@ class ScanningMethod():
     not_found = 'not_found'
     forbidden = 'forbidden'
     ok = 'ok'
+
+class ValidOutputs():
+    standard = 'standard'
+    json = 'json'
 
 class Verb():
     head = 'head'
@@ -96,19 +101,53 @@ def template(template_file, variables={}):
 
 class StandardOutput():
     def echo(self, msg):
+        """
+            For miscelaneous messages. E.g. "Initializing scanning".
+        """
         print(msg)
 
+    def result(self, result, functionality):
+        """
+            For the final result of the scan.
+            @param result as returned by BasePluginInternal.url_scan
+        """
+        for enumerate in result:
+            result_ind = result[enumerate]
+            finds = result_ind['finds']
+            is_empty = result_ind['is_empty']
+
+            template_str = functionality[enumerate]['template']
+            template_params = {
+                    'noun': enumerate,
+                    'Noun': enumerate.capitalize(),
+                    'items': finds,
+                    'empty': is_empty,
+                }
+
+            self.echo(template(template_str, template_params))
+
     def warn(self, msg):
+        """
+            For things that have gone seriously wrong but don't merit a program
+            halt.
+            Outputs to stderr, so JsonOutput does not need to override.
+        """
         print(textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79),
                 file=sys.stderr)
 
     def fatal(self, msg):
+        """
+            For errors so grave that the program cannot continue.
+        """
         msg = textwrap.fill(colors['red'] + "[+] " + msg + colors['endc'], 79)
         raise RuntimeError(msg)
 
 class JsonOutput(StandardOutput):
     def echo(self, msg):
         pass
+
+    def result(self, result, functionality=None):
+        print(json.dumps(result))
 
 def is_string(var):
     return isinstance(var, basestring)

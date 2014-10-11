@@ -1,4 +1,4 @@
-# A tool for scanning several CMSs.
+# A tool for scanning CMSs.
 
 Usage:
 
@@ -22,6 +22,23 @@ installed by running the following command:
 <pre>
 pip install requirements.txt
 </pre>
+
+# Scan types.
+
+Droopescan aims to be the most aggressive by default, while not overloading the
+target server due to excessive requests. Due to this, by default, a large number
+of requests will be made with a single thread; you can increase this default by
+using the `--threads` argument.
+
+This tool is able to perform four kinds of tests:
+
+* Plugin checks: Performs several hundred requests and returns a listing of all
+plugins found to be installed in the target host.
+* Theme checks: As above, but for themes.
+* Version checks: Downloads several files and, based on the checksums of these
+files, returns a list of all possible versions. 
+* Interesting url checks: Checks for interesting urls (admin panels, readme
+files, etc.)
 
 # Authentication.
 
@@ -49,6 +66,56 @@ machine secret.google.com
 
 *WARNING:* By design, to allow intercepting proxies, this application allows
 self-signed or otherwise invalid certificates.
+
+# Output.
+
+This application supports both "standard output", meant for human consumption,
+or JSON, which is more suitable for machine consumption.
+
+This can be controlled with the `--output` flag, and some sample JSON output
+would look as follows:
+
+<pre>
+{
+  "themes": {
+    "is_empty": true,
+    "finds": [
+      
+    ]
+  },
+  "interesting urls": {
+    "is_empty": false,
+    "finds": [
+      {
+        "url": "https:\/\/www.drupal.org\/CHANGELOG.txt",
+        "description": "Default changelog file."
+      },
+      {
+        "url": "https:\/\/www.drupal.org\/user\/login",
+        "description": "Default admin."
+      }
+    ]
+  },
+  "version": {
+    "is_empty": false,
+    "finds": [
+      "7.29",
+      "7.30",
+      "7.31"
+    ]
+  },
+  "plugins": {
+    "is_empty": false,
+    "finds": [
+      {
+        "url": "https:\/\/www.drupal.org\/sites\/all\/modules\/views\/",
+        "name": "views"
+      },
+      [...snip...]
+    ]
+  }
+}
+</pre>
 
 # Testing
 

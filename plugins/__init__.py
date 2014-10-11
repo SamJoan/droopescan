@@ -1,7 +1,7 @@
 from cement.core import handler, controller
 from common import template, enum_list, dict_combine, base_url
 from common import Verb, ScanningMethod, Enumerate, VersionsFile, ProgressBar, \
-        StandardOutput
+        StandardOutput, ValidOutputs, JsonOutput
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from distutils.util import strtobool
@@ -30,6 +30,8 @@ class AbstractArgumentController(controller.CementBaseController):
                     choices=enum_list(Enumerate), default='a')),
                 (['--method'], dict(action='store', help='R|' +
                     template('help_method.tpl'), choices=enum_list(ScanningMethod))),
+                (['--output', '-o'], dict(action='store', help='Output format',
+                    choices=enum_list(ValidOutputs), default='standard')),
                 (['--number', '-n'], dict(action='store', help='''Number of
                     words to attempt from the plugin/theme dictionary. Default
                     is 1000. Use -n 'all' to use all available.''', default=1000)),
@@ -98,6 +100,7 @@ class BasePluginInternal(controller.CementBaseController):
         enumerate = pargs.enumerate
         verb = pargs.verb
         method = pargs.method
+        output = pargs.output
         number = pargs.number if not pargs.number == 'all' else 100000
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
@@ -188,14 +191,19 @@ class BasePluginInternal(controller.CementBaseController):
 
     def plugin_init(self):
         time_start = datetime.now()
-        self._general_init()
         opts = self._options_and_session_init()
+
+        if opts['output'] == 'json':
+            output = JsonOutput()
+            self._general_init(output=output)
+        else:
+            self._general_init()
+
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)
 
         if 'url_file' in opts:
-            url_file = open(opts['url_file'])
-            try:
+            with open(opts['url_file']) as url_file:
                 with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
                     results = []
                     for url in url_file:
@@ -210,15 +218,17 @@ class BasePluginInternal(controller.CementBaseController):
 
                     for result in results:
                         try:
-                            result['future'].result()
+                            output = result['future'].result()
+                            self.out.result(output, functionality)
                         except:
                             exc = traceback.format_exc()
                             self.out.warn(exc)
 
-            finally:
-                url_file.close()
         else:
-            self.url_scan(opts['url'], opts, functionality, enabled_functionality)
+            output = self.url_scan(opts['url'], opts, functionality,
+                    enabled_functionality)
+
+            self.out.result(output, functionality)
 
         self.out.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
                 str(datetime.now() - time_start))
@@ -238,29 +248,26 @@ class BasePluginInternal(controller.CementBaseController):
             self.out.echo(common.template('scan_begin.tpl', {'noun': 'all', 'url':
                 url}))
 
+        result = {}
         for enumerate in enabled_functionality:
             if not enumerating_all:
                 self.out.echo(common.template('scan_begin.tpl', {'noun': enumerate,
                     'url': url}))
 
-            # Call to the respective functions occurs here.
             enum = functionality[enumerate]
 
+            # Get the arguments for the function.
             kwargs = dict(enum['kwargs'])
             kwargs['url'] = url
             if enumerate in ['themes', 'plugins']:
                 kwargs['scanning_method'] = scanning_method
 
+            # Call to the respective functions occurs here.
             finds, is_empty = enum['func'](**kwargs)
 
-            template_params = {
-                    'noun': enumerate,
-                    'Noun': enumerate.capitalize(),
-                    'items': finds,
-                    'empty': is_empty,
-                }
+            result[enumerate] = {'finds': finds, 'is_empty': is_empty}
 
-            self.out.echo(common.template(enum['template'], template_params))
+        return result
 
     def determine_scanning_method(self, url, verb):
         """

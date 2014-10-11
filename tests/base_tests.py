@@ -1,5 +1,5 @@
 from cement.utils import test
-from common import file_len, ProgressBar
+from common import file_len, ProgressBar, JsonOutput
 from common.testutils import decallmethods, MockBuffer
 from contextlib import contextmanager
 from plugins.drupal import Drupal
@@ -142,3 +142,24 @@ class BaseTests(BaseTest):
 
         assert a == '10%)'
         assert " ===== " in u.get()
+
+    def test_can_choose_output(self):
+        output = JsonOutput()
+        self.scanner._general_init(output=output)
+
+        assert isinstance(self.scanner.out, JsonOutput)
+
+    def test_can_choose_output_argv(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(self.param_plugins)
+        self.add_argv(['--output', 'json'])
+
+        m = self.mock_controller('drupal', '_general_init')
+
+        try:
+            self.app.run()
+        except:
+            pass
+
+        args, kwargs = m.call_args
+        assert isinstance(kwargs['output'], JsonOutput)
