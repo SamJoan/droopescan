@@ -33,7 +33,7 @@ class BaseTest(test.CementTestCase):
 
     def _init_scanner(self):
         self.scanner = Drupal()
-        self.scanner._session_init("user agent")
+        self.scanner._general_init("user agent")
 
     def tearDown(self):
         self.app.close()

@@ -36,12 +36,21 @@ class Verb():
     head = 'head'
     get = 'get'
 
-def validate_url(url):
+def validate_url(url, out):
+    """
+        Checks if a URL is valid and calls fatal() if not. It also returns a
+        patched-up version of URL, with e.g. an ending slash, if it didn't have
+        one.
+        @param url url to check
+        @param out instance of StandardOutput as defined in this lib.
+    """
     if not url:
-        fatal("--url parameter is required.")
+        out.fatal("--url parameter is required.")
+
+    url = url.strip('\n')
 
     if not re.match(r"^http", url):
-        fatal("--url parameter invalid.")
+        out.fatal("--url parameter invalid.")
 
     # add '/' to urls which do not end with '/' already.
     if not url.endswith("/"):
@@ -84,15 +93,16 @@ def template(template_file, variables={}):
 
     return pystache.render(template, variables)
 
-def echo(msg):
-    print(msg)
+class StandardOutput():
+    def echo(self, msg):
+        print(msg)
 
-def warn(msg):
-    print textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79)
+    def warn(self, msg):
+        print textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79)
 
-def fatal(msg):
-    msg = textwrap.fill(colors['red'] + "[+] " + msg + colors['endc'], 79)
-    raise RuntimeError(msg)
+    def fatal(self, msg):
+        msg = textwrap.fill(colors['red'] + "[+] " + msg + colors['endc'], 79)
+        raise RuntimeError(msg)
 
 def is_string(var):
     return isinstance(var, basestring)

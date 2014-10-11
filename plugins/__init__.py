@@ -1,6 +1,7 @@
 from cement.core import handler, controller
 from common import template, enum_list, dict_combine, base_url
-from common import Verb, ScanningMethod, Enumerate, VersionsFile, ProgressBar
+from common import Verb, ScanningMethod, Enumerate, VersionsFile, ProgressBar, \
+        StandardOutput
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from distutils.util import strtobool
@@ -51,6 +52,7 @@ class AbstractArgumentController(controller.CementBaseController):
 class BasePluginInternal(controller.CementBaseController):
 
     requests = None
+    out = None
     DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
 
     class Meta:
@@ -71,10 +73,12 @@ class BasePluginInternal(controller.CementBaseController):
             except AttributeError:
                 return default
 
-    def _session_init(self, user_agent):
+    def _general_init(self, user_agent):
         self.session = Session()
         self.session.verify = False
         self.session.headers['User-Agent'] = user_agent
+
+        self.out = StandardOutput()
 
     def _options_and_session_init(self):
         pargs = self.app.pargs
@@ -82,7 +86,7 @@ class BasePluginInternal(controller.CementBaseController):
         if pargs.url_file != None:
             url_file = pargs.url_file
         else:
-            url = common.validate_url(pargs.url)
+            url = pargs.url
 
         threads = pargs.threads
         enumerate = pargs.enumerate
@@ -92,7 +96,6 @@ class BasePluginInternal(controller.CementBaseController):
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
         themes_base_url = self.getattr(pargs, 'themes_base_url')
-
 
         # all variables here will be returned.
         return locals()
@@ -179,7 +182,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def plugin_init(self):
         time_start = datetime.now()
-        self._session_init(self.DEFAULT_UA)
+        self._general_init(self.DEFAULT_UA)
         opts = self._options_and_session_init()
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)
@@ -204,18 +207,18 @@ class BasePluginInternal(controller.CementBaseController):
                             result['future'].result()
                         except:
                             exc = traceback.format_exc()
-                            common.warn(exc)
+                            self.out.warn(exc)
 
             finally:
                 url_file.close()
         else:
             self.url_scan(opts['url'], opts, functionality, enabled_functionality)
 
-        common.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
+        self.out.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
                 str(datetime.now() - time_start))
 
     def url_scan(self, url, opts, functionality, enabled_functionality):
-        url = common.validate_url(url.strip('\n'))
+        url = common.validate_url(url, self.out)
 
         if self.can_enumerate_plugins or self.can_enumerate_themes:
             scanning_method = opts['method']
@@ -226,12 +229,12 @@ class BasePluginInternal(controller.CementBaseController):
 
         enumerating_all = opts['enumerate'] == 'a'
         if enumerating_all:
-            common.echo(common.template('scan_begin.tpl', {'noun': 'all', 'url':
+            self.out.echo(common.template('scan_begin.tpl', {'noun': 'all', 'url':
                 url}))
 
         for enumerate in enabled_functionality:
             if not enumerating_all:
-                common.echo(common.template('scan_begin.tpl', {'noun': enumerate,
+                self.out.echo(common.template('scan_begin.tpl', {'noun': enumerate,
                     'url': url}))
 
             # Call to the respective functions occurs here.
@@ -251,7 +254,7 @@ class BasePluginInternal(controller.CementBaseController):
                     'empty': is_empty,
                 }
 
-            common.echo(common.template(enum['template'], template_params))
+            self.out.echo(common.template(enum['template'], template_params))
 
     def determine_scanning_method(self, url, verb):
         """
@@ -295,17 +298,17 @@ class BasePluginInternal(controller.CementBaseController):
             return base_url(redirect_url)
 
         if not ok_200:
-            common.warn("Known regular file '%s' returned status code %s instead of 200 as expected." %
+            self.out.warn("Known regular file '%s' returned status code %s instead of 200 as expected." %
                     (reg, ok_resp.status_code))
 
         if folder_resp.status_code == 403 and ok_200:
             return ScanningMethod.forbidden
         if folder_resp.status_code == 404 and ok_200:
-            common.warn('Known %s folders have returned 404 Not Found. If a module does not have a %s file it will not be detected.' %
+            self.out.warn('Known %s folders have returned 404 Not Found. If a module does not have a %s file it will not be detected.' %
                     (self._meta.label, self.module_readme_file))
             return ScanningMethod.not_found
         if folder_resp.status_code == 200 and ok_200:
-            common.warn('Known folder names for %s are returning 200 OK. Is directory listing enabled?' % self._meta.label)
+            self.out.warn('Known folder names for %s are returning 200 OK. Is directory listing enabled?' % self._meta.label)
             return ScanningMethod.ok
         else:
             self._error_determine_scanning(folder_resp, folder_redirect, ok_200)
@@ -317,8 +320,8 @@ class BasePluginInternal(controller.CementBaseController):
             %s), expected file returned %s.''' % (folder_resp.status_code,
             loc, ok_human)
 
-        common.warn(info)
-        common.fatal('It is possible that the website is not running %s. If you disagree, please specify a --method.' %
+        self.out.warn(info)
+        self.out.fatal('It is possible that the website is not running %s. If you disagree, please specify a --method.' %
                 self._meta.label)
 
     def plugins_get(self, amount=100000):
@@ -401,7 +404,7 @@ class BasePluginInternal(controller.CementBaseController):
                         'url': plugin_url
                     })
                 elif r.status_code >= 500:
-                    common.warn('Got a 500 error. Is the server overloaded?')
+                    self.out.warn('Got a 500 error. Is the server overloaded?')
 
             p.hide()
 
