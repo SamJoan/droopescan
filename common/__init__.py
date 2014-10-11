@@ -95,7 +95,6 @@ def template(template_file, variables={}):
     return pystache.render(template, variables)
 
 class StandardOutput():
-
     def echo(self, msg):
         print(msg)
 
@@ -107,7 +106,7 @@ class StandardOutput():
         msg = textwrap.fill(colors['red'] + "[+] " + msg + colors['endc'], 79)
         raise RuntimeError(msg)
 
-class ApiOutput(StandardOutput):
+class JsonOutput(StandardOutput):
     def echo(self, msg):
         pass
 

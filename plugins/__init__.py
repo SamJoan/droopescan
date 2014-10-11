@@ -73,12 +73,18 @@ class BasePluginInternal(controller.CementBaseController):
             except AttributeError:
                 return default
 
-    def _general_init(self, user_agent):
+    def _general_init(self, output=None, user_agent=None):
         self.session = Session()
         self.session.verify = False
+        if not user_agent:
+            user_agent = self.DEFAULT_UA
+
         self.session.headers['User-Agent'] = user_agent
 
-        self.out = StandardOutput()
+        if not output:
+            self.out = StandardOutput()
+        else:
+            self.out = output
 
     def _options_and_session_init(self):
         pargs = self.app.pargs
@@ -182,7 +188,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def plugin_init(self):
         time_start = datetime.now()
-        self._general_init(self.DEFAULT_UA)
+        self._general_init()
         opts = self._options_and_session_init()
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)

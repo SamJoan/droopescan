@@ -123,12 +123,12 @@ class BaseTests(BaseTest):
 
     def test_user_agent(self):
         user_agent = "user_agent_string"
-        self.scanner._general_init(user_agent)
+        self.scanner._general_init(user_agent=user_agent)
 
         assert self.scanner.session.headers['User-Agent'] == user_agent
 
     def test_no_verify(self):
-        self.scanner._general_init("")
+        self.scanner._general_init()
 
         assert self.scanner.session.verify == False
 
