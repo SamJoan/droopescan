@@ -324,7 +324,7 @@ class BaseHttpTests(BaseTest):
 
     @patch.object(Drupal, 'plugins_get', return_value=['supermodule',
         'nonexistant1', 'nonexistant2', 'supermodule', 'intermitent'])
-    @patch.object(common, 'warn')
+    @patch.object(common.StandardOutput, 'warn')
     def test_warns_on_500(self, warn, mock):
         r_200 = ['supermodule/']
         r_404 = ['nonexistant1/', 'nonexistant2/', 'supermodule/']
@@ -365,7 +365,7 @@ class BaseHttpTests(BaseTest):
 
         assert result == base_url_https
 
-    @patch.object(common, 'warn')
+    @patch.object(common.StandardOutput, 'warn')
     def test_invalid_url_file_warns(self, warn):
         """
             Test that when using a URL file, instead of throwing a fatal
