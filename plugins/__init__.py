@@ -396,7 +396,6 @@ class BasePluginInternal(controller.CementBaseController):
                         'plugin_url': plugin_url,
                     })
 
-
             p = ProgressBar(sys.stderr)
             items_progressed = 0
             items_total = len(base_urls) * int(max_iterator)
