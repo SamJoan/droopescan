@@ -27,7 +27,7 @@ pip install requirements.txt
 
 Droopescan aims to be the most aggressive by default, while not overloading the
 target server due to excessive requests. Due to this, by default, a large number
-of requests will be made with a single thread; you can increase this default by
+of requests will be made with four threads; you can increase this default by
 using the `--threads` argument.
 
 This tool is able to perform four kinds of tests:

@@ -43,7 +43,7 @@ class AbstractArgumentController(controller.CementBaseController):
                 (['--themes-base-url'], dict(action='store', help='''Same as
                     above, but for themes.''')),
                 (['--threads', '-t'], dict(action='store', help='''Number of
-                    threads. Default 1.''', default=1, type=int)),
+                    threads. Default 1.''', default=4, type=int)),
                 (['--verb'], dict(action='store', help="""The HTTP verb to use;
                     the default option is head, except for version enumeration
                     requests, which are always get because we need to get the hash

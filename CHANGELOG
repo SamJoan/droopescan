@@ -1,3 +1,10 @@
+1.8.0-alpha
+===========
+
+* Added JSON output.
+* Added multi-threaded multi site scanning.
+* Improved output.
+
 1.7.3
 =====
 
