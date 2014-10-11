@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 """
     |
  ___| ___  ___  ___  ___  ___  ___  ___  ___  ___
@@ -12,7 +13,7 @@ from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
 from common import template
 from plugins import AbstractArgumentController
-import common
+import common, sys
 
 class DroopeScanBase(controller.CementBaseController):
     class Meta:
@@ -43,7 +44,7 @@ if __name__ == "__main__":
         ds.run()
     except RuntimeError as e:
         if not ds.debug and not ds.testing:
-            print(e)
+            print(e, file=sys.stdout)
         else:
             raise
     finally:

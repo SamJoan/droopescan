@@ -1,10 +1,11 @@
+from __future__ import print_function
 from cement.core import handler
 import argparse
 import hashlib
 import logging
 import pystache
-import sys
 import re
+import sys
 import textwrap
 import xml.etree.ElementTree as ET
 
@@ -94,15 +95,21 @@ def template(template_file, variables={}):
     return pystache.render(template, variables)
 
 class StandardOutput():
+
     def echo(self, msg):
         print(msg)
 
     def warn(self, msg):
-        print textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79)
+        print(textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79),
+                file=sys.stderr)
 
     def fatal(self, msg):
         msg = textwrap.fill(colors['red'] + "[+] " + msg + colors['endc'], 79)
         raise RuntimeError(msg)
+
+class ApiOutput(StandardOutput):
+    def echo(self, msg):
+        pass
 
 def is_string(var):
     return isinstance(var, basestring)
