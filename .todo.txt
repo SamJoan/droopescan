@@ -1,9 +1,9 @@
 Add;
 
-    For 1.8:
-        - Accept input from file.
-        - Thread that per-site.
-        - Output as JSON.
+    Misc bugfixes:
+        - Progressbar takes user input and puts it into the loading thing, even
+          when the -n is larger than the number of plugins/themes available.
+          Shows a lot w/ default settings when scanning SS themes.
 
     ---
 

@@ -112,6 +112,11 @@ class StandardOutput():
             @param result as returned by BasePluginInternal.url_scan
         """
         for enumerate in result:
+
+            # The host is a special header, we must not attempt to display it.
+            if enumerate == "host":
+                continue
+
             result_ind = result[enumerate]
             finds = result_ind['finds']
             is_empty = result_ind['is_empty']

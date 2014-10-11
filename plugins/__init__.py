@@ -213,12 +213,13 @@ class BasePluginInternal(controller.CementBaseController):
 
                         results.append({
                             'future': future,
-                            'url': url,
+                            'url': url.rstrip('\n'),
                         })
 
                     for result in results:
                         try:
                             output = result['future'].result()
+                            output['host'] = result['url']
                             self.out.result(output, functionality)
                         except:
                             exc = traceback.format_exc()
@@ -324,9 +325,9 @@ class BasePluginInternal(controller.CementBaseController):
             self.out.warn('Known folder names for %s are returning 200 OK. Is directory listing enabled?' % self._meta.label)
             return ScanningMethod.ok
         else:
-            self._error_determine_scanning(folder_resp, folder_redirect, ok_200)
+            self._error_determine_scanning(url, folder_resp, folder_redirect, ok_200)
 
-    def _error_determine_scanning(self, folder_resp, folder_redirect, ok_200):
+    def _error_determine_scanning(self, url, folder_resp, folder_redirect, ok_200):
         loc = folder_resp.headers['location'] if folder_redirect else 'not present as not a redirect'
         ok_human = '200 status' if ok_200 else 'non-200 status.'
         info = '''Expected folder returned status '%s' (location header
@@ -334,8 +335,7 @@ class BasePluginInternal(controller.CementBaseController):
             loc, ok_human)
 
         self.out.warn(info)
-        self.out.fatal('It is possible that the website is not running %s. If you disagree, please specify a --method.' %
-                self._meta.label)
+        self.out.fatal('It is possible that ''%s'' is not running %s. If you disagree, please specify a --method.' % (url, self._meta.label))
 
     def plugins_get(self, amount=100000):
         amount = int(amount)

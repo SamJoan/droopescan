@@ -380,6 +380,7 @@ class BaseHttpTests(BaseTest):
         self.mock_all_url_file(invalid_url_file)
         self.app.run()
 
+        print warn.call_args
         assert warn.call_count == 2
 
     def test_url_file_calls_all(self):
