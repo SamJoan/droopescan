@@ -96,7 +96,7 @@ class Release(HumanBasePlugin):
                 call('git remote | xargs -l git push --tags', shell=True)
 
                 # Return to development.
-                call('git', 'checkout', 'development')
+                call(['git', 'checkout', 'development'])
 
             else:
                 self.error('Canceled by user')
