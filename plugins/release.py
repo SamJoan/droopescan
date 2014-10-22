@@ -81,15 +81,22 @@ class Release(HumanBasePlugin):
             if ok:
                 self.prepend_to_file(CHANGELOG, final)
 
-                # commit changelog.
+                # Commit changelog.
                 call(['git', 'add', '.'])
                 call(['git', 'commit', '-m', 'Tagging version \'%s\'' %
                     version_nb])
 
-                # tag & push.
+                # Merge stable changes to master.
+                call(['git', 'checkout', 'master'])
+                call(['git', 'merge', 'development'])
+
+                # Tag & push.
                 call(['git', 'tag', version_nb])
-                call(['git', 'push'])
-                call(['git', 'push', '--tags'])
+                call('git remote | xargs -l git push --all', shell=True)
+                call('git remote | xargs -l git push --tags', shell=True)
+
+                # Return to development.
+                call('git', 'checkout', 'development')
 
             else:
                 self.error('Canceled by user')

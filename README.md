@@ -1,4 +1,4 @@
-# A tool for scanning CMSs.
+# A CMS Scanning Tool.
 
 Usage:
 
