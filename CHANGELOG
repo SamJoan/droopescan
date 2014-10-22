@@ -1,3 +1,9 @@
+1.8.2-beta
+==========
+
+* Add new drupal version so that fully patched up versions of Drupal get
+  detected properly.
+
 1.8.1-beta
 ==========
 
