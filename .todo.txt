@@ -1,14 +1,18 @@
 Add;
 
-    Misc bugfixes:
-        - Progressbar takes user input and puts it into the loading thing, even
-          when the -n is larger than the number of plugins/themes available.
-          Shows a lot w/ default settings when scanning SS themes.
-        - Drupal release scripts generates four files for drupals on the 7.x
-          branch, versus three that exist for all other versions in the 7.x
-          branch. This causes tests to fail for good reason, and causes lousy
-          test results. It should befixed by either only checking for files that already
-          are on the XML for that major, or by adding the major for all versions.
+Misc bugfixes:
+- Progressbar takes user input and puts it into the loading thing, even
+  when the -n is larger than the number of plugins/themes available.
+  Shows a lot w/ default settings when scanning SS themes.
+- Drupal release scripts generates four files for drupals on the 7.x
+  branch, versus three that exist for all other versions in the 7.x
+  branch. This causes tests to fail for good reason, and causes lousy
+  test results. It should befixed by either only checking for files that already
+  are on the XML for that major, or by adding the major for all versions.
+
+Relevant:
+- https://wappalyzer.com/ -
+  http://www.opensourcecms.com/general/cms-marketshare.php
 
     ---
 
