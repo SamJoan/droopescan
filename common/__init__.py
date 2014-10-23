@@ -100,6 +100,9 @@ def template(template_file, variables={}):
     return pystache.render(template, variables)
 
 class StandardOutput():
+
+    errors_display = True
+
     def echo(self, msg):
         """
             For miscelaneous messages. E.g. "Initializing scanning".
@@ -137,8 +140,9 @@ class StandardOutput():
             halt.
             Outputs to stderr, so JsonOutput does not need to override.
         """
-        print(textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79),
-                file=sys.stderr)
+        if self.errors_display:
+            print(textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79),
+                    file=sys.stderr)
 
     def fatal(self, msg):
         """
@@ -148,6 +152,9 @@ class StandardOutput():
         raise RuntimeError(msg)
 
 class JsonOutput(StandardOutput):
+
+    errors_display = False
+
     def echo(self, msg):
         pass
 

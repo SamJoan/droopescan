@@ -1,7 +1,9 @@
+from __future__ import print_function
 from cement.utils import test
-from common import file_len, ProgressBar, JsonOutput
+from common import file_len, ProgressBar, JsonOutput, StandardOutput
 from common.testutils import decallmethods, MockBuffer
 from contextlib import contextmanager
+from mock import patch
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
 from requests import Session
@@ -138,7 +140,6 @@ class BaseTests(BaseTest):
         p.set(10, 100)
 
         a = u.get()[-4:]
-        print a, u
 
         assert a == '10%)'
         assert " ===== " in u.get()
@@ -163,3 +164,18 @@ class BaseTests(BaseTest):
 
         args, kwargs = m.call_args
         assert isinstance(kwargs['output'], JsonOutput)
+
+    def test_output_defaults(self):
+        jo = JsonOutput()
+        so = StandardOutput()
+
+        assert jo.errors_display == False
+        assert so.errors_display == True
+
+    @patch('__builtin__.print')
+    def test_no_output_when_error_display_false(self, mock_print):
+        jo = JsonOutput()
+        jo.warn("""Things have not gone according to plan. Please exit the
+                building in an orderly fashion.""")
+
+        assert mock_print.called == False

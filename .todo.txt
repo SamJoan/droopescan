@@ -9,7 +9,6 @@ Add;
           branch. This causes tests to fail for good reason, and causes lousy
           test results. It should befixed by either only checking for files that already
           are on the XML for that major, or by adding the major for all versions.
-        - Move README to README.md
 
     ---
 

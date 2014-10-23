@@ -195,9 +195,10 @@ class BasePluginInternal(controller.CementBaseController):
 
         if opts['output'] == 'json':
             output = JsonOutput()
-            self._general_init(output=output)
         else:
-            self._general_init()
+            output = StandardOutput()
+
+        self._general_init(output=output)
 
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)
