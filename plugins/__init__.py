@@ -287,6 +287,7 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             new_url = url
 
+        print scanning_method, new_url
         return scanning_method, new_url
 
     def _determine_scanning_method(self, url, verb):
