@@ -10,6 +10,7 @@ Misc bugfixes:
   test results. It should befixed by either only checking for files that already
   are on the XML for that major, or by adding the major for all versions.
 - Auto append http:// to things that don't have it?
+- Add https://github.com/droope/droopescan/releases to readme.
 - Does not differentiate between drupal 7.31 and drupal 7.32. This means that
   valid druppagedon-able websites are shown as possibly secure, and it is not
   possible to distinguish between them
@@ -56,10 +57,6 @@ Where this bug arises is when:
     - Website then returns 301 on www. This www takes you to misc instead of
       misc/
     - That is retarded. Should only follow 1 redirect max.
-
-  - http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
-     Ferkin stuff keeps shutting down and discarding connections. Need to
-     increase the default connection pool.
 
 Relevant:
 - https://wappalyzer.com/ -
