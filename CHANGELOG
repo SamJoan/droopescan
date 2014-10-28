@@ -1,3 +1,9 @@
+1.8.3
+=====
+
+* Added timeouts to prevent hanging on massive scans.
+* Avoid unnecessarily discarding connections due to a low max http pool limit.
+
 1.8.3-rc
 ========
 
