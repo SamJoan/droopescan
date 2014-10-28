@@ -47,8 +47,11 @@ class AbstractArgumentController(controller.CementBaseController):
                 (['--verb'], dict(action='store', help="""The HTTP verb to use;
                     the default option is head, except for version enumeration
                     requests, which are always get because we need to get the hash
-                    from the file's contents""",
-                default='head', choices=enum_list(Verb))),
+                    from the file's contents""", default='head',
+                    choices=enum_list(Verb))),
+                (['--timeout'], dict(action='store', help="""How long to wait
+                    for an HTTP response before timing out (in seconds).""",
+                    default=15, type=int))
             ]
 
 class BasePluginInternal(controller.CementBaseController):
@@ -88,7 +91,7 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             self.out = output
 
-    def _options_and_session_init(self):
+    def _options(self):
         pargs = self.app.pargs
 
         if pargs.url_file != None:
@@ -101,6 +104,7 @@ class BasePluginInternal(controller.CementBaseController):
         verb = pargs.verb
         method = pargs.method
         output = pargs.output
+        timeout = pargs.timeout
         number = pargs.number if not pargs.number == 'all' else 100000
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
@@ -113,6 +117,7 @@ class BasePluginInternal(controller.CementBaseController):
         kwargs_plugins = {
             'threads': opts['threads'],
             'verb': opts['verb'],
+            'timeout': opts['timeout']
         }
 
         return dict(kwargs_plugins)
@@ -145,6 +150,7 @@ class BasePluginInternal(controller.CementBaseController):
                     'versions_file': self.versions_file,
                     'verb': opts['verb'],
                     'threads': opts['threads'],
+                    'timeout': opts['timeout']
                 }
             },
             'interesting urls': {
@@ -153,7 +159,8 @@ class BasePluginInternal(controller.CementBaseController):
                 'kwargs': {
                     'verb': opts['verb'],
                     'interesting_urls': self.interesting_urls,
-                    'threads': opts['threads']
+                    'threads': opts['threads'],
+                    'timeout': opts['timeout']
                 }
             },
         }
@@ -191,7 +198,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def plugin_init(self):
         time_start = datetime.now()
-        opts = self._options_and_session_init()
+        opts = self._options()
 
         if opts['output'] == 'json':
             output = JsonOutput()
@@ -241,7 +248,9 @@ class BasePluginInternal(controller.CementBaseController):
         if self.can_enumerate_plugins or self.can_enumerate_themes:
             scanning_method = opts['method']
             if not scanning_method:
-                scanning_method, url = self.determine_scanning_method(url, opts['verb'])
+                scanning_method, url = self.determine_scanning_method(url,
+                        opts['verb'], opts['timeout'])
+
         else:
             scanning_method = None
 
@@ -271,38 +280,41 @@ class BasePluginInternal(controller.CementBaseController):
 
         return result
 
-    def determine_scanning_method(self, url, verb):
+    def determine_scanning_method(self, url, verb, timeout):
         """
             @param url the URL to determine scanning based on.
             @param verb the verb, e.g. head, or get.
             @return scanning_method, url. This is because in case of redirects,
                 a new URL may be returned.
         """
-        scanning_method = self._determine_scanning_method(url, verb)
+        scanning_method = self._determine_scanning_method(url, verb, timeout)
 
         redirected = scanning_method not in enum_list(ScanningMethod)
         if redirected:
             new_url = scanning_method
-            scanning_method = self._determine_scanning_method(new_url, verb)
+            scanning_method = self._determine_scanning_method(new_url, verb,
+                    timeout)
+
         else:
             new_url = url
 
-        print scanning_method, new_url
         return scanning_method, new_url
 
-    def _determine_scanning_method(self, url, verb):
-        requests_method = getattr(self.session, verb)
-        folder_resp = requests_method(url + self.folder_url)
+    def _determine_scanning_method(self, url, verb, timeout):
+        requests_verb = getattr(self.session, verb)
+        folder_resp = requests_verb(url + self.folder_url, timeout=timeout)
 
         if common.is_string(self.regular_file_url):
             reg = url + self.regular_file_url
-            ok_resp = requests_method(url + self.regular_file_url)
+            ok_resp = requests_verb(url + self.regular_file_url,
+                    timeout=timeout)
+
             ok_200 = ok_resp.status_code == 200
         else:
             ok_200 = False
             reg = url + self.regular_file_url[-1]
             for path in self.regular_file_url:
-                ok_resp = requests_method(url + path)
+                ok_resp = requests_verb(url + path)
                 if ok_resp.status_code == 200:
                     ok_200 = True
                     break
@@ -359,7 +371,7 @@ class BasePluginInternal(controller.CementBaseController):
                 yield theme.strip()
                 i +=1
 
-    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method, max_iterator=500, threads=10, verb='head'):
+    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method, max_iterator=500, threads=10, verb='head', timeout=15):
         '''
             @param url base URL for the website.
             @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
@@ -369,13 +381,15 @@ class BasePluginInternal(controller.CementBaseController):
             @param max_iterator integer that will be passed unto iterator_returning_method
             @param threads number of threads
             @param verb what HTTP verb. Valid options are 'get' and 'head'.
+            @param timeout the time, in seconds, that requests should wait
+                before throwing an exception.
         '''
         if common.is_string(base_url_supplied):
             base_urls = [base_url_supplied]
         else:
             base_urls = base_url_supplied
 
-        sess_verb = getattr(self.session, verb)
+        requests_verb = getattr(self.session, verb)
         futures = []
         with ThreadPoolExecutor(max_workers=threads) as executor:
             for base_url in base_urls:
@@ -390,7 +404,9 @@ class BasePluginInternal(controller.CementBaseController):
 
                 for plugin_name in plugins:
                     plugin_url = url_template % (url, plugin_name)
-                    future = executor.submit(sess_verb, plugin_url)
+                    future = executor.submit(requests_verb, plugin_url,
+                            timeout=timeout)
+
                     futures.append({
                         'base_url': base_url,
                         'future': future,
@@ -424,23 +440,24 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found, no_results
 
-    def enumerate_plugins(self, url, base_url, scanning_method='forbidden', max_plugins=500, threads=10, verb='head'):
+    def enumerate_plugins(self, url, base_url, scanning_method='forbidden', max_plugins=500, threads=10, verb='head', timeout=15):
         iterator = getattr(self, 'plugins_get')
         return self.enumerate(url, base_url, scanning_method, iterator,
-                max_plugins, threads, verb)
+                max_plugins, threads, verb, timeout)
 
-    def enumerate_themes(self, url, base_url, scanning_method='forbidden', max_plugins=500, threads=10, verb='head'):
+    def enumerate_themes(self, url, base_url, scanning_method='forbidden', max_plugins=500, threads=10, verb='head', timeout=15):
         iterator = getattr(self, 'themes_get')
         return self.enumerate(url, base_url, scanning_method, iterator,
-                max_plugins, threads, verb)
+                max_plugins, threads, verb, timeout)
 
-    def enumerate_interesting(self, url, interesting_urls, threads=10, verb='head'):
+    def enumerate_interesting(self, url, interesting_urls, threads=10,
+            verb='head', timeout=15):
         requests_verb = getattr(self.session, verb)
 
         found = []
         for path, description in interesting_urls:
             interesting_url = url + path
-            resp = requests_verb(interesting_url)
+            resp = requests_verb(interesting_url, timeout=timeout)
             if resp.status_code == 200 or resp.status_code == 301:
                 found.append({
                     'url': interesting_url,
@@ -449,9 +466,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found, len(found) == 0
 
-    def enumerate_version(self, url, versions_file, threads=10, verb='head'):
-        requests_verb = getattr(self.session, verb)
-
+    def enumerate_version(self, url, versions_file, threads=10, verb='head', timeout=15):
         vf = VersionsFile(versions_file)
 
         hashes = {}
@@ -460,7 +475,7 @@ class BasePluginInternal(controller.CementBaseController):
         with ThreadPoolExecutor(max_workers=threads) as executor:
             for file_url in files:
                 futures[file_url] = executor.submit(self.enumerate_file_hash,
-                        url, file_url=file_url)
+                        url, file_url=file_url, timeout=timeout)
 
             for file_url in futures:
                 hashes[file_url] = futures[file_url].result()
@@ -469,8 +484,8 @@ class BasePluginInternal(controller.CementBaseController):
 
         return version, len(version) == 0
 
-    def enumerate_file_hash(self, url, file_url):
-        r = self.session.get(url + file_url)
+    def enumerate_file_hash(self, url, file_url, timeout=15):
+        r = self.session.get(url + file_url, timeout=timeout)
         return hashlib.md5(r.content).hexdigest()
 
 class BasePlugin(BasePluginInternal):

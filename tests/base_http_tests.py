@@ -416,3 +416,52 @@ class BaseHttpTests(BaseTest):
         self.add_argv(['--url-file', 'tests/resources/url_file_invalid.txt'])
 
         self.app.run()
+
+    @patch('requests.Session.head')
+    def test_respects_timeout_scanning_method(self, mock_head):
+        try:
+            self.scanner.determine_scanning_method(self.base_url, 'head',
+                    timeout=5)
+        except RuntimeError:
+            pass
+
+        self.assert_called_contains(mock_head, 'timeout', 5)
+
+    @patch('requests.Session.head')
+    def test_respects_timeout_enumerate(self, mock_head):
+
+        self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, ScanningMethod.forbidden,
+                timeout=5)
+
+        self.assert_called_contains(mock_head, 'timeout', 5)
+
+    @patch('requests.Session.get')
+    def test_respects_timeout_version(self, mock_get):
+        try:
+            version, is_empty = self.scanner.enumerate_version(self.base_url,
+                    self.xml_file, timeout=5)
+        except TypeError:
+            pass
+
+        self.assert_called_contains(mock_get, 'timeout', 5)
+
+    @patch('requests.Session.head')
+    def test_respects_timeout_interesting(self, mock_head):
+        found, empty = self.scanner.enumerate_interesting(self.base_url,
+                self.scanner.interesting_urls, timeout=5)
+
+        self.assert_called_contains(mock_head, 'timeout', 5)
+
+    def test_timeout_gets_passed(self):
+        self.add_argv(self.param_all)
+        self.add_argv(['--timeout', '5'])
+        self.add_argv(['--method', 'forbidden'])
+
+        all_mocks = self.mock_all_enumerate('drupal')
+
+        self.app.run()
+
+        for mock in all_mocks:
+            self.assert_called_contains(mock, 'timeout', 5)

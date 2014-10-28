@@ -179,3 +179,4 @@ class BaseTests(BaseTest):
                 building in an orderly fashion.""")
 
         assert mock_print.called == False
+

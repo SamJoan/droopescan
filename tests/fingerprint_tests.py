@@ -17,9 +17,6 @@ class FingerprintTests(BaseTest):
         Tests related to version fingerprinting for all plugins.
     '''
 
-    versions_xsd = 'common/versions.xsd'
-    xml_file = 'tests/resources/versions.xml'
-
     class MockHash():
         files = None
         def mock_func(self, *args, **kwargs):

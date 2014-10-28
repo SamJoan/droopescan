@@ -21,6 +21,9 @@ class BaseTest(test.CementTestCase):
     param_version = param_base + ["-e", 'v']
     param_all = param_base + ["-e", 'a']
 
+    versions_xsd = 'common/versions.xsd'
+    xml_file = 'tests/resources/versions.xml'
+
     def setUp(self):
         super(BaseTest, self).setUp()
         self.reset_backend()
