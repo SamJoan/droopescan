@@ -60,7 +60,6 @@ Where this bug arises is when:
   - http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
      Ferkin stuff keeps shutting down and discarding connections. Need to
      increase the default connection pool.
-  - Timeouts are necessary! Add timeouts.
 
 Relevant:
 - https://wappalyzer.com/ -

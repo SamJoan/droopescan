@@ -112,6 +112,7 @@ class BaseTests(BaseTest):
             'threads': 'a',
             'verb': 'a',
             'enumerate': 'p',
+            'timeout': 15
         }
         opts_t = dict(opts_p)
         opts_t['enumerate'] = 't'

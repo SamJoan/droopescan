@@ -185,7 +185,7 @@ class BaseHttpTests(BaseTest):
         self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url, 'head')
+        m.assert_called_with(self.base_url, 'head', 15)
 
     def test_determine_forbidden(self):
         self.add_argv(self.param_plugins)

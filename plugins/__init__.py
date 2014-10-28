@@ -7,6 +7,7 @@ from datetime import datetime
 from distutils.util import strtobool
 from requests import Session
 import common, hashlib
+import requests
 import sys, tempfile, os, traceback
 
 class AbstractArgumentController(controller.CementBaseController):
@@ -80,6 +81,12 @@ class BasePluginInternal(controller.CementBaseController):
 
     def _general_init(self, output=None, user_agent=None):
         self.session = Session()
+
+        # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
+        a = requests.adapters.HTTPAdapter(pool_maxsize=5000)
+        self.session.mount('http://', a)
+        self.session.mount('https://', a)
+
         self.session.verify = False
         if not user_agent:
             user_agent = self.DEFAULT_UA
@@ -280,7 +287,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return result
 
-    def determine_scanning_method(self, url, verb, timeout):
+    def determine_scanning_method(self, url, verb, timeout=15):
         """
             @param url the URL to determine scanning based on.
             @param verb the verb, e.g. head, or get.
@@ -300,7 +307,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return scanning_method, new_url
 
-    def _determine_scanning_method(self, url, verb, timeout):
+    def _determine_scanning_method(self, url, verb, timeout=15):
         requests_verb = getattr(self.session, verb)
         folder_resp = requests_verb(url + self.folder_url, timeout=timeout)
 
