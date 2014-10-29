@@ -9,6 +9,10 @@ Misc bugfixes:
   branch. This causes tests to fail for good reason, and causes lousy
   test results. It should befixed by either only checking for files that already
   are on the XML for that major, or by adding the major for all versions.
+- Detect pages that give 200 for everything. cartel's suggestion to request
+  /whaever is good.
+- Need to use the changelog to narrow down. If the changelog is outside range,
+  discard. If changelog is within range, narrow down and print warning.
 
 Relevant:
 - https://wappalyzer.com/ -
