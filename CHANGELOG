@@ -1,3 +1,10 @@
+1.8.4-beta
+==========
+
+* Improved accuracy for druppagedon as far as possible.
+* Fixed aesthetic issues with JSON output.
+* Fixed issues with redirects on non-cms websites.
+
 1.8.3
 =====
 

@@ -9,54 +9,6 @@ Misc bugfixes:
   branch. This causes tests to fail for good reason, and causes lousy
   test results. It should befixed by either only checking for files that already
   are on the XML for that major, or by adding the major for all versions.
-- Auto append http:// to things that don't have it?
-- Add https://github.com/droope/droopescan/releases to readme.
-- Does not differentiate between drupal 7.31 and drupal 7.32. This means that
-  valid druppagedon-able websites are shown as possibly secure, and it is not
-  possible to distinguish between them.
-
-unknown-soldier droope # http http://easytek.co.nz/misc -p h
-HTTP/1.1 301 Moved Permanently
-Content-Length: 147
-Content-Type: text/html
-Date: Fri, 24 Oct 2014 03:53:45 GMT
-Location: http://www.easytek.co.nz
-Server: Microsoft-IIS/6.0
-X-Powered-By: ASP.NET
-
-unknown-soldier droope # http http://easytek.co.nz/misc/drupal.js -p h
-HTTP/1.1 301 Moved Permanently
-Content-Length: 147
-Content-Type: text/html
-Date: Fri, 24 Oct 2014 03:53:56 GMT
-Location: http://www.easytek.co.nz
-Server: Microsoft-IIS/6.0
-X-Powered-By: ASP.NET
-
-unknown-soldier droope # http http://easytek.co.nz/misc -p h
-HTTP/1.1 301 Moved Permanently
-Content-Length: 147
-Content-Type: text/html
-Date: Fri, 24 Oct 2014 03:54:07 GMT
-Location: http://www.easytek.co.nz
-Server: Microsoft-IIS/6.0
-X-Powered-By: ASP.NET
-
-unknown-soldier droope # http http://www.easytek.co.nz/misc -p h
-HTTP/1.1 404 Not Found
-Content-Length: 1635
-Content-Type: text/html
-Date: Fri, 24 Oct 2014 03:54:13 GMT
-Server: Microsoft-IIS/6.0
-X-Powered-By: ASP.NET
-
-produces: {"version": {"is_empty": true, "finds": []}}
-
-Where this bug arises is when:
-    - Website returns 301 and redirects to WWW.
-    - Website then returns 301 on www. This www takes you to misc instead of
-      misc/
-    - That is retarded. Should only follow 1 redirect max.
 
 Relevant:
 - https://wappalyzer.com/ -

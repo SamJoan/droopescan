@@ -1,5 +1,7 @@
 # A CMS Scanning Tool.
 
+Stable versions can be [found here](https://github.com/droope/droopescan/releases).
+
 Usage:
 
 <pre>
