@@ -351,7 +351,6 @@ class BaseHttpTests(BaseTest):
         enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
         self.app.run()
 
-        print enum.call_args_list
         self.assert_args_contains(enum, 0, base_url_https)
 
     def test_redirect_is_detected(self):
@@ -364,6 +363,19 @@ class BaseHttpTests(BaseTest):
                 Verb.head)
 
         assert result == base_url_https
+
+    @test.raises(RuntimeError)
+    def test_redirect_once_max(self):
+        self.add_argv(['--url', self.base_url, '--enumerate', 'p'])
+
+        # Trigger redirect twice.
+        base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
+        m = self.mock_controller('drupal', '_determine_scanning_method',
+                side_effect=[base_url_https, base_url_https])
+
+        enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
+        # Should raise RuntimeError
+        self.app.run()
 
     @patch.object(common.StandardOutput, 'warn')
     def test_invalid_url_file_warns(self, warn):

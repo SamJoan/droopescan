@@ -302,6 +302,12 @@ class BasePluginInternal(controller.CementBaseController):
             scanning_method = self._determine_scanning_method(new_url, verb,
                     timeout)
 
+            # We will tolerate 1 redirect.
+            redirected_again = scanning_method not in enum_list(ScanningMethod)
+            if redirected_again:
+                self.out.fatal("""Could not identify as got redirected twice, first
+                    to '%s' and then to '%s'""" % (new_url, scanning_method))
+
         else:
             new_url = url
 
