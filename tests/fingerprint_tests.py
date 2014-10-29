@@ -218,4 +218,12 @@ class FingerprintTests(BaseTest):
 
             assert False
 
+    def test_version_exists(self):
+        filename = 'misc/tableheader.js'
+        file_xpath = './files/file[@url="%s"]' % filename
+        file_add = self.v.root.findall(file_xpath)[0]
+
+        assert self.v.version_exists(file_add, '6.15', 'b1946ac92492d2347c6235b4d2611184')
+        assert not self.v.version_exists(file_add, '6.14', 'b1946ac92492d2347c6235b4d2611184')
+
 

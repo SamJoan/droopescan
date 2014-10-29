@@ -72,26 +72,6 @@ class VersionGetterBase():
 
         return sums
 
-class DrupalVersionsSelect(VersionGetterBase):
-    update_majors = ['6', '7']
-
-    def newer_get(self, majors, versions_string):
-        """
-            @see VersionGetterBase.newer_get
-        """
-        url = 'http://ftp.drupal.org/files/projects/drupal-%s.tar.gz'
-        versions = versions_string.split(",")
-
-        ret = {}
-        for version in versions:
-            major = str(version).split('.')[0]
-            if not major in ret:
-                ret[major] = []
-
-            ret[major].append((version, url % version))
-
-        return ret
-
 class DrupalVersions(VersionGetterBase):
     update_majors = ['6', '7']
 
@@ -126,6 +106,24 @@ class DrupalVersions(VersionGetterBase):
                     newer[major].append((version, dl_url))
 
         return newer
+
+    def process_selection(self, versions_string):
+        """
+            Transforms user input (versions seperated by comma (e.g. 7.23,7.24)
+            into what the application expects.
+        """
+        url = 'http://ftp.drupal.org/files/projects/drupal-%s.tar.gz'
+        versions = versions_string.split(",")
+
+        ret = {}
+        for version in versions:
+            major = str(version).split('.')[0]
+            if not major in ret:
+                ret[major] = []
+
+            ret[major].append((version, url % version))
+
+        return ret
 
 class SSVersions(VersionGetterBase):
     update_majors = ['3']
@@ -182,29 +180,21 @@ class Versions(HumanBasePlugin):
         arguments = [
                 (['--cms', '-c'], dict(action='store', required=True,
                     help='Which CMS to generate the XML for', choices=['drupal',
-                        'ss', 'drupal_select'])),
+                        'ss'])),
                 (['--selection', '-s'], dict(action='store',
                     help='Comma separated list of versions for drupal_select.'))
             ]
 
-    @controller.expose(help='', hide=True)
-    def default(self):
-        # Get the VersionGetter.
-        cms = self.app.pargs.cms
-        additional_params = None
-        if cms == "drupal":
-            vg = DrupalVersions()
-            versions_file = Drupal.versions_file
-        elif cms == "ss":
-            vg = SSVersions()
-            versions_file = SilverStripe.versions_file
-        elif cms == "drupal_select":
-            vg = DrupalVersionsSelect()
-            versions_file = Drupal.versions_file
-            additional_params = self.app.pargs.selection
-            if additional_params == None:
-                self.error("Selection (-s) should be set for drupal_select.")
-
+    def download_append(self, vg, versions_file, **additional_params):
+        """
+            @param vg an instance of VersionGetterBase, such as SSVersions or
+                DrupalVersions
+            @param versions_file the versions_file which corresponds to this
+                VersionGetterBase, in the filesystem.
+            @param **aditional_params:
+                - override_newer: utilize this value instead of calling
+                      newer_get.
+        """
         versions = VersionsFile(versions_file)
 
         ok = self.confirm('This will download a whole bunch of stuff. OK?')
@@ -212,13 +202,11 @@ class Versions(HumanBasePlugin):
             base_folder = mkdtemp() + "/"
 
             # Get information needed.
-            majors = versions.highest_version_major(vg.update_majors)
-
-            # Download files.
-            if additional_params == None:
-                new = vg.newer_get(majors)
+            if 'override_newer' in additional_params:
+                new = additional_params['override_newer']
             else:
-                new = vg.newer_get(majors, additional_params)
+                majors = versions.highest_version_major(vg.update_majors)
+                new = vg.newer_get(majors)
 
             if len(new) == 0:
                 self.error("No new version found, versions.xml is up to date.")
@@ -254,6 +242,24 @@ class Versions(HumanBasePlugin):
 
         else:
             self.error('Aborted.')
+
+    @controller.expose(help='', hide=True)
+    def default(self):
+        # Get the VersionGetter.
+        cms = self.app.pargs.cms
+        additional_params = {}
+        if cms == "drupal":
+            vg = DrupalVersions()
+            versions_file = Drupal.versions_file
+
+            if self.app.pargs.selection != None:
+                additional_params['override_newer'] = vg.process_selection(self.app.pargs.selection)
+
+        elif cms == "ss":
+            vg = SSVersions()
+            versions_file = SilverStripe.versions_file
+
+        self.download_append(vg, versions_file, **additional_params)
 
 def load():
     handler.register(Versions)

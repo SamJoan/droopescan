@@ -341,6 +341,28 @@ class VersionsFile():
 
         return majors
 
+    def version_exists(self, file, check_version, expected_hash):
+        """
+            Returns True if version is present within a file element, False if
+            it is not.
+            @param file a file element (ElementTree element)
+            @param check_version version to check for.
+            @param expected_hash the hash that the file should have if it is
+                present.
+            @raises If element exists but has a different hash than the one
+                expected, it raises a RuntimeError.
+        """
+        versions = file.findall('./version')
+        for version in versions:
+            nb = version.attrib['nb']
+            hsh = version.attrib['md5']
+
+            if nb == check_version:
+                if hsh == expected_hash:
+                    return True
+
+        return False
+
     def update(self, sums):
         """
             Update self.et with the sums as returned by VersionsX.sums_get
@@ -355,11 +377,13 @@ class VersionsFile():
                 except IndexError:
                     raise ValueError("Attempted to update element '%s' which doesn't exist" % filename)
 
-                new_ver = ET.SubElement(file_add, 'version')
-                new_ver.attrib = {
-                        'md5': hsh,
-                        'nb': version
-                }
+                # Do not add duplicate, equal hashes.
+                if not self.version_exists(file_add, version, hsh):
+                    new_ver = ET.SubElement(file_add, 'version')
+                    new_ver.attrib = {
+                            'md5': hsh,
+                            'nb': version
+                    }
 
     def indent(self, elem, level=0):
         # imported as a backport for python < 3.5

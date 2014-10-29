@@ -13,7 +13,7 @@ Misc bugfixes:
 - Add https://github.com/droope/droopescan/releases to readme.
 - Does not differentiate between drupal 7.31 and drupal 7.32. This means that
   valid druppagedon-able websites are shown as possibly secure, and it is not
-  possible to distinguish between them
+  possible to distinguish between them.
 
 unknown-soldier droope # http http://easytek.co.nz/misc -p h
 HTTP/1.1 301 Moved Permanently
