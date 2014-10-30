@@ -63,7 +63,7 @@ class FingerprintTests(BaseTest):
                     files[url] = '5d41402abc4b2a76b9719d911017c592'
 
             ch_xml = doc.find('./files/changelog')
-            if ch_xml:
+            if ch_xml is not None:
                 ch_url = ch_xml.get('url')
                 ch_versions = ch_xml.findall('./version')
                 for ch_version in ch_versions:

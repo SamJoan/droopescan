@@ -1,6 +1,6 @@
 Add;
 
-Misc bugfixes:
+nth:
 - Progressbar takes user input and puts it into the loading thing, even
   when the -n is larger than the number of plugins/themes available.
   Shows a lot w/ default settings when scanning SS themes.
@@ -9,8 +9,6 @@ Misc bugfixes:
   branch. This causes tests to fail for good reason, and causes lousy
   test results. It should befixed by either only checking for files that already
   are on the XML for that major, or by adding the major for all versions.
-- Need to use the changelog to narrow down. If the changelog is outside range,
-  discard. If changelog is within range, narrow down and print warning.
 - Make lists of hosts lowercase.
 
 Relevant:

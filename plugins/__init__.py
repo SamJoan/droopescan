@@ -524,7 +524,6 @@ class BasePluginInternal(controller.CementBaseController):
                 timeout=timeout)
 
         ch_version = vf.changelog_identify(ch_hash)
-        print ch_version
 
         if ch_version in versions_estimated:
             return [ch_version]
