@@ -344,7 +344,7 @@
       <version md5="30d9e08baa11f3836eca00425b550f82" nb="7.29" />
       <version md5="30d9e08baa11f3836eca00425b550f82" nb="7.32" />
     </file>
-    <file url="CHANGELOG.txt">
+    <changelog url="CHANGELOG.txt">
       <version md5="fa02637f87ad76f18b3b97aed66753d2" nb="7.14" />
       <version md5="30ca3761d02c5a025d5caea0e76b43c2" nb="7.15" />
       <version md5="ad2968774051eb5479dc709ce87ba7e2" nb="7.16" />
@@ -392,6 +392,6 @@
       <version md5="5af1565654858c3a7f996a8f79926172" nb="7.0-beta3" />
       <version md5="7784d1f30b54933abf74b969d003afa5" nb="7.0-beta2" />
       <version md5="85f9505fcf687b9fd4b55d2e60393436" nb="7.31" />
-    </file>
+    </changelog>
   </files>
 </cms>

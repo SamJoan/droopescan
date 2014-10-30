@@ -226,6 +226,9 @@ def md5_file(filename):
 class VersionsFile():
     et = None
     root = None
+
+    changelog_xpath = './files/changelog'
+
     def __init__(self, xml_file):
         self.et = ET.parse(xml_file)
         self.root = self.et.getroot()
@@ -236,6 +239,21 @@ class VersionsFile():
             files.append(file.attrib['url'])
 
         return files
+
+    def changelog_get(self):
+        changelog = self.root.find(self.changelog_xpath)
+        return changelog.attrib['url']
+
+    def changelog_identify(self, ch_hash):
+        changelog_files = self.root.findall(self.changelog_xpath + '/version')
+        for version in changelog_files:
+            hsh = version.attrib['md5']
+            nb = version.attrib['nb']
+            if hsh == ch_hash:
+                return nb
+
+        return False
+
 
     def files_per_version(self):
         xpath = './files/file'
@@ -386,7 +404,6 @@ class VersionsFile():
                     }
 
     def indent(self, elem, level=0):
-        # imported as a backport for python < 3.5
         # @see http://effbot.org/zone/element-lib.htm#prettyprint
         i = "\n" + level*"  "
         if len(elem):
@@ -405,6 +422,11 @@ class VersionsFile():
     def str_pretty(self):
         self.indent(self.root)
         return ET.tostring(self.root, encoding='utf-8')
+
+    def has_changelog(self):
+        changelogs = self.root.findall(self.changelog_xpath)
+
+        return len(changelogs) > 0
 
 class SmartFormatter(argparse.RawDescriptionHelpFormatter):
     def _split_lines(self, text, width):

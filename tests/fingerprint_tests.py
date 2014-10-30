@@ -17,10 +17,13 @@ class FingerprintTests(BaseTest):
         Tests related to version fingerprinting for all plugins.
     '''
 
+    xml_file_changelog = 'tests/resources/versions_with_changelog.xml'
+
     class MockHash():
         files = None
         def mock_func(self, *args, **kwargs):
             url = kwargs['file_url']
+            print self.files
             return self.files[url]
 
     def setUp(self):
@@ -39,6 +42,8 @@ class FingerprintTests(BaseTest):
             @param version_to_mock the version which we will pretend to be.
             @return a function which can be used to mock
                 BasePlugin.enumerate_file_hash
+
+            @usage self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, "7.27")
         '''
         with open(xml_file) as f:
             doc = etree.fromstring(f.read())
@@ -57,6 +62,14 @@ class FingerprintTests(BaseTest):
 
                 if not url in files:
                     files[url] = '5d41402abc4b2a76b9719d911017c592'
+
+            ch_xml = doc.find('./files/changelog')
+            ch_url = ch_xml.get('url')
+            ch_versions = ch_xml.findall('./version')
+            for ch_version in ch_versions:
+                ch_nb = ch_version.get('nb')
+                if ch_nb == version_to_mock:
+                    files[ch_url] = ch_version.get('md5')
 
         mock_hash = self.MockHash()
         mock_hash.files = files
@@ -225,5 +238,37 @@ class FingerprintTests(BaseTest):
 
         assert self.v.version_exists(file_add, '6.15', 'b1946ac92492d2347c6235b4d2611184')
         assert not self.v.version_exists(file_add, '6.14', 'b1946ac92492d2347c6235b4d2611184')
+
+    def test_version_has_changelog(self):
+        v_with_changelog = VersionsFile(self.xml_file_changelog)
+
+        assert not self.v.has_changelog()
+        assert v_with_changelog.has_changelog()
+
+    def test_narrow_skip_no_changelog(self):
+        self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, "7.27")
+        self.scanner.enumerate_version_changelog = m = MagicMock()
+
+        self.scanner.enumerate_version(self.base_url, self.xml_file)
+        assert not m.called
+
+        self.scanner.enumerate_version(self.base_url, self.xml_file_changelog)
+        assert m.called
+
+    def test_narrow_down_changelog(self):
+        mock_versions = ['7.26', '7.27', '7.28']
+
+        v_changelog = VersionsFile(self.xml_file_changelog)
+        self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file_changelog, "7.27")
+        result = self.scanner.enumerate_version_changelog(self.base_url,
+                mock_versions, v_changelog)
+
+        assert result == ['7.27']
+
+    def test_narrow_down_ignore_incorrect_changelog(self):
+        assert False
+
+    def test_narrow_down_unidentifiable_changelog(self):
+        pass
 
 

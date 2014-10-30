@@ -512,7 +512,24 @@ class BasePluginInternal(controller.CementBaseController):
 
         version = vf.version_get(hashes)
 
+        # Narrow down using changelog, if accurate.
+        if vf.has_changelog():
+            version = self.enumerate_version_changelog(url, version, vf, verb, timeout)
+
         return version, len(version) == 0
+
+    def enumerate_version_changelog(self, url, versions_estimated, vf, timeout=15):
+
+        ch_url = vf.changelog_get()
+        ch_hash = self.enumerate_file_hash(url, file_url=ch_url,
+                timeout=timeout)
+
+        ch_version = vf.changelog_identify(ch_hash)
+
+        if ch_version in versions_estimated:
+            return [ch_version]
+        else:
+            return versions_estimated
 
     def enumerate_file_hash(self, url, file_url, timeout=15):
         r = self.session.get(url + file_url, timeout=timeout)
