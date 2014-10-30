@@ -254,7 +254,6 @@ class VersionsFile():
 
         return False
 
-
     def files_per_version(self):
         xpath = './files/file'
         files = self.root.findall(xpath)
