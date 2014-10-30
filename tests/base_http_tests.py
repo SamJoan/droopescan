@@ -191,7 +191,7 @@ class BaseHttpTests(BaseTest):
         self.add_argv(self.param_plugins)
 
         self.respond_several(self.base_url + "%s", {403: ["misc/"], 200:
-            ["misc/drupal.js"]})
+            ["misc/drupal.js"], 404: [self.scanner.not_found_url]})
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
@@ -201,8 +201,8 @@ class BaseHttpTests(BaseTest):
     def test_determine_not_found(self):
         self.add_argv(self.param_plugins)
 
-        self.respond_several(self.base_url + "%s", {404: ["misc/"], 200:
-            ["misc/drupal.js"]})
+        self.respond_several(self.base_url + "%s", {404: ["misc/",
+            self.scanner.not_found_url], 200: ["misc/drupal.js"]})
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
@@ -213,17 +213,44 @@ class BaseHttpTests(BaseTest):
         self.add_argv(self.param_plugins)
 
         self.respond_several(self.base_url + "%s", {200: ["misc/",
-            "misc/drupal.js"]})
+            "misc/drupal.js"], 404: [self.scanner.not_found_url]})
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
         self.assert_called_contains(m, 'scanning_method', ScanningMethod.ok)
 
+    @test.raises(RuntimeError)
+    def test_determine_detect_false_ok(self):
+        self.add_argv(self.param_plugins)
+
+        self.respond_several(self.base_url + "%s", {200: ["misc/",
+            "misc/drupal.js", self.scanner.not_found_url]})
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+
+        self.app.run()
+
+    def test_determine_detect_false_ok_drupal(self):
+        self.add_argv(self.param_plugins)
+
+        responses.add(responses.HEAD, self.base_url +
+                self.scanner.not_found_url, body='A'*1337)
+        responses.add(responses.HEAD, self.base_url +
+                'misc/drupal.js', body='A'*15000)
+        responses.add(responses.HEAD, self.base_url + "misc/")
+
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+
+        # Should not exception because difference in length proves that website
+        # is drupal.
+        self.app.run()
+
     def test_determine_with_multiple_ok(self):
         self.scanner.regular_file_url = ["misc/drupal_old.js", "misc/drupal.js"]
         self.respond_several(self.base_url + "%s", {200: ["misc/",
-            "misc/drupal.js"], 404: ["misc/drupal_old.js"]})
+            "misc/drupal.js"], 404: ["misc/drupal_old.js",
+                self.scanner.not_found_url]})
 
         scanning_method = self.scanner._determine_scanning_method(self.base_url,
                 'head')
@@ -235,7 +262,8 @@ class BaseHttpTests(BaseTest):
         self.add_argv(self.param_plugins)
 
         self.respond_several(self.base_url + "%s", {404:
-            [self.scanner.folder_url, self.scanner.regular_file_url]})
+            [self.scanner.folder_url, self.scanner.regular_file_url,
+                self.scanner.not_found_url]})
         self.app.run()
 
     def test_passes_verb(self):
@@ -275,6 +303,8 @@ class BaseHttpTests(BaseTest):
 
         responses.add(responses.GET, self.base_url + "misc/")
         responses.add(responses.GET, self.base_url + "misc/drupal.js")
+        responses.add(responses.GET, self.base_url + self.scanner.not_found_url,
+                status=404)
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
         # will exception if not get
@@ -357,7 +387,7 @@ class BaseHttpTests(BaseTest):
         base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
 
         self.respond_several(self.base_url + "%s", {301: ["misc/",
-            "misc/drupal.js"]}, headers={'location': base_url_https})
+            "misc/drupal.js"], 404: [self.scanner.not_found_url]}, headers={'location': base_url_https})
 
         result = self.scanner._determine_scanning_method(self.base_url,
                 Verb.head)
@@ -374,7 +404,6 @@ class BaseHttpTests(BaseTest):
                 side_effect=[base_url_https, base_url_https])
 
         enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
-        # Should raise RuntimeError
         self.app.run()
 
     @patch.object(common.StandardOutput, 'warn')
@@ -437,7 +466,7 @@ class BaseHttpTests(BaseTest):
         except RuntimeError:
             pass
 
-        self.assert_called_contains(mock_head, 'timeout', 5)
+        self.assert_called_contains_all(mock_head, 'timeout', 5)
 
     @patch('requests.Session.head')
     def test_respects_timeout_enumerate(self, mock_head):
@@ -447,7 +476,7 @@ class BaseHttpTests(BaseTest):
                 self.scanner.plugins_base_url, ScanningMethod.forbidden,
                 timeout=5)
 
-        self.assert_called_contains(mock_head, 'timeout', 5)
+        self.assert_called_contains_all(mock_head, 'timeout', 5)
 
     @patch('requests.Session.get')
     def test_respects_timeout_version(self, mock_get):
@@ -457,7 +486,7 @@ class BaseHttpTests(BaseTest):
         except TypeError:
             pass
 
-        self.assert_called_contains(mock_get, 'timeout', 5)
+        self.assert_called_contains_all(mock_get, 'timeout', 5)
 
     @patch('requests.Session.head')
     def test_respects_timeout_interesting(self, mock_head):

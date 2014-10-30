@@ -82,6 +82,14 @@ class BaseTest(test.CementTestCase):
         args, kwargs = mocked_method.call_args
         assert kwargs[kwarg_name] == kwarg_value, "Parameter is not as expected."
 
+    def assert_called_contains_all(self, mocked_method, kwarg_name, kwarg_value):
+        call_list = mocked_method.call_args_list
+        if len(mocked_method.call_args_list) == 0:
+            assert False, "No calls to mocked method"
+
+        for args, kwargs in call_list:
+            assert kwargs[kwarg_name] == kwarg_value
+
     def assert_args_contains(self, mocked_method, position, expected_value):
         """
             Assert that the call contains this argument in the args at position position.
@@ -109,7 +117,8 @@ class BaseTest(test.CementTestCase):
     def mock_all_url_file(self, url_file):
         with open(url_file) as f:
             for url in f:
-                self.respond_several(url.strip('\n') + '%s', {403: ['misc/'],
-                    200: [ 'misc/drupal.js']})
+                url_tpl = url.strip('\n') + '%s'
+                self.respond_several(url_tpl, {403: ['misc/'], 200:
+                    ['misc/drupal.js'], 404: [self.scanner.not_found_url]})
 
 

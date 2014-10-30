@@ -60,6 +60,7 @@ class BasePluginInternal(controller.CementBaseController):
     requests = None
     out = None
     DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
+    not_found_url = "misc/test/error/404/ispresent.html"
 
     class Meta:
         label = 'baseplugin'
@@ -313,24 +314,35 @@ class BasePluginInternal(controller.CementBaseController):
 
         return scanning_method, new_url
 
-    def _determine_scanning_method(self, url, verb, timeout=15):
-        requests_verb = getattr(self.session, verb)
-        folder_resp = requests_verb(url + self.folder_url, timeout=timeout)
-
+    def _determine_ok_200(self, requests_verb, url, timeout):
         if common.is_string(self.regular_file_url):
-            reg = url + self.regular_file_url
-            ok_resp = requests_verb(url + self.regular_file_url,
-                    timeout=timeout)
-
+            reg_url = url + self.regular_file_url
+            ok_resp = requests_verb(reg_url, timeout=timeout)
             ok_200 = ok_resp.status_code == 200
         else:
             ok_200 = False
-            reg = url + self.regular_file_url[-1]
             for path in self.regular_file_url:
-                ok_resp = requests_verb(url + path)
+                reg_url = url + path
+                ok_resp = requests_verb(reg_url)
                 if ok_resp.status_code == 200:
                     ok_200 = True
                     break
+
+        len_content = len(ok_resp.content)
+
+        return ok_200, len_content
+
+    def _determine_fake_200(self, requests_verb, url, timeout):
+        response = requests_verb(url + self.not_found_url,
+                    timeout=timeout)
+
+        return response.status_code == 200, len(response.content)
+
+    def _determine_scanning_method(self, url, verb, timeout=15):
+        requests_verb = getattr(self.session, verb)
+        folder_resp = requests_verb(url + self.folder_url, timeout=timeout)
+        ok_200, reg_url_len = self._determine_ok_200(requests_verb, url, timeout)
+        fake_200, fake_200_len = self._determine_fake_200(requests_verb, url, timeout)
 
         # Detect redirects.
         folder_redirect = 300 <= folder_resp.status_code < 400
@@ -338,25 +350,30 @@ class BasePluginInternal(controller.CementBaseController):
             redirect_url = folder_resp.headers['Location']
             return base_url(redirect_url)
 
-        if not ok_200:
-            self.out.warn("Known regular file '%s' returned status code %s instead of 200 as expected." %
-                    (reg, ok_resp.status_code))
+        # Websites which return 200 for not found URLs.
+        diff_lengths_above_threshold = abs(fake_200_len - reg_url_len) > 25
+        if fake_200 and not diff_lengths_above_threshold:
+            self.out.warn("""Website responds with 200 for all URLs and
+                    doesn't seem to be running %s.""" % self._meta.label)
+            ok_200 = False
 
         if folder_resp.status_code == 403 and ok_200:
             return ScanningMethod.forbidden
-        if folder_resp.status_code == 404 and ok_200:
+
+        elif folder_resp.status_code == 404 and ok_200:
             self.out.warn('Known %s folders have returned 404 Not Found. If a module does not have a %s file it will not be detected.' %
                     (self._meta.label, self.module_readme_file))
             return ScanningMethod.not_found
-        if folder_resp.status_code == 200 and ok_200:
-            self.out.warn('Known folder names for %s are returning 200 OK. Is directory listing enabled?' % self._meta.label)
+
+        elif folder_resp.status_code == 200 and ok_200:
+
             return ScanningMethod.ok
         else:
             self._error_determine_scanning(url, folder_resp, folder_redirect, ok_200)
 
     def _error_determine_scanning(self, url, folder_resp, folder_redirect, ok_200):
         loc = folder_resp.headers['location'] if folder_redirect else 'not present as not a redirect'
-        ok_human = '200 status' if ok_200 else 'non-200 status.'
+        ok_human = '200 status' if ok_200 else 'not found status.'
         info = '''Expected folder returned status '%s' (location header
             %s), expected file returned %s.''' % (folder_resp.status_code,
             loc, ok_human)

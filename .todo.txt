@@ -13,40 +13,10 @@ Misc bugfixes:
   /whaever is good.
 - Need to use the changelog to narrow down. If the changelog is outside range,
   discard. If changelog is within range, narrow down and print warning.
+- Make lists of hosts lowercase.
 
 Relevant:
 - https://wappalyzer.com/ -
   http://www.opensourcecms.com/general/cms-marketshare.php
 
     ---
-
------
-
-   (    , )     (,
-  .   `.' ) ('.    ',
-   ). , ('.   ( ) (
-,)(_,) .`), ) _ _,_    _________ ___ ___         .__  .__
-\_   ___ \   /     \  /   _____//   |   \   ____ |  | |  |
-/    \  \/  /  \ /  \ \_____  \/    ~    \_/ __ \|  | |  |
-\     \____/    Y    \/        \    Y    /\  ___/|  |_|  |__
- \______  /\____|__  /_______  /\___|_  /  \___  >____/____/:wq
-        \/         \/        \/       \/       \/.-.
-                                                (x.0)
-                                              '=.|w|.='
-                                              _='`"``=.
-Handle: droope
-Talk Title: CMS Hell
-Abstract: We all know about Wordpress and its (in)security. What about
-other CMSes? What about NZ made ones?
-
-Introducing 'droopescan', a plugin-based tool for scanning CMSs. In this
-talk we will see its effectiveness in identifying versions and plugins,
-and we will see how the landscape looks like for installations of two
-CMSs (Drupal & SilverStripe) in New Zealand.
-Duration: 30 mins
-Bio: I am security researcher for Security-Assessment.com, with more
-than five years of experience in IT. I have a strong background on web
-applications, and generally enjoy building and hacking software of all
-kinds.
-Origin: Uruguay
-
