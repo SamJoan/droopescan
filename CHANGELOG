@@ -1,3 +1,10 @@
+1.8.4-rc
+========
+
+* Add better handling for websites with fake changelogs, but still utilize them to narrow down when reasonable.
+* Deal with websites that always respond with 200 OK, even on not found pages. Add heuristic test to differentiate from real 200 OK responses.
+* Misc fixes.
+
 1.8.4-beta
 ==========
 
