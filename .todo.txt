@@ -9,7 +9,11 @@ nth:
   branch. This causes tests to fail for good reason, and causes lousy
   test results. It should befixed by either only checking for files that already
   are on the XML for that major, or by adding the major for all versions.
-- Make lists of hosts lowercase.
+- Make a wrapper for all functions which catches all exceptions in order to
+  prevent hanged threads. Or better: Use .map with a timeout. result() can be
+  called with a timeout too. Add another flag, max_time_per_site?
+- Add stderr into a log. Silencing it was madness.
+
 
 Relevant:
 - https://wappalyzer.com/ -
