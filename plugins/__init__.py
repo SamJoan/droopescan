@@ -514,17 +514,17 @@ class BasePluginInternal(controller.CementBaseController):
 
         # Narrow down using changelog, if accurate.
         if vf.has_changelog():
-            version = self.enumerate_version_changelog(url, version, vf, verb, timeout)
+            version = self.enumerate_version_changelog(url, version, vf, timeout)
 
         return version, len(version) == 0
 
     def enumerate_version_changelog(self, url, versions_estimated, vf, timeout=15):
-
         ch_url = vf.changelog_get()
         ch_hash = self.enumerate_file_hash(url, file_url=ch_url,
                 timeout=timeout)
 
         ch_version = vf.changelog_identify(ch_hash)
+        print ch_version
 
         if ch_version in versions_estimated:
             return [ch_version]

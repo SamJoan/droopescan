@@ -23,7 +23,6 @@ class FingerprintTests(BaseTest):
         files = None
         def mock_func(self, *args, **kwargs):
             url = kwargs['file_url']
-            print self.files
             return self.files[url]
 
     def setUp(self):
@@ -64,12 +63,13 @@ class FingerprintTests(BaseTest):
                     files[url] = '5d41402abc4b2a76b9719d911017c592'
 
             ch_xml = doc.find('./files/changelog')
-            ch_url = ch_xml.get('url')
-            ch_versions = ch_xml.findall('./version')
-            for ch_version in ch_versions:
-                ch_nb = ch_version.get('nb')
-                if ch_nb == version_to_mock:
-                    files[ch_url] = ch_version.get('md5')
+            if ch_xml:
+                ch_url = ch_xml.get('url')
+                ch_versions = ch_xml.findall('./version')
+                for ch_version in ch_versions:
+                    ch_nb = ch_version.get('nb')
+                    if ch_nb == version_to_mock:
+                        files[ch_url] = ch_version.get('md5')
 
         mock_hash = self.MockHash()
         mock_hash.files = files
@@ -80,6 +80,7 @@ class FingerprintTests(BaseTest):
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
     def test_calls_version(self, m):
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
+        responses.add(responses.GET, self.base_url + 'CHANGELOG.txt')
         # with no mocked calls, any HTTP req will cause a ConnectionError.
         self.app.run()
 
@@ -125,6 +126,7 @@ class FingerprintTests(BaseTest):
     def test_fingerprint_correct_verb(self, patch):
         # this needs to be a get, otherwise, how are going to get the request body?
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
+        responses.add(responses.GET, self.base_url + 'CHANGELOG.txt')
 
         # will exception if attempts to HEAD
         self.scanner.enumerate_version(self.base_url,
@@ -266,9 +268,14 @@ class FingerprintTests(BaseTest):
         assert result == ['7.27']
 
     def test_narrow_down_ignore_incorrect_changelog(self):
-        assert False
+        mock_versions = ['7.26', '7.27', '7.28']
 
-    def test_narrow_down_unidentifiable_changelog(self):
-        pass
+        v_changelog = VersionsFile(self.xml_file_changelog)
+        self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file_changelog, "7.22")
+        result = self.scanner.enumerate_version_changelog(self.base_url,
+                mock_versions, v_changelog)
+
+        # Changelog is possibly outdated, can't rely on it.
+        assert result == mock_versions
 
 
