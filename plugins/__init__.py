@@ -52,7 +52,9 @@ class AbstractArgumentController(controller.CementBaseController):
                     choices=enum_list(Verb))),
                 (['--timeout'], dict(action='store', help="""How long to wait
                     for an HTTP response before timing out (in seconds).""",
-                    default=15, type=int))
+                    default=15, type=int)),
+                (['--timeout-host'], dict(action='store', help="""Maximum time
+                    to spend per host (in seconds).""", default=450, type=int)),
             ]
 
 class BasePluginInternal(controller.CementBaseController):
@@ -113,6 +115,7 @@ class BasePluginInternal(controller.CementBaseController):
         method = pargs.method
         output = pargs.output
         timeout = pargs.timeout
+        timeout_host = pargs.timeout_host
         number = pargs.number if not pargs.number == 'all' else 100000
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
@@ -220,6 +223,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         if 'url_file' in opts:
             with open(opts['url_file']) as url_file:
+                timeout_host = opts['timeout_host']
                 with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
                     results = []
                     for url in url_file:
@@ -234,7 +238,8 @@ class BasePluginInternal(controller.CementBaseController):
 
                     for result in results:
                         try:
-                            output = result['future'].result()
+                            output = result['future'].result(timeout=timeout_host)
+
                             output['host'] = result['url']
                             self.out.result(output, functionality)
                         except:
