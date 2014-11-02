@@ -3,7 +3,7 @@ from cement.utils import test
 from common import file_len, ProgressBar, JsonOutput, StandardOutput
 from common.testutils import decallmethods, MockBuffer
 from contextlib import contextmanager
-from mock import patch
+from mock import patch, MagicMock
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
 from requests import Session
@@ -180,4 +180,17 @@ class BaseTests(BaseTest):
                 building in an orderly fashion.""")
 
         assert mock_print.called == False
+
+    @patch('__builtin__.open')
+    @patch('__builtin__.print')
+    def test_log_output_when_error_display_false(self, mock_print, mock_open):
+        jo = JsonOutput(error_log='/tmp/a')
+        jo.warn("""Things have not gone according to plan. Please exit the
+                building in an orderly fashion.""")
+
+        assert mock_print.called == True
+        assert mock_open.called == True
+
+        args, kwargs = mock_print.call_args
+        assert isinstance(kwargs['file'], MagicMock)
 

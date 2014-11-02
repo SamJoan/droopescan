@@ -1,7 +1,7 @@
 from cement.utils import test
 from common import file_len, base_url
 from common.testutils import decallmethods
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, Future
 from mock import patch
 from plugins.drupal import Drupal
 from plugins import ScanningMethod, Verb, Enumerate
@@ -421,7 +421,6 @@ class BaseHttpTests(BaseTest):
         self.mock_all_url_file(invalid_url_file)
         self.app.run()
 
-        print warn.call_args
         assert warn.call_count == 2
 
     def test_url_file_calls_all(self):
@@ -506,3 +505,18 @@ class BaseHttpTests(BaseTest):
 
         for mock in all_mocks:
             self.assert_called_contains(mock, 'timeout', 5)
+
+    @patch.object(Future, 'result')
+    def test_thread_timeout_gets_passed(self, result):
+        self.add_argv(self.param_plugins)
+        self.add_argv(['--timeout-host', '150', '--url-file', self.valid_file, '--method', 'forbidden'])
+        all_mocks = self.mock_all_enumerate('drupal')
+
+        try:
+            self.app.run()
+        except:
+            # this will never happen. j/k this will always happen.
+            pass
+
+        result.assert_called_with(timeout=150)
+

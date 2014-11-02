@@ -102,6 +102,20 @@ def template(template_file, variables={}):
 class StandardOutput():
 
     errors_display = True
+    error_log_file = None
+    error_log = None
+
+    def __init__(self, error_log='-'):
+        self.error_log_file = error_log
+        if error_log == '-':
+            self.error_log = sys.stderr
+        else:
+            self.errors_display = True
+            self.error_log = open(error_log, 'w')
+
+    def __del__(self):
+        if self.error_log_file != '-':
+            self.error_log.close()
 
     def echo(self, msg):
         """
@@ -142,7 +156,7 @@ class StandardOutput():
         """
         if self.errors_display:
             print(textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79),
-                    file=sys.stderr)
+                    file=self.error_log)
 
     def fatal(self, msg):
         """

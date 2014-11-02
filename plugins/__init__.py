@@ -33,6 +33,8 @@ class AbstractArgumentController(controller.CementBaseController):
                     template('help_method.tpl'), choices=enum_list(ScanningMethod))),
                 (['--output', '-o'], dict(action='store', help='Output format',
                     choices=enum_list(ValidOutputs), default='standard')),
+                (['--error-log'], dict(action='store', help='''A file to store the
+                    errors on.''', default='-')),
                 (['--number', '-n'], dict(action='store', help='''Number of
                     words to attempt from the plugin/theme dictionary. Default
                     is 1000. Use -n 'all' to use all available.''', default=1000)),
@@ -52,7 +54,9 @@ class AbstractArgumentController(controller.CementBaseController):
                     choices=enum_list(Verb))),
                 (['--timeout'], dict(action='store', help="""How long to wait
                     for an HTTP response before timing out (in seconds).""",
-                    default=15, type=int))
+                    default=15, type=int)),
+                (['--timeout-host'], dict(action='store', help="""Maximum time
+                    to spend per host (in seconds).""", default=450, type=int)),
             ]
 
 class BasePluginInternal(controller.CementBaseController):
@@ -113,6 +117,8 @@ class BasePluginInternal(controller.CementBaseController):
         method = pargs.method
         output = pargs.output
         timeout = pargs.timeout
+        timeout_host = pargs.timeout_host
+        error_log = pargs.error_log
         number = pargs.number if not pargs.number == 'all' else 100000
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
@@ -209,9 +215,9 @@ class BasePluginInternal(controller.CementBaseController):
         opts = self._options()
 
         if opts['output'] == 'json':
-            output = JsonOutput()
+            output = JsonOutput(error_log=opts['error_log'])
         else:
-            output = StandardOutput()
+            output = StandardOutput(error_log=opts['error_log'])
 
         self._general_init(output=output)
 
@@ -220,6 +226,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         if 'url_file' in opts:
             with open(opts['url_file']) as url_file:
+                timeout_host = opts['timeout_host']
                 with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
                     results = []
                     for url in url_file:
@@ -234,7 +241,8 @@ class BasePluginInternal(controller.CementBaseController):
 
                     for result in results:
                         try:
-                            output = result['future'].result()
+                            output = result['future'].result(timeout=timeout_host)
+
                             output['host'] = result['url']
                             self.out.result(output, functionality)
                         except:

@@ -9,9 +9,6 @@ nth:
   branch. This causes tests to fail for good reason, and causes lousy
   test results. It should befixed by either only checking for files that already
   are on the XML for that major, or by adding the major for all versions.
-- Make lists of hosts lowercase.
-- http://warkworthfitness.co.nz/ has a 7.15 drupal according to changelog, but
-  none is detected. Definitely not running drupal. 
 - If no versions match, just use the changelog. With a warning.
 
 Relevant:
