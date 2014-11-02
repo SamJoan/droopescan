@@ -33,6 +33,8 @@ class AbstractArgumentController(controller.CementBaseController):
                     template('help_method.tpl'), choices=enum_list(ScanningMethod))),
                 (['--output', '-o'], dict(action='store', help='Output format',
                     choices=enum_list(ValidOutputs), default='standard')),
+                (['--error-log'], dict(action='store', help='''A file to store the
+                    errors on.''', default='-')),
                 (['--number', '-n'], dict(action='store', help='''Number of
                     words to attempt from the plugin/theme dictionary. Default
                     is 1000. Use -n 'all' to use all available.''', default=1000)),
@@ -116,6 +118,7 @@ class BasePluginInternal(controller.CementBaseController):
         output = pargs.output
         timeout = pargs.timeout
         timeout_host = pargs.timeout_host
+        error_log = pargs.error_log
         number = pargs.number if not pargs.number == 'all' else 100000
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
@@ -212,9 +215,9 @@ class BasePluginInternal(controller.CementBaseController):
         opts = self._options()
 
         if opts['output'] == 'json':
-            output = JsonOutput()
+            output = JsonOutput(error_log=opts['error_log'])
         else:
-            output = StandardOutput()
+            output = StandardOutput(error_log=opts['error_log'])
 
         self._general_init(output=output)
 
