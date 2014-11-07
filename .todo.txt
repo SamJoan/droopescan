@@ -14,6 +14,7 @@ nth:
 - Error output needs fixing. Esp. for logs.
 - Output needs fixing.
 - Fix Travis.
+- Progressbars look funky when threads > 1 & -o json.
 - https://github.com/ss23/droopescan/commit/275332caaf8593fe0f13ea6a01d9b4de3b4afac0
 
 Relevant:
