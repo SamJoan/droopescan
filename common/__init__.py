@@ -360,7 +360,10 @@ class VersionsFile():
         highest = {}
         for version_elem in versions:
             version = version_elem.attrib['nb']
-            major = version.split('.')[0]
+
+            for possibility in majors_include:
+                if version.startswith(possibility):
+                    major = possibility
 
             if major not in highest:
                 highest[major] = version
@@ -368,7 +371,12 @@ class VersionsFile():
             if self.version_gt(version, highest[major]):
                 highest[major] = version
 
-        majors = {key: highest[key] for key in majors_include}
+        majors = {}
+        for key in majors_include:
+            try:
+                majors[key] = highest[key]
+            except KeyError:
+                majors[key] = key + ".0"
 
         return majors
 

@@ -1,4 +1,3 @@
-
 # Not required when not importing versions.
 try:
     from bs4 import BeautifulSoup
@@ -10,7 +9,7 @@ from common import VersionsFile, version_gt, md5_file
 from plugins.drupal import Drupal
 from plugins.silverstripe import SilverStripe
 from plugins import HumanBasePlugin
-from subprocess import call
+from subprocess import call, check_output
 from tempfile import NamedTemporaryFile, mkdtemp
 from time import sleep
 import os
@@ -60,6 +59,8 @@ class VersionGetterBase():
         return extracted
 
     def sums_get(self, extracted, files_to_hash):
+        print extracted, files_to_hash
+        sys.exit()
         sums = {}
         for version, directory in extracted:
             sums[version] = {}
@@ -126,49 +127,52 @@ class DrupalVersions(VersionGetterBase):
         return ret
 
 class SSVersions(VersionGetterBase):
-    update_majors = ['3']
+    update_majors = ['3.1', '3.0', '2']
+    checkout_folder = 'silverstripe-framework/'
 
-    def newer_get(self, majors):
+    def newer_get(self, update_majors):
         """
             @see VersionGetterBase.newer_get
         """
-        base_url = 'http://www.silverstripe.org/software/download/release-archive/'
-        resp = requests.get(base_url)
-        soup = BeautifulSoup(resp.text)
+        clone_url = "https://github.com/silverstripe/silverstripe-framework.git"
+        #clone_url = "/root/silverstripe-cms/"
 
-        download_links = soup.select('ul.download-links.list-unstyled a')
-        newer = {}
-        assert len(download_links) > 0
-        for dl_link in download_links:
-            url = dl_link.get('href')
+        temp = mkdtemp() + "/"
+        call(['git', 'clone', clone_url], cwd=temp)
+        versions = check_output(['git', 'tag'], cwd=temp +
+                self.checkout_folder).split('\n')
 
-            is_tar = url.endswith('.tar.gz')
-            is_cms = "SilverStripe-cms-" in url
+        # @TODO get only newer.
+        final = []
+        for version in versions:
+            major = None
+            for m in update_majors:
+                if version.startswith(m):
+                    major = m
 
-            if is_tar and is_cms:
-                prefix = 'SilverStripe-cms-v'
-                v_start = url.index(prefix) + len(prefix)
-                v_end = url.index('.tar.gz')
+            if major == None:
+                print version, "skipped."
+                continue
 
-                version = url[v_start:v_end]
-                major = version[:version.index('.')]
-                is_release_candidate = '-' in version
+            final.append(version)
 
-                if not is_release_candidate:
-                    if not major in majors:
-                        continue
+        return (final, temp)
 
-                    if not version_gt(version, majors[major]):
-                        continue
+    def download(self, newer, location):
+        versions, temp_dir = newer
+        dirs = []
+        for ver in versions:
+            ver_dir = temp_dir + ver + "/"
+            call(['cp', '-r', temp_dir + self.checkout_folder, ver_dir])
+            call(['git', 'checkout', '-b', 'randomRandomRandom', ver],
+                    cwd=ver_dir)
 
-                    if not major in newer:
-                        newer[major] = []
+            dirs.append((ver, ver_dir))
 
-                    newer[major].append((version, 'http://www.silverstripe.org'
-                        + url))
+        return dirs
 
-        return newer
-
+    def extract(self, files, location):
+        return files
 
 class Versions(HumanBasePlugin):
     class Meta:
