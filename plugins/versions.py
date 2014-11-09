@@ -18,6 +18,12 @@ import shutil
 import sys
 import tarfile
 
+def c(*args, **kwargs):
+    print args[0]
+    return_code = call(*args, **kwargs)
+    if return_code != 0:
+        raise Exception("Above command failed.")
+
 class VersionGetterBase():
     def newer_get(self, majors):
         """
@@ -38,7 +44,7 @@ class VersionGetterBase():
             urls = newer[major]
             for version, dl_url in urls:
                 out_file = location + version + '.tar.gz'
-                call(['wget', dl_url, '-O', out_file])
+                c(['wget', dl_url, '-O', out_file])
                 files.append((version, out_file))
 
         return files
@@ -59,8 +65,6 @@ class VersionGetterBase():
         return extracted
 
     def sums_get(self, extracted, files_to_hash):
-        print extracted, files_to_hash
-        sys.exit()
         sums = {}
         for version, directory in extracted:
             sums[version] = {}
@@ -128,19 +132,25 @@ class DrupalVersions(VersionGetterBase):
 
 class SSVersions(VersionGetterBase):
     update_majors = ['3.1', '3.0', '2']
-    checkout_folder = 'silverstripe-framework/'
+
+    #framework_url = 'https://github.com/silverstripe/silverstripe-framework.git'
+    #cms_url = 'https://github.com/silverstripe/silverstripe-cms.git'
+    framework_url = '/root/silverstripe-framework/'
+    cms_url = '/root/silverstripe-cms/'
+
+    framework_folder = 'silverstripe-framework/'
+    cms_folder = 'silverstripe-cms/'
 
     def newer_get(self, update_majors):
         """
             @see VersionGetterBase.newer_get
         """
-        clone_url = "https://github.com/silverstripe/silverstripe-framework.git"
-        #clone_url = "/root/silverstripe-cms/"
 
         temp = mkdtemp() + "/"
-        call(['git', 'clone', clone_url], cwd=temp)
+        c(['git', 'clone', self.framework_url], cwd=temp)
+        c(['git', 'clone', self.cms_url], cwd=temp)
         versions = check_output(['git', 'tag'], cwd=temp +
-                self.checkout_folder).split('\n')
+                self.framework_folder).split('\n')
 
         # @TODO get only newer.
         final = []
@@ -163,9 +173,19 @@ class SSVersions(VersionGetterBase):
         dirs = []
         for ver in versions:
             ver_dir = temp_dir + ver + "/"
-            call(['cp', '-r', temp_dir + self.checkout_folder, ver_dir])
-            call(['git', 'checkout', '-b', 'randomRandomRandom', ver],
-                    cwd=ver_dir)
+
+            os.mkdir(ver_dir)
+
+            fw_dir = ver_dir + "framework/"
+            cms_dir = ver_dir + "cms/"
+
+            c(['cp', '-r', temp_dir + self.framework_folder, fw_dir])
+            c(['cp', '-r', temp_dir + self.cms_folder, cms_dir])
+
+            c(['git', 'checkout', '-b', ver, ver],
+                    cwd=fw_dir)
+            c(['git', 'checkout', '-b', ver, ver],
+                    cwd=cms_dir)
 
             dirs.append((ver, ver_dir))
 
@@ -201,49 +221,44 @@ class Versions(HumanBasePlugin):
         """
         versions = VersionsFile(versions_file)
 
-        ok = self.confirm('This will download a whole bunch of stuff. OK?')
+        base_folder = mkdtemp() + "/"
+
+        # Get information needed.
+        if 'override_newer' in additional_params:
+            new = additional_params['override_newer']
+        else:
+            majors = versions.highest_version_major(vg.update_majors)
+            new = vg.newer_get(majors)
+
+        if len(new) == 0:
+            self.error("No new version found, versions.xml is up to date.")
+
+        # Get hashes.
+        dl_files = vg.download(new, base_folder)
+        extracted_dirs = vg.extract(dl_files, base_folder)
+        file_sums = vg.sums_get(extracted_dirs, versions.files_get())
+
+        versions.update(file_sums)
+        xml = versions.str_pretty()
+
+        # Final sanity checks.
+        f_temp = NamedTemporaryFile(delete=False)
+        f_temp.write(xml)
+        f_temp.close()
+        c(['diff', '-s', f_temp.name, versions_file])
+        os.remove(f_temp.name)
+
+        ok = self.confirm('Overwrite %s with the new file?' %
+                versions_file)
+
         if ok:
-            base_folder = mkdtemp() + "/"
+            f_real = open(versions_file, 'w')
+            f_real.write(xml)
+            f_real.close()
 
-            # Get information needed.
-            if 'override_newer' in additional_params:
-                new = additional_params['override_newer']
-            else:
-                majors = versions.highest_version_major(vg.update_majors)
-                new = vg.newer_get(majors)
+            print "Done."
 
-            if len(new) == 0:
-                self.error("No new version found, versions.xml is up to date.")
-
-            # Get hashes.
-            dl_files = vg.download(new, base_folder)
-            extracted_dirs = vg.extract(dl_files, base_folder)
-            file_sums = vg.sums_get(extracted_dirs, versions.files_get())
-
-            versions.update(file_sums)
-            xml = versions.str_pretty()
-
-            # Final sanity checks.
-            f_temp = NamedTemporaryFile(delete=False)
-            f_temp.write(xml)
-            f_temp.close()
-            call(['diff', '-s', f_temp.name, versions_file])
-            os.remove(f_temp.name)
-
-            ok = self.confirm('Overwrite %s with the new file?' %
-                    versions_file)
-
-            if ok:
-                f_real = open(versions_file, 'w')
-                f_real.write(xml)
-                f_real.close()
-
-                print "Done."
-
-                call(['git', 'status'])
-            else:
-                self.error('Aborted.')
-
+            c(['git', 'status'])
         else:
             self.error('Aborted.')
 
