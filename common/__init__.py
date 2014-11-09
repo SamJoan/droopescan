@@ -367,6 +367,7 @@ class VersionsFile():
         for version_elem in versions:
             version = version_elem.attrib['nb']
 
+            major = None
             for possibility in majors_include:
                 if version.startswith(possibility):
                     major = possibility

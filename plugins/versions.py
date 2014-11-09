@@ -245,7 +245,7 @@ class Versions(HumanBasePlugin):
         f_temp = NamedTemporaryFile(delete=False)
         f_temp.write(xml)
         f_temp.close()
-        c(['diff', '-s', f_temp.name, versions_file])
+        call(['diff', '-s', f_temp.name, versions_file])
         os.remove(f_temp.name)
 
         ok = self.confirm('Overwrite %s with the new file?' %
