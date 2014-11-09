@@ -209,7 +209,13 @@ class FingerprintTests(BaseTest):
         fails = []
         for xml_path in glob('plugins/*/versions.xml'):
            vf = VersionsFile(xml_path)
-           fpvm = vf.files_per_version_major()
+
+           if 'silverstripe' in xml_path:
+               major_numbers = 2
+           else:
+               major_numbers = 1
+
+           fpvm = vf.files_per_version_major(major_numbers)
 
            number = 0
            for major in fpvm:

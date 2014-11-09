@@ -284,11 +284,17 @@ class VersionsFile():
 
         return versions
 
-    def files_per_version_major(self):
+    def files_per_version_major(self, major_numbers):
+        """
+            @param major_numbers Numbers which mean a major. In drupal 7.x is
+            the major seven, so input 1. In SS, 3.1 is the major (two numbers),
+            os input two.
+        """
         fpv = self.files_per_version()
         majors = {}
         for version in fpv:
-            major = version.split(".")[0]
+            major = ".".join(version.split(".")[0:major_numbers])
+
             if not major in majors:
                 majors[major] = {}
 
