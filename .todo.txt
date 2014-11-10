@@ -16,8 +16,8 @@ nth:
 - Fix Travis.
 - Progressbars look funky when threads > 1 & -o json.
 - https://github.com/ss23/droopescan/commit/275332caaf8593fe0f13ea6a01d9b4de3b4afac0
-- SS outdated. 3.1.7 out, need to get that & get all older versions.
-    -> all stable versions are vulnerable.
+- http://stackoverflow.com/questions/1641231/python-working-around-memory-leaks/1641280#1641280
+    http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
 
 Relevant:
 - https://wappalyzer.com/ -
