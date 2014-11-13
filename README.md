@@ -22,7 +22,7 @@ In order to run this tool you need to install a few dependencies. These can be
 installed by running the following command:
 
 <pre>
-pip install requirements.txt
+pip install -r requirements.txt
 </pre>
 
 # Scan types.
@@ -126,7 +126,7 @@ commands will result in them being installed and the tests being ran:
 
 <pre>
     apt-get install python-dev libxslt1-dev libxml2-dev
-    pip install requirements_test.txt
+    pip install -r requirements_test.txt
     ./droopescan test
 </pre>
 
