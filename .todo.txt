@@ -11,9 +11,8 @@ nth:
   are on the XML for that major, or by adding the major for all versions.
 - If no versions match, just use the changelog. With a warning.
 - IndexErrors. This is caused by relative location headers. e.g. 'Location: /'
-- Error output needs fixing. Esp. for logs.
 - Output needs fixing.
-- Progressbars look funky when threads > 1 & -o json.
+- Progressbars look funky when URL_FILE.
 - https://github.com/ss23/droopescan/commit/275332caaf8593fe0f13ea6a01d9b4de3b4afac0
 - http://stackoverflow.com/questions/1641231/python-working-around-memory-leaks/1641280#1641280
     http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/

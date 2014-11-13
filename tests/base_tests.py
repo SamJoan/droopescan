@@ -194,3 +194,16 @@ class BaseTests(BaseTest):
         args, kwargs = mock_print.call_args
         assert isinstance(kwargs['file'], MagicMock)
 
+    @patch('common.ProgressBar.set')
+    def test_progressbar_url_file_hidden_in_ennumerate(self, p):
+        """@TODO add progressbar for multisite. ensure the other one is hidden first."""
+        try:
+            self.scanner.enumerate_plugins(self.base_url,
+                    self.scanner.plugins_base_url, hide_progressbar=True)
+        except:
+            pass
+
+        print(p.called)
+
+        assert False
+
