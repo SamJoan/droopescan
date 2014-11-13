@@ -133,10 +133,10 @@ class DrupalVersions(VersionGetterBase):
 class SSVersions(VersionGetterBase):
     update_majors = ['3.1', '3.0', '2']
 
-    #framework_url = 'https://github.com/silverstripe/silverstripe-framework.git'
-    #cms_url = 'https://github.com/silverstripe/silverstripe-cms.git'
-    framework_url = '/root/silverstripe-framework/'
-    cms_url = '/root/silverstripe-cms/'
+    framework_url = 'https://github.com/silverstripe/silverstripe-framework.git'
+    cms_url = 'https://github.com/silverstripe/silverstripe-cms.git'
+    #framework_url = '/root/silverstripe-framework/'
+    #cms_url = '/root/silverstripe-cms/'
 
     framework_folder = 'silverstripe-framework/'
     cms_folder = 'silverstripe-cms/'
