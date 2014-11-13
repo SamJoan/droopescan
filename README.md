@@ -2,6 +2,8 @@
 
 Stable versions can be [found here](https://github.com/droope/droopescan/releases).
 
+[![Build Status](https://travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan)
+
 Usage:
 
 <pre>
