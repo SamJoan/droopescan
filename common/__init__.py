@@ -8,6 +8,7 @@ import pystache
 import re
 import sys
 import textwrap
+import time
 import xml.etree.ElementTree as ET
 
 logging.basicConfig(level=logging.WARN)
@@ -99,22 +100,26 @@ def template(template_file, variables={}):
 
     return pystache.render(template, variables)
 
+def strip_whitespace(s):
+    return re.sub(r'\s+', ' ', s)
+
 class StandardOutput():
 
     errors_display = True
-    error_log_file = None
     error_log = None
+    log_to_file = False
 
     def __init__(self, error_log='-'):
-        self.error_log_file = error_log
-        if error_log == '-':
+        self.log_to_file = error_log != '-'
+
+        if not self.log_to_file:
             self.error_log = sys.stderr
         else:
             self.errors_display = True
             self.error_log = open(error_log, 'w')
 
     def __del__(self):
-        if self.error_log_file != '-':
+        if self.log_to_file:
             self.error_log.close()
 
     def echo(self, msg):
@@ -148,21 +153,34 @@ class StandardOutput():
 
             self.echo(template(template_str, template_params))
 
-    def warn(self, msg):
+    def warn(self, msg, whitespace_strp=True):
         """
             For things that have gone seriously wrong but don't merit a program
             halt.
             Outputs to stderr, so JsonOutput does not need to override.
         """
         if self.errors_display:
-            print(textwrap.fill(colors['warn'] + "[+] " + msg + colors['endc'], 79),
-                    file=self.error_log)
+
+            if whitespace_strp:
+                msg = strip_whitespace(msg)
+
+            if not self.log_to_file:
+                msg = colors['warn'] + "[+] " + msg + colors['endc']
+            else:
+                msg = "[" + time.strftime("%c") + "] " + msg
+
+            print(msg, file=self.error_log)
 
     def fatal(self, msg):
         """
             For errors so grave that the program cannot continue.
         """
-        msg = textwrap.fill(colors['red'] + "[+] " + msg + colors['endc'], 79)
+        if not self.log_to_file:
+            msg = strip_whitespace(colors['red'] + "[+] " + msg +
+                    colors['endc'])
+        else:
+            msg = "[" + time.strftime("%c") + "] " + msg
+
         raise RuntimeError(msg)
 
 class JsonOutput(StandardOutput):

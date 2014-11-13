@@ -13,11 +13,11 @@ nth:
 - IndexErrors. This is caused by relative location headers. e.g. 'Location: /'
 - Error output needs fixing. Esp. for logs.
 - Output needs fixing.
-- Fix Travis.
 - Progressbars look funky when threads > 1 & -o json.
 - https://github.com/ss23/droopescan/commit/275332caaf8593fe0f13ea6a01d9b4de3b4afac0
 - http://stackoverflow.com/questions/1641231/python-working-around-memory-leaks/1641280#1641280
     http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
+- Add test to self.out.warn param strip_whitespace.
 
 Relevant:
 - https://wappalyzer.com/ -

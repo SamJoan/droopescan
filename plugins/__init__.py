@@ -247,7 +247,7 @@ class BasePluginInternal(controller.CementBaseController):
                             self.out.result(output, functionality)
                         except:
                             exc = traceback.format_exc()
-                            self.out.warn(exc)
+                            self.out.warn(exc, whitespace_strp=False)
 
         else:
             output = self.url_scan(opts['url'], opts, functionality,
@@ -381,7 +381,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def _error_determine_scanning(self, url, folder_resp, folder_redirect, ok_200):
         loc = folder_resp.headers['location'] if folder_redirect else 'not present as not a redirect'
-        ok_human = '200 status' if ok_200 else 'not found status.'
+        ok_human = '200 status' if ok_200 else 'not found status'
         info = '''Expected folder returned status '%s' (location header
             %s), expected file returned %s.''' % (folder_resp.status_code,
             loc, ok_human)
