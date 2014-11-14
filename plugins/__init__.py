@@ -230,7 +230,8 @@ class BasePluginInternal(controller.CementBaseController):
                 with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
                     results = []
                     for url in url_file:
-                        args = [url, opts, functionality, enabled_functionality]
+                        args = [url, opts, functionality, enabled_functionality,
+                                True]
 
                         future = executor.submit(self.url_scan, *args)
 
@@ -251,14 +252,15 @@ class BasePluginInternal(controller.CementBaseController):
 
         else:
             output = self.url_scan(opts['url'], opts, functionality,
-                    enabled_functionality)
+                    enabled_functionality, hide_progressbar=False)
 
             self.out.result(output, functionality)
 
         self.out.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
                 str(datetime.now() - time_start))
 
-    def url_scan(self, url, opts, functionality, enabled_functionality):
+    def url_scan(self, url, opts, functionality, enabled_functionality,
+            hide_progressbar):
         url = common.validate_url(url, self.out)
 
         if self.can_enumerate_plugins or self.can_enumerate_themes:
@@ -271,16 +273,8 @@ class BasePluginInternal(controller.CementBaseController):
             scanning_method = None
 
         enumerating_all = opts['enumerate'] == 'a'
-        if enumerating_all:
-            self.out.echo(common.template('scan_begin.tpl', {'noun': 'all', 'url':
-                url}))
-
         result = {}
         for enumerate in enabled_functionality:
-            if not enumerating_all:
-                self.out.echo(common.template('scan_begin.tpl', {'noun': enumerate,
-                    'url': url}))
-
             enum = functionality[enumerate]
 
             # Get the arguments for the function.
@@ -288,6 +282,7 @@ class BasePluginInternal(controller.CementBaseController):
             kwargs['url'] = url
             if enumerate in ['themes', 'plugins']:
                 kwargs['scanning_method'] = scanning_method
+                kwargs['hide_progressbar'] = hide_progressbar
 
             # Call to the respective functions occurs here.
             finds, is_empty = enum['func'](**kwargs)
@@ -409,7 +404,9 @@ class BasePluginInternal(controller.CementBaseController):
                 yield theme.strip()
                 i +=1
 
-    def enumerate(self, url, base_url_supplied, scanning_method, iterator_returning_method, max_iterator=500, threads=10, verb='head', timeout=15):
+    def enumerate(self, url, base_url_supplied, scanning_method,
+            iterator_returning_method, max_iterator=500, threads=10,
+            verb='head', timeout=15, hide_progressbar=False):
         '''
             @param url base URL for the website.
             @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
@@ -421,6 +418,8 @@ class BasePluginInternal(controller.CementBaseController):
             @param verb what HTTP verb. Valid options are 'get' and 'head'.
             @param timeout the time, in seconds, that requests should wait
                 before throwing an exception.
+            @param hide_progressbar if true, the progressbar will not be
+                displayed.
         '''
         if common.is_string(base_url_supplied):
             base_urls = [base_url_supplied]
@@ -452,15 +451,19 @@ class BasePluginInternal(controller.CementBaseController):
                         'plugin_url': plugin_url,
                     })
 
-            p = ProgressBar(sys.stderr)
-            items_progressed = 0
-            items_total = len(base_urls) * int(max_iterator)
+            if not hide_progressbar:
+                p = ProgressBar(sys.stderr)
+                items_progressed = 0
+                items_total = len(base_urls) * int(max_iterator)
 
             no_results = True
             found = []
             for future_array in futures:
-                items_progressed += 1
-                p.set(items_progressed, items_total)
+
+                if not hide_progressbar:
+                    items_progressed += 1
+                    p.set(items_progressed, items_total)
+
                 r = future_array['future'].result()
                 if r.status_code == expected_status:
                     plugin_url = future_array['plugin_url']
@@ -474,19 +477,26 @@ class BasePluginInternal(controller.CementBaseController):
                 elif r.status_code >= 500:
                     self.out.warn('Got a 500 error. Is the server overloaded?')
 
-            p.hide()
+            if not hide_progressbar:
+                p.hide()
 
         return found, no_results
 
-    def enumerate_plugins(self, url, base_url, scanning_method='forbidden', max_plugins=500, threads=10, verb='head', timeout=15):
+    def enumerate_plugins(self, url, base_url, scanning_method='forbidden',
+            max_plugins=500, threads=10, verb='head', timeout=15,
+            hide_progressbar=False):
+
         iterator = getattr(self, 'plugins_get')
         return self.enumerate(url, base_url, scanning_method, iterator,
-                max_plugins, threads, verb, timeout)
+                max_plugins, threads, verb, timeout, hide_progressbar)
 
-    def enumerate_themes(self, url, base_url, scanning_method='forbidden', max_plugins=500, threads=10, verb='head', timeout=15):
+    def enumerate_themes(self, url, base_url, scanning_method='forbidden',
+            max_plugins=500, threads=10, verb='head', timeout=15,
+            hide_progressbar=False):
+
         iterator = getattr(self, 'themes_get')
         return self.enumerate(url, base_url, scanning_method, iterator,
-                max_plugins, threads, verb, timeout)
+                max_plugins, threads, verb, timeout, hide_progressbar)
 
     def enumerate_interesting(self, url, interesting_urls, threads=10,
             verb='head', timeout=15):

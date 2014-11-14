@@ -17,6 +17,7 @@ nth:
 - http://stackoverflow.com/questions/1641231/python-working-around-memory-leaks/1641280#1641280
     http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
 - Add test to self.out.warn param strip_whitespace.
+- Add a handler for KeyboardInterrupt or snakesthatbite.blogspot.co.nz/2010/09/cpython-threading-interrupting.html
 
 Relevant:
 - https://wappalyzer.com/ -

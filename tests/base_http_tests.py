@@ -1,5 +1,5 @@
 from cement.utils import test
-from common import file_len, base_url
+from common import file_len, base_url, ProgressBar
 from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor, Future
 from mock import patch
@@ -520,3 +520,60 @@ class BaseHttpTests(BaseTest):
 
         result.assert_called_with(timeout=150)
 
+    @patch.object(ProgressBar, 'set')
+    def test_progressbar_url_file_hidden_in_ennumerate_plugins(self, p):
+        """@TODO add progressbar for multisite. ensure the other one is hidden first."""
+        try:
+            self.scanner.enumerate_plugins(self.base_url,
+                    self.scanner.plugins_base_url, hide_progressbar=True)
+        except:
+            pass
+
+        assert p.called == False
+
+    @patch.object(ProgressBar, 'set')
+    def test_progressbar_url_file_hidden_in_ennumerate_themes(self, p):
+        """@TODO add progressbar for multisite. ensure the other one is hidden first."""
+        try:
+            self.scanner.enumerate_themes(self.base_url,
+                    self.scanner.plugins_base_url, hide_progressbar=True)
+        except:
+            pass
+
+        assert p.called == False
+
+    def test_progressbar_url_file_hidden(self):
+        mocks = self.mock_all_enumerate('drupal')
+        self.add_argv(['--url-file', self.valid_file])
+        self.add_argv(['--method', 'forbidden'])
+
+        self.app.run()
+
+        total_hide_progressbar = 0
+        for mock in mocks:
+            args, kwargs = mock.call_args
+            try:
+                if kwargs['hide_progressbar'] == True:
+                    total_hide_progressbar += 1
+            except KeyError:
+                pass
+
+        assert total_hide_progressbar == 2
+
+    def test_progressbar_url_displays(self):
+        mocks = self.mock_all_enumerate('drupal')
+        self.add_argv(self.param_all)
+        self.add_argv(['--method', 'forbidden'])
+
+        self.app.run()
+
+        total_show_progressbar = 0
+        for mock in mocks:
+            args, kwargs = mock.call_args
+            try:
+                if kwargs['hide_progressbar'] == False:
+                    total_show_progressbar += 1
+            except KeyError:
+                pass
+
+        assert total_show_progressbar == 2
