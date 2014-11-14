@@ -2,7 +2,7 @@ from cement.utils import test
 from common import file_len, base_url, ProgressBar
 from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor, Future
-from mock import patch
+from mock import patch, MagicMock
 from plugins.drupal import Drupal
 from plugins import ScanningMethod, Verb, Enumerate
 from requests.exceptions import ConnectionError
@@ -393,6 +393,31 @@ class BaseHttpTests(BaseTest):
                 Verb.head)
 
         assert result == base_url_https
+
+    def test_redirect_relative_path(self):
+
+        redirect_vals = {
+            '/': self.base_url,
+            '/relative': self.base_url + 'relative',
+            'relative': self.base_url + 'relative',
+        }
+
+        side_effect_list = []
+        for relative_url in redirect_vals:
+            side_effect_list.append(relative_url)
+
+        m = self.mock_controller('drupal', '_determine_scanning_method',
+                side_effect=side_effect_list)
+
+        self.scanner._determine_scanning_method = MagicMock(side_effect=list(redirect_vals))
+        result = self.scanner.determine_scanning_method(self.base_url,
+                Verb.head)
+
+        print m.call_args_list
+
+        print result
+
+        assert result == self.base_url
 
     @test.raises(RuntimeError)
     def test_redirect_once_max(self):
