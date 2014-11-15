@@ -168,12 +168,14 @@ class SSVersions(VersionGetterBase):
             max_avail = update_majors[major]
 
             if not version_gt(version, max_avail):
-                print "skip %s bc already have it." % version
                 continue
 
             final.append(version)
 
-        return (final, temp)
+        if len(final) == 0:
+            return []
+        else:
+            return (final, temp)
 
     def download(self, newer, location):
         versions, temp_dir = newer
