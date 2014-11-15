@@ -1,5 +1,5 @@
 from cement.core import handler, controller
-from common import template, enum_list, dict_combine, base_url
+from common import template, enum_list, dict_combine, base_url, file_len
 from common import Verb, ScanningMethod, Enumerate, VersionsFile, ProgressBar, \
         StandardOutput, ValidOutputs, JsonOutput
 from concurrent.futures import ThreadPoolExecutor
@@ -412,7 +412,7 @@ class BasePluginInternal(controller.CementBaseController):
                 i +=1
 
     def enumerate(self, url, base_url_supplied, scanning_method,
-            iterator_returning_method, max_iterator=500, threads=10,
+            iterator_returning_method, iterator_len, max_iterator=500, threads=10,
             verb='head', timeout=15, hide_progressbar=False):
         '''
             @param url base URL for the website.
@@ -420,6 +420,8 @@ class BasePluginInternal(controller.CementBaseController):
             @param scanning_method see ScanningMethod
             @param iterator_returning_method a function which returns an
                 element that, when iterated, will return a full list of plugins
+            @param iterator_len the number of items the above iterator can
+                return, regardless of user preference.
             @param max_iterator integer that will be passed unto iterator_returning_method
             @param threads number of threads
             @param verb what HTTP verb. Valid options are 'get' and 'head'.
@@ -461,7 +463,8 @@ class BasePluginInternal(controller.CementBaseController):
             if not hide_progressbar:
                 p = ProgressBar(sys.stderr)
                 items_progressed = 0
-                items_total = len(base_urls) * int(max_iterator)
+                max_possible = max_iterator if int(max_iterator) < int(iterator_len) else iterator_len
+                items_total = max_possible * len(base_urls)
 
             no_results = True
             found = []
@@ -482,7 +485,7 @@ class BasePluginInternal(controller.CementBaseController):
                         'url': plugin_url
                     })
                 elif r.status_code >= 500:
-                    self.out.warn('Got a 500 error. Is the server overloaded?')
+                    self.out.warn('\rGot a 500 error. Is the server overloaded?')
 
             if not hide_progressbar:
                 p.hide()
@@ -493,17 +496,23 @@ class BasePluginInternal(controller.CementBaseController):
             max_plugins=500, threads=10, verb='head', timeout=15,
             hide_progressbar=False):
 
-        iterator = getattr(self, 'plugins_get')
+        iterator = self.plugins_get
+        iterator_len = file_len(self.plugins_file)
+
         return self.enumerate(url, base_url, scanning_method, iterator,
-                max_plugins, threads, verb, timeout, hide_progressbar)
+                iterator_len, max_plugins, threads, verb,
+                timeout, hide_progressbar)
 
     def enumerate_themes(self, url, base_url, scanning_method='forbidden',
             max_plugins=500, threads=10, verb='head', timeout=15,
             hide_progressbar=False):
 
-        iterator = getattr(self, 'themes_get')
+        iterator = self.themes_get
+        iterator_len = file_len(self.themes_file)
+
         return self.enumerate(url, base_url, scanning_method, iterator,
-                max_plugins, threads, verb, timeout, hide_progressbar)
+                iterator_len, max_plugins, threads, verb, timeout,
+                hide_progressbar)
 
     def enumerate_interesting(self, url, interesting_urls, threads=10,
             verb='head', timeout=15):
