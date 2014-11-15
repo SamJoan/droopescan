@@ -1,26 +1,14 @@
-from __future__ import print_function
+
 from cement.utils import test
 from common import file_len, ProgressBar, JsonOutput, StandardOutput
 from common.testutils import decallmethods, MockBuffer
-from contextlib import contextmanager
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
 from requests import Session
-from StringIO import StringIO
 from tests import BaseTest
 import responses
 import sys
-
-@contextmanager
-def capture_sys_output():
-    caputure_out, capture_err = StringIO(), StringIO()
-    current_out, current_err = sys.stdout, sys.stderr
-    try:
-        sys.stdout, sys.stderr = caputure_out, capture_err
-        yield caputure_out, capture_err
-    finally:
-        sys.stdout, sys.stderr = current_out, current_err
 
 @decallmethods(responses.activate)
 class BaseTests(BaseTest):
@@ -34,16 +22,14 @@ class BaseTests(BaseTest):
 
     @test.raises(RuntimeError)
     def test_errors_when_no_url(self):
-        with capture_sys_output() as (stdout, stderr):
-            self.add_argv(['scan', 'drupal'])
-            self.app.run()
+        self.add_argv(['scan', 'drupal'])
+        self.app.run()
 
     @test.raises(IOError)
     def test_fails_io_when_url_file(self):
-        with capture_sys_output() as (stdout, stderr):
-            self.add_argv(['scan', 'drupal'])
-            self.add_argv(['--url-file', '/tmp/NONEXISTANTFILE'])
-            self.app.run()
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['--url-file', '/tmp/NONEXISTANTFILE'])
+        self.app.run()
 
     @test.raises(RuntimeError)
     def test_errors_when_invalid_url(self):
@@ -54,17 +40,15 @@ class BaseTests(BaseTest):
 
     @test.raises(SystemExit)
     def test_errors_when_invalid_enumerate(self):
-        with capture_sys_output() as (stdout, stderr):
-            self.add_argv(['scan', 'drupal'])
-            self.add_argv(self.param_base + ['-e', 'z'])
-            self.app.run()
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(self.param_base + ['-e', 'z'])
+        self.app.run()
 
     @test.raises(SystemExit)
     def test_errors_when_invalid_method(self):
-        with capture_sys_output() as (stdout, stderr):
-            self.add_argv(['scan', 'drupal'])
-            self.add_argv(self.param_plugins + ['--method', 'derpo'])
-            self.app.run()
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(self.param_plugins + ['--method', 'derpo'])
+        self.app.run()
 
     @test.raises(ConnectionError)
     def test_calls_plugin(self):

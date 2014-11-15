@@ -1,3 +1,4 @@
+
 from __future__ import print_function
 from cement.core import handler
 import argparse
@@ -199,7 +200,7 @@ class JsonOutput(StandardOutput):
         print(json.dumps(result))
 
 def is_string(var):
-    return isinstance(var, basestring)
+    return isinstance(var, str)
 
 def dict_combine(x, y):
     z = x.copy()

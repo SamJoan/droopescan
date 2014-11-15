@@ -19,7 +19,7 @@ import sys
 import tarfile
 
 def c(*args, **kwargs):
-    print args[0]
+    print(args[0])
     return_code = call(*args, **kwargs)
     if return_code != 0:
         raise Exception("Above command failed.")
@@ -162,7 +162,7 @@ class SSVersions(VersionGetterBase):
                     major = m
 
             if major == None:
-                print version, "skipped."
+                print(version, "skipped.")
                 continue
 
             max_avail = update_majors[major]
@@ -265,7 +265,7 @@ class Versions(HumanBasePlugin):
             f_real.write(xml)
             f_real.close()
 
-            print "Done."
+            print("Done.")
 
             c(['git', 'status'])
         else:

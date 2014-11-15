@@ -346,7 +346,7 @@ class BaseHttpTests(BaseTest):
         description = self.scanner.interesting_urls[0][1]
         interesting_url = self.base_url + path
 
-        urls_200 = map(lambda x: x[0], self.scanner.interesting_urls)
+        urls_200 = [x[0] for x in self.scanner.interesting_urls]
         self.respond_several(self.base_url + "%s", {200:
             urls_200}, verb=responses.GET)
 

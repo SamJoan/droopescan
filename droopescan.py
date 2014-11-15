@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from __future__ import print_function
+
 """
     |
  ___| ___  ___  ___  ___  ___  ___  ___  ___  ___
@@ -8,7 +8,7 @@ from __future__ import print_function
                     |
 =================================================
 """
-
+from __future__ import print_function
 from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
 from common import template

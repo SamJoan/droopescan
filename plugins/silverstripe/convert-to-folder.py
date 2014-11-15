@@ -16,7 +16,7 @@ import requests
 try:
     composer_file = sys.argv[1]
 except IndexError:
-    print("Usage: %s FILE_WITH_COMPOSER_MODULES" % sys.argv[0])
+    print(("Usage: %s FILE_WITH_COMPOSER_MODULES" % sys.argv[0]))
     sys.exit()
 
 f = open(composer_file)
@@ -52,12 +52,12 @@ for module_name in reqs:
             pass
         else:
             # god knows whatever the fuck happened there.
-            print module_name
+            print(module_name)
             pprint(response)
             raise
 
     if not folder_name:
         folder_name = os.path.basename(module_name)
 
-    print folder_name
+    print(folder_name)
 

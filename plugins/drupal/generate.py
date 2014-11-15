@@ -13,19 +13,19 @@ try:
     what = sys.argv[1]
     total_nb = int(sys.argv[2])
 except IndexError:
-    print("Usage: %s (module|theme) total_nb" % sys.argv[0])
+    print(("Usage: %s (module|theme) total_nb" % sys.argv[0]))
     sys.exit()
 
 
 per_page = 25
 if total_nb % per_page != 0:
-    print("total_nb needs to be a multiple of %s" % per_page)
+    print(("total_nb needs to be a multiple of %s" % per_page))
     sys.exit()
 
 base_url = 'https://drupal.org/project/project_%s?page=%s'
 total_pages = total_nb / per_page
 module_names = []
-for page in xrange(0, total_pages):
+for page in range(0, total_pages):
     response = requests.get(base_url % (what, page))
     soup = BeautifulSoup(response.text)
 
@@ -35,4 +35,4 @@ for page in xrange(0, total_pages):
 
     for link in links:
         project_name = link['href'].split("/")[-1]
-        print project_name
+        print(project_name)

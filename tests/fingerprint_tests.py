@@ -246,7 +246,7 @@ class FingerprintTests(BaseTest):
 
         if len(fails) > 0:
             for fail in fails:
-                print fail
+                print(fail)
 
             assert False
 

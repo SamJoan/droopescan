@@ -41,13 +41,13 @@ class Release(HumanBasePlugin):
         all_ok = True
         for run in self.test_runs:
             args = self.test_runs_base + run + self.test_runs_append
-            print args
+            print(args)
             ret_code = call(args)
             if ret_code != 0:
                 all_ok = False
                 break
             else:
-                print "OK"
+                print("OK")
 
         return all_ok
 
@@ -75,7 +75,7 @@ class Release(HumanBasePlugin):
 
             final = self.changelog(version_nb).strip() + "\n\n"
 
-            print "The following will be prepended to the CHANGELOG:\n---\n%s---" % final
+            print("The following will be prepended to the CHANGELOG:\n---\n%s---" % final)
 
             ok = self.confirm("Is that OK?")
             if ok:

@@ -11,7 +11,7 @@ class Stats(controller.CementBaseController):
     def stats(self):
        plugins = plugins_get()
        for plugin in plugins:
-           print template('stats_plugin.tpl', {'plugin': plugin})
+           print(template('stats_plugin.tpl', {'plugin': plugin}))
 
 def load():
     handler.register(Stats)

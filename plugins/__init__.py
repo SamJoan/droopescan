@@ -1,3 +1,4 @@
+from __future__ import print_function
 from cement.core import handler, controller
 from common import template, enum_list, dict_combine, base_url, file_len
 from common import Verb, ScanningMethod, Enumerate, VersionsFile, ProgressBar, \
@@ -613,10 +614,10 @@ class HumanBasePlugin(controller.CementBaseController):
         sys.stdout.write('%s [y/n]\n' % question)
         while True:
             try:
-                return strtobool(raw_input().lower())
+                return strtobool(input().lower())
             except ValueError:
                 sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
 
     def get_input(self, question):
-        print question,
-        return raw_input()
+        print(question, end=' ')
+        return input()

@@ -5,7 +5,7 @@ import subprocess
 
 def plugins_get():
     controllers = handler.list('controller')
-    plugins = filter(lambda c: issubclass(c, BasePlugin), controllers)
+    plugins = [c for c in controllers if issubclass(c, BasePlugin)]
 
     return_plugins = []
     for p in plugins:

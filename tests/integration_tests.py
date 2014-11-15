@@ -35,5 +35,5 @@ class IntegrationTests(BaseTest):
         exist_files = ['misc/drupal.js', 'misc/tabledrag.js', 'misc/tableheader.js', 'misc/ajax.js']
 
         out_sums = self.dv.sums_get(extracted_folders, exist_files)
-        print out_sums
+        print(out_sums)
 

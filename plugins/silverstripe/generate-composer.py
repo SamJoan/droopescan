@@ -14,7 +14,7 @@ try:
 except IndexError:
     print("Generates ONLY the module names to import from composer. See notes \
         for getting modules")
-    print("Usage: %s (all|theme)" % sys.argv[0])
+    print(("Usage: %s (all|theme)" % sys.argv[0]))
     sys.exit()
 
 what = "" if what == "all" else what
@@ -23,7 +23,7 @@ what = "" if what == "all" else what
 per_page = 16
 base_url = 'http://addons.silverstripe.org/add-ons?search=&type=%s&sort=downloads&start=%s'
 module_names = []
-for page in xrange(0, 1000):
+for page in range(0, 1000):
     start = page * per_page
     response = requests.get(base_url % (what, start))
     soup = BeautifulSoup(response.text)
@@ -37,4 +37,4 @@ for page in xrange(0, 1000):
             pass
 
     for link in links:
-        print link.contents[0]
+        print(link.contents[0])
