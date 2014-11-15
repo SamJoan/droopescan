@@ -1,5 +1,6 @@
 from lxml import etree
 import inspect
+from inspect import getmembers, isfunction, ismethod
 
 def decallmethods(decorator, prefix='test_'):
     """
@@ -7,11 +8,14 @@ def decallmethods(decorator, prefix='test_'):
     accidental external HTTP requests.
     """
     def dectheclass(cls):
-        for name, m in inspect.getmembers(cls, inspect.ismethod):
+        for name, m in getmembers(cls, predicate=lambda x: isfunction(x)
+                or ismethod(x)):
+
             if name.startswith(prefix):
                 setattr(cls, name, decorator(m))
 
         return cls
+
     return dectheclass
 
 
