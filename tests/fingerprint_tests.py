@@ -116,7 +116,7 @@ class FingerprintTests(BaseTest):
         body = 'zjyzjy2076'
         responses.add(responses.GET, self.base_url + file_url, body=body)
 
-        actual_md5 = hashlib.md5(body).hexdigest()
+        actual_md5 = hashlib.md5(body.encode('utf-8')).hexdigest()
 
         md5 = self.scanner.enumerate_file_hash(self.base_url, file_url)
 

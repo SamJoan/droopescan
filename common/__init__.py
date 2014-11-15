@@ -166,7 +166,6 @@ class StandardOutput():
             Outputs to stderr, so JsonOutput does not need to override.
         """
         if self.errors_display:
-
             if whitespace_strp:
                 msg = strip_whitespace(msg)
 

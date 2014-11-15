@@ -9,6 +9,7 @@ from requests import Session
 from tests import BaseTest
 import responses
 import sys
+import io
 
 @decallmethods(responses.activate)
 class BaseTests(BaseTest):
@@ -157,23 +158,26 @@ class BaseTests(BaseTest):
         assert jo.errors_display == False
         assert so.errors_display == True
 
-    @patch('__builtin__.print')
-    def test_no_output_when_error_display_false(self, mock_print):
-        jo = JsonOutput()
-        jo.warn("""Things have not gone according to plan. Please exit the
-                building in an orderly fashion.""")
+    def test_no_output_when_error_display_false(self):
+        with patch('sys.stdout', new=io.BytesIO()) as fake_out:
+            jo = JsonOutput()
+            jo.warn("""Things have not gone according to plan. Please exit the
+                    building in an orderly fashion.""")
 
-        assert mock_print.called == False
+            val = fake_out.getvalue()
 
-    @patch('__builtin__.open')
-    @patch('__builtin__.print')
-    def test_log_output_when_error_display_false(self, mock_print, mock_open):
-        jo = JsonOutput(error_log='/tmp/a')
-        jo.warn("""Things have not gone according to plan. Please exit the
-                building in an orderly fashion.""")
+        assert val == b""
 
-        assert mock_print.called == True
-        assert mock_open.called == True
+    def test_log_output_when_error_display_false(self):
+        warn_string = u"warn_string"
+        error_file = u"/tmp/a"
+        with patch('sys.stdout', new=io.StringIO()) as fake_out:
+            jo = JsonOutput(error_log=error_file)
+            jo.error_log = io.StringIO()
+            jo.warn(warn_string)
 
-        args, kwargs = mock_print.call_args
-        assert isinstance(kwargs['file'], MagicMock)
+            file_output = jo.error_log.getvalue()
+            standard_out = fake_out.getvalue()
+
+        assert standard_out == ""
+        assert warn_string in file_output
