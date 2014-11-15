@@ -1,4 +1,5 @@
 
+from __future__ import unicode_literals
 from cement.utils import test
 from common import file_len, ProgressBar, JsonOutput, StandardOutput
 from common.testutils import decallmethods, MockBuffer
@@ -169,8 +170,10 @@ class BaseTests(BaseTest):
         assert val == b""
 
     def test_log_output_when_error_display_false(self):
-        warn_string = u"warn_string"
-        error_file = u"/tmp/a"
+
+        warn_string = 'warn_string'
+        error_file = '/tmp/a'
+
         with patch('sys.stdout', new=io.StringIO()) as fake_out:
             jo = JsonOutput(error_log=error_file)
             jo.error_log = io.StringIO()

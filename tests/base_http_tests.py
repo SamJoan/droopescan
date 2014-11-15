@@ -503,7 +503,6 @@ class BaseHttpTests(BaseTest):
 
     @patch('requests.Session.head')
     def test_respects_timeout_enumerate(self, mock_head):
-
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.forbidden,
