@@ -78,8 +78,13 @@ def enum_list(enum):
 
 def base_url(url):
     """
-        Returns the protocol, domain and port of a URL.
+        Returns the protocol, domain and port of a URL. If the URL is relative,
+            False is returned.
     """
+
+    if 'http' not in url:
+        return False
+
     url_split = url.split("/")
     return url_split[0] + "//" + url_split[2] + "/"
 

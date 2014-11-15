@@ -302,7 +302,13 @@ class BasePluginInternal(controller.CementBaseController):
 
         redirected = scanning_method not in enum_list(ScanningMethod)
         if redirected:
+
+            # Detect relative redirects.
             new_url = scanning_method
+            redirect_is_relative = 'http' not in new_url
+            if redirect_is_relative:
+                new_url = url + (new_url.lstrip('/'))
+
             scanning_method = self._determine_scanning_method(new_url, verb,
                     timeout)
 
@@ -351,7 +357,8 @@ class BasePluginInternal(controller.CementBaseController):
         folder_redirect = 300 <= folder_resp.status_code < 400
         if not ok_200 and folder_redirect:
             redirect_url = folder_resp.headers['Location']
-            return base_url(redirect_url)
+            redirect_base_url = base_url(redirect_url)
+            return redirect_base_url if redirect_base_url != False else redirect_url
 
         # Websites which return 200 for not found URLs.
         diff_lengths_above_threshold = abs(fake_200_len - reg_url_len) > 25

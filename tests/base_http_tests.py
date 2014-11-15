@@ -395,7 +395,6 @@ class BaseHttpTests(BaseTest):
         assert result == base_url_https
 
     def test_redirect_relative_path(self):
-
         redirect_vals = {
             '/': self.base_url,
             '/relative': self.base_url + 'relative',
@@ -405,19 +404,29 @@ class BaseHttpTests(BaseTest):
         side_effect_list = []
         for relative_url in redirect_vals:
             side_effect_list.append(relative_url)
+            side_effect_list.append('forbidden')
 
         m = self.mock_controller('drupal', '_determine_scanning_method',
                 side_effect=side_effect_list)
 
-        self.scanner._determine_scanning_method = MagicMock(side_effect=list(redirect_vals))
-        result = self.scanner.determine_scanning_method(self.base_url,
-                Verb.head)
+        self.scanner._determine_scanning_method = MagicMock(side_effect=side_effect_list)
 
-        print m.call_args_list
+        for i in redirect_vals:
+            result = self.scanner.determine_scanning_method(self.base_url,
+                    Verb.head)
 
-        print result
+            expected_result = ('forbidden', redirect_vals[i])
+            assert result == expected_result
 
-        assert result == self.base_url
+    def test_redirect_relative_does_not_crash(self):
+        relative_redir = '/relative'
+
+        self.respond_several(self.base_url + "%s", {301: ["misc/",
+            "misc/drupal.js"], 404: [self.scanner.not_found_url]}, headers={'location': relative_redir})
+
+        result = self.scanner._determine_scanning_method(self.base_url, 'head')
+
+        assert result == relative_redir
 
     @test.raises(RuntimeError)
     def test_redirect_once_max(self):
@@ -558,7 +567,6 @@ class BaseHttpTests(BaseTest):
 
     @patch.object(ProgressBar, 'set')
     def test_progressbar_url_file_hidden_in_ennumerate_themes(self, p):
-        """@TODO add progressbar for multisite. ensure the other one is hidden first."""
         try:
             self.scanner.enumerate_themes(self.base_url,
                     self.scanner.plugins_base_url, hide_progressbar=True)
