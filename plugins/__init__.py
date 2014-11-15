@@ -476,6 +476,7 @@ class BasePluginInternal(controller.CementBaseController):
                     p.set(items_progressed, items_total)
 
                 r = future_array['future'].result()
+                print(r)
                 if r.status_code == expected_status:
                     plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']

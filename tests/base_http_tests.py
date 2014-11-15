@@ -11,6 +11,10 @@ import common
 import requests
 import responses
 
+class FakeRequest():
+    status_code = 200
+    content = "FakeRequest."
+
 @decallmethods(responses.activate)
 class BaseHttpTests(BaseTest):
     """
@@ -491,7 +495,7 @@ class BaseHttpTests(BaseTest):
 
         self.app.run()
 
-    @patch('requests.Session.head')
+    @patch('requests.Session.head', return_value=FakeRequest())
     def test_respects_timeout_scanning_method(self, mock_head):
         try:
             self.scanner.determine_scanning_method(self.base_url, 'head',
@@ -501,7 +505,7 @@ class BaseHttpTests(BaseTest):
 
         self.assert_called_contains_all(mock_head, 'timeout', 5)
 
-    @patch('requests.Session.head')
+    @patch('requests.Session.head', return_value=FakeRequest())
     def test_respects_timeout_enumerate(self, mock_head):
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,
