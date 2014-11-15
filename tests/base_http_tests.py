@@ -556,10 +556,10 @@ class BaseHttpTests(BaseTest):
 
     @patch.object(ProgressBar, 'set')
     def test_progressbar_url_file_hidden_in_ennumerate_plugins(self, p):
-        """@TODO add progressbar for multisite. ensure the other one is hidden first."""
         try:
             self.scanner.enumerate_plugins(self.base_url,
-                    self.scanner.plugins_base_url, hide_progressbar=True)
+                    self.scanner.plugins_base_url, hide_progressbar=True,
+                    max_plugins=5)
         except:
             pass
 
@@ -569,7 +569,7 @@ class BaseHttpTests(BaseTest):
     def test_progressbar_url_file_hidden_in_ennumerate_themes(self, p):
         try:
             self.scanner.enumerate_themes(self.base_url,
-                    self.scanner.plugins_base_url, hide_progressbar=True)
+                    self.scanner.plugins_base_url, hide_progressbar=True, max_plugins=5)
         except:
             pass
 
