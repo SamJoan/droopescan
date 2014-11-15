@@ -156,6 +156,17 @@ class FingerprintTests(BaseTest):
         assert self.v.version_gt("3.0.7", "3.1.5") == False
         assert self.v.version_gt("3.0.6", "3.1.5") == False
 
+    def test_version_gt_rc(self):
+        assert self.v.version_gt("3.1.7", "3.1.7-rc1")
+        assert self.v.version_gt("3.1.7", "3.1.7-rc2")
+        assert self.v.version_gt("3.1.7", "3.1.7-rc3")
+        assert self.v.version_gt("3.1.8", "3.1.7-rc1")
+        assert self.v.version_gt("4", "3.1.7-rc1")
+
+        assert self.v.version_gt("3.1.7-rc1", "3.1.7-rc1") == False
+        assert self.v.version_gt("3.1.7-rc1", "3.1.7") == False
+        assert self.v.version_gt("3.1.6", "3.1.7-rc1") == False
+
     def test_version_gt_ascii(self):
         # strips all letters?
         assert self.v.version_gt('1.0a', '2.0a') == False

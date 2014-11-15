@@ -152,7 +152,8 @@ class SSVersions(VersionGetterBase):
         versions = check_output(['git', 'tag'], cwd=temp +
                 self.framework_folder).split('\n')
 
-        # @TODO get only newer.
+        #{'2': '2.4.8-rc1', '3.0': '3.0.11-rc1', '3.1': '3.1.7-rc1'}
+
         final = []
         for version in versions:
             major = None
@@ -162,6 +163,12 @@ class SSVersions(VersionGetterBase):
 
             if major == None:
                 print version, "skipped."
+                continue
+
+            max_avail = update_majors[major]
+
+            if not version_gt(version, max_avail):
+                print "skip %s bc already have it." % version
                 continue
 
             final.append(version)

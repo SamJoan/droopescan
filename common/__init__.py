@@ -213,12 +213,12 @@ def file_len(fname):
     return i + 1
 
 def strip_letters(string):
-    return ''.join([c for c in str(string) if c in '1234567890.'])
+    return ''.join([c for c in str(string) if c in '1234567890.-'])
 
 def version_gt(version, gt):
     """
         Code for parsing simple, numeric versions. Letters will be stripped
-        prior to comparison.
+        prior to comparison. Simple appendages such as 1-rc1 are supported.
     """
     version_split = strip_letters(version).split('.')
     gt_split = strip_letters(gt).split('.')
@@ -240,13 +240,44 @@ def version_gt(version, gt):
         overcame_shortest = i >= shortest_len
 
         if not overcame_shortest:
-            v = int(version_split[i])
-            g = int(gt_split[i])
+
+            v = version_split[i]
+            g = gt_split[i]
+
+            v_is_rc = '-' in v
+            g_is_rc = '-' in g
+
+            if v_is_rc:
+                v_split = v.split('-')
+                v = v_split[0]
+                v_rc_nb = int(''.join(v_split[1:]))
+
+            if g_is_rc:
+                g_split = g.split('-')
+                g = g_split[0]
+                g_rc_nb = int(''.join(g_split[1:]))
+
+            v = int(v)
+            g = int(g)
+
             if v > g:
                 gt = True
                 break
             elif v < g:
                 break
+            else:
+                if not v_is_rc and g_is_rc:
+                    gt = True
+                    break
+                elif v_is_rc and not g_is_rc:
+                    break
+                elif v_is_rc and g_is_rc:
+                    if v_rc_nb > g_rc_nb:
+                        gt = True
+                        break
+                    elif v_rc_nb < g_rc_nb:
+                        break
+
         else:
             if int(longest[i]) > 0:
                 if longest == version_split:

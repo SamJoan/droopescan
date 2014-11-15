@@ -1,21 +1,13 @@
 Add;
 
 nth:
-- Progressbar takes user input and puts it into the loading thing, even
-  when the -n is larger than the number of plugins/themes available.
-  Shows a lot w/ default settings when scanning SS themes.
-
-  Also, 500 errors fuck the progressbar.
 - Drupal release scripts generates four files for drupals on the 7.x
   branch, versus three that exist for all other versions in the 7.x
   branch. This causes tests to fail for good reason, and causes lousy
   test results. It should befixed by either only checking for files that already
   are on the XML for that major, or by adding the major for all versions.
-- If no versions match, just use the changelog. With a warning.
-- https://github.com/ss23/droopescan/commit/275332caaf8593fe0f13ea6a01d9b4de3b4afac0
 - http://stackoverflow.com/questions/1641231/python-working-around-memory-leaks/1641280#1641280
     http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
-- Add test to self.out.warn param strip_whitespace.
 - Add a handler for KeyboardInterrupt or snakesthatbite.blogspot.co.nz/2010/09/cpython-threading-interrupting.html
 
 Relevant:
