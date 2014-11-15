@@ -465,7 +465,7 @@ class BasePluginInternal(controller.CementBaseController):
                 p = ProgressBar(sys.stderr)
                 items_progressed = 0
                 max_possible = max_iterator if int(max_iterator) < int(iterator_len) else iterator_len
-                items_total = max_possible * len(base_urls)
+                items_total = int(max_possible) * len(base_urls)
 
             no_results = True
             found = []
