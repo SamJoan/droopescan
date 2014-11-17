@@ -1,5 +1,5 @@
 from cement.utils import test
-from common import file_len, base_url, ProgressBar
+from common import file_len, base_url, ProgressBar, StandardOutput
 from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor, Future
 from mock import patch, MagicMock
@@ -543,19 +543,17 @@ class BaseHttpTests(BaseTest):
         for mock in all_mocks:
             self.assert_called_contains(mock, 'timeout', 5)
 
+    @patch.object(common.StandardOutput, 'warn')
     @patch.object(Future, 'result')
-    def test_thread_timeout_gets_passed(self, result):
+    def test_thread_timeout_gets_passed(self, result, warn):
         self.add_argv(self.param_plugins)
         self.add_argv(['--timeout-host', '150', '--url-file', self.valid_file, '--method', 'forbidden'])
         all_mocks = self.mock_all_enumerate('drupal')
 
-        try:
-            self.app.run()
-        except:
-            # this will never happen. j/k this will always happen.
-            pass
+        self.app.run()
 
         result.assert_called_with(timeout=150)
+        assert not warn.called
 
     @patch.object(ProgressBar, 'set')
     def test_progressbar_url_file_hidden_in_ennumerate_plugins(self, p):

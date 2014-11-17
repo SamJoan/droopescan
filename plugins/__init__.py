@@ -211,7 +211,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return enabled_functionality
 
-    def _process_results_multisite(self, results):
+    def _process_results_multisite(self, results, functionality, timeout_host):
         for result in results:
             try:
                 output = result['future'].result(timeout=timeout_host)
@@ -255,13 +255,15 @@ class BasePluginInternal(controller.CementBaseController):
 
                         # Process and release memory.
                         if i % 1000 == 0:
-                            self._process_results_multisite(results)
+                            self._process_results_multisite(results,
+                                    functionality, timeout_host)
                             results = []
 
                         i += 1
 
                     if len(results) > 0:
-                        self._process_results_multisite(results)
+                        self._process_results_multisite(results, functionality,
+                                timeout_host)
                         results = []
 
         else:
