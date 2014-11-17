@@ -211,6 +211,17 @@ class BasePluginInternal(controller.CementBaseController):
 
         return enabled_functionality
 
+    def _process_results_multisite(self, results):
+        for result in results:
+            try:
+                output = result['future'].result(timeout=timeout_host)
+
+                output['host'] = result['url']
+                self.out.result(output, functionality)
+            except:
+                exc = traceback.format_exc()
+                self.out.warn(exc, whitespace_strp=False)
+
     def plugin_init(self):
         time_start = datetime.now()
         opts = self._options()
@@ -228,6 +239,7 @@ class BasePluginInternal(controller.CementBaseController):
         if 'url_file' in opts:
             with open(opts['url_file']) as url_file:
                 timeout_host = opts['timeout_host']
+                i = 0
                 with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
                     results = []
                     for url in url_file:
@@ -241,21 +253,24 @@ class BasePluginInternal(controller.CementBaseController):
                             'url': url.rstrip('\n'),
                         })
 
-                    for result in results:
-                        try:
-                            output = result['future'].result(timeout=timeout_host)
+                        # Process and release memory.
+                        if i % 1000 == 0:
+                            self._process_results_multisite(results)
+                            results = []
 
-                            output['host'] = result['url']
-                            self.out.result(output, functionality)
-                        except:
-                            exc = traceback.format_exc()
-                            self.out.warn(exc, whitespace_strp=False)
+                        i += 1
+
+                    if len(results) > 0:
+                        self._process_results_multisite(results)
+                        results = []
 
         else:
             output = self.url_scan(opts['url'], opts, functionality,
                     enabled_functionality, hide_progressbar=False)
 
             self.out.result(output, functionality)
+
+
 
         self.out.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
                 str(datetime.now() - time_start))
