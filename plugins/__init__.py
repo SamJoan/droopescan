@@ -270,10 +270,9 @@ class BasePluginInternal(controller.CementBaseController):
 
             self.out.result(output, functionality)
 
-
-
         self.out.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
                 str(datetime.now() - time_start))
+        self.out.close()
 
     def url_scan(self, url, opts, functionality, enabled_functionality,
             hide_progressbar):

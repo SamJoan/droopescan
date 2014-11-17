@@ -124,7 +124,7 @@ class StandardOutput():
             self.errors_display = True
             self.error_log = open(error_log, 'w')
 
-    def __del__(self):
+    def close(self):
         if self.log_to_file:
             self.error_log.close()
 
