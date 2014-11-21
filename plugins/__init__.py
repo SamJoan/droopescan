@@ -630,7 +630,8 @@ class HumanBasePlugin(controller.CementBaseController):
         sys.stdout.write('%s [y/n]\n' % question)
         while True:
             try:
-                return strtobool(input().lower())
+                user_input = raw_input().lower()
+                return strtobool(user_input)
             except ValueError:
                 sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
 
