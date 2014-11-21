@@ -12,7 +12,7 @@ class SilverStripe(BasePlugin):
 
     folder_url = 'framework/'
     regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css']
-    module_readme_file = '_config.php'
+    module_readme_file = 'README.md'
 
     versions_file = 'plugins/silverstripe/versions.xml'
 
