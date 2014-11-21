@@ -69,7 +69,7 @@ machine secret.google.com
 </pre>
 
 *WARNING:* By design, to allow intercepting proxies, this application allows
-self-signed or otherwise invalid certificates.
+self-signed or otherwise invalid certificates. ˙ ͜ʟ˙
 
 # Output.
 
