@@ -1,16 +1,10 @@
 Add;
 
 nth:
-- Drupal release scripts generates four files for drupals on the 7.x
-  branch, versus three that exist for all other versions in the 7.x
-  branch. This causes tests to fail for good reason, and causes lousy
-  test results. It should befixed by either only checking for files that already
-  are on the XML for that major, or by adding the major for all versions.
 - http://stackoverflow.com/questions/1641231/python-working-around-memory-leaks/1641280#1641280
     http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
 - Add a handler for KeyboardInterrupt or snakesthatbite.blogspot.co.nz/2010/09/cpython-threading-interrupting.html
 - Disable warnings as per here: https://urllib3.readthedocs.org/en/latest/security.html
-- Change default output for -U to json.
 
 Relevant:
 - https://wappalyzer.com/ -

@@ -303,11 +303,9 @@ class BasePluginInternal(controller.CementBaseController):
 
             # Call to the respective functions occurs here.
             finds, is_empty = enum['func'](**kwargs)
-            print(finds, is_empty)
 
             result[enumerate] = {'finds': finds, 'is_empty': is_empty}
 
-        print(result)
         return result
 
     def determine_scanning_method(self, url, verb, timeout=15):
