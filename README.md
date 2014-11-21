@@ -121,7 +121,32 @@ would look as follows:
 }
 </pre>
 
-# Testing
+# Stats.
+
+You can get an up to date report on the capabilities of the scanner by running
+the following command
+
+<pre>
+    ./droopescan stats
+</pre>
+
+Some sample output might look as follows:
+
+<pre>
+Functionality available for 'Drupal':
+    - Enumerate plugins (XXX plugins, last updated X months ago)
+    - Enumerate themes (XX themes, last updated X months ago)
+    - Enumerate interesting urls (X urls)
+    - Enumerate version (up to version X.X.X)
+
+Functionality available for 'SilverStripe':
+    - Enumerate plugins (XXX plugins, last updated X months ago)
+    - Enumerate themes (XX themes, last updated X months ago)
+    - Enumerate interesting urls (X urls)
+    - Enumerate version (up to version X.X.X)
+</pre>
+
+# Testing.
 
 To run tests, some dependencies can be installed; running the following
 commands will result in them being installed and the tests being ran:
