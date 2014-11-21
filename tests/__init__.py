@@ -112,6 +112,9 @@ class BaseTest(test.CementTestCase):
         all.append(self.mock_controller(plugin_name, 'enumerate_interesting'))
         all.append(self.mock_controller(plugin_name, 'enumerate_version'))
 
+        for a in all:
+            all[a].return_value = ([], True)
+
         return all
 
     def mock_all_url_file(self, url_file):

@@ -159,6 +159,34 @@ class BaseTests(BaseTest):
         assert jo.errors_display == False
         assert so.errors_display == True
 
+    def test_output_json_when_url_file(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['--url-file', self.valid_file])
+
+        m = self.mock_controller('drupal', '_general_init')
+
+        try:
+            self.app.run()
+        except:
+            pass
+
+        args, kwargs = m.call_args
+        assert isinstance(kwargs['output'], JsonOutput)
+
+    def test_output_standard_when_normal_url(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['--url-file', self.valid_file])
+
+        m = self.mock_controller('drupal', '_general_init')
+
+        try:
+            self.app.run()
+        except:
+            pass
+
+        args, kwargs = m.call_args
+        assert isinstance(kwargs['output'], StandardOutput)
+
     def test_no_output_when_error_display_false(self):
         with patch('sys.stdout', new=io.BytesIO()) as fake_out:
             jo = JsonOutput()

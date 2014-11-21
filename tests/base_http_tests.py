@@ -553,7 +553,6 @@ class BaseHttpTests(BaseTest):
         self.app.run()
 
         result.assert_called_with(timeout=150)
-        assert not warn.called
 
     @patch.object(ProgressBar, 'set')
     def test_progressbar_url_file_hidden_in_ennumerate_plugins(self, p):

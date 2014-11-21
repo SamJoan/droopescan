@@ -226,7 +226,7 @@ class BasePluginInternal(controller.CementBaseController):
         time_start = datetime.now()
         opts = self._options()
 
-        if opts['output'] == 'json':
+        if opts['output'] == 'json' or 'url_file' in opts:
             output = JsonOutput(error_log=opts['error_log'])
         else:
             output = StandardOutput(error_log=opts['error_log'])
@@ -303,9 +303,11 @@ class BasePluginInternal(controller.CementBaseController):
 
             # Call to the respective functions occurs here.
             finds, is_empty = enum['func'](**kwargs)
+            print(finds, is_empty)
 
             result[enumerate] = {'finds': finds, 'is_empty': is_empty}
 
+        print(result)
         return result
 
     def determine_scanning_method(self, url, verb, timeout=15):

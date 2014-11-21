@@ -11,7 +11,6 @@ nth:
 - Add a handler for KeyboardInterrupt or snakesthatbite.blogspot.co.nz/2010/09/cpython-threading-interrupting.html
 - Disable warnings as per here: https://urllib3.readthedocs.org/en/latest/security.html
 - Change default output for -U to json.
-- Config.php is not a good choice for SS because sometimes it will throw 500s because of bad PHP, confusing the overload detection.
 
 Relevant:
 - https://wappalyzer.com/ -
