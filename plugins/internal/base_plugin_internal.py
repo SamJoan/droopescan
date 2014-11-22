@@ -3,16 +3,14 @@ from cement.core import handler, controller
 from common import ScanningMethod, ProgressBar, StandardOutput, JsonOutput, \
         VersionsFile
 from common import template, enum_list, dict_combine, base_url, file_len
-from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from requests import Session
 import common
 import hashlib
 import requests
 import sys
 import traceback
-
-requests.packages.urllib3.disable_warnings()
 
 class BasePluginInternal(controller.CementBaseController):
 
