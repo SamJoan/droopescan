@@ -1,3 +1,17 @@
+1.9.0-rc1
+=========
+
+* Add python 3 support.
+* More documentation.
+* General tidy up of the code.
+* Database updates.
+* Improved detection for SS modules.
+* Fixed memory leak which was showing up after scanning more than 40.000
+  websites.
+* Improved output.
+* Added travis support.
+* General bug fixes.
+
 1.8.4.1
 =======
 
