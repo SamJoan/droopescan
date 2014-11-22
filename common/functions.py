@@ -21,7 +21,6 @@ def validate_url(url, out):
     if not re.match(r"^http", url):
         out.fatal("--url parameter invalid.")
 
-    # add '/' to urls which do not end with '/' already.
     if not url.endswith("/"):
         return url + "/"
     else :
