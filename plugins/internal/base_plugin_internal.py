@@ -12,6 +12,8 @@ import requests
 import sys
 import traceback
 
+requests.packages.urllib3.disable_warnings()
+
 class BasePluginInternal(controller.CementBaseController):
 
     requests = None
