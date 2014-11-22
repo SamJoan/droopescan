@@ -4,7 +4,7 @@ from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor, Future
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
-from plugins import ScanningMethod, Verb, Enumerate
+from common import ScanningMethod, Verb, Enumerate
 from requests.exceptions import ConnectionError
 from tests import BaseTest
 import common
