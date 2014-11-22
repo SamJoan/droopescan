@@ -54,7 +54,7 @@ class Release(HumanBasePlugin):
     @controller.expose(help='', hide=True)
     def release(self):
         # internal sanity checks.
-        tests_passed = call(['nosetests']) == 0
+        tests_passed = call(['./droopescan', 'test']) == 0
         if not tests_passed:
             self.error("Unit tests failed... abort.")
             return

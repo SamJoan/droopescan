@@ -32,4 +32,4 @@ class HumanBasePlugin(controller.CementBaseController):
 
     def get_input(self, question):
         print(question, end=' ')
-        return input()
+        return raw_input()
