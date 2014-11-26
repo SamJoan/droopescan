@@ -11,6 +11,12 @@ nth:
 
 why?
 
+Re Updating process:
+    - Make updating of SS faster.
+    - Make Drupal update CHANGELOG.
+    - Implement some functional-programming-style API that modules can call from, for example plugins/drupal.py
+    - Abstract GIT, wget & extract functionality.
+    
 Relevant:
 - https://wappalyzer.com/ -
   http://www.opensourcecms.com/general/cms-marketshare.php
