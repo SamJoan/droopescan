@@ -2,14 +2,6 @@ Add;
 
 nth:
 - Add a handler for KeyboardInterrupt or snakesthatbite.blogspot.co.nz/2010/09/cpython-threading-interrupting.html
-- Drupal.org is 7.34 as per changelog, but output says:
-[+] Possible version(s):
-    7.29
-    7.30
-    7.31
-    7.32
-
-why?
 
 Re Updating process:
     - Make updating of SS faster.

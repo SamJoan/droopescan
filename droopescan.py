@@ -12,7 +12,7 @@ from __future__ import print_function
 from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
 from common import template
-from plugins import AbstractArgumentController
+from plugins import Scan
 import common, sys
 
 class DroopeScanBase(controller.CementBaseController):
@@ -37,7 +37,7 @@ if __name__ == "__main__":
             plugin_config_dir="./plugins.d",
             plugin_dir="./plugins")
 
-    handler.register(AbstractArgumentController)
+    handler.register(Scan)
 
     try:
         ds.setup()

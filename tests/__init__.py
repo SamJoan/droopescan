@@ -4,7 +4,7 @@ from common.testutils import decallmethods
 from droopescan import DroopeScan
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
-from plugins import AbstractArgumentController
+from plugins import Scan
 import responses
 
 class BaseTest(test.CementTestCase):
@@ -30,7 +30,7 @@ class BaseTest(test.CementTestCase):
         self.app = DroopeScan(argv=[],
             plugin_config_dir="./plugins.d",
             plugin_dir="./plugins")
-        handler.register(AbstractArgumentController)
+        handler.register(Scan)
         self.app.testing = True
         self.app.setup()
 
