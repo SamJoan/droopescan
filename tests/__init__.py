@@ -54,7 +54,7 @@ class BaseTest(test.CementTestCase):
                 exception.
         """
         m = MagicMock()
-        if return_value:
+        if return_value != None:
             m.return_value = return_value
         else:
             if method.startswith("enumerate_"):

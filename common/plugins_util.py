@@ -4,8 +4,7 @@ from plugins import BasePlugin
 import subprocess
 
 def plugins_get():
-    controllers = handler.list('controller')
-    plugins = [c for c in controllers if issubclass(c, BasePlugin)]
+    plugins = plugins_base_get()
 
     return_plugins = []
     for p in plugins:
@@ -14,8 +13,13 @@ def plugins_get():
 
     return return_plugins
 
-class Plugin(object):
+def plugins_base_get():
+    controllers = handler.list('controller')
+    plugins = [c for c in controllers if issubclass(c, BasePlugin)]
 
+    return plugins
+
+class Plugin(object):
     name = None
 
     plugins_can_enumerate = False

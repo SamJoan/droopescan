@@ -1,6 +1,6 @@
 from cement.core import handler, controller
 from plugins import BasePlugin
-import common
+from common.update_api import github_tag_newer
 
 class Drupal(BasePlugin):
 
@@ -28,6 +28,12 @@ class Drupal(BasePlugin):
     @controller.expose(help='drupal-related scanning tools')
     def drupal(self):
         self.plugin_init()
+
+    def update_version_check(self):
+        return github_tag_newer('drupal/drupal/', self.versions_file, update_majors=['6', '7'])
+
+    def update_version():
+        pass
 
 def load():
     handler.register(Drupal)

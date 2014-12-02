@@ -1,24 +1,21 @@
 from cement.core import handler, controller
 from plugins import HumanBasePlugin
+from common.plugins_util import plugins_base_get
 
 class Update(HumanBasePlugin):
     class Meta:
         label = 'update'
-        stacked_on = 'base'
-        stacked_type = 'nested'
-        hide = True
-
-        arguments = [
-                (['--cms', '-c'], dict(action='store', required=True,
-                    help='Which CMS to generate the XML for', choices=['drupal',
-                        'ss'])),
-                (['--selection', '-s'], dict(action='store',
-                    help='Comma separated list of versions for drupal_select.'))
-            ]
 
     @controller.expose(help='', hide=True)
     def update(self):
-        pass
+        plugins = plugins_base_get()
+        for plugin in plugins:
+            try:
+                must_update = plugin.update_version_check()
+                if must_update:
+                    plugin.update_version()
+            except AttributeError:
+                print("Skipping '%s' because update_version_check() or update_version() is not defined." % plugin.Meta.label)
 
 def load():
     handler.register(Update)
