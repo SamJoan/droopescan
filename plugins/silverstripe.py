@@ -1,4 +1,5 @@
 from cement.core import handler, controller
+from common.update_api import github_tag_newer
 from plugins import BasePlugin
 import common
 
@@ -27,6 +28,9 @@ class SilverStripe(BasePlugin):
     @controller.expose(help='silverstripe related scanning tools')
     def silverstripe(self):
         self.plugin_init()
+
+    def update_version_check(self):
+        return github_tag_newer('silverstripe/silverstripe-framework/', self.versions_file, update_majors=['3.1', '3.0', '2'])
 
 
 def load():

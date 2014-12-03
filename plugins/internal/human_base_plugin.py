@@ -10,6 +10,9 @@ class HumanBasePlugin(controller.CementBaseController):
         #'endc': '\033[0m',
         raise RuntimeError('\033[91m%s\033[0m' % msg)
 
+    def msg(self, msg):
+        print(msg)
+
     def prepend_to_file(self, filename, prepend_text):
         f = open(filename,'r')
         temp = f.read()
