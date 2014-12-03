@@ -30,8 +30,6 @@ def github_tag_newer(github_repo, versions_file, update_majors):
     for tag in bs.find_all('span', {'class':'tag-name'}):
         gh_versions.append(tag.text)
 
-    print(gh_versions)
-
     update_needed = False
     for major in current_highest:
         curr_version = current_highest[major]

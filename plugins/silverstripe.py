@@ -32,6 +32,9 @@ class SilverStripe(BasePlugin):
     def update_version_check(self):
         return github_tag_newer('silverstripe/silverstripe-framework/', self.versions_file, update_majors=['3.1', '3.0', '2'])
 
+    def update_version(self):
+        return False
+
 
 def load():
     handler.register(SilverStripe)

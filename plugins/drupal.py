@@ -20,6 +20,7 @@ class Drupal(BasePlugin):
             ("CHANGELOG.txt", "Default changelog file."),
             ("user/login", "Default admin."),
         ]
+
     versions_file = "plugins/drupal/versions.xml"
 
     class Meta:

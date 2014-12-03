@@ -15,6 +15,7 @@ class Update(HumanBasePlugin):
                 plugin_name = plugin.Meta.label
 
                 must_update = plugin.update_version_check()
+                print(must_update)
                 if must_update:
                     plugin.update_version()
                 else:
