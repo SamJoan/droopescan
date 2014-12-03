@@ -66,3 +66,6 @@ class UpdateTests(BaseTest):
             vf().highest_version_major.return_value = {'6': '6.33', '7': '7.34'}
             assert github_tag_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
 
+    def test_update(self):
+        assert False
+
