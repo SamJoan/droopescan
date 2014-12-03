@@ -9,8 +9,9 @@ class Update(HumanBasePlugin):
     @controller.expose(help='', hide=True)
     def update(self):
         plugins = plugins_base_get()
-        for plugin in plugins:
+        for Plugin in plugins:
             try:
+                plugin = Plugin()
                 must_update = plugin.update_version_check()
                 if must_update:
                     plugin.update_version()

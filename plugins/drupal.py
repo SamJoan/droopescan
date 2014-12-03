@@ -32,7 +32,7 @@ class Drupal(BasePlugin):
     def update_version_check(self):
         return github_tag_newer('drupal/drupal/', self.versions_file, update_majors=['6', '7'])
 
-    def update_version():
+    def update_version(self):
         pass
 
 def load():
