@@ -186,17 +186,11 @@ Functionality available for 'SilverStripe':
 
 # Testing.
 
-To run tests, some dependencies can be installed; running the following
+To run tests, some dependencies must be installed; running the following
 commands will result in them being installed and the tests being ran:
 
 <pre>
     apt-get install python-dev libxslt1-dev libxml2-dev
     pip install -r requirements_test.txt
     ./droopescan test
-</pre>
-
-Tests which interact with the internet can be ran with the following command:
-
-<pre>
-    ./droopescan test -i
 </pre>
