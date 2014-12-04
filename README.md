@@ -186,7 +186,7 @@ Functionality available for 'SilverStripe':
 
 # Testing.
 
-To run tests, some dependencies can be installed; running the following
+To run tests, some dependencies must be installed; running the following
 commands will result in them being installed and the tests being ran:
 
 <pre>
