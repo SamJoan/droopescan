@@ -5,7 +5,7 @@ except:
 
 from common.functions import version_gt
 from common.versions import VersionsFile
-from os.path import basename
+import os.path
 import requests
 
 GH = 'https://github.com/'
@@ -76,11 +76,22 @@ class GitRepo():
                 purposes).
         """
         self._clone_url = clone_url
-        self._path = '%s%s%s' % (UW, plugin_name + '/', basename(clone_url[:-1]) + "/")
+        self._path = '%s%s%s' % (UW, plugin_name + '/', os.path.basename(clone_url[:-1]) + "/")
 
     def init(self):
         """
             Performs a clone or a pull, depending on whether the repository has
             been previously cloned or not.
         """
+        if os.path.isdir(self._path):
+            self.pull()
+        else:
+            self.clone()
+
+    def clone(self):
+        base_dir = '/'.join(self._path.split('/')[:-2])
+        os.makedirs(base_dir, '0700')
+
+    def pull(self):
+        pass
 

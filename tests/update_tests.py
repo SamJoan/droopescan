@@ -16,12 +16,29 @@ class UpdateTests(BaseTest):
     drupal_repo_path = 'drupal/drupal/'
     drupal_gh = '%s%s' % (GH, drupal_repo_path)
     plugin_name = 'drupal'
+    gr = None
 
     def setUp(self):
         super(UpdateTests, self).setUp()
         self.add_argv(['update'])
         self.updater = Update()
         self._init_scanner()
+
+        self.gr = GitRepo(self.drupal_gh, self.plugin_name)
+
+        os_mock = ['os.makedirs']
+        self.patchers = []
+        for mod in os_mock:
+            mod_name = mod.split('.')[-1]
+            self.patchers.append(patch(mod))
+
+            attr_name = "cmd_%s" % mod_name
+            setattr(self, attr_name, self.patchers[-1].start())
+
+    def tearDown(self):
+        for p in self.patchers:
+            p.stop()
+
 
     def gh_mock(self):
         # github_response.html has 7.34 & 6.34 as the latest tags.
@@ -101,4 +118,26 @@ class UpdateTests(BaseTest):
 
         assert gr._clone_url == self.drupal_gh
         assert gr._path == path_on_disk
+
+    def test_create_pull(self):
+        with patch('common.update_api.GitRepo.clone') as clone:
+            with patch('os.path.isdir', return_value=False) as isdir:
+                self.gr.init()
+
+                assert clone.called
+                assert isdir.called
+
+        with patch('common.update_api.GitRepo.pull') as pull:
+            with patch('os.path.isdir', return_value=True) as isdir:
+                self.gr.init()
+
+                assert pull.called
+                assert isdir.called
+
+    def test_clone_creates_dir(self):
+        self.gr.clone()
+        args, kwargs = self.cmd_makedirs.call_args
+        assert self.cmd_makedirs.called
+        assert args[0] == './update-workspace/drupal'
+        assert args[1] == '0700'
 
