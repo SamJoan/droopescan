@@ -1,15 +1,21 @@
 from cement.utils import test
 from common import VersionsFile
 from common.testutils import decallmethods
-from common.update_api import github_tag_newer
+from common.update_api import github_tag_newer, github_repo, _github_normalize
+from common.update_api import GitRepo
+from common.update_api import GH, UW
 from mock import patch, MagicMock
-from tests import BaseTest
 from plugins.update import Update
+from tests import BaseTest
 import common
 import responses
 
 @decallmethods(responses.activate)
 class UpdateTests(BaseTest):
+
+    drupal_repo_path = 'drupal/drupal/'
+    drupal_gh = '%s%s' % (GH, drupal_repo_path)
+    plugin_name = 'drupal'
 
     def setUp(self):
         super(UpdateTests, self).setUp()
@@ -66,6 +72,33 @@ class UpdateTests(BaseTest):
             vf().highest_version_major.return_value = {'6': '6.33', '7': '7.34'}
             assert github_tag_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
 
-    def test_update(self):
-        assert False
+    def test_github_repo(self):
+        with patch('common.update_api.GitRepo.__init__', return_value=None) as gri:
+            with patch('common.update_api.GitRepo.init') as grii:
+                returned_gh = github_repo(self.drupal_repo_path, self.plugin_name)
+                args, kwargs = gri.call_args
+
+                assert args[0] == self.drupal_gh
+                assert args[1] == self.plugin_name
+
+                assert gri.called
+                assert grii.called
+
+                assert isinstance(returned_gh, GitRepo)
+
+    def test_normalize_repo(self):
+        expected = 'drupal/drupal/'
+        assert _github_normalize("/drupal/drupal/") == expected
+        assert _github_normalize("/drupal/drupal") == expected
+        assert _github_normalize("drupal/drupal") == expected
+        assert _github_normalize("/drupal/drupal/") == expected
+
+    def test_gr_init(self):
+        gr = GitRepo(self.drupal_gh, self.plugin_name)
+        repo_name = self.drupal_gh.split('/')[-2:][0] + '/'
+
+        path_on_disk = '%s%s%s' % (UW, self.plugin_name + "/", repo_name)
+
+        assert gr._clone_url == self.drupal_gh
+        assert gr._path == path_on_disk
 
