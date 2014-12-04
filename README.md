@@ -194,9 +194,3 @@ commands will result in them being installed and the tests being ran:
     pip install -r requirements_test.txt
     ./droopescan test
 </pre>
-
-Tests which interact with the internet can be ran with the following command:
-
-<pre>
-    ./droopescan test -i
-</pre>
