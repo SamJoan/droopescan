@@ -51,6 +51,8 @@ class Drupal(BasePlugin):
             gr.tag_checkout(version)
             hashes[version] = gr.hashes_get(version, versions_file, gr)
 
+        return versions_file.u
+
 def load():
     handler.register(Drupal)
 

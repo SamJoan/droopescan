@@ -233,9 +233,13 @@ class UpdateTests(BaseTest):
         new_versions = ['7.34', '6.34']
         ret_val = (self.gr, vf, new_versions)
 
+        ret_hashes_get ={'css/css.css': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                'javascript/main.js': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                'css/jss.phs': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'}
+
         with patch('plugins.drupal.github_repo_new', return_value=ret_val) as m:
             with patch('plugins.drupal.GitRepo.tag_checkout') as tc:
-                with patch('plugins.drupal.GitRepo.hashes_get') as hg:
+                with patch('plugins.drupal.GitRepo.hashes_get', return_value=ret_hashes_get) as hg:
                     self.scanner.update_version()
                     assert len(tc.call_args_list) == 2
                     assert len(hg.call_args_list) == 2
@@ -245,6 +249,8 @@ class UpdateTests(BaseTest):
                         assert args[0] in new_versions
                         assert args[1] == vf
                         assert isinstance(args[2], GitRepo)
+
+                    assert vf.update.called
 
     def test_tag_checkout_func(self):
         version = '7.34'
