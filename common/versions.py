@@ -178,6 +178,7 @@ class VersionsFile():
     def update(self, sums):
         """
             Update self.et with the sums as returned by VersionsX.sums_get
+            @param sums {'version': {'file1':'hash1'}}
         """
         for version in sums:
             hashes = sums[version]

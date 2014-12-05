@@ -12,7 +12,7 @@ import subprocess
 GH = 'https://github.com/'
 UW = './update-workspace/'
 
-def github_tag_newer(github_repo, versions_file, update_majors):
+def github_tags_newer(github_repo, versions_file, update_majors):
     """
         Update newer tags based on a github repository.
         @param github_repo the github repository, e.g. 'drupal/drupal/'.
@@ -34,16 +34,26 @@ def github_tag_newer(github_repo, versions_file, update_majors):
     for tag in bs.find_all('span', {'class':'tag-name'}):
         gh_versions.append(tag.text)
 
-    update_needed = False
-    for major in current_highest:
-        curr_version = current_highest[major]
-        for gh_version in gh_versions:
-            if gh_version.startswith(major) and version_gt(gh_version,
-                    curr_version):
-                update_needed = True
-                break
+    newer = _newer_tags_get(current_highest, gh_versions)
 
-    return update_needed
+    return len(newer) > 0
+
+def _newer_tags_get(current_highest, versions):
+    """
+        Returns versions from versions which are greater than than the highest
+            version in each major.
+        @param current_highest as returned by VersionsFile.highest_version_major()
+        @param versions a list of versions.
+    """
+    newer = []
+    for major in current_highest:
+        highest_version = current_highest[major]
+        for version in versions:
+            if version.startswith(major) and version_gt(version,
+                    highest_version):
+                newer.append(version)
+
+    return newer
 
 def _github_normalize(github_repo):
     gr = github_repo.strip('/')
@@ -96,7 +106,11 @@ class GitRepo():
             the constructor. The clone will be located at ./.update-workspace/<plugin_name>/<repo-name>/
         """
         base_dir = '/'.join(self.path.split('/')[:-2])
-        os.makedirs(base_dir, '0700')
+        try:
+            os.makedirs(base_dir, '0700')
+        except OSError:
+            # Raises an error exception if the leaf directory already exists.
+            pass
 
         self._cmd(['git', 'clone', self._clone_url, self.path])
 
@@ -105,6 +119,14 @@ class GitRepo():
             Performs a pull on this repository.
         """
         self._cmd(['git', 'pull'])
+
+    def tags_newer(self, versions_file):
+        """
+            Checks this git repo tags for newer versions.
+            @param versions_file a common.VersionsFile instance to
+                check against.
+        """
+        pass
 
     def _cmd(self, *args, **kwargs):
 

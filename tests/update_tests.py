@@ -1,7 +1,7 @@
 from cement.utils import test
 from common import VersionsFile
 from common.testutils import decallmethods
-from common.update_api import github_tag_newer, github_repo, _github_normalize
+from common.update_api import github_tags_newer, github_repo, _github_normalize
 from common.update_api import GitRepo
 from common.update_api import GH, UW
 from mock import patch, MagicMock
@@ -27,7 +27,7 @@ class UpdateTests(BaseTest):
 
         self.gr = GitRepo(self.drupal_gh, self.plugin_name)
 
-        os_mock = ['os.makedirs', 'subprocess.call']
+        os_mock = ['os.makedirs', 'subprocess.call', 'subprocess.check_output']
         self.patchers = []
         for mod in os_mock:
             mod_name = mod.split('.')[-1]
@@ -47,7 +47,6 @@ class UpdateTests(BaseTest):
     def tearDown(self):
         for p in self.patchers:
             p.stop()
-
 
     def gh_mock(self):
         # github_response.html has 7.34 & 6.34 as the latest tags.
@@ -80,23 +79,17 @@ class UpdateTests(BaseTest):
 
         assert not m.called
 
-    def test_drupal_update_calls_gh_update(self):
-        with patch('plugins.drupal.github_tag_newer') as m:
-            self.scanner.update_version_check()
-
-            assert m.called
-
     def test_github_tag_newer(self):
         self.gh_mock()
         with patch('common.update_api.VersionsFile') as vf:
             vf().highest_version_major.return_value = {'6': '6.34', '7': '7.33'}
-            assert github_tag_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
+            assert github_tags_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
 
             vf().highest_version_major.return_value = {'6': '6.34', '7': '7.34'}
-            assert not github_tag_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
+            assert not github_tags_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
 
             vf().highest_version_major.return_value = {'6': '6.33', '7': '7.34'}
-            assert github_tag_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
+            assert github_tags_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
 
     def test_github_repo(self):
         with patch('common.update_api.GitRepo.__init__', return_value=None) as gri:
@@ -149,7 +142,8 @@ class UpdateTests(BaseTest):
         assert args[0] == './update-workspace/drupal'
         assert args[1] == '0700'
 
-        #@TODO handle exceptions.  Raises an error exception if the leaf directory already exists or cannot be created
+        self.mock_makedirs.side_effect = OSError()
+        self.gr.clone()
 
     def test_clone_func(self):
         self.gr.clone()
@@ -168,4 +162,27 @@ class UpdateTests(BaseTest):
 
         assert args == expected
         assert kwargs['cwd'] == self.path
+
+    def test_tags_newer_func(self):
+        assert False
+
+    def test_drupal_update_calls_gh_update(self):
+        with patch('plugins.drupal.github_tags_newer') as m:
+            self.scanner.update_version_check()
+
+            assert m.called
+
+    def test_drupal_update(self):
+        with patch('plugins.drupal.github_repo') as m:
+            self.scanner.update_version()
+
+            assert m.called
+
+    def test_drupal_update_calls_tags_newer(self):
+        with patch('plugins.drupal.GitRepo.tags_newer') as m:
+            self.scanner.update_version()
+
+            args, kwargs = m.call_args
+            assert isinstance(args[0], VersionsFile)
+
 
