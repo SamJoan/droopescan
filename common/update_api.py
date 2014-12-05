@@ -8,6 +8,7 @@ from common.versions import VersionsFile
 import os.path
 import requests
 import subprocess
+import common.functions
 import common.versions
 
 GH = 'https://github.com/'
@@ -177,7 +178,7 @@ class GitRepo():
             Checks out a tag.
             @param tag the tag name.
         """
-        pass
+        self._cmd(['git', 'checkout', tag])
 
     def hashes_get(self, versions_file, major):
         """
@@ -185,9 +186,14 @@ class GitRepo():
             @param versions_file a common.VersionsFile instance to
                 check against.
             @param majors a list of major branches to check. E.g. ['6', '7']
-            @return sums {'version': {'file1':'hash1'}}
+            @return sums {'file1':'hash1'}
         """
-        pass
+        files = versions_file.files_get()
+        result = {}
+        for f in files:
+            result[f] = common.functions.md5_file(f)
+
+        return result
 
     def _cmd(self, *args, **kwargs):
 

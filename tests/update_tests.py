@@ -27,7 +27,7 @@ class UpdateTests(BaseTest):
 
         self.gr = GitRepo(self.drupal_gh, self.plugin_name)
 
-        os_mock = ['os.makedirs', 'subprocess.call', 'subprocess.check_output']
+        os_mock = ['os.makedirs', 'subprocess.call', 'subprocess.check_output', 'common.functions.md5_file']
         self.patchers = []
         for mod in os_mock:
             mod_name = mod.split('.')[-1]
@@ -247,9 +247,27 @@ class UpdateTests(BaseTest):
                         assert isinstance(args[2], GitRepo)
 
     def test_tag_checkout_func(self):
-        assert False
+        version = '7.34'
+        expected = tuple([['git', 'checkout', version]])
+        self.gr.tag_checkout(version)
 
-    def test_hashes_get(self):
-        assert False
+        args, kwargs = self.mock_call.call_args
+        assert args == expected
+        assert kwargs['cwd'] == self.gr.path
+
+    def test_hashes_get_func(self):
+        md5 = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        files = ['javascript/main.js', 'css/css.css', 'css/jss.phs']
+        self.mock_md5_file.return_value = md5
+
+        with patch('common.update_api.VersionsFile') as vf:
+            vf.files_get.return_value = files
+            self.gr.hashes_get(vf, self.scanner._update_majors)
+
+            assert len(self.mock_md5_file.call_args_list) == len(files)
+            for call in self.mock_md5_file.call_args_list:
+                args, kwargs = call
+                assert args[0] in files
+
 
 
