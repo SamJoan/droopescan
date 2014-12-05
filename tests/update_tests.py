@@ -16,6 +16,7 @@ class UpdateTests(BaseTest):
     drupal_repo_path = 'drupal/drupal/'
     drupal_gh = '%s%s' % (GH, drupal_repo_path)
     plugin_name = 'drupal'
+    path = UW + "drupal/drupal/"
     gr = None
 
     def setUp(self):
@@ -26,13 +27,21 @@ class UpdateTests(BaseTest):
 
         self.gr = GitRepo(self.drupal_gh, self.plugin_name)
 
-        os_mock = ['os.makedirs']
+        os_mock = ['os.makedirs', 'subprocess.call']
         self.patchers = []
         for mod in os_mock:
             mod_name = mod.split('.')[-1]
-            self.patchers.append(patch(mod))
 
-            attr_name = "cmd_%s" % mod_name
+            ret_val = None
+            if mod_name == 'call':
+                ret_val = 0
+
+            if ret_val != None:
+                self.patchers.append(patch(mod, return_value=ret_val))
+            else:
+                self.patchers.append(patch(mod))
+
+            attr_name = "mock_%s" % (mod_name.lstrip('_'))
             setattr(self, attr_name, self.patchers[-1].start())
 
     def tearDown(self):
@@ -117,7 +126,7 @@ class UpdateTests(BaseTest):
         path_on_disk = '%s%s%s' % (UW, self.plugin_name + "/", repo_name)
 
         assert gr._clone_url == self.drupal_gh
-        assert gr._path == path_on_disk
+        assert gr.path == path_on_disk
 
     def test_create_pull(self):
         with patch('common.update_api.GitRepo.clone') as clone:
@@ -136,8 +145,27 @@ class UpdateTests(BaseTest):
 
     def test_clone_creates_dir(self):
         self.gr.clone()
-        args, kwargs = self.cmd_makedirs.call_args
-        assert self.cmd_makedirs.called
+        args, kwargs = self.mock_makedirs.call_args
         assert args[0] == './update-workspace/drupal'
         assert args[1] == '0700'
+
+        #@TODO handle exceptions.  Raises an error exception if the leaf directory already exists or cannot be created
+
+    def test_clone_func(self):
+        self.gr.clone()
+
+        args, kwargs = self.mock_call.call_args
+        expected = tuple([['git', 'clone', self.drupal_gh, self.path]])
+
+        assert args == expected
+
+    def test_pull_func(self):
+        self.gr.pull()
+
+        args, kwargs = self.mock_call.call_args
+
+        expected = tuple([['git', 'pull']])
+
+        assert args == expected
+        assert kwargs['cwd'] == self.path
 
