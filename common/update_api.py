@@ -8,6 +8,7 @@ from common.versions import VersionsFile
 import os.path
 import requests
 import subprocess
+import common.versions
 
 GH = 'https://github.com/'
 UW = './update-workspace/'
@@ -41,9 +42,11 @@ def github_tags_newer(github_repo, versions_file, update_majors):
 def _newer_tags_get(current_highest, versions):
     """
         Returns versions from versions which are greater than than the highest
-            version in each major.
+            version in each major. Note that a major must be in current_highest
+            in order for versions of that major branch to appear in the return.
         @param current_highest as returned by VersionsFile.highest_version_major()
         @param versions a list of versions.
+        @return a list of versions.
     """
     newer = []
     for major in current_highest:
@@ -73,6 +76,24 @@ def github_repo(github_repo, plugin_name):
     gr.init()
 
     return gr
+
+def github_repo_new(repo_url, plugin_name, versions_file, update_majors):
+    """
+        Convenience method which creates GitRepo and returns the created
+        instance, as well as a VersionsFile and tags which need to be updated.
+        @param repo_url the github repository path, e.g. 'drupal/drupal/'
+        @param plugin_name the current plugin's name (for namespace purposes).
+        @param versions_file the path in disk to this plugin's versions.xml
+        @param update_majors major versions to update. If you want to update
+            the 6.x and 7.x branch, you would supply a list which would look like
+            ['6', '7']
+        @return (GitRepo, VersionsFile, GitRepo.tags_newer())
+    """
+    gr = github_repo(repo_url, plugin_name)
+    vf = common.versions.VersionsFile(versions_file)
+    new_tags = gr.tags_newer(vf, update_majors)
+
+    return gr, vf, new_tags
 
 class GitRepo():
 
@@ -120,11 +141,51 @@ class GitRepo():
         """
         self._cmd(['git', 'pull'])
 
-    def tags_newer(self, versions_file):
+    def tags_newer(self, versions_file, majors):
         """
             Checks this git repo tags for newer versions.
             @param versions_file a common.VersionsFile instance to
                 check against.
+            @param majors a list of major branches to check. E.g. ['6', '7']
+            @raise RuntimeError no newer tags were found.
+        """
+        highest = versions_file.highest_version_major(majors)
+        all = self.tags_get()
+
+        newer = _newer_tags_get(highest, all)
+
+        if len(newer) == 0:
+            raise RuntimeError("No new tags found.")
+
+        return newer
+
+    def tags_get(self):
+        """
+            @return a list with all tags in this repository.
+        """
+        tags_content = subprocess.check_output(['git', 'tag'])
+        tags = []
+        for line in tags_content.split('\n'):
+            tag = line.strip()
+            if tag != '':
+                tags.append(tag)
+
+        return tags
+
+    def tag_checkout(self, tag):
+        """
+            Checks out a tag.
+            @param tag the tag name.
+        """
+        pass
+
+    def hashes_get(self, versions_file, major):
+        """
+            Gets hashes for currently checked out version.
+            @param versions_file a common.VersionsFile instance to
+                check against.
+            @param majors a list of major branches to check. E.g. ['6', '7']
+            @return sums {'version': {'file1':'hash1'}}
         """
         pass
 

@@ -190,7 +190,7 @@ To run tests, some dependencies must be installed; running the following
 commands will result in them being installed and the tests being ran:
 
 <pre>
-    apt-get install python-dev libxslt1-dev libxml2-dev
+    apt-get install python-dev libxslt1-dev libxml2-dev python3
     pip install -r requirements_test.txt
     ./droopescan test
 </pre>

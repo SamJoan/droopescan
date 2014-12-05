@@ -18,9 +18,8 @@ class Tests(HumanBasePlugin):
 
     @controller.expose(help='', hide=True)
     def default(self):
-        integration = self.app.pargs.integration
-        call(['python2.7', '/usr/local/bin/nosetests'])
-        call(['python3.2', '/usr/local/bin/nosetests'])
+        call(['python2', '/usr/local/bin/nosetests'])
+        call(['python3', '/usr/local/bin/nosetests'])
 
 def load():
     handler.register(Tests)

@@ -41,7 +41,7 @@ class UpdateTests(BaseTest):
             else:
                 self.patchers.append(patch(mod))
 
-            attr_name = "mock_%s" % (mod_name.lstrip('_'))
+            attr_name = "mock_%s" % (mod_name)
             setattr(self, attr_name, self.patchers[-1].start())
 
     def tearDown(self):
@@ -56,7 +56,7 @@ class UpdateTests(BaseTest):
 
     def test_update_calls_plugin(self):
         self.gh_mock()
-        m = self.mock_controller('drupal', 'update_version_check')
+        m = self.mock_controller('drupal', 'update_version_check', return_value=False)
         self.updater.update()
 
         assert m.called
@@ -163,8 +163,49 @@ class UpdateTests(BaseTest):
         assert args == expected
         assert kwargs['cwd'] == self.path
 
+    @test.raises(RuntimeError)
+    def test_tags_newer_exc(self):
+        tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
+        update_majors = ['6', '7']
+        with patch('common.update_api.VersionsFile') as vf:
+            with patch('common.update_api.GitRepo.tags_get') as tg:
+                vf.highest_version_major.return_value = {'6': '6.34', '7': '7.34'}
+                tg.return_value = tags_get_ret
+                exceptioned = False
+
+                # No new tags should result in exception.
+                self.gr.tags_newer(vf, update_majors)
+
     def test_tags_newer_func(self):
-        assert False
+        tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
+        update_majors = ['6', '7']
+        with patch('common.update_api.VersionsFile') as vf:
+            with patch('common.update_api.GitRepo.tags_get') as tg:
+                vf.highest_version_major.return_value = {'6': '6.33', '7': '7.33'}
+                tg.return_value = tags_get_ret
+
+                out = self.gr.tags_newer(vf, update_majors)
+
+                args, kwargs = vf.highest_version_major.call_args
+                assert args[0] == update_majors
+                assert '6.34' in out
+                assert '7.34' in out
+
+                vf.highest_version_major.return_value = {'6': '6.32', '7': '7.33'}
+                out = self.gr.tags_newer(vf, update_majors)
+                assert '6.33' in out
+                assert '6.34' in out
+                assert '7.34' in out
+
+    def test_tags_get_func(self):
+        tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
+        tags_content = open('tests/resources/git_tag_output.txt').read()
+        self.mock_check_output.return_value = tags_content
+
+        out = self.gr.tags_get()
+        assert len(out) == len(tags_get_ret)
+        for t in tags_get_ret:
+            assert t in out
 
     def test_drupal_update_calls_gh_update(self):
         with patch('plugins.drupal.github_tags_newer') as m:
@@ -173,7 +214,7 @@ class UpdateTests(BaseTest):
             assert m.called
 
     def test_drupal_update(self):
-        with patch('plugins.drupal.github_repo') as m:
+        with patch('common.update_api.github_repo') as m:
             self.scanner.update_version()
 
             assert m.called
@@ -184,5 +225,31 @@ class UpdateTests(BaseTest):
 
             args, kwargs = m.call_args
             assert isinstance(args[0], VersionsFile)
+            assert args[1] == self.scanner._update_majors
+
+    def test_drupal_calls_hashes_get(self):
+        vf = MagicMock()
+
+        new_versions = ['7.34', '6.34']
+        ret_val = (self.gr, vf, new_versions)
+
+        with patch('plugins.drupal.github_repo_new', return_value=ret_val) as m:
+            with patch('plugins.drupal.GitRepo.tag_checkout') as tc:
+                with patch('plugins.drupal.GitRepo.hashes_get') as hg:
+                    self.scanner.update_version()
+                    assert len(tc.call_args_list) == 2
+                    assert len(hg.call_args_list) == 2
+
+                    for call in hg.call_args_list:
+                        args, kwargs = call
+                        assert args[0] in new_versions
+                        assert args[1] == vf
+                        assert isinstance(args[2], GitRepo)
+
+    def test_tag_checkout_func(self):
+        assert False
+
+    def test_hashes_get(self):
+        assert False
 
 
