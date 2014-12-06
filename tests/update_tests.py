@@ -4,7 +4,7 @@ from common.testutils import decallmethods
 from common.update_api import github_tags_newer, github_repo, _github_normalize
 from common.update_api import GitRepo
 from common.update_api import GH, UW
-from mock import patch, MagicMock
+from mock import patch, MagicMock, mock_open
 from plugins.update import Update
 from tests import BaseTest
 import common
@@ -269,11 +269,42 @@ class UpdateTests(BaseTest):
                 assert args[0] in files
 
     def test_update_calls_plugin(self):
-        self.gh_mock()
-        m = self.mock_controller('drupal', 'update_version_check', return_value=True)
-        ret_val = (self.gr, VersionsFile('tests/resources/update_versions.xml'), ['7.34', '6.34'])
-        with patch('common.update_api.github_repo_new', return_value=ret_val) as m:
-            assert False, "check VersionsFile gets updated"
+        md5 = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        files = ['misc/drupal.js', 'misc/tabledrag.js', 'misc/ajax.js']
+        self.mock_md5_file.return_value = md5
 
-            assert m.called
+        vf = VersionsFile('tests/resources/update_versions.xml')
+        versions = ['7.34', '6.34']
+        ret_val = (self.gr, vf, versions)
+
+        with patch('common.update_api.github_repo_new', return_value=ret_val) as m:
+
+            fpv_before = vf.files_per_version()
+            out = self.scanner.update_version()
+            fpv_after = vf.files_per_version()
+
+            assert len(fpv_before) == len(fpv_after) - len(versions)
+            for v in versions:
+                assert v in fpv_after
+                assert fpv_after[v] == files
+
+    def test_writes_vf(self):
+        vf = MagicMock()
+        xml = 'new_xml_string'
+        vf.str_pretty.return_value = xml
+
+        o = mock_open()
+        with patch('plugins.update.open', o, create=True):
+
+            uvc = self.mock_controller('drupal', 'update_version_check', return_value=True)
+            uv = self.mock_controller('drupal', 'update_version', return_value=vf)
+
+            self.updater.update()
+
+            args, kwargs = o.call_args
+            assert args[0] == self.scanner.versions_file
+            assert args[1] == 'w'
+
+            args, kwargs = o().write.call_args
+            assert args[0] == xml
 
