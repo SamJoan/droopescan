@@ -5,14 +5,15 @@ except:
 
 from common.functions import version_gt
 from common.versions import VersionsFile
+import common.functions
+import common.versions
+import os
 import os.path
 import requests
 import subprocess
-import common.functions
-import common.versions
 
 GH = 'https://github.com/'
-UW = './update-workspace/'
+UW = './.update-workspace/'
 
 def github_tags_newer(github_repo, versions_file, update_majors):
     """
@@ -110,7 +111,8 @@ class GitRepo():
                 purposes).
         """
         self._clone_url = clone_url
-        self.path = '%s%s%s' % (UW, plugin_name + '/', os.path.basename(clone_url[:-1]) + "/")
+        self.path = '%s%s%s' % (UW, plugin_name + '/',
+                os.path.basename(clone_url[:-1]) + "/")
 
     def init(self):
         """
@@ -129,12 +131,12 @@ class GitRepo():
         """
         base_dir = '/'.join(self.path.split('/')[:-2])
         try:
-            os.makedirs(base_dir, '0700')
+            os.makedirs(base_dir, 0o700)
         except OSError:
             # Raises an error exception if the leaf directory already exists.
             pass
 
-        self._cmd(['git', 'clone', self._clone_url, self.path])
+        self._cmd(['git', 'clone', self._clone_url, self.path], cwd='/')
 
     def pull(self):
         """
@@ -164,7 +166,7 @@ class GitRepo():
         """
             @return a list with all tags in this repository.
         """
-        tags_content = subprocess.check_output(['git', 'tag'])
+        tags_content = subprocess.check_output(['git', 'tag'], cwd=self.path)
         tags = []
         for line in tags_content.split('\n'):
             tag = line.strip()

@@ -59,7 +59,10 @@ class UpdateTests(BaseTest):
         self.mock_controller('drupal', 'update_version_check', return_value=True)
         m = self.mock_controller('drupal', 'update_version')
 
-        self.updater.update()
+
+        o = mock_open()
+        with patch('plugins.update.open', o, create=True):
+            self.updater.update()
 
         assert m.called
 
@@ -68,7 +71,9 @@ class UpdateTests(BaseTest):
         self.mock_controller('drupal', 'update_version_check', return_value=False)
         m = self.mock_controller('drupal', 'update_version')
 
-        self.updater.update()
+        o = mock_open()
+        with patch('plugins.update.open', o, create=True):
+            self.updater.update()
 
         assert not m.called
 
@@ -131,10 +136,13 @@ class UpdateTests(BaseTest):
 
     def test_clone_creates_dir(self):
         self.gr.clone()
-        args, kwargs = self.mock_makedirs.call_args
-        assert args[0] == './update-workspace/drupal'
-        assert args[1] == '0700'
+        expected_dir = './.update-workspace/drupal'
 
+        args, kwargs = self.mock_makedirs.call_args
+        assert args[0] == expected_dir
+        assert args[1] == 0o700
+
+        # Assert except block is there.
         self.mock_makedirs.side_effect = OSError()
         self.gr.clone()
 
@@ -307,4 +315,7 @@ class UpdateTests(BaseTest):
 
             args, kwargs = o().write.call_args
             assert args[0] == xml
+
+    def test_writes_valid_xml(self):
+        assert False
 
