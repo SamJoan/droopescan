@@ -201,7 +201,7 @@ class UpdateTests(BaseTest):
             assert t in out
 
     def test_drupal_update_calls_gh_update(self):
-        with patch('plugins.drupal.github_tags_newer') as m:
+        with patch('common.update_api.github_tags_newer') as m:
             self.scanner.update_version_check()
 
             assert m.called
@@ -234,14 +234,20 @@ class UpdateTests(BaseTest):
             with patch('plugins.drupal.GitRepo.tag_checkout') as tc:
                 with patch('plugins.drupal.GitRepo.hashes_get', return_value=ret_hashes_get) as hg:
                     self.scanner.update_version()
-                    assert len(tc.call_args_list) == 2
-                    assert len(hg.call_args_list) == 2
 
-                    for call in hg.call_args_list:
-                        args, kwargs = call
-                        assert False, "this does not make any sense whatsoever"
-                        assert args[1] == vf
-                        assert args[2] == self.scanner._update_major
+                    tccl = tc.call_args_list
+                    hgcl = hg.call_args_list
+
+                    assert len(tc.call_args_list) == 2
+
+                    for args, kwargs in tccl:
+                        assert args[0] in new_versions
+
+                    assert len(hg.call_args_list) == 2
+                    for args, kwargs in hgcl:
+                        assert args[0] == vf
+                        assert args[1] == self.scanner._update_majors
+
         version = '7.34'
         expected = tuple([['git', 'checkout', version]])
         self.gr.tag_checkout(version)

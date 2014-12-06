@@ -37,7 +37,7 @@ class Drupal(BasePlugin):
         """
             @return True if new tags have been made in the github repository.
         """
-        return github_tags_newer('drupal/drupal/', self.versions_file, update_majors=['6', '7'])
+        return ua.github_tags_newer('drupal/drupal/', self.versions_file, update_majors=['6', '7'])
 
     def update_version(self):
         """
@@ -49,7 +49,7 @@ class Drupal(BasePlugin):
         hashes = {}
         for version in new_tags:
             gr.tag_checkout(version)
-            hashes[version] = gr.hashes_get(versions_file, gr)
+            hashes[version] = gr.hashes_get(versions_file, self._update_majors)
 
         versions_file.update(hashes)
         return versions_file
