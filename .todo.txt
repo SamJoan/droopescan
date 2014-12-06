@@ -4,10 +4,8 @@ nth:
 - Add a handler for KeyboardInterrupt or snakesthatbite.blogspot.co.nz/2010/09/cpython-threading-interrupting.html
 
 Re Updating process:
-    - Make updating of SS faster.
+    - Implement SS.
     - Make Drupal update CHANGELOG.
-    - Implement some functional-programming-style API that modules can call from, for example plugins/drupal.py
-    - Abstract GIT, wget & extract functionality. (mantener un git y hacer un pull, fijarse si hay tags nuevos, teniendo en cuenta permisos)
     
 Relevant:
 - https://wappalyzer.com/ -
