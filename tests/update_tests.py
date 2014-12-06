@@ -236,13 +236,11 @@ class UpdateTests(BaseTest):
                     self.scanner.update_version()
 
                     tccl = tc.call_args_list
-                    hgcl = hg.call_args_list
-
                     assert len(tc.call_args_list) == 2
-
                     for args, kwargs in tccl:
                         assert args[0] in new_versions
 
+                    hgcl = hg.call_args_list
                     assert len(hg.call_args_list) == 2
                     for args, kwargs in hgcl:
                         assert args[0] == vf
