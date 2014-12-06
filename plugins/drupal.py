@@ -1,7 +1,7 @@
 from cement.core import handler, controller
 from plugins import BasePlugin
-from common.update_api import github_tags_newer, github_repo_new
 from common.update_api import GitRepo
+import common.update_api as ua
 import common.versions
 
 class Drupal(BasePlugin):
@@ -43,15 +43,16 @@ class Drupal(BasePlugin):
         """
             @return updated VersionsFile
         """
-        gr, versions_file, new_tags = github_repo_new('drupal/drupal/',
+        gr, versions_file, new_tags = ua.github_repo_new('drupal/drupal/',
                 'drupal', self.versions_file, self._update_majors)
 
         hashes = {}
         for version in new_tags:
             gr.tag_checkout(version)
-            hashes[version] = gr.hashes_get(version, versions_file, gr)
+            hashes[version] = gr.hashes_get(versions_file, gr)
 
-        return versions_file.u
+        versions_file.update(hashes)
+        return versions_file
 
 def load():
     handler.register(Drupal)

@@ -196,7 +196,6 @@ class GitRepo():
         return result
 
     def _cmd(self, *args, **kwargs):
-
         if 'cwd' not in kwargs:
             kwargs['cwd'] = self.path
 
@@ -204,5 +203,4 @@ class GitRepo():
         if return_code != 0:
             command = ' '.join(args)
             raise RuntimeError('Command "%s" failed with exit status "%s"' % (command, return_code))
-
 

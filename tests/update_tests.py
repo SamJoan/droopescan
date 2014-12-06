@@ -54,13 +54,6 @@ class UpdateTests(BaseTest):
         responses.add(responses.GET, 'https://github.com/drupal/drupal/releases', body=gh_resp)
         responses.add(responses.GET, 'https://github.com/silverstripe/silverstripe-framework/releases')
 
-    def test_update_calls_plugin(self):
-        self.gh_mock()
-        m = self.mock_controller('drupal', 'update_version_check', return_value=False)
-        self.updater.update()
-
-        assert m.called
-
     def test_update_checks_and_updates(self):
         self.gh_mock()
         self.mock_controller('drupal', 'update_version_check', return_value=True)
@@ -237,7 +230,7 @@ class UpdateTests(BaseTest):
                 'javascript/main.js': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
                 'css/jss.phs': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'}
 
-        with patch('plugins.drupal.github_repo_new', return_value=ret_val) as m:
+        with patch('common.update_api.github_repo_new', return_value=ret_val) as m:
             with patch('plugins.drupal.GitRepo.tag_checkout') as tc:
                 with patch('plugins.drupal.GitRepo.hashes_get', return_value=ret_hashes_get) as hg:
                     self.scanner.update_version()
@@ -246,13 +239,9 @@ class UpdateTests(BaseTest):
 
                     for call in hg.call_args_list:
                         args, kwargs = call
-                        assert args[0] in new_versions
+                        assert False, "this does not make any sense whatsoever"
                         assert args[1] == vf
-                        assert isinstance(args[2], GitRepo)
-
-                    assert vf.update.called
-
-    def test_tag_checkout_func(self):
+                        assert args[2] == self.scanner._update_major
         version = '7.34'
         expected = tuple([['git', 'checkout', version]])
         self.gr.tag_checkout(version)
@@ -275,5 +264,12 @@ class UpdateTests(BaseTest):
                 args, kwargs = call
                 assert args[0] in files
 
+    def test_update_calls_plugin(self):
+        self.gh_mock()
+        m = self.mock_controller('drupal', 'update_version_check', return_value=True)
+        ret_val = (self.gr, VersionsFile('tests/resources/update_versions.xml'), ['7.34', '6.34'])
+        with patch('common.update_api.github_repo_new', return_value=ret_val) as m:
+            assert False, "check VersionsFile gets updated"
 
+            assert m.called
 
