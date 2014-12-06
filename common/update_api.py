@@ -67,7 +67,7 @@ def _github_normalize(github_repo):
 def github_repo(github_repo, plugin_name):
     """
         Returns a GitRepo from a github repository after either cloning or
-            pulling (depending on whether it exists)
+            fetching (depending on whether it exists)
         @param github_repo the github repository path, e.g. 'drupal/drupal/'
         @param plugin_name the current plugin's name (for namespace purposes).
     """
@@ -116,11 +116,11 @@ class GitRepo():
 
     def init(self):
         """
-            Performs a clone or a pull, depending on whether the repository has
+            Performs a clone or a fetch, depending on whether the repository has
             been previously cloned or not.
         """
         if os.path.isdir(self.path):
-            self.pull()
+            self.fetch()
         else:
             self.clone()
 
@@ -138,11 +138,11 @@ class GitRepo():
 
         self._cmd(['git', 'clone', self._clone_url, self.path], cwd='/')
 
-    def pull(self):
+    def fetch(self):
         """
-            Performs a pull on this repository.
+            Get objects and refs from a remote repository.
         """
-        self._cmd(['git', 'pull'])
+        self._cmd(['git', 'fetch', '--all'])
 
     def tags_newer(self, versions_file, majors):
         """
@@ -193,7 +193,7 @@ class GitRepo():
         files = versions_file.files_get()
         result = {}
         for f in files:
-            result[f] = common.functions.md5_file(f)
+            result[f] = common.functions.md5_file(self.path + f)
 
         return result
 
@@ -203,6 +203,6 @@ class GitRepo():
 
         return_code = subprocess.call(*args, **kwargs)
         if return_code != 0:
-            command = ' '.join(args)
+            command = ' '.join(args[0])
             raise RuntimeError('Command "%s" failed with exit status "%s"' % (command, return_code))
 

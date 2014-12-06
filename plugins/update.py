@@ -6,6 +6,9 @@ class Update(HumanBasePlugin):
     class Meta:
         label = 'update'
 
+    def is_valid(self, new_xml):
+        return new_xml.startswith('<cms>')
+
     @controller.expose(help='', hide=True)
     def update(self):
         plugins = plugins_base_get()
@@ -18,8 +21,12 @@ class Update(HumanBasePlugin):
                 if must_update:
                     new_vf = plugin.update_version()
                     with open(plugin.versions_file, 'w') as f:
-                        print(f, f.write)
-                        f.write(new_vf.str_pretty())
+                        new_xml = new_vf.str_pretty()
+                        if self.is_valid(new_xml):
+                            f.write(new_xml)
+                        else:
+                            self.msg('Prevented write of invalid XML %s' %
+                                    new_xml)
 
                     self.msg('Updated %s.' % plugin_name)
 

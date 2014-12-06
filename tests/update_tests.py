@@ -119,7 +119,7 @@ class UpdateTests(BaseTest):
         assert gr._clone_url == self.drupal_gh
         assert gr.path == path_on_disk
 
-    def test_create_pull(self):
+    def test_create_fetch(self):
         with patch('common.update_api.GitRepo.clone') as clone:
             with patch('os.path.isdir', return_value=False) as isdir:
                 self.gr.init()
@@ -127,11 +127,11 @@ class UpdateTests(BaseTest):
                 assert clone.called
                 assert isdir.called
 
-        with patch('common.update_api.GitRepo.pull') as pull:
+        with patch('common.update_api.GitRepo.fetch') as fetch:
             with patch('os.path.isdir', return_value=True) as isdir:
                 self.gr.init()
 
-                assert pull.called
+                assert fetch.called
                 assert isdir.called
 
     def test_clone_creates_dir(self):
@@ -154,12 +154,12 @@ class UpdateTests(BaseTest):
 
         assert args == expected
 
-    def test_pull_func(self):
-        self.gr.pull()
+    def test_fetch_func(self):
+        self.gr.fetch()
 
         args, kwargs = self.mock_call.call_args
 
-        expected = tuple([['git', 'pull']])
+        expected = tuple([['git', 'fetch', '--all']])
 
         assert args == expected
         assert kwargs['cwd'] == self.path
@@ -274,7 +274,15 @@ class UpdateTests(BaseTest):
             assert len(self.mock_md5_file.call_args_list) == len(files)
             for call in self.mock_md5_file.call_args_list:
                 args, kwargs = call
-                assert args[0] in files
+
+                in_there = False
+                for f in files:
+                    if args[0].endswith(f):
+                        in_there = True
+                        break
+
+                assert UW in args[0]
+                assert in_there
 
     def test_update_calls_plugin(self):
         md5 = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
@@ -298,7 +306,7 @@ class UpdateTests(BaseTest):
 
     def test_writes_vf(self):
         vf = MagicMock()
-        xml = 'new_xml_string'
+        xml = '<cms>lalala'
         vf.str_pretty.return_value = xml
 
         o = mock_open()
@@ -317,5 +325,17 @@ class UpdateTests(BaseTest):
             assert args[0] == xml
 
     def test_writes_valid_xml(self):
-        assert False
+        self.mock_controller('drupal', 'update_version_check', return_value=True)
+        self.mock_controller('drupal', 'update_version')
+
+        o = mock_open()
+        with patch('plugins.update.open', o, create=True):
+            with patch('plugins.update.Update.is_valid', return_value=False) as iv:
+                self.updater.update()
+
+                args, kwargs = iv.call_args
+
+                assert iv.called
+                assert not o().write.called
+
 
