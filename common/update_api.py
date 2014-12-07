@@ -136,7 +136,7 @@ class GitRepo():
             # Raises an error exception if the leaf directory already exists.
             pass
 
-        self._cmd(['git', 'clone', self._clone_url, self.path], cwd='/')
+        self._cmd(['git', 'clone', self._clone_url, self.path], cwd=os.getcwd())
 
     def fetch(self):
         """
@@ -190,7 +190,7 @@ class GitRepo():
             @param majors a list of major branches to check. E.g. ['6', '7']
             @return sums {'file1':'hash1'}
         """
-        files = versions_file.files_get()
+        files = versions_file.files_get_all()
         result = {}
         for f in files:
             result[f] = common.functions.md5_file(self.path + f)

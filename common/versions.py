@@ -14,8 +14,24 @@ class VersionsFile():
         self.root = self.et.getroot()
 
     def files_get(self):
+        """
+            Returns a list of files which must be used for fingerprinting.
+        """
         files = []
         for file in self.root.iter('file'):
+            files.append(file.attrib['url'])
+
+        return files
+
+    def files_get_all(self):
+        """
+            Returns a list of files which includes the changelog.
+        """
+        files = []
+        for file in self.root.iter('file'):
+            files.append(file.attrib['url'])
+
+        for file in self.root.iter('changelog'):
             files.append(file.attrib['url'])
 
         return files
@@ -184,7 +200,7 @@ class VersionsFile():
             hashes = sums[version]
             for filename in hashes:
                 hsh = hashes[filename]
-                file_xpath = './files/file[@url="%s"]' % filename
+                file_xpath = './files/*[@url="%s"]' % filename
                 try:
                     file_add = self.root.findall(file_xpath)[0]
                 except IndexError:

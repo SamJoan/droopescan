@@ -18,6 +18,7 @@ class UpdateTests(BaseTest):
     plugin_name = 'drupal'
     path = UW + "drupal/drupal/"
     gr = None
+    update_versions_xml = 'tests/resources/update_versions.xml'
 
     def setUp(self):
         super(UpdateTests, self).setUp()
@@ -268,9 +269,10 @@ class UpdateTests(BaseTest):
         self.mock_md5_file.return_value = md5
 
         with patch('common.update_api.VersionsFile') as vf:
-            vf.files_get.return_value = files
+            vf.files_get_all.return_value = files
             self.gr.hashes_get(vf, self.scanner._update_majors)
 
+            assert vf.files_get_all.called
             assert len(self.mock_md5_file.call_args_list) == len(files)
             for call in self.mock_md5_file.call_args_list:
                 args, kwargs = call
@@ -289,12 +291,11 @@ class UpdateTests(BaseTest):
         files = ['misc/drupal.js', 'misc/tabledrag.js', 'misc/ajax.js']
         self.mock_md5_file.return_value = md5
 
-        vf = VersionsFile('tests/resources/update_versions.xml')
+        vf = VersionsFile(self.update_versions_xml)
         versions = ['7.34', '6.34']
         ret_val = (self.gr, vf, versions)
 
         with patch('common.update_api.github_repo_new', return_value=ret_val) as m:
-
             fpv_before = vf.files_per_version()
             out = self.scanner.update_version()
             fpv_after = vf.files_per_version()
@@ -303,6 +304,34 @@ class UpdateTests(BaseTest):
             for v in versions:
                 assert v in fpv_after
                 assert fpv_after[v] == files
+
+    def test_files_get_all_chlg(self):
+        changelog_file = 'CHANGELOG.txt'
+        vf = VersionsFile(self.update_versions_xml)
+        files = vf.files_get()
+        files_all = vf.files_get_all()
+
+        assert len(files) == len(files_all) - 1
+        assert changelog_file in files_all
+        assert not changelog_file in files
+
+    def test_updates_changelog(self):
+        weird_hash = '13371337133713371337133713371337'
+        vf = VersionsFile(self.update_versions_xml)
+
+        hashes = {
+            '6.34': {
+                'misc/ajax.js': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                'CHANGELOG.txt': weird_hash,
+                'misc/drupal.js': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                'misc/tabledrag.js': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+            }
+        }
+
+        vf.update(hashes)
+
+        out = vf.str_pretty()
+        assert weird_hash in str(out)
 
     def test_writes_vf(self):
         vf = MagicMock()
@@ -337,5 +366,4 @@ class UpdateTests(BaseTest):
 
                 assert iv.called
                 assert not o().write.called
-
 
