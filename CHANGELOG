@@ -1,3 +1,11 @@
+1.9.0
+=====
+
+* Update databases.
+* Improve drupal detection.
+* SilverStripe improvements.
+* Massive internal rework.
+
 1.9.0-rc1
 =========
 
