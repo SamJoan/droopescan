@@ -53,7 +53,7 @@ python droopescan.py scan --help
 * Scans for outdated installations, and also themes and plugins.
 * Plugin system which handles not only scanning but also the
 [updating](https://github.com/droope/droopescan/blob/3f7c786b99eef40b53dc3ef541772d66684a20da/plugins/drupal.py#L36-L55)
-of plugin databases.
+of plugins.
 * Support for basic authentication and intercepting proxies.
 
 # Installation
@@ -73,17 +73,17 @@ The master branch always contains the latest version released.
 
 Droopescan aims to be the most accurate by default, while not overloading the
 target server due to excessive concurrent requests. Due to this, by default, a
-large number of requests will be made with four threads; you can increase this
-default by using the `--threads` argument.
+large number of requests will be made with four threads; change these settings
+by using the `--number` and `--threads` arguments respectively.
 
 This tool is able to perform four kinds of tests:
 
-* Plugin checks: Performs several thousand requests and returns a listing of
-all plugins found to be installed in the target host.
-* Theme checks: As above, but for themes.
-* Version checks: Downloads several files and, based on the checksums of these
+* *Plugin checks*: Performs several thousand HTTP requests and returns a
+listing of all plugins found to be installed in the target host.
+* *Theme checks*: As above, but for themes.
+* *Version checks*: Downloads several files and, based on the checksums of these
 files, returns a list of all possible versions. 
-* Interesting url checks: Checks for interesting urls (admin panels, readme
+* *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
 # Authentication.
@@ -91,9 +91,9 @@ files, etc.)
 The application fully supports `.netrc` files and `http_proxy` environment
 variables. 
 
-You can set `http_proxy` and `https_proxy` variables. These allow you to
+You can set the `http_proxy` and `https_proxy` variables. These allow you to
 set a parent HTTP proxy, in which you can handle more complex types of
-authentication (e.g. Fiddler, ZAP)
+authentication (e.g. Fiddler, ZAP, Burp)
 
 <pre>
 export http_proxy='localhost:8080'
@@ -101,8 +101,8 @@ export https_proxy='localhost:8080'
 python droopescan.py drupal --url http://localhost/drupal
 </pre>
 
-Another option is to use a .netrc file. An example `~/.netrc` file could look
-as follows:
+Another option is to use a .netrc file for basic authentication. An example
+`~/.netrc` file could look as follows:
 
 <pre>
 machine secret.google.com
@@ -110,16 +110,17 @@ machine secret.google.com
     password Winter01
 </pre>
 
-*WARNING:* By design, to allow intercepting proxies, this application allows
-self-signed or otherwise invalid certificates. ˙ ͜ʟ˙
+*WARNING:* By design, to allow intercepting proxies and the testing of
+applications with bad SSL, droopescan allows self-signed or otherwise invalid
+certificates. ˙ ͜ʟ˙
 
 # Output.
 
 This application supports both "standard output", meant for human consumption,
 or JSON, which is more suitable for machine consumption.
 
-This can be controlled with the `--output` flag, and some sample JSON output
-would look as follows (minus the excessive whitespace):
+This can be controlled with the `--output` flag. Some sample JSON output would
+look as follows (minus the excessive whitespace):
 
 <pre>
 {
@@ -163,7 +164,8 @@ would look as follows (minus the excessive whitespace):
 }
 </pre>
 
-Scan types might be missing from the output if they are not scanned. 
+Some attributes might be missing from the JSON object if parts of the scan are
+not ran. 
 
 This is how multi-site output looks like; each line contains a valid JSON object
 as shown above.
@@ -232,7 +234,7 @@ Pull requests are welcome. Please remember to make your pull requests against
 the develoment branch rather than the master. Issues can be raised on the issue
 tracker here on GitHub.
 
-To run tests, some dependencies must be installed; running the following
+To run tests, some dependencies must be installed. Running the following
 commands will result in them being installed and the tests being ran:
 
 <pre>
