@@ -1,10 +1,11 @@
 from cement.utils import test
 from common import VersionsFile
 from common.testutils import decallmethods
+from common.update_api import GH, UW
 from common.update_api import github_tags_newer, github_repo, _github_normalize
 from common.update_api import GitRepo
-from common.update_api import GH, UW
 from mock import patch, MagicMock, mock_open
+from plugins.drupal import Drupal
 from plugins.update import Update
 from tests import BaseTest
 import common
@@ -15,7 +16,7 @@ class UpdateTests(BaseTest):
 
     drupal_repo_path = 'drupal/drupal/'
     drupal_gh = '%s%s' % (GH, drupal_repo_path)
-    plugin_name = 'drupal'
+    plugin_name = 'drupal/drupal'
     path = UW + "drupal/drupal/"
     gr = None
     update_versions_xml = 'tests/resources/update_versions.xml'
@@ -28,7 +29,9 @@ class UpdateTests(BaseTest):
 
         self.gr = GitRepo(self.drupal_gh, self.plugin_name)
 
-        os_mock = ['os.makedirs', 'subprocess.call', 'subprocess.check_output', 'common.functions.md5_file']
+        os_mock = ['os.makedirs', 'subprocess.call', 'subprocess.check_output',
+                'common.functions.md5_file',
+                'common.plugins_util.plugins_base_get']
         self.patchers = []
         for mod in os_mock:
             mod_name = mod.split('.')[-1]
@@ -36,6 +39,8 @@ class UpdateTests(BaseTest):
             ret_val = None
             if mod_name == 'call':
                 ret_val = 0
+            if mod_name == 'plugins_base_get':
+                ret_val = [self.controller_get('drupal')]
 
             if ret_val != None:
                 self.patchers.append(patch(mod, return_value=ret_val))
@@ -59,7 +64,6 @@ class UpdateTests(BaseTest):
         self.gh_mock()
         self.mock_controller('drupal', 'update_version_check', return_value=True)
         m = self.mock_controller('drupal', 'update_version')
-
 
         o = mock_open()
         with patch('plugins.update.open', o, create=True):
@@ -113,10 +117,7 @@ class UpdateTests(BaseTest):
 
     def test_gr_init(self):
         gr = GitRepo(self.drupal_gh, self.plugin_name)
-        repo_name = self.drupal_gh.split('/')[-2:][0] + '/'
-
-        path_on_disk = '%s%s%s' % (UW, self.plugin_name + "/", repo_name)
-
+        path_on_disk = '%s%s/' % (UW, self.plugin_name)
         assert gr._clone_url == self.drupal_gh
         assert gr.path == path_on_disk
 
@@ -140,6 +141,7 @@ class UpdateTests(BaseTest):
         expected_dir = './.update-workspace/drupal'
 
         args, kwargs = self.mock_makedirs.call_args
+        print(args[0], expected_dir)
         assert args[0] == expected_dir
         assert args[1] == 0o700
 

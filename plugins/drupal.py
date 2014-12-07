@@ -44,7 +44,7 @@ class Drupal(BasePlugin):
             @return updated VersionsFile
         """
         gr, versions_file, new_tags = ua.github_repo_new('drupal/drupal/',
-                'drupal', self.versions_file, self._update_majors)
+                'drupal/drupal', self.versions_file, self._update_majors)
 
         hashes = {}
         for version in new_tags:

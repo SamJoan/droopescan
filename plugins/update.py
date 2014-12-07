@@ -1,6 +1,7 @@
 from cement.core import handler, controller
 from plugins import HumanBasePlugin
-from common.plugins_util import plugins_base_get
+import common.plugins_util as pu
+
 
 class Update(HumanBasePlugin):
     class Meta:
@@ -11,7 +12,7 @@ class Update(HumanBasePlugin):
 
     @controller.expose(help='', hide=True)
     def update(self):
-        plugins = plugins_base_get()
+        plugins = pu.plugins_base_get()
         for Plugin in plugins:
             try:
                 plugin = Plugin()

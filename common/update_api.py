@@ -97,6 +97,26 @@ def github_repo_new(repo_url, plugin_name, versions_file, update_majors):
 
     return gr, vf, new_tags
 
+def hashes_get(versions_file, majors, base_path):
+    """
+        Gets hashes for currently checked out version.
+        @param versions_file a common.VersionsFile instance to
+            check against.
+        @param majors a list of major branches to check. E.g. ['6', '7']
+        @param base_path where to look for files. e.g. './.update-workspace/silverstripe/'
+        @return sums {'file1':'hash1'}
+    """
+    files = versions_file.files_get_all()
+    result = {}
+    for f in files:
+        try:
+            result[f] = common.functions.md5_file(base_path + f)
+        except IOError:
+            # Not all files exist for all versions.
+            pass
+
+    return result
+
 class GitRepo():
 
     _initialized = False
@@ -107,12 +127,12 @@ class GitRepo():
         """
             Base abstraction for working with git repositories.
             @param clone_url the URL to clone the repo from.
-            @param plugin_name the current plugin's name (for namespace
-                purposes).
+            @param plugin_name used to determine the clone location. The clone
+                will be located at ./.update-workspace/<plugin_name>/. Slashes
+                are permitted and will create subfolders.
         """
         self._clone_url = clone_url
-        self.path = '%s%s%s' % (UW, plugin_name + '/',
-                os.path.basename(clone_url[:-1]) + "/")
+        self.path = '%s%s/' % (UW, plugin_name)
 
     def init(self):
         """
@@ -127,7 +147,7 @@ class GitRepo():
     def clone(self):
         """
             Clones a directory based on the clone_url and plugin_name given to
-            the constructor. The clone will be located at ./.update-workspace/<plugin_name>/<repo-name>/
+            the constructor. The clone will be located at self.path.
         """
         base_dir = '/'.join(self.path.split('/')[:-2])
         try:
@@ -190,12 +210,7 @@ class GitRepo():
             @param majors a list of major branches to check. E.g. ['6', '7']
             @return sums {'file1':'hash1'}
         """
-        files = versions_file.files_get_all()
-        result = {}
-        for f in files:
-            result[f] = common.functions.md5_file(self.path + f)
-
-        return result
+        return hashes_get(versions_file, major, self.path)
 
     def _cmd(self, *args, **kwargs):
         if 'cwd' not in kwargs:

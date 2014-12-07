@@ -63,8 +63,11 @@ class BaseTest(test.CementTestCase):
         if side_effect:
             m.side_effect = side_effect
 
-        setattr(backend.__handlers__['controller'][plugin_label], method, m)
+        setattr(self.controller_get(plugin_label), method, m)
         return m
+
+    def controller_get(self, plugin_label):
+        return backend.__handlers__['controller'][plugin_label]
 
     def add_argv(self, argv):
         """
