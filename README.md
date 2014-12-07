@@ -1,14 +1,43 @@
-# A CMS Scanning Tool.
+# droopescan.
 
-Stable versions can be [found here](https://github.com/droope/droopescan/releases).
+A plugin-based scanner that aids security researchers in identifying issues with
+several CMSs, mainly Drupal & Silverstripe.
+
+Stable versions can be [downloaded from here](https://github.com/droope/droopescan/releases).
 
 [![Build Status](https://travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan)
 
-Usage:
-
 <pre>
-python droopescan.py scan drupal --url http://localhost/drupal-7.28
-python droopescan.py scan silverstripe --url http://localhost/silverstripe
+debian:~/droopescan# ./droopescan scan drupal -u http://drupal.org/ -n 100
+[+] No themes found.                                                            
+
+[+] Possible interesting urls found:
+    Default changelog file. - https://www.drupal.org/CHANGELOG.txt
+    Default admin. - https://www.drupal.org/user/login
+
+[+] Possible version(s):
+    7.34
+
+[+] Plugins found:
+    views https://www.drupal.org/sites/all/modules/views/
+    token https://www.drupal.org/sites/all/modules/token/
+    pathauto https://www.drupal.org/sites/all/modules/pathauto/
+    libraries https://www.drupal.org/sites/all/modules/libraries/
+    entity https://www.drupal.org/sites/all/modules/entity/
+    google_analytics https://www.drupal.org/sites/all/modules/google_analytics/
+    ctools https://www.drupal.org/sites/all/modules/ctools/
+    features https://www.drupal.org/sites/all/modules/features/
+    views_bulk_operations https://www.drupal.org/sites/all/modules/views_bulk_operations/
+    link https://www.drupal.org/sites/all/modules/link/
+    metatag https://www.drupal.org/sites/all/modules/metatag/
+    field_group https://www.drupal.org/sites/all/modules/field_group/
+    entityreference https://www.drupal.org/sites/all/modules/entityreference/
+    references https://www.drupal.org/sites/all/modules/references/
+    redirect https://www.drupal.org/sites/all/modules/redirect/
+    field_collection https://www.drupal.org/sites/all/modules/field_collection/
+    diff https://www.drupal.org/sites/all/modules/diff/
+
+[+] Scan finished (0:01:47.590709 elapsed)
 </pre>
 
 You can get a full list of options by running:
@@ -18,26 +47,39 @@ python droopescan.py --help
 python droopescan.py scan --help
 </pre>
 
-# Dependencies.
+# Features.
 
-In order to run this tool you need to install a few dependencies. These can be
-installed by running the following command:
+* Fast, multi-threaded scanning. Mass scanning supported out of the box.
+* Scans for outdated installations, and also themes and plugins.
+* Plugin system which handles not only scanning but also the
+[updating](https://github.com/droope/droopescan/blob/3f7c786b99eef40b53dc3ef541772d66684a20da/plugins/drupal.py#L36-L55)
+of plugin databases.
+* Support for basic authentication and intercepting proxies.
+
+# Installation
+
+Installation is as follows:
 
 <pre>
+git clone https://github.com/droope/droopescan.git
+cd droopescan
 pip install -r requirements.txt
+./droopescan scan --help
 </pre>
+
+The master branch always contains the latest version released.
 
 # Scan types.
 
-Droopescan aims to be the most aggressive by default, while not overloading the
-target server due to excessive requests. Due to this, by default, a large number
-of requests will be made with four threads; you can increase this default by
-using the `--threads` argument.
+Droopescan aims to be the most accurate by default, while not overloading the
+target server due to excessive concurrent requests. Due to this, by default, a
+large number of requests will be made with four threads; you can increase this
+default by using the `--threads` argument.
 
 This tool is able to perform four kinds of tests:
 
-* Plugin checks: Performs several hundred requests and returns a listing of all
-plugins found to be installed in the target host.
+* Plugin checks: Performs several thousand requests and returns a listing of
+all plugins found to be installed in the target host.
 * Theme checks: As above, but for themes.
 * Version checks: Downloads several files and, based on the checksums of these
 files, returns a list of all possible versions. 
@@ -77,7 +119,7 @@ This application supports both "standard output", meant for human consumption,
 or JSON, which is more suitable for machine consumption.
 
 This can be controlled with the `--output` flag, and some sample JSON output
-would look as follows:
+would look as follows (minus the excessive whitespace):
 
 <pre>
 {
@@ -124,7 +166,7 @@ would look as follows:
 Scan types might be missing from the output if they are not scanned. 
 
 This is how multi-site output looks like; each line contains a valid JSON object
-as described above.
+as shown above.
 
 <pre>
     $ ./droopescan scan drupal -U six_and_above.txt -e v
@@ -184,7 +226,11 @@ Functionality available for 'SilverStripe':
     - Enumerate version (up to version X.X.X)
 </pre>
 
-# Testing.
+# Contribute & Issues.
+
+Pull requests are welcome. Please remember to make your pull requests against
+the develoment branch rather than the master. Issues can be raised on the issue
+tracker here on GitHub.
 
 To run tests, some dependencies must be installed; running the following
 commands will result in them being installed and the tests being ran:
@@ -194,3 +240,7 @@ commands will result in them being installed and the tests being ran:
     pip install -r requirements_test.txt
     ./droopescan test
 </pre>
+
+# License.
+
+The project is licensed under the GPL license.
