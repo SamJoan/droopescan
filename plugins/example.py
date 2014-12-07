@@ -41,6 +41,19 @@ class Example(BasePlugin):
     def example(self):
         self.plugin_init()
 
+    def update_version_check(self):
+        """
+            @return True if new versions of this software have been found.
+        """
+
+    def update_version(self):
+        """
+            This function needs to return an updated VersionsFile, which will
+                be written to disk. There are APIs on common.update_api which can
+                be used.
+            @return updated VersionsFile
+        """
+
     # there is a plethora of functions to override in BasePlugin and BaseInternalPlugin.
 
 def load():
