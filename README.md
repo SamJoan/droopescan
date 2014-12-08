@@ -47,16 +47,16 @@ python droopescan.py --help
 python droopescan.py scan --help
 </pre>
 
-# Features.
+# Why droopescan?
 
-* Fast, multi-threaded scanning. Mass scanning supported out of the box.
+* Fast, multi-threaded scanning. Bulk scanning supported out of the box.
 * Scans for outdated installations, and also themes and plugins.
 * Plugin system which handles not only scanning but also the
 [updating](https://github.com/droope/droopescan/blob/3f7c786b99eef40b53dc3ef541772d66684a20da/plugins/drupal.py#L36-L55)
 of plugins.
 * Support for basic authentication and intercepting proxies.
 
-# Installation
+# Installation.
 
 Installation is as follows:
 
@@ -69,7 +69,8 @@ pip install -r requirements.txt
 
 The master branch always contains the latest version released.
 
-# Scan types.
+# Features.
+## Scan types.
 
 Droopescan aims to be the most accurate by default, while not overloading the
 target server due to excessive concurrent requests. Due to this, by default, a
@@ -86,7 +87,7 @@ files, returns a list of all possible versions.
 * *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
-# Authentication.
+## Authentication.
 
 The application fully supports `.netrc` files and `http_proxy` environment
 variables. 
@@ -114,7 +115,7 @@ machine secret.google.com
 applications with bad SSL, droopescan allows self-signed or otherwise invalid
 certificates. ˙ ͜ʟ˙
 
-# Output.
+## Output.
 
 This application supports both "standard output", meant for human consumption,
 or JSON, which is more suitable for machine consumption.
@@ -203,7 +204,7 @@ as shown above.
     {"host": "http://localhost/drupal-7.34/", "version": {"is_empty": false, "finds": ["7.34"]}}
 </pre>
 
-# Stats.
+## Stats.
 
 You can get an up to date report on the capabilities of the scanner by running
 the following command
@@ -228,14 +229,32 @@ Functionality available for 'SilverStripe':
     - Enumerate version (up to version X.X.X)
 </pre>
 
-# Contribute & Issues.
+# Contribute.
 
-Pull requests are welcome. Please remember to make your pull requests against
-the develoment branch rather than the master. Issues can be raised on the issue
-tracker here on GitHub.
+## Create your own plugin.
 
-To run tests, some dependencies must be installed. Running the following
-commands will result in them being installed and the tests being ran:
+You can add suport for your favourite CMS. The process is actually quite
+simple, and a lot of information can be glimpsed by viewing the example.py file
+in the plugins/ folder.
+
+This file should serve well as a base for your implementation.
+
+You can create your own module and enable it as follows:
+
+
+
+## Issues & Pull Requests.
+
+Pull requests that create new plugins are welcome provided that maintenance for
+those plugins is done automatically (i.e. the plugins implement
+update_version_check and update_version).
+
+Please remember to make your pull requests against the develoment branch rather
+than the master. Issues can be raised on the issue tracker here on GitHub but
+are not guaranteed to be fixed.
+
+To run automated tests, some dependencies must be installed. Running the
+following commands will result in them being installed and the tests being ran:
 
 <pre>
     apt-get install python-dev libxslt1-dev libxml2-dev python3
@@ -243,6 +262,6 @@ commands will result in them being installed and the tests being ran:
     ./droopescan test
 </pre>
 
-# License.
+## License.
 
-The project is licensed under the GPL license.
+The project is licensed under the GPL license. 
