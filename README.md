@@ -47,7 +47,7 @@ python droopescan.py --help
 python droopescan.py scan --help
 </pre>
 
-# Features.
+# Why droopescan?
 
 * Fast, multi-threaded scanning. Mass scanning supported out of the box.
 * Scans for outdated installations, and also themes and plugins.
@@ -69,7 +69,8 @@ pip install -r requirements.txt
 
 The master branch always contains the latest version released.
 
-# Scan types.
+# Features
+## Scan types.
 
 Droopescan aims to be the most accurate by default, while not overloading the
 target server due to excessive concurrent requests. Due to this, by default, a
@@ -86,7 +87,7 @@ files, returns a list of all possible versions.
 * *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
-# Authentication.
+## Authentication.
 
 The application fully supports `.netrc` files and `http_proxy` environment
 variables. 
@@ -114,7 +115,7 @@ machine secret.google.com
 applications with bad SSL, droopescan allows self-signed or otherwise invalid
 certificates. ˙ ͜ʟ˙
 
-# Output.
+## Output.
 
 This application supports both "standard output", meant for human consumption,
 or JSON, which is more suitable for machine consumption.
@@ -203,7 +204,7 @@ as shown above.
     {"host": "http://localhost/drupal-7.34/", "version": {"is_empty": false, "finds": ["7.34"]}}
 </pre>
 
-# Stats.
+## Stats.
 
 You can get an up to date report on the capabilities of the scanner by running
 the following command
