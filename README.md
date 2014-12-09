@@ -8,7 +8,7 @@ Stable versions can be [downloaded from here](https://github.com/droope/droopesc
 [![Build Status](https://travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan)
 
 <pre>
-debian:~/droopescan# ./droopescan scan drupal -u http://drupal.org/ -n 100
+computer:~/droopescan# ./droopescan scan drupal -u http://drupal.org/ -t 8
 [+] No themes found.                                                            
 
 [+] Possible interesting urls found:
@@ -36,8 +36,30 @@ debian:~/droopescan# ./droopescan scan drupal -u http://drupal.org/ -n 100
     redirect https://www.drupal.org/sites/all/modules/redirect/
     field_collection https://www.drupal.org/sites/all/modules/field_collection/
     diff https://www.drupal.org/sites/all/modules/diff/
+    flag https://www.drupal.org/sites/all/modules/flag/
+    search_api https://www.drupal.org/sites/all/modules/search_api/
+    migrate https://www.drupal.org/sites/all/modules/migrate/
+    honeypot https://www.drupal.org/sites/all/modules/honeypot/
+    facetapi https://www.drupal.org/sites/all/modules/facetapi/
+    jcarousel https://www.drupal.org/sites/all/modules/jcarousel/
+    search_api_db https://www.drupal.org/sites/all/modules/search_api_db/
+    security_review https://www.drupal.org/sites/all/modules/security_review/
+    memcache https://www.drupal.org/sites/all/modules/memcache/
+    views_field_view https://www.drupal.org/sites/all/modules/views_field_view/
+    field_formatter_settings https://www.drupal.org/sites/all/modules/field_formatter_settings/
+    r4032login https://www.drupal.org/sites/all/modules/r4032login/
+    varnish https://www.drupal.org/sites/all/modules/varnish/
+    bueditor https://www.drupal.org/sites/all/modules/bueditor/
+    apachesolr https://www.drupal.org/sites/all/modules/apachesolr/
+    codefilter https://www.drupal.org/sites/all/modules/codefilter/
+    geolocation https://www.drupal.org/sites/all/modules/geolocation/
+    url https://www.drupal.org/sites/all/modules/url/
+    views_content_cache https://www.drupal.org/sites/all/modules/views_content_cache/
+    homebox https://www.drupal.org/sites/all/modules/homebox/
+    fasttoggle https://www.drupal.org/sites/all/modules/fasttoggle/
+    views_litepager https://www.drupal.org/sites/all/modules/views_litepager/
 
-[+] Scan finished (0:01:47.590709 elapsed)
+[+] Scan finished (0:08:11.388810 elapsed)
 </pre>
 
 You can get a full list of options by running:

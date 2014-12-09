@@ -3,9 +3,26 @@ Add;
 nth:
 - Add a handler for KeyboardInterrupt or snakesthatbite.blogspot.co.nz/2010/09/cpython-threading-interrupting.html
 
-Re Updating process:
-    - Implement SS.
-    - Make Drupal update CHANGELOG.
+Notes:
+
+    
+    - Add automatic plugin & theme list generation for SS & Drupal.
+    Drupal:
+        - Add interesting file detection for plugins:
+                            --
+            -> CHANGELOG.txt |
+            -> README.txt    | -- Need to permutate cases. E.g. readme.txt README.txt README.TXT 
+            -> LICENSE.txt   |
+                            --
+
+            -> API.txt
+
+    SilverStripe:
+        http://dev/cms/README.md
+        http://dev/framework/README.md
+
+        http://dev/cms/composer.json  <- reveals SS fw major, sometimes forbidden. Always forbidden, apparently :\
+        http://dev/framework/composer.json
     
 Relevant:
 - https://wappalyzer.com/ -
