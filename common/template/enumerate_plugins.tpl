@@ -6,4 +6,7 @@
 {{/empty}}
 {{#items}}
     {{name}} {{blue}}{{url}}{{endc}}
+    {{#imu}}
+        {{blue}}{{url}}{{endc}}
+    {{/imu}}
 {{/items}}

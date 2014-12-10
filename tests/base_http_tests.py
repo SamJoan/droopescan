@@ -2,7 +2,7 @@ from cement.utils import test
 from common import file_len, base_url, ProgressBar, StandardOutput
 from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor, Future
-from mock import patch, MagicMock
+from mock import patch, MagicMock, ANY
 from plugins.drupal import Drupal
 from common import ScanningMethod, Verb, Enumerate
 from requests.exceptions import ConnectionError
@@ -610,3 +610,42 @@ class BaseHttpTests(BaseTest):
                 pass
 
         assert total_show_progressbar == 2
+
+    @patch.object(Drupal, 'plugins_get', return_value=["this_exists"])
+    def test_enumerate_calls_detect_file(self, m):
+        imu = [('readme.txt', '')]
+        ret_val = 'ret_val'
+        pbu = "sites/all/modules/%s/"
+        self.respond_several(self.base_url + pbu, {403: ["this_exists"]})
+        with patch.object(Drupal, '_enumerate_plugin_if', return_value=ret_val) as epif:
+            result, is_empty = self.scanner.enumerate_plugins(self.base_url, "%s" + pbu, imu=imu)
+
+            epif.assert_called_with(ANY, ANY, ANY, imu)
+            assert result == ret_val
+            assert is_empty == False
+
+    @patch.object(Drupal, 'plugins_get', return_value=["this_exists"])
+    def test_doesnt_call_detect_file_if_no_variable(self, m):
+        pbu = "sites/all/modules/%s/"
+        self.respond_several(self.base_url + pbu, {403: ["this_exists"]})
+        with patch.object(Drupal, '_enumerate_plugin_if') as epif:
+            result, is_empty = self.scanner.enumerate_plugins(self.base_url, "%s" + pbu)
+
+            assert not epif.called
+
+    @patch.object(Drupal, 'plugins_get', return_value=["this_exists"])
+    def test_detect_imu(self, m):
+        readme_imu = ('readme.txt', 'README file.')
+        http_responses_map = {403: ["this_exists/"], 200: ["this_exists/readme.txt"], 404: ["this_exists/LICENSE.txt", "this_exists/API.txt"]}
+        imu = [readme_imu, ('LICENSE.txt', 'License file.'), ('API.txt', 'Contains API documentation for the module.')]
+        found = [{'name': 'this_exists', 'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/'}]
+
+        pbu = "sites/all/modules/%s"
+        self.respond_several(self.base_url + pbu, http_responses_map)
+
+        final_found = self.scanner._enumerate_plugin_if(found, 'head', 4, imu)
+        imu_final = final_found[0]['imu']
+
+        assert len(final_found) == len(found)
+        assert len(imu_final) == 1
+        assert imu_final[0] == {'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/readme.txt', 'description': 'README file.'}

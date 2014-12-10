@@ -19,9 +19,20 @@ class Drupal(BasePlugin):
     module_readme_file = "LICENSE.txt"
 
     interesting_urls = [
-            ("CHANGELOG.txt", "Default changelog file."),
-            ("user/login", "Default admin."),
+            ("CHANGELOG.txt", "Default changelog file"),
+            ("user/login", "Default admin"),
         ]
+
+    interesting_module_urls = [
+        ('CHANGELOG.txt', 'Changelog file'),
+        ('changelog.txt', 'Changelog file'),
+        ('CHANGELOG.TXT', 'Changelog file'),
+        ('README.txt', 'README file'),
+        ('readme.txt', 'README file'),
+        ('README.TXT', 'README file'),
+        ('LICENSE.txt', 'License file'),
+        ('API.txt', 'Contains API documentation for the module')
+    ]
 
     versions_file = "plugins/drupal/versions.xml"
     _update_majors = ['6','7']

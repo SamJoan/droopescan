@@ -84,7 +84,8 @@ class BasePluginInternal(controller.CementBaseController):
         kwargs_plugins = {
             'threads': opts['threads'],
             'verb': opts['verb'],
-            'timeout': opts['timeout']
+            'timeout': opts['timeout'],
+            'imu': getattr(self, 'interesting_module_urls', None)
         }
 
         return dict(kwargs_plugins)
@@ -205,7 +206,6 @@ class BasePluginInternal(controller.CementBaseController):
                             'url': url.rstrip('\n'),
                         })
 
-                        # Process and release memory.
                         if i % 1000 == 0:
                             self._process_results_multisite(results,
                                     functionality, timeout_host)
@@ -382,7 +382,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def enumerate(self, url, base_url_supplied, scanning_method,
             iterator_returning_method, iterator_len, max_iterator=500, threads=10,
-            verb='head', timeout=15, hide_progressbar=False):
+            verb='head', timeout=15, hide_progressbar=False, imu=None):
         '''
             @param url base URL for the website.
             @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
@@ -398,6 +398,8 @@ class BasePluginInternal(controller.CementBaseController):
                 before throwing an exception.
             @param hide_progressbar if true, the progressbar will not be
                 displayed.
+            @param imu Interesting module urls. A list containing tuples in the
+                following format [('readme.txt', 'default readme')].
         '''
         if common.is_string(base_url_supplied):
             base_urls = [base_url_supplied]
@@ -438,7 +440,6 @@ class BasePluginInternal(controller.CementBaseController):
             no_results = True
             found = []
             for future_array in futures:
-
                 if not hide_progressbar:
                     items_progressed += 1
                     p.set(items_progressed, items_total)
@@ -459,29 +460,32 @@ class BasePluginInternal(controller.CementBaseController):
             if not hide_progressbar:
                 p.hide()
 
+        if imu != None and not no_results:
+            found = self._enumerate_plugin_if(found, verb, threads, imu)
+
         return found, no_results
 
     def enumerate_plugins(self, url, base_url, scanning_method='forbidden',
             max_plugins=500, threads=10, verb='head', timeout=15,
-            hide_progressbar=False):
+            hide_progressbar=False, imu=None):
 
         iterator = self.plugins_get
         iterator_len = file_len(self.plugins_file)
 
         return self.enumerate(url, base_url, scanning_method, iterator,
                 iterator_len, max_plugins, threads, verb,
-                timeout, hide_progressbar)
+                timeout, hide_progressbar, imu)
 
     def enumerate_themes(self, url, base_url, scanning_method='forbidden',
             max_plugins=500, threads=10, verb='head', timeout=15,
-            hide_progressbar=False):
+            hide_progressbar=False, imu=None):
 
         iterator = self.themes_get
         iterator_len = file_len(self.themes_file)
 
         return self.enumerate(url, base_url, scanning_method, iterator,
                 iterator_len, max_plugins, threads, verb, timeout,
-                hide_progressbar)
+                hide_progressbar, imu)
 
     def enumerate_interesting(self, url, interesting_urls, threads=10,
             verb='head', timeout=15):
@@ -537,3 +541,35 @@ class BasePluginInternal(controller.CementBaseController):
         r = self.session.get(url + file_url, timeout=timeout)
         return hashlib.md5(r.content).hexdigest()
 
+    def _enumerate_plugin_if(self, found_list, verb, threads, imu_list):
+        """
+            Finds interesting urls within a plugin folder which return 200.
+            @param found_list as returned in self.enumerate. E.g. [{'name': 'this_exists', 'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/'}]
+            @param verb the verb to use.
+            @param threads the number of threads to use.
+            @param imu Interesting module urls.
+        """
+        requests_verb = getattr(self.session, verb)
+        with ThreadPoolExecutor(max_workers=threads) as executor:
+            futures = []
+            for i, found in enumerate(found_list):
+                found_list[i]['imu'] = []
+                for imu in imu_list:
+                    interesting_url = found['url'] + imu[0]
+                    future = executor.submit(requests_verb, interesting_url)
+                    futures.append({
+                        'url': interesting_url,
+                        'future': future,
+                        'description': imu[1],
+                        'i': i
+                    })
+
+            for f in futures:
+                r = f['future'].result()
+                if r.status_code == 200:
+                    found_list[f['i']]['imu'].append({
+                        'url': f['url'],
+                        'description': f['description']
+                    })
+
+        return found_list
