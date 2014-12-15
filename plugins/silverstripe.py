@@ -22,6 +22,12 @@ class SilverStripe(BasePlugin):
             ('/Security/login', 'Administrative interface.')
         ]
 
+    interesting_module_urls = [
+        ('README.md', 'Default README file'),
+        ('LICENSE', 'Default license file'),
+        ('CHANGELOG', 'Default changelog file'),
+    ]
+
     _update_majors = ['3.1', '3.0', '2.4']
     _repo_framework = 'silverstripe/silverstripe-framework/'
     _repo_cms = 'silverstripe/silverstripe-cms/'
