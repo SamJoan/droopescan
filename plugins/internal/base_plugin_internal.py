@@ -1,7 +1,7 @@
 from __future__ import print_function
 from cement.core import handler, controller
 from common import ScanningMethod, ProgressBar, StandardOutput, JsonOutput, \
-        VersionsFile
+        VersionsFile, RequestsLogger
 from common import template, enum_list, dict_combine, base_url, file_len
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -37,7 +37,7 @@ class BasePluginInternal(controller.CementBaseController):
             except AttributeError:
                 return default
 
-    def _general_init(self, output=None, user_agent=None):
+    def _general_init(self, output=None, user_agent=None, debug_requests=False):
         self.session = Session()
 
         # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
@@ -50,6 +50,8 @@ class BasePluginInternal(controller.CementBaseController):
             user_agent = self.DEFAULT_UA
 
         self.session.headers['User-Agent'] = user_agent
+        if debug_requests:
+            self.session = RequestsLogger(self.session)
 
         if not output:
             self.out = StandardOutput()
@@ -72,6 +74,7 @@ class BasePluginInternal(controller.CementBaseController):
         timeout = pargs.timeout
         timeout_host = pargs.timeout_host
         error_log = pargs.error_log
+        debug_requests = pargs.debug_requests
         number = pargs.number if not pargs.number == 'all' else 100000
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
@@ -184,11 +187,15 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             output = StandardOutput(error_log=opts['error_log'])
 
-        self._general_init(output=output)
+        debug_requests = opts['debug_requests']
+        self._general_init(output=output, debug_requests=debug_requests)
+
+        hide_progressbar = True if debug_requests else False
+        if debug_requests:
+            opts['threads'] = 1
 
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)
-
         if 'url_file' in opts:
             with open(opts['url_file']) as url_file:
                 timeout_host = opts['timeout_host']
@@ -220,7 +227,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         else:
             output = self.url_scan(opts['url'], opts, functionality,
-                    enabled_functionality, hide_progressbar=False)
+                    enabled_functionality, hide_progressbar=hide_progressbar)
 
             self.out.result(output, functionality)
 
@@ -443,7 +450,7 @@ class BasePluginInternal(controller.CementBaseController):
                     p.set(items_progressed, items_total)
 
                 r = future_array['future'].result()
-                if r.status_code != 404 and not r.status_code >= 500:
+                if r.status_code in [200, 403]:
                     plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']
 

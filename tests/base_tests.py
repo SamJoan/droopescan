@@ -212,3 +212,28 @@ class BaseTests(BaseTest):
 
         assert standard_out == ""
         assert warn_string in file_output
+
+    def test_debug_requests(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['--url', self.base_url])
+        self.add_argv(['--debug-requests'])
+
+        with patch('common.RequestsLogger._print') as rlp:
+            try:
+                self.app.run()
+            except:
+                pass
+
+            assert rlp.called
+
+    def test_not_debug_requests(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['--url', self.base_url])
+
+        with patch('common.RequestsLogger._print') as rlp:
+            try:
+                self.app.run()
+            except:
+                pass
+
+            assert not rlp.called

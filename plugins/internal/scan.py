@@ -16,20 +16,25 @@ class Scan(controller.CementBaseController):
 
         arguments = [
                 (['-u', '--url'], dict(action='store', help='')),
-                (['-U', '--url-file'], dict(action='store', help='''A file which
-                    contains a list of URLs.''')),
+                (['--debug-requests'], dict(action='store_true', help="""Prints every
+                    HTTP request made and the response returned from the server
+                    for debugging purposes. Disables threading and loading
+                    bars.""", default=False)),
                 (['--enumerate', '-e'], dict(action='store', help='R|' +
                     common.template('help_enumerate.tpl'),
                     choices=common.enum_list(common.Enumerate), default='a')),
                 (['--method'], dict(action='store', help='R|' +
                     common.template('help_method.tpl'), choices=common.enum_list(common.ScanningMethod))),
-                (['--output', '-o'], dict(action='store', help='Output format',
-                    choices=common.enum_list(common.ValidOutputs), default='standard')),
-                (['--error-log'], dict(action='store', help='''A file to store the
-                    errors on.''', default='-')),
+                (['--threads', '-t'], dict(action='store', help='''Number of
+                    threads. Default 4.''', default=4, type=int)),
                 (['--number', '-n'], dict(action='store', help='''Number of
                     words to attempt from the plugin/theme dictionary. Default
                     is 1000. Use -n 'all' to use all available.''', default=1000)),
+                (['--verb'], dict(action='store', help="""The HTTP verb to use;
+                    the default option is head, except for version enumeration
+                    requests, which are always get because we need to get the hash
+                    from the file's contents""", default='head',
+                    choices=common.enum_list(common.Verb))),
                 (['--plugins-base-url'], dict(action='store', help="""Location
                     where the plugins are stored by the CMS. Default is the CMS'
                     default location. First %%s in string will be replaced with
@@ -37,13 +42,12 @@ class Scan(controller.CementBaseController):
                     name. E.g. '%%ssites/all/modules/%%s/'""")),
                 (['--themes-base-url'], dict(action='store', help='''Same as
                     above, but for themes.''')),
-                (['--threads', '-t'], dict(action='store', help='''Number of
-                    threads. Default 1.''', default=4, type=int)),
-                (['--verb'], dict(action='store', help="""The HTTP verb to use;
-                    the default option is head, except for version enumeration
-                    requests, which are always get because we need to get the hash
-                    from the file's contents""", default='head',
-                    choices=common.enum_list(common.Verb))),
+                (['-U', '--url-file'], dict(action='store', help='''A file which
+                    contains a list of URLs.''')),
+                (['--output', '-o'], dict(action='store', help='Output format',
+                    choices=common.enum_list(common.ValidOutputs), default='standard')),
+                (['--error-log'], dict(action='store', help='''A file to store the
+                    errors on.''', default='-')),
                 (['--timeout'], dict(action='store', help="""How long to wait
                     for an HTTP response before timing out (in seconds).""",
                     default=15, type=int)),

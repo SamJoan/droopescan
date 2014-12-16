@@ -128,3 +128,31 @@ class JsonOutput(StandardOutput):
     def result(self, result, functionality=None):
         print(json.dumps(result))
 
+class RequestsLogger():
+
+    _session = None
+
+    def __init__(self, session):
+        """
+            @param session a requests.Session instance.
+        """
+        self._session = session
+
+    def _print(self, method, *args, **kwargs):
+        tpl = '[%s] %s...'
+        print(tpl % (method, args[0]), end='')
+
+        sess_method = getattr(self._session, method)
+        r = sess_method(*args, **kwargs)
+        print(' %s' % (r.status_code))
+
+        return r
+
+    def head(self, *args, **kwargs):
+        return self._print('head', *args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        return self._print('get', *args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        return self._print('post', *args, **kwargs)

@@ -7,15 +7,7 @@ Notes:
 
     
     - Add automatic plugin & theme list generation for SS & Drupal.
-    Drupal:
-        - Add interesting file detection for plugins:
-                            --
-            -> CHANGELOG.txt |
-            -> README.txt    | -- Need to permutate cases. E.g. readme.txt README.txt README.TXT 
-            -> LICENSE.txt   |
-                            --
-
-            -> API.txt
+    - Add docs re `--debug-requests`.
 
     SilverStripe:
         http://dev/cms/README.md
