@@ -1,3 +1,11 @@
+1.11.0
+======
+
+* Improved SS scanning (particularly plugin scanning) a great deal.
+* Added 'interesting module urls' for SS.
+* More documentation.
+* Internal tidy-up.
+
 1.10.0
 ======
 
