@@ -226,6 +226,37 @@ as shown above.
     {"host": "http://localhost/drupal-7.34/", "version": {"is_empty": false, "finds": ["7.34"]}}
 </pre>
 
+## Debug.
+
+When things are not going exactly your way, you can check why by using the
+`--debug-requests` command. 
+
+Some output might look like this:
+
+<pre>
+computer:~/droopescan# ./droopescan scan silverstripe -u http://localhost -n 10 -e p --debug-requests
+[head] http://localhost/framework/... 403
+[head] http://localhost/cms/css/layout.css... 404
+[head] http://localhost/framework/css/UploadField.css... 200
+[head] http://localhost/misc/test/error/404/ispresent.html... 404
+[head] http://localhost/widgetextensions/... 404
+[head] http://localhost/orbit/... 404
+[head] http://localhost/sitemap/... 404
+[head] http://localhost/simplestspam/... 404
+[head] http://localhost/ecommerce_modifier_example/... 404
+[head] http://localhost/silverstripe-hashpath/... 404
+[head] http://localhost/timeline/... 404
+[head] http://localhost/silverstripe-hiddenfields/... 404
+[head] http://localhost/addressable/... 404
+[head] http://localhost/silverstripe-description/... 404
+[+] No plugins found.
+
+[+] Scan finished (0:00:00.058422 elapsed)
+</pre>
+
+There is another argument, `--debug`, which is added automatically by [cement](http://builtoncement.com/) 
+and is not what you want.
+
 ## Stats.
 
 You can get an up to date report on the capabilities of the scanner by running

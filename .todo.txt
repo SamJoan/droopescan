@@ -5,18 +5,9 @@ nth:
 
 Notes:
 
-    
     - Add automatic plugin & theme list generation for SS & Drupal.
-    - Add docs re `--debug-requests`.
     - Does not detect redirect when --method is specified.
 
-    SilverStripe:
-        http://dev/cms/README.md
-        http://dev/framework/README.md
-
-        http://dev/cms/composer.json  <- reveals SS fw major, sometimes forbidden. Always forbidden, apparently :\
-        http://dev/framework/composer.json
-    
 Relevant:
 - https://wappalyzer.com/ -
   http://www.opensourcecms.com/general/cms-marketshare.php
