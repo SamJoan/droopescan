@@ -14,7 +14,7 @@ class Drupal(BasePlugin):
     themes_base_url = ["%ssites/all/themes/%s/",
             "%ssites/default/themes/%s/"]
 
-    folder_url = "misc/"
+    forbidden_url = "misc/"
     regular_file_url = "misc/drupal.js"
     module_readme_file = "LICENSE.txt"
 

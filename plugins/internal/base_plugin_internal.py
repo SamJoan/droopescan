@@ -318,7 +318,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def _determine_scanning_method(self, url, verb, timeout=15):
         requests_verb = getattr(self.session, verb)
-        folder_resp = requests_verb(url + self.folder_url, timeout=timeout)
+        folder_resp = requests_verb(url + self.forbidden_url, timeout=timeout)
         ok_200, reg_url_len = self._determine_ok_200(requests_verb, url, timeout)
         fake_200, fake_200_len = self._determine_fake_200(requests_verb, url, timeout)
 
@@ -414,10 +414,8 @@ class BasePluginInternal(controller.CementBaseController):
 
                 if scanning_method == ScanningMethod.not_found:
                     url_template = base_url + self.module_readme_file
-                    expected_status = 200
                 else:
                     url_template = base_url
-                    expected_status = common.scan_http_status(scanning_method)
 
                 for plugin_name in plugins:
                     plugin_url = url_template % (url, plugin_name)
@@ -445,7 +443,7 @@ class BasePluginInternal(controller.CementBaseController):
                     p.set(items_progressed, items_total)
 
                 r = future_array['future'].result()
-                if r.status_code == expected_status:
+                if r.status_code != 404 and not r.status_code >= 500:
                     plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']
 

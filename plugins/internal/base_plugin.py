@@ -6,7 +6,7 @@ class BasePlugin(BasePluginInternal):
         For documentation regarding these variables, please see
         example.py
     '''
-    folder_url = None
+    forbidden_url = None
     regular_file_url = None
 
     plugins_base_url = None

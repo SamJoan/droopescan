@@ -11,7 +11,7 @@ class SilverStripe(BasePlugin):
     themes_file = 'plugins/silverstripe/wordlists/themes'
     themes_base_url = '%sthemes/%s/'
 
-    folder_url = 'framework/'
+    forbidden_url = 'framework/'
     regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css']
     module_readme_file = 'README.md'
 

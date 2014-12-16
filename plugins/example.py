@@ -18,7 +18,7 @@ class Example(BasePlugin):
     themes_base_url = ["%ssites/all/themes/%s/",
             "%ssites/default/themes/%s/"]
     # a URL which you know is a valid folder
-    folder_url = "misc/"
+    forbidden_url = "misc/"
     # a URL which you know results in a 200 OK. If item is a list, then all
     # items are tested to see if any responds with OK.
     regular_file_url = "misc/drupal.js"

@@ -61,6 +61,23 @@ class BaseHttpTests(BaseTest):
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
+    def test_plugins_ok_or_forbidden(self, m):
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
+            404: ["nonexistant1", "nonexistant2"]})
+
+        self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, ScanningMethod.ok)
+
+        module_name = 'supermodule'
+        expected_module_url = self.scanner.plugins_base_url % (self.base_url,
+                module_name)
+        expected_result = [{'url': expected_module_url, 'name': module_name}]
+        assert result == expected_result, "Should have detected the \
+                'supermodule' module."
+
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "nonexistant2", "supermodule"])
     def test_plugins_not_found(self, m):
         module_file = self.scanner.module_readme_file
         self.respond_several(self.base_url + "sites/all/modules/%s", {200:
@@ -266,7 +283,7 @@ class BaseHttpTests(BaseTest):
         self.add_argv(self.param_plugins)
 
         self.respond_several(self.base_url + "%s", {404:
-            [self.scanner.folder_url, self.scanner.regular_file_url,
+            [self.scanner.forbidden_url, self.scanner.regular_file_url,
                 self.scanner.not_found_url]})
         self.app.run()
 
