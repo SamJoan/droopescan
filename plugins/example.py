@@ -17,17 +17,24 @@ class Example(BasePlugin):
     themes_file = "plugins/drupal/wordlists/themes_1250"
     themes_base_url = ["%ssites/all/themes/%s/",
             "%ssites/default/themes/%s/"]
-    # a URL which you know is a valid folder
+    # a URL which commonly responds with forbidden (most frequently folders, but
+    # could be something else.)
     forbidden_url = "misc/"
     # a URL which you know results in a 200 OK. If item is a list, then all
     # items are tested to see if any responds with OK.
     regular_file_url = "misc/drupal.js"
     # a file which always exists in the modules.
-    module_readme_file = "README.txt"
+    module_common_file = "README.txt"
 
     # a list of tuples that contain on the index 0 a url, and on 1 a description
     # to be shown to the user if the URL replies with 200 found
     interesting_urls = [("CHANGELOG", "This CMS' default changelog 200 OK.")]
+
+    # A list of interesting files which are normally present in modules,
+    # relative to the module's folder.
+    interesting_module_urls = [
+        ('CHANGELOG.txt', 'Changelog file'),
+    ]
 
     # a file which validates against common/versions.xsd for version
     # fingerprinting.

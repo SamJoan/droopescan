@@ -11,7 +11,7 @@ class BasePlugin(BasePluginInternal):
 
     plugins_base_url = None
     plugins_file = None
-    module_readme_file = None
+    module_common_file = None
     themes_base_url = None
     themes_file = None
 

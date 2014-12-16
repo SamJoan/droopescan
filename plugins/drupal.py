@@ -16,7 +16,7 @@ class Drupal(BasePlugin):
 
     forbidden_url = "misc/"
     regular_file_url = "misc/drupal.js"
-    module_readme_file = "LICENSE.txt"
+    module_common_file = "LICENSE.txt"
 
     interesting_urls = [
             ("CHANGELOG.txt", "Default changelog file"),

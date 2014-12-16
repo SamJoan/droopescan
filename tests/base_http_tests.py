@@ -79,7 +79,7 @@ class BaseHttpTests(BaseTest):
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
     def test_plugins_not_found(self, m):
-        module_file = self.scanner.module_readme_file
+        module_file = self.scanner.module_common_file
         self.respond_several(self.base_url + "sites/all/modules/%s", {200:
             ["supermodule/%s" % module_file], 404: ["nonexistant1", "nonexistant2",
                 'supermodule', 'nonexistant1/%s' % module_file, 'nonexistant2/%s' % module_file]})
@@ -90,7 +90,7 @@ class BaseHttpTests(BaseTest):
 
         module_name = 'supermodule'
         expected_module_url = (self.scanner.plugins_base_url % (self.base_url,
-                module_name)) + self.scanner.module_readme_file
+                module_name)) + self.scanner.module_common_file
         expected_result = [{'url': expected_module_url, 'name': module_name}]
         assert result == expected_result, "Should have detected the \
                 'supermodule' module."

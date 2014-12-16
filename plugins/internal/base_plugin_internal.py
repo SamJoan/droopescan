@@ -341,7 +341,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         elif folder_resp.status_code == 404 and ok_200:
             self.out.warn('Known %s folders have returned 404 Not Found. If a module does not have a %s file it will not be detected.' %
-                    (self._meta.label, self.module_readme_file))
+                    (self._meta.label, self.module_common_file))
             return ScanningMethod.not_found
 
         elif folder_resp.status_code == 200 and ok_200:
@@ -413,7 +413,7 @@ class BasePluginInternal(controller.CementBaseController):
                 plugins = iterator_returning_method(max_iterator)
 
                 if scanning_method == ScanningMethod.not_found:
-                    url_template = base_url + self.module_readme_file
+                    url_template = base_url + self.module_common_file
                 else:
                     url_template = base_url
 

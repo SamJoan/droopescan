@@ -13,7 +13,7 @@ class SilverStripe(BasePlugin):
 
     forbidden_url = 'framework/'
     regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css']
-    module_readme_file = 'README.md'
+    module_common_file = 'README.md'
 
     versions_file = 'plugins/silverstripe/versions.xml'
 
