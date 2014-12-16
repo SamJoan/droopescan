@@ -55,6 +55,7 @@ class BaseHttpTests(BaseTest):
         module_name = 'supermodule'
         expected_module_url = self.scanner.plugins_base_url % (self.base_url,
                 module_name)
+
         expected_result = [{'url': expected_module_url, 'name': module_name}]
         assert result == expected_result, "Should have detected the \
                 'supermodule' module."
@@ -90,7 +91,7 @@ class BaseHttpTests(BaseTest):
 
         module_name = 'supermodule'
         expected_module_url = (self.scanner.plugins_base_url % (self.base_url,
-                module_name)) + self.scanner.module_common_file
+                module_name))
         expected_result = [{'url': expected_module_url, 'name': module_name}]
         assert result == expected_result, "Should have detected the \
                 'supermodule' module."

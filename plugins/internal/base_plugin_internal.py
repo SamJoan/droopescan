@@ -5,12 +5,14 @@ from common import ScanningMethod, ProgressBar, StandardOutput, JsonOutput, \
 from common import template, enum_list, dict_combine, base_url, file_len
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from os.path import dirname
 from requests import Session
 import common
 import hashlib
 import requests
 import sys
 import traceback
+
 
 class BasePluginInternal(controller.CementBaseController):
 
@@ -429,11 +431,16 @@ class BasePluginInternal(controller.CementBaseController):
                     future = executor.submit(requests_verb, plugin_url,
                             timeout=timeout)
 
+                    if plugin_url.endswith('/'):
+                        final_url = plugin_url
+                    else:
+                        final_url = dirname(plugin_url) + "/"
+
                     futures.append({
                         'base_url': base_url,
                         'future': future,
                         'plugin_name': plugin_name,
-                        'plugin_url': plugin_url,
+                        'plugin_url': final_url,
                     })
 
             if not hide_progressbar:

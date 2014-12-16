@@ -19,7 +19,7 @@ class SilverStripe(BasePlugin):
 
     interesting_urls = [
             ('framework/docs/en/changelogs/index.md', 'Changelogs, there are other files in same dir, but \'index.md\' is frequently outdated.'),
-            ('/Security/login', 'Administrative interface.')
+            ('Security/login', 'Administrative interface.')
         ]
 
     interesting_module_urls = [
