@@ -77,6 +77,7 @@ python droopescan.py scan --help
 [updating](https://github.com/droope/droopescan/blob/3f7c786b99eef40b53dc3ef541772d66684a20da/plugins/drupal.py#L36-L55)
 of plugins.
 * Support for basic authentication and intercepting proxies.
+* 100% python.
 
 # Installation
 
