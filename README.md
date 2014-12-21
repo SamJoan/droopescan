@@ -9,7 +9,7 @@ Stable versions can be [downloaded from here](https://github.com/droope/droopesc
 
 <pre>
 computer:~/droopescan# ./droopescan scan drupal -u http://drupal.org/ -t 8
-[+] No themes found.
+[+] No themes found.                                                            
 
 [+] Possible interesting urls found:
     Default changelog file. - https://www.drupal.org/CHANGELOG.txt
@@ -105,14 +105,14 @@ This tool is able to perform four kinds of tests:
 listing of all plugins found to be installed in the target host.
 * *Theme checks*: As above, but for themes.
 * *Version checks*: Downloads several files and, based on the checksums of these
-files, returns a list of all possible versions.
+files, returns a list of all possible versions. 
 * *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
 ## Authentication.
 
 The application fully supports `.netrc` files and `http_proxy` environment
-variables.
+variables. 
 
 You can set the `http_proxy` and `https_proxy` variables. These allow you to
 set a parent HTTP proxy, in which you can handle more complex types of
@@ -150,7 +150,7 @@ look as follows (minus the excessive whitespace):
   "themes": {
     "is_empty": true,
     "finds": [
-
+      
     ]
   },
   "interesting urls": {
@@ -188,7 +188,7 @@ look as follows (minus the excessive whitespace):
 </pre>
 
 Some attributes might be missing from the JSON object if parts of the scan are
-not ran.
+not ran. 
 
 This is how multi-site output looks like; each line contains a valid JSON object
 as shown above.
@@ -229,7 +229,7 @@ as shown above.
 ## Debug.
 
 When things are not going exactly your way, you can check why by using the
-`--debug-requests` command.
+`--debug-requests` command. 
 
 Some output might look like this:
 
@@ -254,7 +254,7 @@ computer:~/droopescan# ./droopescan scan silverstripe -u http://localhost -n 10 
 [+] Scan finished (0:00:00.058422 elapsed)
 </pre>
 
-There is another argument, `--debug`, which is added automatically by [cement](http://builtoncement.com/)
+There is another argument, `--debug`, which is added automatically by [cement](http://builtoncement.com/) 
 and is not what you want.
 
 ## Stats.
@@ -340,18 +340,16 @@ Pull requests that create new plugins are welcome provided that maintenance for
 those plugins is done automatically (i.e. the plugins implement
 update_version_check and update_version).
 
-Please remember to make your pull requests against the develoment branch
-rather than the master. Issues can be raised on the issue tracker here
-on GitHub.
+Pull requests are welcome. Please remember to make your pull requests against
+the develoment branch rather than the master. Issues can be raised on the issue
+tracker here on GitHub.
 
 To run tests, some dependencies must be installed. Running the following
 commands will result in them being installed and the tests being ran:
 
 <pre>
-    apt-get install python-dev libxslt1-dev libxml2-dev python3 zlib1g-dev python3-pip python3-dev
+    apt-get install python-dev libxslt1-dev libxml2-dev python3
     pip install -r requirements_test.txt
-    pip3 install -r requirements.txt
-    pip3 install -r requirements_test.txt
     ./droopescan test
 </pre>
 
