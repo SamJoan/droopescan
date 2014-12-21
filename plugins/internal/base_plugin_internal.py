@@ -10,20 +10,12 @@ from requests import Session
 import common
 import hashlib
 import requests
-import signal
 import sys
 import traceback
 
-global shutdown
-shutdown = False
-def handle_interrupt(signal, stack):
-    print("\nShutting down...")
-    global shutdown
-    shutdown = True
-
-signal.signal(signal.SIGINT, handle_interrupt)
 
 class BasePluginInternal(controller.CementBaseController):
+
     requests = None
     out = None
     DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
@@ -180,16 +172,10 @@ class BasePluginInternal(controller.CementBaseController):
     def _process_results_multisite(self, results, functionality, timeout_host):
         for result in results:
             try:
-                if shutdown:
-                    result['future'].cancel()
-                    continue
-
                 output = result['future'].result(timeout=timeout_host)
 
                 output['host'] = result['url']
-                if not shutdown:
-                    self.out.result(output, functionality)
-
+                self.out.result(output, functionality)
             except:
                 exc = traceback.format_exc()
                 self.out.warn(exc, whitespace_strp=False)
@@ -245,13 +231,10 @@ class BasePluginInternal(controller.CementBaseController):
             output = self.url_scan(opts['url'], opts, functionality,
                     enabled_functionality, hide_progressbar=hide_progressbar)
 
-            if not shutdown:
-                self.out.result(output, functionality)
+            self.out.result(output, functionality)
 
-        if not shutdown:
-            self.out.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
-                    str(datetime.now() - time_start))
-
+        self.out.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
+                str(datetime.now() - time_start))
         self.out.close()
 
     def url_scan(self, url, opts, functionality, enabled_functionality,
@@ -469,11 +452,6 @@ class BasePluginInternal(controller.CementBaseController):
             no_results = True
             found = []
             for future_array in futures:
-
-                if shutdown:
-                    future_array['future'].cancel()
-                    continue
-
                 if not hide_progressbar:
                     items_progressed += 1
                     p.set(items_progressed, items_total)
@@ -549,11 +527,6 @@ class BasePluginInternal(controller.CementBaseController):
                         url, file_url=file_url, timeout=timeout)
 
             for file_url in futures:
-
-                if shutdown:
-                    futures[file_url].cancel()
-                    continue
-
                 hashes[file_url] = futures[file_url].result()
 
         version = vf.version_get(hashes)

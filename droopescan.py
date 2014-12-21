@@ -13,7 +13,7 @@ from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
 from common import template
 from plugins import Scan
-import common, sys, signal
+import common, sys
 
 class DroopeScanBase(controller.CementBaseController):
     class Meta:
@@ -35,8 +35,7 @@ class DroopeScan(foundation.CementApp):
 if __name__ == "__main__":
     ds = DroopeScan("DroopeScan",
             plugin_config_dir="./plugins.d",
-            plugin_dir="./plugins",
-            catch_signals=None)
+            plugin_dir="./plugins")
 
     handler.register(Scan)
 
