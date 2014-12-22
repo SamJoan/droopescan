@@ -296,7 +296,7 @@ You can create your own plugin for `Joomla` and enable it as follows:
 
 <pre>
 $ cp plugins/example.py plugins/joomla.py
-$ cp plugins.d/example.conf plugins.d/joomla.py
+$ cp plugins.d/example.conf plugins.d/joomla.conf
 </pre>
 
 You then need to go to `plugins/joomla.py` and change a few things:
