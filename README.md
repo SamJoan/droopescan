@@ -81,7 +81,13 @@ of plugins.
 
 # Installation
 
-Installation is as follows:
+Installation is easy using pip:
+
+<pre>
+pip install droopescan
+</pre>
+
+Manual installation is as follows:
 
 <pre>
 git clone https://github.com/droope/droopescan.git
@@ -90,7 +96,8 @@ pip install -r requirements.txt
 ./droopescan scan --help
 </pre>
 
-The master branch always contains the latest version released.
+The master branch corresponds to the latest release (what is in pypi).
+Development branch is unstable and all pull requests must be made against it.
 
 # Features
 ## Scan types.
@@ -141,7 +148,8 @@ certificates. ˙ ͜ʟ˙
 ## Output.
 
 This application supports both "standard output", meant for human consumption,
-or JSON, which is more suitable for machine consumption.
+or JSON, which is more suitable for machine consumption. This output is stable
+between major versions.
 
 This can be controlled with the `--output` flag. Some sample JSON output would
 look as follows (minus the excessive whitespace):
@@ -297,7 +305,7 @@ You can create your own plugin for `Joomla` and enable it as follows:
 
 <pre>
 $ cp plugins/example.py plugins/joomla.py
-$ cp plugins.d/example.conf plugins.d/joomla.py
+$ cp plugins.d/example.conf plugins.d/joomla.conf
 </pre>
 
 You then need to go to `plugins/joomla.py` and change a few things:
