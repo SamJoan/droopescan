@@ -1,5 +1,7 @@
 Add;
 
+    - https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/
+
 Version 1.x:
 
     - Add automatic plugin & theme list generation for SS & Drupal.

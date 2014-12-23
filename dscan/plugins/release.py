@@ -4,6 +4,7 @@ from common.plugins_util import Plugin, plugins_get
 from distutils.util import strtobool
 from plugins import HumanBasePlugin
 from subprocess import call
+import re
 import sys, tempfile, os
 
 CHANGELOG = 'CHANGELOG'
@@ -81,22 +82,24 @@ class Release(HumanBasePlugin):
             if ok:
                 self.prepend_to_file(CHANGELOG, final)
 
-                # Commit changelog.
-                call(['git', 'add', '.'])
-                call(['git', 'commit', '-m', 'Tagging version \'%s\'' %
-                    version_nb])
+                try:
+                    call(['git', 'add', '.'])
+                    call(['git', 'commit', '-m', 'Tagging version \'%s\'' %
+                        version_nb])
 
-                # Merge stable changes to master.
-                call(['git', 'checkout', 'master'])
-                call(['git', 'merge', 'development'])
+                    call(['git', 'checkout', 'master'])
+                    call(['git', 'merge', 'development'])
 
-                # Tag & push.
-                call(['git', 'tag', version_nb])
-                call('git remote | xargs -l git push --all', shell=True)
-                call('git remote | xargs -l git push --tags', shell=True)
+                    call(['git', 'tag', version_nb])
+                    call('git remote | xargs -l git push --all', shell=True)
+                    call('git remote | xargs -l git push --tags', shell=True)
 
-                # Return to development.
-                call(['git', 'checkout', 'development'])
+                    is_final_release = '^[0-9.]*$'
+                    if re.match(is_final_release, version_nb):
+                        call(['python', 'setup.py', 'sdist', 'upload', '-r', 'pypi'])
+                        call(['python', 'setup.py', 'bdist_wheel', 'upload', '-r', 'pypi'])
+                finally:
+                    call(['git', 'checkout', 'development'])
 
             else:
                 self.error('Canceled by user')

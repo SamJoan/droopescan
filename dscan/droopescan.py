@@ -32,7 +32,7 @@ class DroopeScan(foundation.CementApp):
         label = 'droopescan'
         base_controller = DroopeScanBase
 
-if __name__ == "__main__":
+def main():
     ds = DroopeScan("DroopeScan",
             plugin_config_dir="./plugins.d",
             plugin_dir="./plugins",

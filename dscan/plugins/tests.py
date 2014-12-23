@@ -1,6 +1,7 @@
 from cement.core import handler, controller
 from plugins import HumanBasePlugin
 from subprocess import call
+import os, sys
 
 BASE_FOLDER = '/var/www/drupal/'
 UPDATE_MAJOR = ['6', '7']
@@ -12,14 +13,11 @@ class Tests(HumanBasePlugin):
         stacked_type = 'nested'
         hide = True
 
-        arguments = [
-                (['--integration', '-i'], dict(action='store_true', help='')),
-            ]
-
     @controller.expose(help='', hide=True)
     def default(self):
-        call(['python2', '/usr/local/bin/nosetests'])
-        call(['python3', '/usr/local/bin/nosetests'])
+        env = {'PYTHONPATH': os.getcwd()}
+        call(['python2', '/usr/local/bin/nosetests'], env=env)
+        call(['python3', '/usr/local/bin/nosetests'], env=env)
 
 def load():
     handler.register(Tests)

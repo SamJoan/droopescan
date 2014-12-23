@@ -1,2 +1,6 @@
 *.pyc
 .update-workspace/
+droopescan.egg-info/
+dist/
+.pypirc
+build/
