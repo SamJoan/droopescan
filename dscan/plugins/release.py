@@ -7,11 +7,11 @@ from subprocess import call
 import re
 import sys, tempfile, os
 
-CHANGELOG = 'CHANGELOG'
+CHANGELOG = '../CHANGELOG'
 
 class Release(HumanBasePlugin):
 
-    test_runs_base = ['./droopescan']
+    test_runs_base = ['../droopescan']
 
     test_runs_append = ['-n', '100', '-t', '4']
 
@@ -54,21 +54,17 @@ class Release(HumanBasePlugin):
 
     @controller.expose(help='', hide=True)
     def release(self):
-        # internal sanity checks.
-        tests_passed = call(['./droopescan', 'test']) == 0
+        tests_passed = call(['../droopescan', 'test']) == 0
         if not tests_passed:
             self.error("Unit tests failed... abort.")
             return
 
-        # external sanity checks.
         external_passed = self.scan_external()
         if not external_passed:
             self.error("External scans failed... abort.")
             return
 
-        # final sanity check.
         human_approves = self.confirm("Does that look OK for you?")
-
         if human_approves:
             prev_version_nb = self.read_first_line(CHANGELOG)
             version_nb = self.get_input("Version number (prev %s):" %
