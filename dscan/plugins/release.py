@@ -92,8 +92,8 @@ class Release(HumanBasePlugin):
 
                     is_final_release = '^[0-9.]*$'
                     if re.match(is_final_release, version_nb):
-                        call(['python', 'setup.py', 'sdist', 'upload', '-r', 'pypi'])
-                        call(['python', 'setup.py', 'bdist_wheel', 'upload', '-r', 'pypi'])
+                        call(['python', '../setup.py', 'sdist', 'upload', '-r', 'pypi'])
+                        call(['python', '../setup.py', 'bdist_wheel', 'upload', '-r', 'pypi'])
                 finally:
                     call(['git', 'checkout', 'development'])
 
