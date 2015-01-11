@@ -2,6 +2,7 @@ from cement.core import controller, foundation, backend, handler
 from cement.utils import test
 from common.testutils import decallmethods
 from droopescan import DroopeScan
+from lxml import etree
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
 from plugins import Scan
@@ -127,4 +128,53 @@ class BaseTest(test.CementTestCase):
                 self.respond_several(url_tpl, {403: ['misc/'], 200:
                     ['misc/drupal.js'], 404: [self.scanner.not_found_url]})
 
+    class MockHash():
+        files = None
+        def mock_func(self, *args, **kwargs):
+            url = kwargs['file_url']
+            return self.files[url]
+
+    def mock_xml(self, xml_file, version_to_mock):
+        '''
+            generates all mock data, and patches Drupal.get_hash
+
+            @param xml_file a file, which contains the XML to mock.
+            @param version_to_mock the version which we will pretend to be.
+            @return a function which can be used to mock
+                BasePlugin.enumerate_file_hash
+
+            @usage self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, "7.27")
+        '''
+        with open(xml_file) as f:
+            doc = etree.fromstring(f.read())
+            files_xml = doc.xpath('//cms/files/file')
+
+            files = {}
+            for file in files_xml:
+                url = file.get('url')
+                versions = file.xpath('version')
+                for file_version in versions:
+                    version_number = file_version.get('nb')
+                    md5 = file_version.get('md5')
+
+                    if version_number == version_to_mock:
+                        files[url] = md5
+
+                if not url in files:
+                    files[url] = '5d41402abc4b2a76b9719d911017c592'
+
+            ch_xml = doc.find('./files/changelog')
+            if ch_xml is not None:
+                ch_url = ch_xml.get('url')
+                ch_versions = ch_xml.findall('./version')
+                for ch_version in ch_versions:
+                    ch_nb = ch_version.get('nb')
+                    if ch_nb == version_to_mock:
+                        files[ch_url] = ch_version.get('md5')
+
+        mock_hash = self.MockHash()
+        mock_hash.files = files
+        mock = MagicMock(side_effect=mock_hash.mock_func)
+
+        return mock
 
