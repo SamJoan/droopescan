@@ -1,9 +1,8 @@
 Add;
 
-    
-
 Version 1.x:
 
+    - Add multisite integration test to integration tests.
     - Add automatic plugin & theme list generation for SS & Drupal.
     - Does not detect redirect when --method is specified. This is important because it fucks with some SS websites! very important SS websites.
     - Add Ctrl + C handling to interesting URLs.

@@ -48,7 +48,8 @@ class Tests(HumanBasePlugin):
             call_base = ['/usr/local/bin/nosetests']
 
             if with_coverage:
-                call_base += ['--with-coverage', '--cover-package', 'dscan']
+                call_base += ['--with-coverage', '--cover-package', 'dscan',
+                        '--cover-inclusive', '--cover-html']
 
             call(['python2'] + call_base, env=env)
             call(['python3'] + call_base, env=env)
