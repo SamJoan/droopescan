@@ -364,6 +364,12 @@ commands will result in them being installed and the tests being ran:
     ./droopescan test
 </pre>
 
+You can run individual tests with the `-s` flag.
+
+<pre>
+./droopescan test -s test_integration_drupal
+</pre>
+
 # License.
 
 The project is licensed under the GPL license.
