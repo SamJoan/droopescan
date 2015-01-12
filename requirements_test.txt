@@ -3,3 +3,4 @@ nose
 responses
 lxml
 BeautifulSoup4
+coverage

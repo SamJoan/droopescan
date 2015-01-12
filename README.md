@@ -359,8 +359,7 @@ commands will result in them being installed and the tests being ran:
 <pre>
     apt-get install python-dev libxslt1-dev libxml2-dev python3 zlib1g-dev python3-pip python3-dev
     pip install -r requirements_test.txt
-    pip3 install -r requirements.txt
-    pip3 install -r requirements_test.txt
+    pip3 install -r requirements.txt -r requirements_test.txt
     ./droopescan test
 </pre>
 

@@ -1,6 +1,9 @@
 from cement.utils import test
 from common.testutils import decallmethods
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 from requests.exceptions import ConnectionError
 from tests import BaseTest
 import json
@@ -20,7 +23,8 @@ class Capture(list):
 @decallmethods(responses.activate)
 class IntegrationTests(BaseTest):
     '''
-        Tests related to version fingerprinting for all plugins.
+        End-to-end tests for droopescan. These should not make any external
+        requests.
     '''
 
     def setUp(self):

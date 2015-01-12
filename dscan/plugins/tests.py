@@ -29,15 +29,29 @@ class Tests(HumanBasePlugin):
         arguments = [
             (['-s', '--single-test'], dict(action='store', help='Name of test to run',
                 required=False, default=None)),
+            (['-c', '--with-coverage'], dict(action='store_true', help='Do test coverage',
+                required=False, default=False)),
+
         ]
 
     @controller.expose(help='', hide=True)
     def default(self):
         env = {'PYTHONPATH': os.getcwd()}
         single_test = self.app.pargs.single_test
+        with_coverage = self.app.pargs.with_coverage
+
+        if single_test and with_coverage:
+            self.error('Cannot run with both -c and -s.')
+
         if not single_test:
-            call(['python2', '/usr/local/bin/nosetests'], env=env)
-            call(['python3', '/usr/local/bin/nosetests'], env=env)
+
+            call_base = ['/usr/local/bin/nosetests']
+
+            if with_coverage:
+                call_base += ['--with-coverage', '--cover-package', 'dscan']
+
+            call(['python2'] + call_base, env=env)
+            call(['python3'] + call_base, env=env)
         else:
             test_file = recursive_grep('tests/', single_test)
             if test_file:
