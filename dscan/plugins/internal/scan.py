@@ -1,5 +1,6 @@
 from __future__ import print_function
 from cement.core import controller
+from common import template
 import common
 
 class Scan(controller.CementBaseController):
@@ -13,6 +14,7 @@ class Scan(controller.CementBaseController):
         epilog = "\n"
 
         argument_formatter = common.SmartFormatter
+        epilog = template("help_epilog.tpl")
 
         arguments = [
                 (['-u', '--url'], dict(action='store', help='')),
@@ -54,4 +56,8 @@ class Scan(controller.CementBaseController):
                 (['--timeout-host'], dict(action='store', help="""Maximum time
                     to spend per host (in seconds).""", default=450, type=int)),
             ]
+
+    @controller.expose(hide=True)
+    def default(self):
+        raise RuntimeError(self.app.args.format_help())
 

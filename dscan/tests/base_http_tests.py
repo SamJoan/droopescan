@@ -405,6 +405,9 @@ class BaseHttpTests(BaseTest):
 
         self.assert_args_contains(enum, 0, base_url_https)
 
+    def test_redirect_with_method(self):
+        assert False
+
     def test_redirect_is_detected(self):
         base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
 

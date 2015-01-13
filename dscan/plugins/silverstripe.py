@@ -39,6 +39,10 @@ class SilverStripe(BasePlugin):
     def silverstripe(self):
         self.plugin_init()
 
+    @controller.expose(help='alias for "silverstripe"')
+    def ss(self):
+        self.silverstripe()
+
     def update_version_check(self):
         """
             @return True if new tags have been made in the github repository.
