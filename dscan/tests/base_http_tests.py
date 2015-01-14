@@ -24,6 +24,7 @@ class BaseHttpTests(BaseTest):
         super(BaseHttpTests, self).setUp()
         self.add_argv(["scan", "drupal"])
         self._init_scanner()
+        responses.add(responses.HEAD, self.base_url, status=200)
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
@@ -396,6 +397,7 @@ class BaseHttpTests(BaseTest):
         assert warn.called
 
     def test_redirect_changes_url(self):
+        responses.reset()
         self.add_argv(['--url', self.base_url, '--enumerate', 'p'])
 
         # Trigger redirect:
@@ -410,6 +412,7 @@ class BaseHttpTests(BaseTest):
         self.assert_args_contains(enum, 0, self.base_url_https)
 
     def test_redirect_with_method(self):
+        responses.reset()
         self.add_argv(['--url', self.base_url, '--method', 'not_found',
             '--enumerate', 'p'])
 
@@ -424,6 +427,7 @@ class BaseHttpTests(BaseTest):
         self.assert_args_contains(enum, 0, self.base_url_https)
 
     def test_redirect_is_detected(self):
+        responses.reset()
         self.respond_several(self.base_url + "%s", {301: [""]},
                 headers={'location': self.base_url_https})
 
@@ -433,6 +437,7 @@ class BaseHttpTests(BaseTest):
         assert result == self.base_url_https
 
     def test_redirect_relative_path(self):
+        responses.reset()
         redirect_vals = {
             '/': self.base_url,
             '/relative': self.base_url + 'relative',
@@ -450,6 +455,7 @@ class BaseHttpTests(BaseTest):
             responses.reset()
 
     def test_redirect_relpath_relative_to_dir(self):
+        responses.reset()
         bu = self.base_url + 'drupal/'
         redirect_vals = {
             '/': self.base_url,
@@ -469,12 +475,6 @@ class BaseHttpTests(BaseTest):
 
     @patch.object(common.StandardOutput, 'warn')
     def test_invalid_url_file_warns(self, warn):
-        """
-            Test that when using a URL file, instead of throwing a fatal
-            exception, a warning is given.
-
-            Temporarilly test that an exception is thrown.
-        """
         invalid_url_file = 'tests/resources/url_file_invalid.txt'
         self.add_argv(['--url-file', invalid_url_file])
 
