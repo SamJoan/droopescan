@@ -262,7 +262,8 @@ class BasePluginInternal(controller.CementBaseController):
         url = common.validate_url(url, self.out)
         url = self.determine_redirect(url, opts['verb'], opts['timeout'])
 
-        if self.can_enumerate_plugins or self.can_enumerate_themes:
+        need_sm = opts['enumerate'] in ['a', 'p', 't']
+        if need_sm and (self.can_enumerate_plugins or self.can_enumerate_themes):
             scanning_method = opts['method']
             if not scanning_method:
                 scanning_method = self.determine_scanning_method(url,

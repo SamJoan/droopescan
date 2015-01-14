@@ -279,8 +279,15 @@ class BaseHttpTests(BaseTest):
 
         assert scanning_method == ScanningMethod.ok
 
-    def test_no_determine_if_no_enumerate(self):
-        assert False
+    def test_no_determine_if_not_needed(self):
+        self.add_argv(['--url', self.base_url, '-e', 'v'])
+
+        self.mock_all_enumerate('drupal')
+        dsm = self.mock_controller('drupal', 'determine_scanning_method')
+
+        self.app.run()
+
+        assert not dsm.called
 
     @test.raises(RuntimeError)
     def test_not_cms(self):

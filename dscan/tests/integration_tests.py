@@ -73,7 +73,11 @@ class IntegrationTests(BaseTest):
             self.app.run()
 
         json_raw = out[0]
-        j = json.loads(json_raw)
+        try:
+            j = json.loads(json_raw)
+        except:
+            print(json_raw)
+            raise
 
         assert len(j['interesting urls']['finds']) == 2
         assert len(j['plugins']['finds']) == 18
