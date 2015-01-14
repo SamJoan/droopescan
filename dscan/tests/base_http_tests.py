@@ -24,7 +24,6 @@ class BaseHttpTests(BaseTest):
         super(BaseHttpTests, self).setUp()
         self.add_argv(["scan", "drupal"])
         self._init_scanner()
-        responses.add(responses.HEAD, self.base_url, status=200)
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
@@ -202,7 +201,7 @@ class BaseHttpTests(BaseTest):
         self.add_argv(['--url', self.base_url[:-1], '--enumerate', 'p'])
 
         # Mock return value so as not to trigger redirects.
-        m = self.mock_controller('drupal', '_determine_scanning_method',
+        m = self.mock_controller('drupal', 'determine_scanning_method',
                 side_effect=["forbidden"])
 
         self.mock_controller('drupal', 'enumerate_plugins')
@@ -275,7 +274,7 @@ class BaseHttpTests(BaseTest):
             "misc/drupal.js"], 404: ["misc/drupal_old.js",
                 self.scanner.not_found_url]})
 
-        scanning_method = self.scanner._determine_scanning_method(self.base_url,
+        scanning_method = self.scanner.determine_scanning_method(self.base_url,
                 'head')
 
         assert scanning_method == ScanningMethod.ok
@@ -297,6 +296,7 @@ class BaseHttpTests(BaseTest):
         self.add_argv(["--method", "forbidden"])
         self.add_argv(['--verb', 'get'])
 
+        responses.add(responses.GET, self.base_url, status=200)
         p = self.mock_controller('drupal', 'enumerate_plugins')
 
         self.app.run()
@@ -327,6 +327,7 @@ class BaseHttpTests(BaseTest):
         self.add_argv(self.param_plugins)
         self.add_argv(['--verb', 'get'])
 
+        responses.add(responses.GET, self.base_url, status=200)
         responses.add(responses.GET, self.base_url + "misc/")
         responses.add(responses.GET, self.base_url + "misc/drupal.js")
         responses.add(responses.GET, self.base_url + self.scanner.not_found_url,
@@ -371,6 +372,8 @@ class BaseHttpTests(BaseTest):
         path = self.scanner.interesting_urls[0][0]
         description = self.scanner.interesting_urls[0][1]
         interesting_url = self.base_url + path
+
+        responses.add(responses.GET, self.base_url, status=200)
 
         urls_200 = [x[0] for x in self.scanner.interesting_urls]
         self.respond_several(self.base_url + "%s", {200:

@@ -369,14 +369,11 @@ class BasePluginInternal(controller.CementBaseController):
 
             return ScanningMethod.ok
         else:
-            self._error_determine_scanning(url, folder_resp, folder_redirect, ok_200)
+            self._error_determine_scanning(url, folder_resp, ok_200)
 
-    def _error_determine_scanning(self, url, folder_resp, folder_redirect, ok_200):
-        loc = folder_resp.headers['location'] if folder_redirect else 'not present as not a redirect'
+    def _error_determine_scanning(self, url, folder_resp, ok_200):
         ok_human = '200 status' if ok_200 else 'not found status'
-        info = '''Expected folder returned status '%s' (location header
-            %s), expected file returned %s.''' % (folder_resp.status_code,
-            loc, ok_human)
+        info = '''Expected folder returned status '%s', expected file returned %s.''' % (folder_resp.status_code, ok_human)
 
         self.out.warn(info)
         self.out.fatal('It is possible that ''%s'' is not running %s. If you disagree, please specify a --method.' % (url, self._meta.label))
