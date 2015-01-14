@@ -55,9 +55,7 @@ class Tests(HumanBasePlugin):
             call(['python3'] + call_base, env=env)
         else:
             test_file = recursive_grep('tests/', single_test)
-            if test_file:
-                self.msg('Test found on file "%s".' % test_file)
-            else:
+            if not test_file:
                 self.error('No test found with name "%s"' % single_test)
 
             appendix = 'tests.py'

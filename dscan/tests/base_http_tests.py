@@ -279,6 +279,9 @@ class BaseHttpTests(BaseTest):
 
         assert scanning_method == ScanningMethod.ok
 
+    def test_no_determine_if_no_enumerate(self):
+        assert False
+
     @test.raises(RuntimeError)
     def test_not_cms(self):
         self.add_argv(self.param_plugins)
@@ -396,28 +399,38 @@ class BaseHttpTests(BaseTest):
         self.add_argv(['--url', self.base_url, '--enumerate', 'p'])
 
         # Trigger redirect:
-        base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
-        m = self.mock_controller('drupal', '_determine_scanning_method',
-                side_effect=[base_url_https, 'forbidden'])
+        dr = self.mock_controller('drupal', 'determine_redirect',
+                return_value=self.base_url_https)
+        self.mock_controller('drupal', 'determine_scanning_method',
+                return_value=ScanningMethod.not_found)
 
         enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
         self.app.run()
 
-        self.assert_args_contains(enum, 0, base_url_https)
+        self.assert_args_contains(enum, 0, self.base_url_https)
 
     def test_redirect_with_method(self):
-        assert False
+        self.add_argv(['--url', self.base_url, '--method', 'not_found',
+            '--enumerate', 'p'])
+
+        # Trigger redirect:
+        dr = self.mock_controller('drupal', 'determine_redirect',
+                return_value=self.base_url_https)
+
+        enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
+        self.app.run()
+
+        assert dr.called
+        self.assert_args_contains(enum, 0, self.base_url_https)
 
     def test_redirect_is_detected(self):
-        base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
+        self.respond_several(self.base_url + "%s", {301: [""]},
+                headers={'location': self.base_url_https})
 
-        self.respond_several(self.base_url + "%s", {301: ["misc/",
-            "misc/drupal.js"], 404: [self.scanner.not_found_url]}, headers={'location': base_url_https})
-
-        result = self.scanner._determine_scanning_method(self.base_url,
+        result = self.scanner.determine_redirect(self.base_url,
                 Verb.head)
 
-        assert result == base_url_https
+        assert result == self.base_url_https
 
     def test_redirect_relative_path(self):
         redirect_vals = {
@@ -426,44 +439,33 @@ class BaseHttpTests(BaseTest):
             'relative': self.base_url + 'relative',
         }
 
-        side_effect_list = []
-        for relative_url in redirect_vals:
-            side_effect_list.append(relative_url)
-            side_effect_list.append('forbidden')
+        for i in redirect_vals:
+            responses.add(responses.HEAD, self.base_url,
+                    status=301, adding_headers={'location': i})
 
-        m = self.mock_controller('drupal', '_determine_scanning_method',
-                side_effect=side_effect_list)
+            ru = self.scanner.determine_redirect(self.base_url, 'head')
 
-        self.scanner._determine_scanning_method = MagicMock(side_effect=side_effect_list)
+            assert ru == redirect_vals[i]
+
+            responses.reset()
+
+    def test_redirect_relpath_relative_to_dir(self):
+        bu = self.base_url + 'drupal/'
+        redirect_vals = {
+            '/': self.base_url,
+            '/relative': self.base_url + 'relative',
+            'relative': bu + 'relative',
+        }
 
         for i in redirect_vals:
-            result = self.scanner.determine_scanning_method(self.base_url,
-                    Verb.head)
+            responses.add(responses.HEAD, bu,
+                    status=301, adding_headers={'location': i})
 
-            expected_result = ('forbidden', redirect_vals[i])
-            assert result == expected_result
+            ru = self.scanner.determine_redirect(bu, 'head')
 
-    def test_redirect_relative_does_not_crash(self):
-        relative_redir = '/relative'
+            assert ru == redirect_vals[i]
 
-        self.respond_several(self.base_url + "%s", {301: ["misc/",
-            "misc/drupal.js"], 404: [self.scanner.not_found_url]}, headers={'location': relative_redir})
-
-        result = self.scanner._determine_scanning_method(self.base_url, 'head')
-
-        assert result == relative_redir
-
-    @test.raises(RuntimeError)
-    def test_redirect_once_max(self):
-        self.add_argv(['--url', self.base_url, '--enumerate', 'p'])
-
-        # Trigger redirect twice.
-        base_url_https = 'https://www.adhwuiaihduhaknbacnckajcwnncwkakncw.com/'
-        m = self.mock_controller('drupal', '_determine_scanning_method',
-                side_effect=[base_url_https, base_url_https])
-
-        enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
-        self.app.run()
+            responses.reset()
 
     @patch.object(common.StandardOutput, 'warn')
     def test_invalid_url_file_warns(self, warn):

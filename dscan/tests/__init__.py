@@ -13,6 +13,7 @@ class BaseTest(test.CementTestCase):
     scanner = None
 
     base_url = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
+    base_url_https = "https://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
     valid_file = 'tests/resources/url_file_valid.txt'
 
     param_base = ["--url", base_url, '-n', '10']
