@@ -23,6 +23,12 @@ def handle_interrupt(signal, stack):
 
 signal.signal(signal.SIGINT, handle_interrupt)
 
+# https://github.com/kennethreitz/requests/issues/2214
+try:
+    requests.packages.urllib3.disable_warnings()
+except:
+    pass
+
 class BasePluginInternal(controller.CementBaseController):
     requests = None
     out = None
