@@ -84,6 +84,7 @@ of plugins.
 Installation is easy using pip:
 
 <pre>
+apt-get install python-pip
 pip install droopescan
 </pre>
 
