@@ -107,8 +107,14 @@ class Release(HumanBasePlugin):
 
                     is_final_release = '^[0-9.]*$'
                     if re.match(is_final_release, version_nb):
-                        c(['python', '../setup.py', 'sdist', 'upload', '-r', 'pypi'])
-                        c(['python', '../setup.py', 'bdist_wheel', 'upload', '-r', 'pypi'])
+                        pypi_repo = 'pipy'
+                    else:
+                        pypi_repo = 'test'
+
+                    c(['python', '../setup.py', 'sdist', 'upload', '-r',
+                        pypi_repo])
+                    c(['python', '../setup.py', 'bdist_wheel', 'upload', '-r',
+                        pypi_repo])
                 finally:
                     c(['git', 'checkout', 'development'])
 
