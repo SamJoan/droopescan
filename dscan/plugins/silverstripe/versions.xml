@@ -139,6 +139,7 @@
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.7" />
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.8" />
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.9-rc1" />
+      <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.9" />
     </file>
     <file url="framework/javascript/HtmlEditorField.js">
       <version md5="255ea83eb97ed9634eae66326fb5ec20" nb="3.0.0" />
@@ -260,6 +261,7 @@
       <version md5="964a5d044ba95792b49456f8b266bbab" nb="3.1.7" />
       <version md5="964a5d044ba95792b49456f8b266bbab" nb="3.1.8" />
       <version md5="964a5d044ba95792b49456f8b266bbab" nb="3.1.9-rc1" />
+      <version md5="964a5d044ba95792b49456f8b266bbab" nb="3.1.9" />
     </file>
     <file url="framework/css/AssetUploadField.css">
       <version md5="78fa54480405595296ea61da2b33c42b" nb="3.0.0" />
@@ -319,6 +321,7 @@
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.7" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.8" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.9-rc1" />
+      <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.9" />
     </file>
     <file url="framework/css/UploadField.css">
       <version md5="2de8e72eb87b371b61b5204c61a2c3d0" nb="3.0.0" />
@@ -378,6 +381,7 @@
       <version md5="5735ae836a12809611fb4a0f010920ea" nb="3.1.7" />
       <version md5="5735ae836a12809611fb4a0f010920ea" nb="3.1.8" />
       <version md5="5735ae836a12809611fb4a0f010920ea" nb="3.1.9-rc1" />
+      <version md5="5735ae836a12809611fb4a0f010920ea" nb="3.1.9" />
     </file>
   </files>
 </cms>
