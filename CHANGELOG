@@ -1,3 +1,10 @@
+1.18.0
+======
+
+* Improved SS detection for new reported bug.
+* Improve stats.
+* Remove relative redirects or same-site redirects.
+
 1.13.0
 ======
 
