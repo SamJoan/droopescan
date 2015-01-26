@@ -1,6 +1,6 @@
 <cms>
   <files>
-    <file url="/framework/CONTRIBUTING.md">
+    <file url="framework/CONTRIBUTING.md">
       <version md5="a0c1db6fa2f9b459d8451ab1357c854a" nb="3.1.0" />
       <version md5="a0c1db6fa2f9b459d8451ab1357c854a" nb="3.1.3" />
       <version md5="a0c1db6fa2f9b459d8451ab1357c854a" nb="3.1.2" />
