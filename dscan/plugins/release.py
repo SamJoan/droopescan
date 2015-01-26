@@ -29,11 +29,9 @@ class Release(HumanBasePlugin):
 
     class Meta:
         label = 'release'
-        stacked_on = 'base'
-        stacked_type = 'nested'
         hide = True
         arguments = [
-            (['-s', '--skip-external'], dict(action='store', help='Skip external tests.',
+            (['-s', '--skip-external'], dict(action='store_true', help='Skip external tests.',
                 required=False, default=False)),
         ]
 
