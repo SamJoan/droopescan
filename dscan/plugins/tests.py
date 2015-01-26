@@ -42,16 +42,19 @@ class Tests(HumanBasePlugin):
         if single_test and with_coverage:
             self.error('Cannot run with both -c and -s.')
 
+        exit = 0
         if not single_test:
-
             call_base = ['/usr/local/bin/nosetests']
 
             if with_coverage:
                 call_base += ['--with-coverage', '--cover-package', 'dscan',
                         '--cover-inclusive', '--cover-html']
 
-            call(['python2'] + call_base, env=env)
-            call(['python3'] + call_base, env=env)
+            e1 = call(['python2'] + call_base, env=env)
+            e2 = call(['python3'] + call_base, env=env)
+            if e1 != 0 or e2 != 0:
+                exit = 1
+
         else:
             test_file = recursive_grep('tests/', single_test)
             if not test_file:
@@ -64,7 +67,9 @@ class Tests(HumanBasePlugin):
 
             test = 'tests.%s_tests:%sTests.%s' % (underscore, upper, single_test)
 
-            call(['python', '/usr/local/bin/nosetests', '--nocapture', test], env=env)
+            exit = call(['python', '/usr/local/bin/nosetests', '--nocapture', test], env=env)
+
+        sys.exit(exit)
 
 def load():
     handler.register(Tests)

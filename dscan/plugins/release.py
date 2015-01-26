@@ -30,6 +30,8 @@ class Release(HumanBasePlugin):
     class Meta:
         label = 'release'
         hide = True
+        stacked_on = 'base'
+        stacked_type = 'nested'
         arguments = [
             (['-s', '--skip-external'], dict(action='store_true', help='Skip external tests.',
                 required=False, default=False)),
@@ -65,7 +67,7 @@ class Release(HumanBasePlugin):
         return all_ok
 
     @controller.expose(help='', hide=True)
-    def release(self):
+    def default(self):
         skip_external = self.app.pargs.skip_external
 
         tests_passed = call(['../droopescan', 'test']) == 0

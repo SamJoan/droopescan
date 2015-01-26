@@ -21,7 +21,7 @@ setup(
     include_package_data=True,
     license='GPL',
     long_description=(read('CHANGELOG')),
-    packages=find_packages('.', exclude='tests'),
+    packages=find_packages('.', exclude=['tests', '.update-workspace']),
     url='http://github.com/droope/droopescan/',
     scripts=['droopescan'],
     classifiers=[
