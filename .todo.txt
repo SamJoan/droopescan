@@ -5,7 +5,6 @@ Version 1.x:
     - Add multisite integration test to integration tests.
     - Add automatic plugin & theme list generation for SS & Drupal.
     - Remove .update-workspace prior to release ;$
-    - Prevent --skip-external from showing when --help on droopescan.
     - Add a flag to prevent detection of redirection. This is important for some websites.
     - Add Ctrl + C handling to interesting URLs.
 
