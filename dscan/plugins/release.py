@@ -111,10 +111,10 @@ class Release(HumanBasePlugin):
                     else:
                         pypi_repo = 'test'
 
-                    c(['python', '../setup.py', 'sdist', 'upload', '-r',
-                        pypi_repo])
-                    c(['python', '../setup.py', 'bdist_wheel', 'upload', '-r',
-                        pypi_repo])
+                    c(['python', 'setup.py', 'sdist', 'upload', '-r',
+                        pypi_repo], cwd='..')
+                    c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r',
+                        pypi_repo], cwd='..')
                 finally:
                     c(['git', 'checkout', 'development'])
 
