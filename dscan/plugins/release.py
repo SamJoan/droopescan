@@ -79,7 +79,7 @@ class Release(HumanBasePlugin):
                 self.prepend_to_file(CHANGELOG, final)
 
                 try:
-                    call(['git', 'add', '.'])
+                    call(['git', 'add', '..'])
                     call(['git', 'commit', '-m', 'Tagging version \'%s\'' %
                         version_nb])
 
