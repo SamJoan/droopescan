@@ -1,3 +1,16 @@
+1.14.0-rc
+=========
+
+* Fix release script.
+
+1.13.0
+======
+
+* Support for SS 3.9.
+* Remove super annoying warning by urllib3.
+* Usability improvements.
+* Add integration tests which should pick up on most issues.
+
 1.12.0
 ======
 

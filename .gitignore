@@ -4,3 +4,5 @@ droopescan.egg-info/
 dist/
 .pypirc
 build/
+dscan/.coverage
+dscan/cover

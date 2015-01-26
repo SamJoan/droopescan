@@ -23,6 +23,12 @@ def handle_interrupt(signal, stack):
 
 signal.signal(signal.SIGINT, handle_interrupt)
 
+# https://github.com/kennethreitz/requests/issues/2214
+try:
+    requests.packages.urllib3.disable_warnings()
+except:
+    pass
+
 class BasePluginInternal(controller.CementBaseController):
     requests = None
     out = None
@@ -258,14 +264,16 @@ class BasePluginInternal(controller.CementBaseController):
 
     def url_scan(self, url, opts, functionality, enabled_functionality,
             hide_progressbar):
-        url = common.validate_url(url, self.out)
 
-        if self.can_enumerate_plugins or self.can_enumerate_themes:
+        url = common.validate_url(url, self.out)
+        url = self.determine_redirect(url, opts['verb'], opts['timeout'])
+
+        need_sm = opts['enumerate'] in ['a', 'p', 't']
+        if need_sm and (self.can_enumerate_plugins or self.can_enumerate_themes):
             scanning_method = opts['method']
             if not scanning_method:
-                scanning_method, url = self.determine_scanning_method(url,
+                scanning_method = self.determine_scanning_method(url,
                         opts['verb'], opts['timeout'])
-
         else:
             scanning_method = None
 
@@ -288,37 +296,36 @@ class BasePluginInternal(controller.CementBaseController):
 
         return result
 
-    def determine_scanning_method(self, url, verb, timeout=15):
+    def determine_redirect(self, url, verb, timeout=15):
         """
-            @param url the URL to determine scanning based on.
+            @param url the url to check
             @param verb the verb, e.g. head, or get.
-            @return scanning_method, url. This is because in case of redirects,
-                a new URL may be returned.
+            @param timeout the time, in seconds, that requests should wait
+                before throwing an exception.
+            @return the url that needs to be scanned. It may be equal to the url
+                parameter if no redirect is needed.
         """
-        scanning_method = self._determine_scanning_method(url, verb, timeout)
+        requests_verb = getattr(self.session, verb)
+        r = requests_verb(url, timeout=timeout)
 
-        redirected = scanning_method not in enum_list(ScanningMethod)
-        if redirected:
+        redirect = 300 <= r.status_code < 400
+        url_new = None
+        if redirect:
+            redirect_url = url_new = r.headers['Location']
 
-            # Detect relative redirects.
-            new_url = scanning_method
-            redirect_is_relative = 'http' not in new_url
-            if redirect_is_relative:
-                new_url = url + (new_url.lstrip('/'))
+            relative_redirect = 'http' not in redirect_url
+            if relative_redirect:
+                relative_to_root = redirect_url.startswith('/')
+                if relative_to_root:
+                    base_url_orig = base_url(url)
+                    url_new = base_url_orig + redirect_url[1:]
+                else:
+                    url_new = url + redirect_url
 
-            scanning_method = self._determine_scanning_method(new_url, verb,
-                    timeout)
-
-            # We will tolerate 1 redirect.
-            redirected_again = scanning_method not in enum_list(ScanningMethod)
-            if redirected_again:
-                self.out.fatal("""Could not identify as got redirected twice, first
-                    to '%s' and then to '%s'""" % (new_url, scanning_method))
-
+        if url_new:
+            return url_new
         else:
-            new_url = url
-
-        return scanning_method, new_url
+            return url
 
     def _determine_ok_200(self, requests_verb, url, timeout):
         if common.is_string(self.regular_file_url):
@@ -344,18 +351,11 @@ class BasePluginInternal(controller.CementBaseController):
 
         return response.status_code == 200, len(response.content)
 
-    def _determine_scanning_method(self, url, verb, timeout=15):
+    def determine_scanning_method(self, url, verb, timeout=15):
         requests_verb = getattr(self.session, verb)
         folder_resp = requests_verb(url + self.forbidden_url, timeout=timeout)
         ok_200, reg_url_len = self._determine_ok_200(requests_verb, url, timeout)
         fake_200, fake_200_len = self._determine_fake_200(requests_verb, url, timeout)
-
-        # Detect redirects.
-        folder_redirect = 300 <= folder_resp.status_code < 400
-        if not ok_200 and folder_redirect:
-            redirect_url = folder_resp.headers['Location']
-            redirect_base_url = base_url(redirect_url)
-            return redirect_base_url if redirect_base_url != False else redirect_url
 
         # Websites which return 200 for not found URLs.
         diff_lengths_above_threshold = abs(fake_200_len - reg_url_len) > 25
@@ -376,14 +376,11 @@ class BasePluginInternal(controller.CementBaseController):
 
             return ScanningMethod.ok
         else:
-            self._error_determine_scanning(url, folder_resp, folder_redirect, ok_200)
+            self._error_determine_scanning(url, folder_resp, ok_200)
 
-    def _error_determine_scanning(self, url, folder_resp, folder_redirect, ok_200):
-        loc = folder_resp.headers['location'] if folder_redirect else 'not present as not a redirect'
+    def _error_determine_scanning(self, url, folder_resp, ok_200):
         ok_human = '200 status' if ok_200 else 'not found status'
-        info = '''Expected folder returned status '%s' (location header
-            %s), expected file returned %s.''' % (folder_resp.status_code,
-            loc, ok_human)
+        info = '''Expected folder returned status '%s', expected file returned %s.''' % (folder_resp.status_code, ok_human)
 
         self.out.warn(info)
         self.out.fatal('It is possible that ''%s'' is not running %s. If you disagree, please specify a --method.' % (url, self._meta.label))
