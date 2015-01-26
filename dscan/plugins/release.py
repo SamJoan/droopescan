@@ -107,7 +107,7 @@ class Release(HumanBasePlugin):
 
                     is_final_release = '^[0-9.]*$'
                     if re.match(is_final_release, version_nb):
-                        pypi_repo = 'pipy'
+                        pypi_repo = 'pypi'
                     else:
                         pypi_repo = 'test'
 
