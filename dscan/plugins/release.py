@@ -113,10 +113,17 @@ class Release(HumanBasePlugin):
                     else:
                         pypi_repo = 'test'
 
-                    c(['python', 'setup.py', 'sdist', 'upload', '-r',
-                        pypi_repo], cwd='..')
-                    c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r',
-                        pypi_repo], cwd='..')
+                    c(['git', 'clean', '-dXnff'])
+                    ok = self.confirm("Is that OK?")
+                    if ok:
+                        c(['git', 'clean', '-dXff'])
+                        c(['python', 'setup.py', 'sdist', 'upload', '-r',
+                            pypi_repo], cwd='..')
+                        c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r',
+                            pypi_repo], cwd='..')
+                    else:
+                        self.error('Can\'t clean. Perform release manually.')
+
                 finally:
                     c(['git', 'checkout', 'development'])
 
