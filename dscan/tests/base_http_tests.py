@@ -444,14 +444,18 @@ class BaseHttpTests(BaseTest):
         result = self.scanner.determine_redirect(self.base_url,
                 Verb.head)
 
+        print(result, self.base_url_https)
         assert result == self.base_url_https
 
-    def test_redirect_relative_path(self):
+    def test_redirect_no_relative(self):
+        """
+            Relative redirects fuck shit up in many occasions, I've seen it.
+        """
         responses.reset()
         redirect_vals = {
             '/': self.base_url,
-            '/relative': self.base_url + 'relative',
-            'relative': self.base_url + 'relative',
+            '/relative': self.base_url,
+            'relative': self.base_url
         }
 
         for i in redirect_vals:
@@ -459,29 +463,31 @@ class BaseHttpTests(BaseTest):
                     status=301, adding_headers={'location': i})
 
             ru = self.scanner.determine_redirect(self.base_url, 'head')
-
             assert ru == redirect_vals[i]
 
             responses.reset()
 
-    def test_redirect_relpath_relative_to_dir(self):
         responses.reset()
-        bu = self.base_url + 'drupal/'
-        redirect_vals = {
-            '/': self.base_url,
-            '/relative': self.base_url + 'relative',
-            'relative': bu + 'relative',
-        }
+        another_base = self.base_url + 'subdir/'
+        responses.add(responses.HEAD, another_base, status=301,
+                adding_headers={'location': 'relative'})
 
-        for i in redirect_vals:
-            responses.add(responses.HEAD, bu,
-                    status=301, adding_headers={'location': i})
+        ru = self.scanner.determine_redirect(another_base, 'head')
 
-            ru = self.scanner.determine_redirect(bu, 'head')
+        assert ru == another_base
 
-            assert ru == redirect_vals[i]
+    def test_redirect_no_same_url(self):
+        """
+            If redirects take us somewhere within the same URL of base url, we
+            should return the base url.
+        """
+        responses.reset()
+        responses.add(responses.HEAD, self.base_url, status=301,
+                adding_headers={'location': self.base_url + "install.php"})
 
-            responses.reset()
+        ru = self.scanner.determine_redirect(self.base_url, 'head')
+        print(ru, self.base_url)
+        assert ru == self.base_url
 
     @patch.object(common.StandardOutput, 'warn')
     def test_invalid_url_file_warns(self, warn):

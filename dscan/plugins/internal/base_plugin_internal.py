@@ -309,23 +309,22 @@ class BasePluginInternal(controller.CementBaseController):
         r = requests_verb(url, timeout=timeout)
 
         redirect = 300 <= r.status_code < 400
-        url_new = None
+        url_new = url
         if redirect:
             redirect_url = url_new = r.headers['Location']
 
-            relative_redirect = 'http' not in redirect_url
+            relative_redirect = not redirect_url.startswith('http')
             if relative_redirect:
-                relative_to_root = redirect_url.startswith('/')
-                if relative_to_root:
-                    base_url_orig = base_url(url)
-                    url_new = base_url_orig + redirect_url[1:]
-                else:
-                    url_new = url + redirect_url
+                url_new = url
 
-        if url_new:
-            return url_new
-        else:
-            return url
+            base_redir = base_url(redirect_url)
+            base_supplied = base_url(url)
+
+            same_base = base_redir == base_supplied
+            if same_base:
+                url_new = url
+
+        return url_new
 
     def _determine_ok_200(self, requests_verb, url, timeout):
         if common.is_string(self.regular_file_url):
