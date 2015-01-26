@@ -229,7 +229,7 @@ class UpdateTests(BaseTest):
 
             args, kwargs = m.call_args
             assert isinstance(args[0], VersionsFile)
-            assert args[1] == self.scanner._update_majors
+            assert args[1] == self.scanner.update_majors
 
     def test_drupal_calls_hashes_get(self):
         vf = MagicMock()
@@ -255,7 +255,7 @@ class UpdateTests(BaseTest):
                     assert len(hg.call_args_list) == 2
                     for args, kwargs in hgcl:
                         assert args[0] == vf
-                        assert args[1] == self.scanner._update_majors
+                        assert args[1] == self.scanner.update_majors
 
         version = '7.34'
         expected = tuple([['git', 'checkout', version]])
@@ -272,7 +272,7 @@ class UpdateTests(BaseTest):
 
         with patch('common.update_api.VersionsFile') as vf:
             vf.files_get_all.return_value = files
-            self.gr.hashes_get(vf, self.scanner._update_majors)
+            self.gr.hashes_get(vf, self.scanner.update_majors)
 
             assert vf.files_get_all.called
             assert len(self.mock_md5_file.call_args_list) == len(files)

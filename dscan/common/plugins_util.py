@@ -71,7 +71,8 @@ class Plugin(object):
                 versions_file = VersionsFile(plugin.versions_file)
 
                 self.version_can_enumerate = True
-                self.version_highest = versions_file.highest_version()
+                hvm = versions_file.highest_version_major(plugin.update_majors)
+                self.version_highest = ', '.join(hvm.values())
 
     def file_mtime(self, file_path):
         out = subprocess.check_output(['git', 'log', '-1', '--format=%cr',

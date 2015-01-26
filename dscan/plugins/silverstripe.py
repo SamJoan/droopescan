@@ -28,7 +28,7 @@ class SilverStripe(BasePlugin):
         ('CHANGELOG', 'Default changelog file'),
     ]
 
-    _update_majors = ['3.1', '3.0', '2.4']
+    update_majors = ['3.1', '3.0', '2.4']
     _repo_framework = 'silverstripe/silverstripe-framework/'
     _repo_cms = 'silverstripe/silverstripe-cms/'
 
@@ -48,23 +48,23 @@ class SilverStripe(BasePlugin):
             @return True if new tags have been made in the github repository.
         """
         return ua.github_tags_newer(self._repo_framework, self.versions_file,
-                update_majors=self._update_majors)
+                update_majors=self.update_majors)
 
     def update_version(self):
         """
             @return updated VersionsFile
         """
         fw_gr, versions_file, new_tags = ua.github_repo_new(self._repo_framework,
-                'silverstripe/framework', self.versions_file, self._update_majors)
+                'silverstripe/framework', self.versions_file, self.update_majors)
         cms_gr, _, _ = ua.github_repo_new(self._repo_cms,
-                'silverstripe/cms', self.versions_file, self._update_majors)
+                'silverstripe/cms', self.versions_file, self.update_majors)
 
         hashes = {}
         for version in new_tags:
             fw_gr.tag_checkout(version)
             cms_gr.tag_checkout(version)
 
-            hashes[version] = ua.hashes_get(versions_file, self._update_majors, './.update-workspace/silverstripe/')
+            hashes[version] = ua.hashes_get(versions_file, self.update_majors, './.update-workspace/silverstripe/')
 
         versions_file.update(hashes)
         return versions_file

@@ -35,7 +35,7 @@ class Drupal(BasePlugin):
     ]
 
     versions_file = "plugins/drupal/versions.xml"
-    _update_majors = ['6','7']
+    update_majors = ['6','7']
 
     class Meta:
         label = 'drupal'
@@ -55,12 +55,12 @@ class Drupal(BasePlugin):
             @return updated VersionsFile
         """
         gr, versions_file, new_tags = ua.github_repo_new('drupal/drupal/',
-                'drupal/drupal', self.versions_file, self._update_majors)
+                'drupal/drupal', self.versions_file, self.update_majors)
 
         hashes = {}
         for version in new_tags:
             gr.tag_checkout(version)
-            hashes[version] = gr.hashes_get(versions_file, self._update_majors)
+            hashes[version] = gr.hashes_get(versions_file, self.update_majors)
 
         versions_file.update(hashes)
         return versions_file
