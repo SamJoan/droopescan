@@ -9,6 +9,13 @@ import sys, tempfile, os
 
 CHANGELOG = '../CHANGELOG'
 
+def c(*args, **kwargs):
+    ret = call(*args, **kwargs)
+    if ret != 0:
+        raise RuntimeError("Command %s failed." % args[0])
+
+    return ret
+
 class Release(HumanBasePlugin):
 
     test_runs_base = ['../droopescan']
@@ -22,6 +29,13 @@ class Release(HumanBasePlugin):
 
     class Meta:
         label = 'release'
+        stacked_on = 'base'
+        stacked_type = 'nested'
+        hide = True
+        arguments = [
+            (['-s', '--skip-external'], dict(action='store', help='Skip external tests.',
+                required=False, default=False)),
+        ]
 
     def read_first_line(self, file):
         with open(file, 'r') as f:
@@ -54,15 +68,18 @@ class Release(HumanBasePlugin):
 
     @controller.expose(help='', hide=True)
     def release(self):
+        skip_external = self.app.pargs.skip_external
+
         tests_passed = call(['../droopescan', 'test']) == 0
         if not tests_passed:
             self.error("Unit tests failed... abort.")
             return
 
-        external_passed = self.scan_external()
-        if not external_passed:
-            self.error("External scans failed... abort.")
-            return
+        if not skip_external:
+            external_passed = self.scan_external()
+            if not external_passed:
+                self.error("External scans failed... abort.")
+                return
 
         human_approves = self.confirm("Does that look OK for you?")
         if human_approves:
@@ -79,23 +96,23 @@ class Release(HumanBasePlugin):
                 self.prepend_to_file(CHANGELOG, final)
 
                 try:
-                    call(['git', 'add', '..'])
-                    call(['git', 'commit', '-m', 'Tagging version \'%s\'' %
+                    c(['git', 'add', '..'])
+                    c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
                         version_nb])
 
-                    call(['git', 'checkout', 'master'])
-                    call(['git', 'merge', 'development'])
+                    c(['git', 'checkout', 'master'])
+                    c(['git', 'merge', 'development'])
 
-                    call(['git', 'tag', version_nb])
+                    c(['git', 'tag', version_nb])
                     call('git remote | xargs -l git push --all', shell=True)
                     call('git remote | xargs -l git push --tags', shell=True)
 
                     is_final_release = '^[0-9.]*$'
                     if re.match(is_final_release, version_nb):
-                        call(['python', '../setup.py', 'sdist', 'upload', '-r', 'pypi'])
-                        call(['python', '../setup.py', 'bdist_wheel', 'upload', '-r', 'pypi'])
+                        c(['python', '../setup.py', 'sdist', 'upload', '-r', 'pypi'])
+                        c(['python', '../setup.py', 'bdist_wheel', 'upload', '-r', 'pypi'])
                 finally:
-                    call(['git', 'checkout', 'development'])
+                    c(['git', 'checkout', 'development'])
 
             else:
                 self.error('Canceled by user')

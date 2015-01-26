@@ -31,7 +31,6 @@ class Tests(HumanBasePlugin):
                 required=False, default=None)),
             (['-c', '--with-coverage'], dict(action='store_true', help='Do test coverage',
                 required=False, default=False)),
-
         ]
 
     @controller.expose(help='', hide=True)
