@@ -444,7 +444,6 @@ class BaseHttpTests(BaseTest):
         result = self.scanner.determine_redirect(self.base_url,
                 Verb.head)
 
-        print(result, self.base_url_https)
         assert result == self.base_url_https
 
     def test_redirect_no_relative(self):
