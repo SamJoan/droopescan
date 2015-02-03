@@ -91,6 +91,7 @@ class BasePluginInternal(controller.CementBaseController):
         timeout_host = pargs.timeout_host
         error_log = pargs.error_log
         debug_requests = pargs.debug_requests
+        follow_redirects = pargs.follow_redirects
         number = pargs.number if not pargs.number == 'all' else 100000
 
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
@@ -266,7 +267,8 @@ class BasePluginInternal(controller.CementBaseController):
             hide_progressbar):
 
         url = common.validate_url(url, self.out)
-        url = self.determine_redirect(url, opts['verb'], opts['timeout'])
+        if opts['follow_redirects']:
+            url = self.determine_redirect(url, opts['verb'], opts['timeout'])
 
         need_sm = opts['enumerate'] in ['a', 'p', 't']
         if need_sm and (self.can_enumerate_plugins or self.can_enumerate_themes):

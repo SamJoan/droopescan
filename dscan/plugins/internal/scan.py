@@ -55,6 +55,8 @@ class Scan(controller.CementBaseController):
                     default=15, type=int)),
                 (['--timeout-host'], dict(action='store', help="""Maximum time
                     to spend per host (in seconds).""", default=450, type=int)),
+                (['--no-follow-redirects'], dict(action='store_false', help="""Prevent
+                    the following of redirects.""", dest="follow_redirects", default=True)),
             ]
 
     @controller.expose(hide=True)

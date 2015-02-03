@@ -421,6 +421,20 @@ class BaseHttpTests(BaseTest):
 
         self.assert_args_contains(enum, 0, self.base_url_https)
 
+    def test_no_redirect_flag(self):
+        self.add_argv(['--url', self.base_url, '--enumerate', 'p',
+            '--no-follow-redirects'])
+
+        dr = self.mock_controller('drupal', 'determine_redirect',
+                return_value=self.base_url_https)
+        self.mock_controller('drupal', 'determine_scanning_method',
+                return_value=ScanningMethod.not_found)
+
+        enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
+        self.app.run()
+
+        assert not dr.called
+
     def test_redirect_with_method(self):
         responses.reset()
         self.add_argv(['--url', self.base_url, '--method', 'not_found',
