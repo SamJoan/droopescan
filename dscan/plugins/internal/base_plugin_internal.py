@@ -527,6 +527,10 @@ class BasePluginInternal(controller.CementBaseController):
 
         found = []
         for path, description in interesting_urls:
+
+            if shutdown:
+                continue
+
             interesting_url = url + path
             resp = requests_verb(interesting_url, timeout=timeout)
             if resp.status_code == 200 or resp.status_code == 301:
