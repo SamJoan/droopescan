@@ -337,7 +337,7 @@ that are in joomla.py with values that are correct for your implementation.
 
 Pull requests that create new plugins are welcome provided that maintenance for
 those plugins is done automatically (i.e. the plugins implement
-update_version_check and update_version).
+update_version_check and update_version.)
 
 Please remember to make your pull requests against the develoment branch
 rather than the master. Issues can be raised on the issue tracker here
