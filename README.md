@@ -58,15 +58,15 @@ python droopescan.py --help
 python droopescan.py scan --help
 </pre>
 
-# Why droopescan?
+# Why not X?
 
-* Fast, multi-threaded scanning. Mass scanning supported out of the box.
-* Scans for outdated installations, and also themes and plugins.
-* Plugin system which handles not only scanning but also the
-[updating](https://github.com/droope/droopescan/blob/3f7c786b99eef40b53dc3ef541772d66684a20da/plugins/drupal.py#L36-L55)
-of plugins.
-* Support for basic authentication and intercepting proxies.
-* 100% python.
+Because droopescan:
+
+* is fast
+* is stable
+* is up to date
+* allows simultaneous scanning of multiple sites
+* is 100% python
 
 # Installation
 
