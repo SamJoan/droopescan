@@ -199,6 +199,7 @@ class BasePluginInternal(controller.CementBaseController):
 
             except:
                 exc = traceback.format_exc()
+                print(exc)
                 self.out.warn(exc, whitespace_strp=False)
 
     def plugin_init(self):
@@ -236,7 +237,7 @@ class BasePluginInternal(controller.CementBaseController):
                             'url': url.rstrip('\n'),
                         })
 
-                        if i % 1000 == 0:
+                        if i % 1000 == 0 and i != 0:
                             self._process_results_multisite(results,
                                     functionality, timeout_host)
                             results = []

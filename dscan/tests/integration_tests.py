@@ -1,15 +1,44 @@
+from __future__ import print_function
 from cement.utils import test
 from common.testutils import decallmethods
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+from mock import MagicMock
 from requests.exceptions import ConnectionError
-from tests import BaseTest
+from tests import BaseTest, MockHash
 import json
 import re
 import responses
 import sys
+
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+class MultiMockHash():
+    """
+        Like MockHash, but works for multisites.
+    """
+    files = None
+    def mock_func(self, *args, **kwargs):
+        file_url = kwargs['file_url']
+        version = _vfu(args[0])
+        return self.files[version][file_url]
+
+def _vfu(url):
+    """
+        Parse the version from a URL.
+        @param url e.g. http://localhost/3.2.1/asd.txt
+        @return e.g. 3.2.1
+    """
+    up = urlparse(url)
+    version = up.path.split('/')[1]
+
+    return version
 
 class Capture(list):
     def __enter__(self):
@@ -34,34 +63,68 @@ class IntegrationTests(BaseTest):
         """
             Parse a single line of output.
             @param line
-            @return (verb, url, status_code) URL must have whatever replaced
-                with self.base_url. status_code must be integer because
-                otherwise weird errors will ensue due to fuzzy comparisons
-                between strings and integers.
+            @return (verb, url, status_code, hash)
+                - verb will be uppercase e.g. HEAD
+                - status_code will be integer.
         """
         splat = line.split(' ')
 
-        verb = splat[0][1:-1]
-        status_code = splat[2].strip()
+        verb = splat[0][1:-1].upper()
+        url = splat[1]
+        status_code = int(splat[2].strip())
+        hash = splat[3].strip()
 
-        url_removed_body = '/'.join(splat[1][:-3].split('/')[3:])
-        url = self.base_url + url_removed_body
 
-        return verb, url, int(status_code)
+        #print(verb, url, status_code)
+        return verb, url, status_code, hash
 
     def _unhandled_cb(self, request):
-        print("Unhandled request to '%s' (%s)." % (request.url, request.method))
+        error = "Unhandled request to '%s' (%s)." % (request.url, request.method)
+        print(error, file=sys.stderr)
         return (404, {}, '')
 
-    def mock_output(self, source):
+    def mock_output(self, source, base_urls = None):
+        """
+            Mocks many responses, taking a "output_" file as a base. This is
+            used for end-to-end tests.
+
+            @param source the file to read from. e.g. tests/resources/output_drupal.txt
+            @param base_urls a list of base_urls used for getting relative
+                paths.
+            @return MagicMock a magic mock which can be used to replace
+                Drupal.enumerate_file_hash, for example.
+        """
+        files = {}
         with open(source, 'r') as f:
             for line in f:
-                verb, url, status_code = self._mock_output_pl(line)
-                responses.add(verb.upper(), url, status=status_code)
+                verb, url, status_code, hash = self._mock_output_pl(line)
+                if hash != "":
+                    path = None
+                    version = _vfu(url)
+                    for base_url in base_urls:
+                        if base_url in url:
+                            path = url.replace(base_url, '')
+
+                    if not path:
+                        assert False
+
+                    if version not in files:
+                        files[version] = {}
+
+                    files[version][path] = hash
+
+                responses.add(verb, url, status=status_code)
 
         default_response = re.compile('.')
         responses.add_callback(responses.GET, default_response, callback=self._unhandled_cb)
         responses.add_callback(responses.HEAD, default_response, callback=self._unhandled_cb)
+        responses.add_callback(responses.POST, default_response, callback=self._unhandled_cb)
+
+        mock_hash = MultiMockHash()
+        mock_hash.files = files
+        mock = MagicMock(side_effect=mock_hash.mock_func)
+
+        return mock
 
     def test_integration_drupal(self):
         self.mock_output("tests/resources/output_drupal.txt")
@@ -83,3 +146,23 @@ class IntegrationTests(BaseTest):
         assert len(j['plugins']['finds']) == 18
         assert len(j['themes']['finds']) == 0
 
+    def test_ss_multisite(self):
+        output_file = "tests/resources/output_ss_multisite.txt"
+        url_file = 'tests/resources/url_file_ss_multisite.txt'
+        with open(url_file) as f:
+            base_urls = [line.strip() for line in f]
+
+        enumerate_mock = self.mock_output(output_file, base_urls)
+        self.mock_controller('silverstripe', 'enumerate_file_hash',
+                mock=enumerate_mock)
+
+        self.add_argv(["scan", "ss", "-U", url_file, "-e", "v"])
+        with Capture() as out:
+            self.app.run()
+
+        for line in out:
+            j = json.loads(line)
+            real_version = _vfu(j['host'])
+
+            print(real_version, j['version']['finds'])
+            assert real_version in j['version']['finds']

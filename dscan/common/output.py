@@ -2,6 +2,7 @@ from __future__ import print_function
 from common.functions import template, strip_whitespace
 from common.enum import colors
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -139,12 +140,20 @@ class RequestsLogger():
         self._session = session
 
     def _print(self, method, *args, **kwargs):
-        tpl = '[%s] %s...'
-        print(tpl % (method, args[0]), end='')
-
+        """
+            Output format affects integration tests.
+            @see IntegrationTests.mock_output
+        """
         sess_method = getattr(self._session, method)
         r = sess_method(*args, **kwargs)
-        print(' %s' % (r.status_code))
+
+        tpl = '[%s] %s %s %s'
+        if method == "get":
+            hsh = hashlib.md5(r.content).hexdigest()
+        else:
+            hsh = ""
+
+        print(tpl % (method, args[0], r.status_code, hsh))
 
         return r
 

@@ -8,6 +8,12 @@ from plugins.drupal import Drupal
 from plugins import Scan
 import responses
 
+class MockHash():
+    files = None
+    def mock_func(self, *args, **kwargs):
+        url = kwargs['file_url']
+        return self.files[url]
+
 class BaseTest(test.CementTestCase):
     app_class = DroopeScan
     scanner = None
@@ -44,7 +50,8 @@ class BaseTest(test.CementTestCase):
     def tearDown(self):
         self.app.close()
 
-    def mock_controller(self, plugin_label, method, return_value = None, side_effect = None):
+    def mock_controller(self, plugin_label, method, return_value = None,
+            side_effect = None, mock = None):
         """
             Mocks controller by label. Can only be used to test controllers
             that get instantiated automatically by cement.
@@ -53,10 +60,16 @@ class BaseTest(test.CementTestCase):
             @param return_value what to return. Default is None, unless the
                 method starts with enumerate_*, in which case the result is a
                 tuple as expected by BasePlugin.
+            @param mock the MagicMock to place. If None, a blank MagicMock is
+                created.
             @param side_effect if set to an exception, it will raise an
                 exception.
         """
-        m = MagicMock()
+        if mock:
+            m = mock
+        else:
+            m = MagicMock()
+
         if return_value != None:
             m.return_value = return_value
         else:
@@ -129,15 +142,10 @@ class BaseTest(test.CementTestCase):
                 url_tpl = url.strip('\n') + '%s'
                 self.respond_several(url_tpl, {403: ['misc/'], 200: ['', 'misc/drupal.js'], 404: [self.scanner.not_found_url]})
 
-    class MockHash():
-        files = None
-        def mock_func(self, *args, **kwargs):
-            url = kwargs['file_url']
-            return self.files[url]
-
     def mock_xml(self, xml_file, version_to_mock):
         '''
-            generates all mock data, and patches Drupal.get_hash
+            Generates all mock data, and returns a MagicMock which can be used
+            to replace self.scanner.enumerate_file_hash.
 
             @param xml_file a file, which contains the XML to mock.
             @param version_to_mock the version which we will pretend to be.
@@ -173,7 +181,7 @@ class BaseTest(test.CementTestCase):
                     if ch_nb == version_to_mock:
                         files[ch_url] = ch_version.get('md5')
 
-        mock_hash = self.MockHash()
+        mock_hash = MockHash()
         mock_hash.files = files
         mock = MagicMock(side_effect=mock_hash.mock_func)
 
