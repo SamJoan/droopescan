@@ -2,8 +2,8 @@ Add;
 
 Version 1.x:
 
-    - Add multisite integration test to integration tests.
     - Add automatic plugin & theme list generation for SS & Drupal.
+    - Reduce number of themes for Drupal.
 
 Version 2.x
 

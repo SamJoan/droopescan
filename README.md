@@ -3,63 +3,52 @@
 A plugin-based scanner that aids security researchers in identifying issues with
 several CMSs, mainly Drupal & Silverstripe.
 
-Stable versions can be [downloaded from here](https://github.com/droope/droopescan/releases).
-
 [![Build Status](https://travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan)
 
 <pre>
-computer:~/droopescan# ./droopescan scan drupal -u http://drupal.org/ -t 8
+computer:~/droopescan# ./droopescan scan drupal -u http://example.org/ -t 8
 [+] No themes found.
 
 [+] Possible interesting urls found:
-    Default changelog file. - https://www.drupal.org/CHANGELOG.txt
-    Default admin. - https://www.drupal.org/user/login
+    Default changelog file - https://www.example.org/CHANGELOG.txt
+    Default admin - https://www.example.org/user/login
 
 [+] Possible version(s):
     7.34
 
 [+] Plugins found:
-    views https://www.drupal.org/sites/all/modules/views/
-    token https://www.drupal.org/sites/all/modules/token/
-    pathauto https://www.drupal.org/sites/all/modules/pathauto/
-    libraries https://www.drupal.org/sites/all/modules/libraries/
-    entity https://www.drupal.org/sites/all/modules/entity/
-    google_analytics https://www.drupal.org/sites/all/modules/google_analytics/
-    ctools https://www.drupal.org/sites/all/modules/ctools/
-    features https://www.drupal.org/sites/all/modules/features/
-    views_bulk_operations https://www.drupal.org/sites/all/modules/views_bulk_operations/
-    link https://www.drupal.org/sites/all/modules/link/
-    metatag https://www.drupal.org/sites/all/modules/metatag/
-    field_group https://www.drupal.org/sites/all/modules/field_group/
-    entityreference https://www.drupal.org/sites/all/modules/entityreference/
-    references https://www.drupal.org/sites/all/modules/references/
-    redirect https://www.drupal.org/sites/all/modules/redirect/
-    field_collection https://www.drupal.org/sites/all/modules/field_collection/
-    diff https://www.drupal.org/sites/all/modules/diff/
-    flag https://www.drupal.org/sites/all/modules/flag/
-    search_api https://www.drupal.org/sites/all/modules/search_api/
-    migrate https://www.drupal.org/sites/all/modules/migrate/
-    honeypot https://www.drupal.org/sites/all/modules/honeypot/
-    facetapi https://www.drupal.org/sites/all/modules/facetapi/
-    jcarousel https://www.drupal.org/sites/all/modules/jcarousel/
-    search_api_db https://www.drupal.org/sites/all/modules/search_api_db/
-    security_review https://www.drupal.org/sites/all/modules/security_review/
-    memcache https://www.drupal.org/sites/all/modules/memcache/
-    views_field_view https://www.drupal.org/sites/all/modules/views_field_view/
-    field_formatter_settings https://www.drupal.org/sites/all/modules/field_formatter_settings/
-    r4032login https://www.drupal.org/sites/all/modules/r4032login/
-    varnish https://www.drupal.org/sites/all/modules/varnish/
-    bueditor https://www.drupal.org/sites/all/modules/bueditor/
-    apachesolr https://www.drupal.org/sites/all/modules/apachesolr/
-    codefilter https://www.drupal.org/sites/all/modules/codefilter/
-    geolocation https://www.drupal.org/sites/all/modules/geolocation/
-    url https://www.drupal.org/sites/all/modules/url/
-    views_content_cache https://www.drupal.org/sites/all/modules/views_content_cache/
-    homebox https://www.drupal.org/sites/all/modules/homebox/
-    fasttoggle https://www.drupal.org/sites/all/modules/fasttoggle/
-    views_litepager https://www.drupal.org/sites/all/modules/views_litepager/
+    views https://www.example.org/sites/all/modules/views/
+        https://www.example.org/sites/all/modules/views/README.txt
+        https://www.example.org/sites/all/modules/views/LICENSE.txt
+    token https://www.example.org/sites/all/modules/token/
+        https://www.example.org/sites/all/modules/token/README.txt
+        https://www.example.org/sites/all/modules/token/LICENSE.txt
+    pathauto https://www.example.org/sites/all/modules/pathauto/
+        https://www.example.org/sites/all/modules/pathauto/README.txt
+        https://www.example.org/sites/all/modules/pathauto/LICENSE.txt
+        https://www.example.org/sites/all/modules/pathauto/API.txt
+    libraries https://www.example.org/sites/all/modules/libraries/
+        https://www.example.org/sites/all/modules/libraries/CHANGELOG.txt
+        https://www.example.org/sites/all/modules/libraries/README.txt
+        https://www.example.org/sites/all/modules/libraries/LICENSE.txt
+    entity https://www.example.org/sites/all/modules/entity/
+        https://www.example.org/sites/all/modules/entity/README.txt
+        https://www.example.org/sites/all/modules/entity/LICENSE.txt
+    google_analytics https://www.example.org/sites/all/modules/google_analytics/
+        https://www.example.org/sites/all/modules/google_analytics/README.txt
+        https://www.example.org/sites/all/modules/google_analytics/LICENSE.txt
+    ctools https://www.example.org/sites/all/modules/ctools/
+        https://www.example.org/sites/all/modules/ctools/CHANGELOG.txt
+        https://www.example.org/sites/all/modules/ctools/LICENSE.txt
+        https://www.example.org/sites/all/modules/ctools/API.txt
+    features https://www.example.org/sites/all/modules/features/
+        https://www.example.org/sites/all/modules/features/CHANGELOG.txt
+        https://www.example.org/sites/all/modules/features/README.txt
+        https://www.example.org/sites/all/modules/features/LICENSE.txt
+        https://www.example.org/sites/all/modules/features/API.txt
+    [... snip for README ...]
 
-[+] Scan finished (0:08:11.388810 elapsed)
+[+] Scan finished (0:04:59.502427 elapsed)
 </pre>
 
 You can get a full list of options by running:
