@@ -122,14 +122,19 @@ class FingerprintTests(BaseTest):
         assert self.v.version_gt('1.0a', '2.0a') == False
         assert self.v.version_gt('4.0a', '2.0a')
 
+    def test_version_gt_edge_case(self):
+        assert self.v.version_gt('8.0.0-beta6', '8.0') == False
+        assert self.v.version_gt('8.0.1-beta6', '8.0')
+
     def test_version_highest(self):
         assert self.v.highest_version() == '7.28'
 
     def test_version_highest_major(self):
-        res = self.v.highest_version_major(['6', '7'])
+        res = self.v.highest_version_major(['6', '7', '8'])
 
         assert res['6'] == '6.15'
         assert res['7'] == '7.28'
+        assert res['8'] == '7.9999'
 
     def test_add_to_xml(self):
         add_versions = {

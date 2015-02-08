@@ -150,7 +150,13 @@ def version_gt(version, gt):
                         break
 
         else:
-            if int(longest[i]) > 0:
+            nb = longest[i]
+
+            is_rc = '-' in nb
+            if is_rc:
+                nb = nb.split('-')[0]
+
+            if int(nb) > 0:
                 if longest == version_split:
                     gt = True
                     break

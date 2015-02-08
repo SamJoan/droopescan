@@ -140,8 +140,13 @@ class VersionsFile():
     def highest_version_major(self, majors_include):
         """
             Returns highest version per major release.
-            @majors_include a list of majors. if present, returns only majors
-                that are included in that list
+            @majors_include a list of majors. Returns only majors
+                that are included in that list.
+
+            @return e.g. {'7': '7.28', '6': '6.15'}
+                If a major in majors_include is not present in the XML file, it
+                returns a version which is lesser to all versions in that major.
+                E.g. 8.0 -> 7.9999
         """
         xpath = './files/file/version'
         versions = self.root.findall(xpath)
@@ -165,7 +170,8 @@ class VersionsFile():
             try:
                 majors[key] = highest[key]
             except KeyError:
-                majors[key] = key + ".0"
+                minus_one = int(key) - 1
+                majors[key] = str(minus_one) + ".9999"
 
         return majors
 

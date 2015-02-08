@@ -35,7 +35,7 @@ class Drupal(BasePlugin):
     ]
 
     versions_file = "plugins/drupal/versions.xml"
-    update_majors = ['6','7']
+    update_majors = ['6','7','8']
 
     class Meta:
         label = 'drupal'
@@ -48,7 +48,8 @@ class Drupal(BasePlugin):
         """
             @return True if new tags have been made in the github repository.
         """
-        return ua.github_tags_newer('drupal/drupal/', self.versions_file, update_majors=['6', '7'])
+        return ua.github_tags_newer('drupal/drupal/', self.versions_file,
+                update_majors=self.update_majors)
 
     def update_version(self):
         """
