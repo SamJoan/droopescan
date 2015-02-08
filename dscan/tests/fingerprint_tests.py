@@ -73,9 +73,12 @@ class FingerprintTests(BaseTest):
 
         assert md5 == actual_md5
 
+    @test.raises(RuntimeError)
     def test_enumerate_not_found(self):
-        # When not found, should raise RuntimeError.
-        assert False
+        ch_url = "CHANGELOG.txt"
+        responses.add(responses.GET, self.base_url + ch_url, status=404)
+
+        self.scanner.enumerate_file_hash(self.base_url, ch_url)
 
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
     @patch('common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
