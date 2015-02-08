@@ -12,7 +12,10 @@ class MockHash():
     files = None
     def mock_func(self, *args, **kwargs):
         url = kwargs['file_url']
-        return self.files[url]
+        try:
+            return self.files[url]
+        except KeyError:
+            raise RuntimeError(url)
 
 class BaseTest(test.CementTestCase):
     app_class = DroopeScan
@@ -140,7 +143,12 @@ class BaseTest(test.CementTestCase):
         with open(url_file) as f:
             for url in f:
                 url_tpl = url.strip('\n') + '%s'
-                self.respond_several(url_tpl, {403: [Drupal.forbidden_url], 200: ['', 'misc/drupal.js'], 404: [self.scanner.not_found_url]})
+
+                self.respond_several(url_tpl, {
+                    403: [Drupal.forbidden_url],
+                    200: ['', 'misc/drupal.js'],
+                    404: [self.scanner.not_found_url]
+                })
 
     def mock_xml(self, xml_file, version_to_mock):
         '''
@@ -172,14 +180,17 @@ class BaseTest(test.CementTestCase):
                 if not url in files:
                     files[url] = '5d41402abc4b2a76b9719d911017c592'
 
-            ch_xml = doc.find('./files/changelog')
-            if ch_xml is not None:
-                ch_url = ch_xml.get('url')
-                ch_versions = ch_xml.findall('./version')
-                for ch_version in ch_versions:
-                    ch_nb = ch_version.get('nb')
-                    if ch_nb == version_to_mock:
-                        files[ch_url] = ch_version.get('md5')
+            ch_xml_all = doc.findall('./files/changelog')
+            if len(ch_xml_all) > 0:
+                for ch_xml in ch_xml_all:
+                    ch_url = ch_xml.get('url')
+                    ch_versions = ch_xml.findall('./version')
+                    found = False
+                    for ch_version in ch_versions:
+                        ch_nb = ch_version.get('nb')
+                        if ch_nb == version_to_mock:
+                            files[ch_url] = ch_version.get('md5')
+                            found = True
 
         mock_hash = MockHash()
         mock_hash.files = files

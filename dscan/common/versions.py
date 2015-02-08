@@ -36,9 +36,18 @@ class VersionsFile():
 
         return files
 
-    def changelog_get(self):
-        changelog = self.root.find(self.changelog_xpath)
-        return changelog.attrib['url']
+    def changelogs_get(self):
+        """
+            @return A list of possible changelogs. More than one may be returned
+                in cases where the location of the changelog varies between major
+                versions of a CMS.
+        """
+        changelogs_elem = self.root.findall(self.changelog_xpath)
+        changelogs = []
+        for c in changelogs_elem:
+            changelogs.append(c.attrib['url'])
+
+        return changelogs
 
     def changelog_identify(self, ch_hash):
         changelog_files = self.root.findall(self.changelog_xpath + '/version')
@@ -142,7 +151,6 @@ class VersionsFile():
             Returns highest version per major release.
             @majors_include a list of majors. Returns only majors
                 that are included in that list.
-
             @return e.g. {'7': '7.28', '6': '6.15'}
                 If a major in majors_include is not present in the XML file, it
                 returns a version which is lesser to all versions in that major.

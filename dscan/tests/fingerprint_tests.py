@@ -28,7 +28,8 @@ class FingerprintTests(BaseTest):
         self.v = VersionsFile(self.xml_file)
 
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
-    def test_calls_version(self, m):
+    @patch('common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
+    def test_calls_version(self, m, n):
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
         responses.add(responses.GET, self.base_url + 'CHANGELOG.txt')
         # with no mocked calls, any HTTP req will cause a ConnectionError.
@@ -72,8 +73,13 @@ class FingerprintTests(BaseTest):
 
         assert md5 == actual_md5
 
+    def test_enumerate_not_found(self):
+        # When not found, should raise RuntimeError.
+        assert False
+
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
-    def test_fingerprint_correct_verb(self, patch):
+    @patch('common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
+    def test_fingerprint_correct_verb(self, patch, other_patch):
         # this needs to be a get, otherwise, how are going to get the request body?
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
         responses.add(responses.GET, self.base_url + 'CHANGELOG.txt')
@@ -251,4 +257,24 @@ class FingerprintTests(BaseTest):
         assert result == mock_versions
 
     def test_multiple_changelogs_or(self):
-        assert False
+        mock_versions = ["8.0", "8.1", "8.2"]
+        xml_multi_changelog = 'tests/resources/versions_multiple_changelog.xml'
+
+        v_changelog = VersionsFile(xml_multi_changelog)
+        self.scanner.enumerate_file_hash = self.mock_xml(xml_multi_changelog, "8.0")
+        result = self.scanner.enumerate_version_changelog(self.base_url,
+                mock_versions, v_changelog)
+
+        assert result == ["8.0"]
+
+    def test_multiple_changelogs_all_fail(self):
+        mock_versions = ["8.0", "8.1", "8.2"]
+        xml_multi_changelog = 'tests/resources/versions_multiple_changelog.xml'
+
+        v_changelog = VersionsFile(xml_multi_changelog)
+        self.scanner.enumerate_file_hash = self.mock_xml(xml_multi_changelog,
+                "7.1")
+        result = self.scanner.enumerate_version_changelog(self.base_url,
+                mock_versions, v_changelog)
+
+        assert result == mock_versions

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<cms>
+    <files>
+        <file url="misc/drupal.js">
+            <version nb="7.26" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="7.28" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="7.27" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="8.0" md5="86cce3963343de4f9e4ec61e5fa01859"/>
+        </file>
+        <file url="misc/tabledrag.js">
+            <version nb="7.26" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="7.28" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="7.27" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="8.0" md5="86cce3963343de4f9e4ec61e5fa01859"/>
+        </file>
+        <file url="misc/ajax.js">
+            <version nb="7.26" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="7.28" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="7.27" md5="caaf444bbba2811b4fa0d5aecfa837e5"/>
+            <version nb="8.0" md5="86cce3963343de4f9e4ec61e5fa01859"/>
+        </file>
+        <changelog url="CHANGELOG.txt">
+            <version nb="7.26" md5="8a57a01ad28f72fedf5bf83dab4f1ece"/>
+            <version nb="7.28" md5="d7a1d3b0e4468342268058e23fa71059"/>
+            <version nb="7.27" md5="fb2f42e93aa34d26a48c415b46fb2468"/>
+            <version nb="7.22" md5="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+        </changelog>
+        <changelog url="core/CHANGELOG.txt">
+            <version nb="8.0" md5="86cce3963343de4f9e4ec61e5fa01859"/>
+        </changelog>
+    </files>
+</cms>

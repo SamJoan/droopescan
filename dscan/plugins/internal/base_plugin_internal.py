@@ -559,7 +559,11 @@ class BasePluginInternal(controller.CementBaseController):
                     futures[file_url].cancel()
                     continue
 
-                hashes[file_url] = futures[file_url].result()
+                try:
+                    hsh = futures[file_url].result()
+                    hashes[file_url] = hsh
+                except RuntimeError:
+                    pass
 
         version = vf.version_get(hashes)
 
@@ -570,12 +574,16 @@ class BasePluginInternal(controller.CementBaseController):
         return version, len(version) == 0
 
     def enumerate_version_changelog(self, url, versions_estimated, vf, timeout=15):
-        ch_url = vf.changelog_get()
-        ch_hash = self.enumerate_file_hash(url, file_url=ch_url,
-                timeout=timeout)
+        changelogs = vf.changelogs_get()
+        ch_hash = None
+        for ch_url in changelogs:
+            try:
+                ch_hash = self.enumerate_file_hash(url, file_url=ch_url,
+                        timeout=timeout)
+            except RuntimeError:
+                pass
 
         ch_version = vf.changelog_identify(ch_hash)
-
         if ch_version in versions_estimated:
             return [ch_version]
         else:
@@ -583,7 +591,10 @@ class BasePluginInternal(controller.CementBaseController):
 
     def enumerate_file_hash(self, url, file_url, timeout=15):
         r = self.session.get(url + file_url, timeout=timeout)
-        return hashlib.md5(r.content).hexdigest()
+        if r.status_code == 200:
+            return hashlib.md5(r.content).hexdigest()
+        else:
+            raise RuntimeError("File '%s' returned status code '%s'." % (file_url, r.status_code))
 
     def _enumerate_plugin_if(self, found_list, verb, threads, imu_list):
         """
