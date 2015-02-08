@@ -338,7 +338,7 @@ class BasePluginInternal(controller.CementBaseController):
             ok_200 = False
             for path in self.regular_file_url:
                 reg_url = url + path
-                ok_resp = requests_verb(reg_url)
+                ok_resp = requests_verb(reg_url, timeout=timeout)
                 if ok_resp.status_code == 200:
                     ok_200 = True
                     break

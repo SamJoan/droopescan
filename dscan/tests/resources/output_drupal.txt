@@ -1,4 +1,4 @@
-[head] http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/misc/ 403 
+[head] http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/ 403 
 [head] http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/misc/drupal.js 200 
 [head] http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/misc/test/error/404/ispresent.html 404 
 [head] http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/themes/zen/ 404 

@@ -250,4 +250,5 @@ class FingerprintTests(BaseTest):
         # Changelog is possibly outdated, can't rely on it.
         assert result == mock_versions
 
-
+    def test_multiple_changelogs_or(self):
+        assert False

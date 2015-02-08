@@ -212,7 +212,7 @@ class BaseHttpTests(BaseTest):
     def test_determine_forbidden(self):
         self.add_argv(self.param_plugins)
 
-        self.respond_several(self.base_url + "%s", {403: ["misc/"], 200:
+        self.respond_several(self.base_url + "%s", {403: [Drupal.forbidden_url], 200:
             ["misc/drupal.js"], 404: [self.scanner.not_found_url]})
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
@@ -223,7 +223,7 @@ class BaseHttpTests(BaseTest):
     def test_determine_not_found(self):
         self.add_argv(self.param_plugins)
 
-        self.respond_several(self.base_url + "%s", {404: ["misc/",
+        self.respond_several(self.base_url + "%s", {404: [Drupal.forbidden_url,
             self.scanner.not_found_url], 200: ["misc/drupal.js"]})
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
@@ -234,7 +234,7 @@ class BaseHttpTests(BaseTest):
     def test_determine_ok(self):
         self.add_argv(self.param_plugins)
 
-        self.respond_several(self.base_url + "%s", {200: ["misc/",
+        self.respond_several(self.base_url + "%s", {200: [Drupal.forbidden_url,
             "misc/drupal.js"], 404: [self.scanner.not_found_url]})
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
@@ -246,7 +246,7 @@ class BaseHttpTests(BaseTest):
     def test_determine_detect_false_ok(self):
         self.add_argv(self.param_plugins)
 
-        self.respond_several(self.base_url + "%s", {200: ["misc/",
+        self.respond_several(self.base_url + "%s", {200: [Drupal.forbidden_url,
             "misc/drupal.js", self.scanner.not_found_url]})
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
@@ -260,7 +260,7 @@ class BaseHttpTests(BaseTest):
                 self.scanner.not_found_url, body='A'*1337)
         responses.add(responses.HEAD, self.base_url +
                 'misc/drupal.js', body='A'*15000)
-        responses.add(responses.HEAD, self.base_url + "misc/")
+        responses.add(responses.HEAD, self.base_url + Drupal.forbidden_url)
 
         m = self.mock_controller('drupal', 'enumerate_plugins')
 
@@ -270,7 +270,7 @@ class BaseHttpTests(BaseTest):
 
     def test_determine_with_multiple_ok(self):
         self.scanner.regular_file_url = ["misc/drupal_old.js", "misc/drupal.js"]
-        self.respond_several(self.base_url + "%s", {200: ["misc/",
+        self.respond_several(self.base_url + "%s", {200: [Drupal.forbidden_url,
             "misc/drupal.js"], 404: ["misc/drupal_old.js",
                 self.scanner.not_found_url]})
 
@@ -293,9 +293,14 @@ class BaseHttpTests(BaseTest):
     def test_not_cms(self):
         self.add_argv(self.param_plugins)
 
-        self.respond_several(self.base_url + "%s", {404:
-            [self.scanner.forbidden_url, self.scanner.regular_file_url,
-                self.scanner.not_found_url]})
+        url_list = [self.scanner.forbidden_url, self.scanner.not_found_url]
+
+        if isinstance(self.scanner.regular_file_url, list):
+            url_list += self.scanner.regular_file_url
+        else:
+            url_list.append(self.scanner.regular_file_url)
+
+        self.respond_several(self.base_url + "%s", {404: url_list})
         self.app.run()
 
     def test_passes_verb(self):
@@ -335,7 +340,7 @@ class BaseHttpTests(BaseTest):
         self.add_argv(['--verb', 'get'])
 
         responses.add(responses.GET, self.base_url, status=200)
-        responses.add(responses.GET, self.base_url + "misc/")
+        responses.add(responses.GET, self.base_url + Drupal.forbidden_url)
         responses.add(responses.GET, self.base_url + "misc/drupal.js")
         responses.add(responses.GET, self.base_url + self.scanner.not_found_url,
                 status=404)

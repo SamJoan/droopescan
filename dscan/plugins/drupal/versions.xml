@@ -355,57 +355,6 @@
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.33" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.34" />
     </file>
-    <changelog url="CHANGELOG.txt">
-      <version md5="fa02637f87ad76f18b3b97aed66753d2" nb="7.14" />
-      <version md5="30ca3761d02c5a025d5caea0e76b43c2" nb="7.15" />
-      <version md5="ad2968774051eb5479dc709ce87ba7e2" nb="7.16" />
-      <version md5="919a4daf02fad61f623fc2f8ff686640" nb="7.17" />
-      <version md5="c2cecc83ec443b111b09beeb3e525d32" nb="7.10" />
-      <version md5="4dcfe6f20e161497b8a8c969f57cf9ae" nb="7.11" />
-      <version md5="750fc8fada9ada1044e2f47927771c1b" nb="7.12" />
-      <version md5="ca11b070227bcf518e64884a83b7f78e" nb="7.13" />
-      <version md5="e4e2ab8f1b84c77e14cb742c8275e906" nb="7.18" />
-      <version md5="a6548e2a131e814eb78e0fb5e0170c69" nb="7.19" />
-      <version md5="f1115ca52f7441b0fb35dbf2d8ceea8a" nb="7.2" />
-      <version md5="8a405ef6f0956fab84462cbc747bb4ee" nb="7.3" />
-      <version md5="1193b01ba75f425e7cf5be5857562bb6" nb="7.0" />
-      <version md5="cbecaf7c4da3a9503fc7528fc9655ef3" nb="7.1" />
-      <version md5="3dea36f6e8d7cad2ea47d5829917f62c" nb="7.6" />
-      <version md5="2e1049b34cf095563cff4a1ab85b99c2" nb="7.7" />
-      <version md5="7d574236459eba874b0a0b45a0269251" nb="7.4" />
-      <version md5="3dea36f6e8d7cad2ea47d5829917f62c" nb="7.5" />
-      <version md5="5dceb87c7c8783b6371b305a285eea4b" nb="7.0-alpha1" />
-      <version md5="46fa5ca038abda95c797ff2338ed8a8f" nb="7.0-alpha2" />
-      <version md5="32c29f96a4044498e7919bb2f07fa384" nb="7.0-alpha3" />
-      <version md5="b019dd69fb21cbfae8183ef7aa2d1d5e" nb="7.0-alpha4" />
-      <version md5="810120469173e7ce0767e4f54d025e88" nb="7.0-alpha5" />
-      <version md5="99525ef80534f758e2d0e4af1797dd8b" nb="7.0-alpha6" />
-      <version md5="d672cd026f87486cd6139e1e1b15e570" nb="7.0-alpha7" />
-      <version md5="05c35ea41cde4ed14642b8a6f79cc353" nb="7.9" />
-      <version md5="f0add58c8139bdee0e70756b3e5ce3d1" nb="7.32" />
-      <version md5="767cff2a1756be6db518b8cb9c360f5c" nb="7.8" />
-      <version md5="a73760e71235a045989fce8ed0525b80" nb="7.29" />
-      <version md5="d56858b074520fc947a7739c03031cbc" nb="7.28" />
-      <version md5="853320639aec176c29fa58af34e20bef" nb="7.25" />
-      <version md5="752e21ba08a2d988806034151120cb21" nb="7.24" />
-      <version md5="cedcdbb21a0b0946b264fecc48a20703" nb="7.27" />
-      <version md5="da1fdf2e2e07c5492c76759b592da669" nb="7.26" />
-      <version md5="756587439d2dd9fce15110a2f08620fe" nb="7.21" />
-      <version md5="66fb72fce833f76801de24ad24b84377" nb="7.20" />
-      <version md5="33cdc361555923382d4dd72e657ad7bc" nb="7.23" />
-      <version md5="dfd6807a045b68b02964dd8269e50ff7" nb="7.22" />
-      <version md5="ce576a19e63085a432945d471ae20403" nb="7.0-rc4" />
-      <version md5="8a2ec8243001d2e52ef4e64b97bbe030" nb="7.0-rc2" />
-      <version md5="5de9b70b99274bdd77ac0ab886cab15b" nb="7.0-rc3" />
-      <version md5="0dc4dee7ee83ab17bd09ddd73c14e0c0" nb="7.30" />
-      <version md5="002d5e0a7a976238f169d934c0e651af" nb="7.0-rc1" />
-      <version md5="2c064b19f0240d5838ac0ae9b0d76336" nb="7.0-beta1" />
-      <version md5="5af1565654858c3a7f996a8f79926172" nb="7.0-beta3" />
-      <version md5="7784d1f30b54933abf74b969d003afa5" nb="7.0-beta2" />
-      <version md5="85f9505fcf687b9fd4b55d2e60393436" nb="7.31" />
-      <version md5="4ee104a47fbf9939cade2787e47b2c2a" nb="7.33" />
-      <version md5="34335e648b3cbd720cc3ed86f88c1d26" nb="7.34" />
-    </changelog>
     <file url="core/misc/drupal.js">
       <version md5="330a6a8916376627bdb21b0ce45804ca" nb="8.0-alpha6" />
       <version md5="93a48e3f7bc90676750e55c34283bff8" nb="8.0-alpha9" />
@@ -498,6 +447,57 @@
       <version md5="2f96f0a494a2301f65f5e25617c2d57d" nb="8.0-alpha7" />
       <version md5="bd114b42d91d266b449a866047db4afa" nb="8.0.0-beta6" />
     </file>
+    <changelog url="CHANGELOG.txt">
+      <version md5="fa02637f87ad76f18b3b97aed66753d2" nb="7.14" />
+      <version md5="30ca3761d02c5a025d5caea0e76b43c2" nb="7.15" />
+      <version md5="ad2968774051eb5479dc709ce87ba7e2" nb="7.16" />
+      <version md5="919a4daf02fad61f623fc2f8ff686640" nb="7.17" />
+      <version md5="c2cecc83ec443b111b09beeb3e525d32" nb="7.10" />
+      <version md5="4dcfe6f20e161497b8a8c969f57cf9ae" nb="7.11" />
+      <version md5="750fc8fada9ada1044e2f47927771c1b" nb="7.12" />
+      <version md5="ca11b070227bcf518e64884a83b7f78e" nb="7.13" />
+      <version md5="e4e2ab8f1b84c77e14cb742c8275e906" nb="7.18" />
+      <version md5="a6548e2a131e814eb78e0fb5e0170c69" nb="7.19" />
+      <version md5="f1115ca52f7441b0fb35dbf2d8ceea8a" nb="7.2" />
+      <version md5="8a405ef6f0956fab84462cbc747bb4ee" nb="7.3" />
+      <version md5="1193b01ba75f425e7cf5be5857562bb6" nb="7.0" />
+      <version md5="cbecaf7c4da3a9503fc7528fc9655ef3" nb="7.1" />
+      <version md5="3dea36f6e8d7cad2ea47d5829917f62c" nb="7.6" />
+      <version md5="2e1049b34cf095563cff4a1ab85b99c2" nb="7.7" />
+      <version md5="7d574236459eba874b0a0b45a0269251" nb="7.4" />
+      <version md5="3dea36f6e8d7cad2ea47d5829917f62c" nb="7.5" />
+      <version md5="5dceb87c7c8783b6371b305a285eea4b" nb="7.0-alpha1" />
+      <version md5="46fa5ca038abda95c797ff2338ed8a8f" nb="7.0-alpha2" />
+      <version md5="32c29f96a4044498e7919bb2f07fa384" nb="7.0-alpha3" />
+      <version md5="b019dd69fb21cbfae8183ef7aa2d1d5e" nb="7.0-alpha4" />
+      <version md5="810120469173e7ce0767e4f54d025e88" nb="7.0-alpha5" />
+      <version md5="99525ef80534f758e2d0e4af1797dd8b" nb="7.0-alpha6" />
+      <version md5="d672cd026f87486cd6139e1e1b15e570" nb="7.0-alpha7" />
+      <version md5="05c35ea41cde4ed14642b8a6f79cc353" nb="7.9" />
+      <version md5="f0add58c8139bdee0e70756b3e5ce3d1" nb="7.32" />
+      <version md5="767cff2a1756be6db518b8cb9c360f5c" nb="7.8" />
+      <version md5="a73760e71235a045989fce8ed0525b80" nb="7.29" />
+      <version md5="d56858b074520fc947a7739c03031cbc" nb="7.28" />
+      <version md5="853320639aec176c29fa58af34e20bef" nb="7.25" />
+      <version md5="752e21ba08a2d988806034151120cb21" nb="7.24" />
+      <version md5="cedcdbb21a0b0946b264fecc48a20703" nb="7.27" />
+      <version md5="da1fdf2e2e07c5492c76759b592da669" nb="7.26" />
+      <version md5="756587439d2dd9fce15110a2f08620fe" nb="7.21" />
+      <version md5="66fb72fce833f76801de24ad24b84377" nb="7.20" />
+      <version md5="33cdc361555923382d4dd72e657ad7bc" nb="7.23" />
+      <version md5="dfd6807a045b68b02964dd8269e50ff7" nb="7.22" />
+      <version md5="ce576a19e63085a432945d471ae20403" nb="7.0-rc4" />
+      <version md5="8a2ec8243001d2e52ef4e64b97bbe030" nb="7.0-rc2" />
+      <version md5="5de9b70b99274bdd77ac0ab886cab15b" nb="7.0-rc3" />
+      <version md5="0dc4dee7ee83ab17bd09ddd73c14e0c0" nb="7.30" />
+      <version md5="002d5e0a7a976238f169d934c0e651af" nb="7.0-rc1" />
+      <version md5="2c064b19f0240d5838ac0ae9b0d76336" nb="7.0-beta1" />
+      <version md5="5af1565654858c3a7f996a8f79926172" nb="7.0-beta3" />
+      <version md5="7784d1f30b54933abf74b969d003afa5" nb="7.0-beta2" />
+      <version md5="85f9505fcf687b9fd4b55d2e60393436" nb="7.31" />
+      <version md5="4ee104a47fbf9939cade2787e47b2c2a" nb="7.33" />
+      <version md5="34335e648b3cbd720cc3ed86f88c1d26" nb="7.34" />
+    </changelog>
     <changelog url="core/CHANGELOG.txt">
       <version md5="f50de9476bc30d736ec992dad35cf782" nb="8.0-alpha6" />
       <version md5="7fc0b90694e0aa25b7e9e139f8145013" nb="8.0-alpha9" />

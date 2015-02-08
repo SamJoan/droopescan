@@ -140,7 +140,7 @@ class BaseTest(test.CementTestCase):
         with open(url_file) as f:
             for url in f:
                 url_tpl = url.strip('\n') + '%s'
-                self.respond_several(url_tpl, {403: ['misc/'], 200: ['', 'misc/drupal.js'], 404: [self.scanner.not_found_url]})
+                self.respond_several(url_tpl, {403: [Drupal.forbidden_url], 200: ['', 'misc/drupal.js'], 404: [self.scanner.not_found_url]})
 
     def mock_xml(self, xml_file, version_to_mock):
         '''
