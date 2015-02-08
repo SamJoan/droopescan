@@ -14,8 +14,8 @@ class Drupal(BasePlugin):
     themes_base_url = ["%ssites/all/themes/%s/",
             "%ssites/default/themes/%s/"]
 
-    forbidden_url = "misc/"
-    regular_file_url = "misc/drupal.js"
+    forbidden_url = "sites/"
+    regular_file_url = ["misc/drupal.js", 'core/misc/drupal.js']
     module_common_file = "LICENSE.txt"
 
     interesting_urls = [
