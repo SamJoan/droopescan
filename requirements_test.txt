@@ -4,3 +4,4 @@ responses
 lxml
 BeautifulSoup4
 coverage
+wheel
