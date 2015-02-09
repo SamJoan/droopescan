@@ -1,3 +1,10 @@
+1.19.0
+======
+
+* Added support for Drupal 8.x.
+* Usability improvements.
+* Add flag for not following redirects.
+
 1.18.0
 ======
 
