@@ -4,7 +4,8 @@ from common.testutils import decallmethods
 from common.update_api import GH, UW
 from common.update_api import github_tags_newer, github_repo, _github_normalize
 from common.update_api import GitRepo
-from mock import patch, MagicMock, mock_open
+from datetime import datetime, timedelta
+from mock import patch, MagicMock, mock_open, Mock
 from plugins.drupal import Drupal
 from plugins.update import Update
 from tests import BaseTest
@@ -59,6 +60,10 @@ class UpdateTests(BaseTest):
         gh_resp = open('tests/resources/github_response.html').read()
         responses.add(responses.GET, 'https://github.com/drupal/drupal/releases', body=gh_resp)
         responses.add(responses.GET, 'https://github.com/silverstripe/silverstripe-framework/releases')
+
+    def mock_update_all(self):
+        self.updater.update_version = Mock(spec=self.updater.update_version)
+        self.updater.update_plugins = Mock(spec=self.updater.update_plugins)
 
     def test_update_checks_and_updates(self):
         self.gh_mock()
@@ -368,4 +373,29 @@ class UpdateTests(BaseTest):
 
                 assert iv.called
                 assert not o().write.called
+
+    def test_calls_update_plugins(self):
+        self.mock_update_all()
+        self.updater.update()
+
+        assert self.updater.update_plugins.called
+
+    def test_plugins_update_check(self):
+        drupal = Drupal()
+        drupal.update_plugins = up = Mock(spec=self.scanner.update_plugins)
+
+        today = datetime.today()
+        yesterday = datetime.today() - timedelta(days=1)
+        too_long_ago = today - timedelta(days=33)
+
+        with patch('common.update_api.file_mtime', return_value=yesterday):
+            self.updater.update_plugins(self.controller_get('drupal')(), 'Drupal')
+            assert not up.called
+
+        with patch('common.update_api.file_mtime', return_value=too_long_ago):
+            self.updater.update_plugins(drupal, 'Drupal')
+            assert up.called
+
+    def test_file_mtime(self):
+        assert False
 

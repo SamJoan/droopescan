@@ -1,6 +1,7 @@
 from cement.core import handler, controller
 from plugins import BasePlugin
 from common.update_api import GitRepo
+from datetime import datetime, timedelta
 import common.update_api as ua
 import common.versions
 
@@ -65,6 +66,16 @@ class Drupal(BasePlugin):
 
         versions_file.update(hashes)
         return versions_file
+
+    def update_plugins_check(self):
+        today = datetime.today()
+        mtime = ua.file_mtime(self.plugins_file)
+        delta = today - mtime
+
+        return delta > timedelta(days=30)
+
+    def update_plugins(self):
+        pass
 
 def load():
     handler.register(Drupal)

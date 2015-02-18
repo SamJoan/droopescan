@@ -5,6 +5,7 @@ except:
 
 from common.functions import version_gt
 from common.versions import VersionsFile
+from datetime import datetime
 import common.functions
 import common.versions
 import os
@@ -117,6 +118,19 @@ def hashes_get(versions_file, majors, base_path):
 
     return result
 
+def file_mtime(file_path):
+    """
+        Returns the file modified time. This is with regards to the last
+        modification the file has had in the droopescan repo, rather than actual
+        file modification time in the filesystem.
+        @param file path relative to the executable.
+        @return datetime.datetime object.
+    """
+    ut = subprocess.check_output(['git', 'log', '-1', '--format=%ct',
+        file_path]).strip()
+
+    return datetime.fromtimestamp(ut)
+
 class GitRepo():
 
     _initialized = False
@@ -220,4 +234,5 @@ class GitRepo():
         if return_code != 0:
             command = ' '.join(args[0])
             raise RuntimeError('Command "%s" failed with exit status "%s"' % (command, return_code))
+
 
