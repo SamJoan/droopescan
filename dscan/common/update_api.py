@@ -126,10 +126,13 @@ def file_mtime(file_path):
         @param file path relative to the executable.
         @return datetime.datetime object.
     """
+    if not os.path.isfile(file_path):
+        raise IOError('File "%s" does not exist.' % file_path)
+
     ut = subprocess.check_output(['git', 'log', '-1', '--format=%ct',
         file_path]).strip()
 
-    return datetime.fromtimestamp(ut)
+    return datetime.fromtimestamp(int(ut))
 
 class GitRepo():
 

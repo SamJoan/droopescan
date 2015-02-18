@@ -2,7 +2,8 @@ from cement.utils import test
 from common import VersionsFile
 from common.testutils import decallmethods
 from common.update_api import GH, UW
-from common.update_api import github_tags_newer, github_repo, _github_normalize
+from common.update_api import github_tags_newer, github_repo, _github_normalize, \
+    file_mtime
 from common.update_api import GitRepo
 from datetime import datetime, timedelta
 from mock import patch, MagicMock, mock_open, Mock
@@ -396,6 +397,20 @@ class UpdateTests(BaseTest):
             self.updater.update_plugins(drupal, 'Drupal')
             assert up.called
 
+    @test.raises(IOError)
+    def test_file_mtime_raises(self):
+        filename = "filename"
+        with patch('os.path.isfile', return_value=False):
+            file_mtime(filename)
+
     def test_file_mtime(self):
-        assert False
+        filename = "filename"
+        timestamp = "1424298106"
+        self.mock_check_output.return_value = timestamp
+        dt = datetime.fromtimestamp(int(timestamp))
+
+        with patch('os.path.isfile', return_value=True):
+            rdt = file_mtime(filename)
+
+        assert dt == rdt
 
