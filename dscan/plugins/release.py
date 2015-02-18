@@ -20,7 +20,7 @@ class Release(HumanBasePlugin):
 
     test_runs_base = ['../droopescan']
 
-    test_runs_append = ['-n', '100', '-t', '4']
+    test_runs_append = ['-n', '100', '-t', '15']
 
     test_runs = [
             ['scan', 'drupal', '--url', 'https://www.drupal.org'],
@@ -66,9 +66,15 @@ class Release(HumanBasePlugin):
 
         return all_ok
 
+    def _check_pypirc(self):
+        pypirc = os.path.expanduser("~/.pypirc")
+        if not os.path.isfile(pypirc):
+            self.error('File "%s" does not exist.' % pypirc)
+
     @controller.expose(help='', hide=True)
     def default(self):
         skip_external = self.app.pargs.skip_external
+        self._check_pypirc()
 
         tests_passed = call(['../droopescan', 'test']) == 0
         if not tests_passed:
