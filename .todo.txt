@@ -4,6 +4,7 @@ Version 1.x:
 
     - Add automatic plugin & theme list generation for SS & Drupal.
     - Reduce number of themes for Drupal.
+    - Add CHANGELOG detection for drupal 6.
 
 Version 2.x
 
