@@ -78,10 +78,12 @@ def dict_combine(x, y):
     return z
 
 def file_len(fname):
+    i = 0
     with open(fname) as f:
-        for i, l in enumerate(f):
-            pass
-    return i + 1
+        for l in f:
+            i += 1
+
+    return i
 
 def strip_letters(string):
     return ''.join([c for c in str(string) if c in '1234567890.-'])

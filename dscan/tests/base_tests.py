@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from cement.utils import test
 from common import file_len, ProgressBar, JsonOutput, StandardOutput
 from common.testutils import decallmethods, MockBuffer
-from mock import patch, MagicMock
+from mock import patch, MagicMock, mock_open
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
 from requests import Session
@@ -238,5 +238,11 @@ class BaseTests(BaseTest):
 
             assert not rlp.called
 
-    def test_file_len_empty_file():
-        assert False
+    def test_file_len_empty_file(self):
+        m = mock_open()
+        with patch('common.functions.open', m, create=True) as o:
+            ln = file_len("test")
+            print(o.call_args_list)
+            assert ln == 0
+
+
