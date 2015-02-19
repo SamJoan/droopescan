@@ -69,6 +69,21 @@ class SilverStripe(BasePlugin):
         versions_file.update(hashes)
         return versions_file
 
+    def update_plugins_check(self):
+        """
+            @return True if more than a month has passed since the last
+                plugin/theme update.
+        """
+        return False
+        today = datetime.today()
+        mtime = ua.file_mtime(self.plugins_file)
+        delta = today - mtime
+
+        return delta > timedelta(days=30)
+
+    def update_plugins(self):
+        raise Exception()
+
 def load():
     handler.register(SilverStripe)
 

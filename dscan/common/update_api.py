@@ -1,3 +1,4 @@
+from __future__ import print_function
 try:
     from bs4 import BeautifulSoup
 except:
@@ -134,7 +135,7 @@ def file_mtime(file_path):
 
     return datetime.fromtimestamp(int(ut))
 
-def modules_get(url_tpl, per_page, css):
+def modules_get(url_tpl, per_page, css, max_modules=100):
     """
         Gets a list of modules. Note that this function can also be used to get
         themes.
@@ -144,12 +145,19 @@ def modules_get(url_tpl, per_page, css):
         @param per_page how many items there are per page.
         @param css the elements matched by this selector will be returned by the
             iterator.
+        @param max_modules absolute maximum modules we will attempt to request.
         @return bs4.element.Tag
         @see http://www.crummy.com/software/BeautifulSoup/bs4/doc/#css-selectors
         @see http://www.crummy.com/software/BeautifulSoup/bs4/doc/#tag
     """
     page = 0
     elements = False
+    done_so_far = 0
+
+    max_potential_pages = max_modules / per_page
+    print("Maximum pages: %s." % max_potential_pages)
+
+    stop = False
     while elements == False or len(elements) == per_page:
         url = url_tpl % page
 
@@ -159,8 +167,18 @@ def modules_get(url_tpl, per_page, css):
 
         for element in elements:
             yield element
+            done_so_far += 1
 
+            if done_so_far >= max_modules:
+                stop = True
+                break
+
+        if stop:
+            break
+
+        print('Finished parsing page %s.' % page)
         page += 1
+
 
 class GitRepo():
 

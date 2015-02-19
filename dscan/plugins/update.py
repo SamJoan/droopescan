@@ -1,7 +1,8 @@
+from __future__ import print_function
 from cement.core import handler, controller
 from plugins import HumanBasePlugin
 import common.plugins_util as pu
-
+import sys
 
 class Update(HumanBasePlugin):
     class Meta:
@@ -25,11 +26,12 @@ class Update(HumanBasePlugin):
             self.msg('Updated %s.' % plugin_name)
 
         else:
-            self.msg('%s is up to date.' % plugin_name.capitalize())
+            self.msg('%s versions are up to date.' % plugin_name.capitalize())
 
     def update_plugins(self, plugin, plugin_name):
         must_update = plugin.update_plugins_check()
         if must_update:
+            self.msg("Updating plugins for %s..." % plugin_name)
             plugins, themes = plugin.update_plugins()
 
             with open(plugin.plugins_file, 'w') as f:
@@ -40,8 +42,11 @@ class Update(HumanBasePlugin):
                 for t in themes:
                     f.write(t + "\n")
 
+            self.msg("Successfully wrote %s plugins and %s themes." %
+                    (len(plugins), len(themes)))
+
         else:
-            self.msg('%s is up to date.' % plugin_name.capitalize())
+            self.msg('%s plugins/themes don\'t need updating.' % plugin_name.capitalize())
 
     @controller.expose(help='', hide=True)
     def update(self):
