@@ -389,13 +389,15 @@ class UpdateTests(BaseTest):
         yesterday = datetime.today() - timedelta(days=1)
         too_long_ago = today - timedelta(days=33)
 
-        with patch('common.update_api.file_mtime', return_value=yesterday):
-            self.updater.update_plugins(self.controller_get('drupal')(), 'Drupal')
-            assert not up.called
+        o = mock_open()
+        with patch('plugins.update.open', o, create=True):
+            with patch('common.update_api.file_mtime', return_value=yesterday):
+                self.updater.update_plugins(self.controller_get('drupal')(), 'Drupal')
+                assert not up.called
 
-        with patch('common.update_api.file_mtime', return_value=too_long_ago):
-            self.updater.update_plugins(drupal, 'Drupal')
-            assert up.called
+            with patch('common.update_api.file_mtime', return_value=too_long_ago):
+                self.updater.update_plugins(drupal, 'Drupal')
+                assert up.called
 
     @test.raises(IOError)
     def test_file_mtime_raises(self):
@@ -415,9 +417,11 @@ class UpdateTests(BaseTest):
         assert dt == rdt
 
     def test_drupal_calls_modules_get(self):
-        with patch('common.update_api.modules_get') as p:
-            self.updater.update_plugins(self.scanner, "Drupal")
-            assert p.called
+        o = mock_open()
+        with patch('plugins.update.open', o, create=True):
+            with patch('common.update_api.modules_get') as p:
+                self.updater.update_plugins(self.scanner, "Drupal")
+                assert p.called
 
     def test_modules_get(self):
         url = 'https://drupal.org/project/project_module?page=%s'

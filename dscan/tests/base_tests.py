@@ -237,3 +237,6 @@ class BaseTests(BaseTest):
                 pass
 
             assert not rlp.called
+
+    def test_file_len_empty_file():
+        assert False
