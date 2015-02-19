@@ -6,7 +6,7 @@ except:
 
 from common.functions import version_gt
 from common.versions import VersionsFile
-from datetime import datetime
+from datetime import datetime, timedelta
 import common.functions
 import common.versions
 import os
@@ -179,6 +179,17 @@ def modules_get(url_tpl, per_page, css, max_modules=2000):
             break
 
         page += 1
+
+def update_modules_check(plugin):
+    """
+        @return True if more than a month has passed since the last
+            plugin/theme update.
+    """
+    today = datetime.today()
+    mtime = file_mtime(plugin.plugins_file)
+    delta = today - mtime
+
+    return delta > timedelta(days=30)
 
 class GitRepo():
 

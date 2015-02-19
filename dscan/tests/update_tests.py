@@ -376,12 +376,6 @@ class UpdateTests(BaseTest):
                 assert iv.called
                 assert not o().write.called
 
-    def test_calls_update_plugins(self):
-        self.mock_update_all()
-        self.updater.update()
-
-        assert self.updater.update_plugins.called
-
     def test_plugins_update_check(self):
         drupal = Drupal()
         drupal.update_plugins = up = Mock(spec=self.scanner.update_plugins,

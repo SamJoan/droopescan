@@ -74,12 +74,7 @@ class SilverStripe(BasePlugin):
             @return True if more than a month has passed since the last
                 plugin/theme update.
         """
-        return False
-        today = datetime.today()
-        mtime = ua.file_mtime(self.plugins_file)
-        delta = today - mtime
-
-        return delta > timedelta(days=30)
+        return ua.update_modules_check(self)
 
     def update_plugins(self):
         raise Exception()
