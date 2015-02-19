@@ -10,6 +10,7 @@ from mock import patch, MagicMock, mock_open, Mock
 from plugins.drupal import Drupal
 from plugins.update import Update
 from tests import BaseTest
+import codecs
 import common
 import responses
 
@@ -73,7 +74,7 @@ class UpdateTests(BaseTest):
 
         o = mock_open()
         with patch('plugins.update.open', o, create=True):
-            self.updater.update()
+            self.updater.update_version(self.controller_get('drupal')(), "Drupal")
 
         assert m.called
 
@@ -84,7 +85,7 @@ class UpdateTests(BaseTest):
 
         o = mock_open()
         with patch('plugins.update.open', o, create=True):
-            self.updater.update()
+            self.updater.update_version(self.controller_get('drupal')(), "Drupal")
 
         assert not m.called
 
@@ -352,7 +353,7 @@ class UpdateTests(BaseTest):
             uvc = self.mock_controller('drupal', 'update_version_check', return_value=True)
             uv = self.mock_controller('drupal', 'update_version', return_value=vf)
 
-            self.updater.update()
+            self.updater.update_version(self.controller_get('drupal')(), "Drupal")
 
             args, kwargs = o.call_args
             assert args[0] == self.scanner.versions_file
@@ -368,7 +369,7 @@ class UpdateTests(BaseTest):
         o = mock_open()
         with patch('plugins.update.open', o, create=True):
             with patch('plugins.update.Update.is_valid', return_value=False) as iv:
-                self.updater.update()
+                self.updater.update_version(self.controller_get('drupal')(), "Drupal")
 
                 args, kwargs = iv.call_args
 
@@ -383,7 +384,8 @@ class UpdateTests(BaseTest):
 
     def test_plugins_update_check(self):
         drupal = Drupal()
-        drupal.update_plugins = up = Mock(spec=self.scanner.update_plugins)
+        drupal.update_plugins = up = Mock(spec=self.scanner.update_plugins,
+                return_value=([], []))
 
         today = datetime.today()
         yesterday = datetime.today() - timedelta(days=1)
@@ -428,8 +430,9 @@ class UpdateTests(BaseTest):
         css = '.node-project-module > h2 > a'
         per_page = 25
 
-        do_resp = open('tests/resources/drupal_org_response.html').read()
-        do_resp_last = open('tests/resources/drupal_org_response_partial.html').read()
+        do_resp = codecs.open('tests/resources/drupal_org_response.html',
+                encoding='utf-8').read()
+        do_resp_last = codecs.open('tests/resources/drupal_org_response_partial.html').read()
         responses.add(responses.GET, 'https://drupal.org/project/project_module?page=0',
                 body=do_resp, match_querystring=True)
         responses.add(responses.GET, 'https://drupal.org/project/project_module?page=1',
