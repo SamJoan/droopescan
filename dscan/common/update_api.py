@@ -135,7 +135,7 @@ def file_mtime(file_path):
 
     return datetime.fromtimestamp(int(ut))
 
-def modules_get(url_tpl, per_page, css, max_modules=100):
+def modules_get(url_tpl, per_page, css, max_modules=2000):
     """
         Gets a list of modules. Note that this function can also be used to get
         themes.
@@ -173,12 +173,12 @@ def modules_get(url_tpl, per_page, css, max_modules=100):
                 stop = True
                 break
 
+        print('Finished parsing page %s.' % page)
+
         if stop:
             break
 
-        print('Finished parsing page %s.' % page)
         page += 1
-
 
 class GitRepo():
 

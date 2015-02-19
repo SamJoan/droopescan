@@ -7,11 +7,11 @@ import common.versions
 
 class Drupal(BasePlugin):
 
-    plugins_file = "plugins/drupal/wordlists/plugins_3500"
+    plugins_file = "plugins/drupal/plugins.txt"
     plugins_base_url = ["%ssites/all/modules/%s/",
             "%ssites/default/modules/%s/"]
 
-    themes_file = "plugins/drupal/wordlists/themes_1250"
+    themes_file = "plugins/drupal/themes.txt"
     themes_base_url = ["%ssites/all/themes/%s/",
             "%ssites/default/themes/%s/"]
 
