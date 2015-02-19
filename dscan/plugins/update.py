@@ -30,7 +30,16 @@ class Update(HumanBasePlugin):
     def update_plugins(self, plugin, plugin_name):
         must_update = plugin.update_plugins_check()
         if must_update:
-            plugin.update_plugins()
+            plugins, themes = plugin.update_plugins()
+
+            with open(plugin.plugins_file, 'w') as f:
+                for p in plugins:
+                    f.write(p + "\n")
+
+            with open(plugin.themes_file, 'w') as f:
+                for t in themes:
+                    f.write(t + "\n")
+
         else:
             self.msg('%s is up to date.' % plugin_name.capitalize())
 

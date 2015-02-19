@@ -3,7 +3,7 @@ from common import VersionsFile
 from common.testutils import decallmethods
 from common.update_api import GH, UW
 from common.update_api import github_tags_newer, github_repo, _github_normalize, \
-    file_mtime
+    file_mtime, modules_get
 from common.update_api import GitRepo
 from datetime import datetime, timedelta
 from mock import patch, MagicMock, mock_open, Mock
@@ -414,3 +414,72 @@ class UpdateTests(BaseTest):
 
         assert dt == rdt
 
+    def test_drupal_calls_modules_get(self):
+        with patch('common.update_api.modules_get') as p:
+            self.updater.update_plugins(self.scanner, "Drupal")
+            assert p.called
+
+    def test_modules_get(self):
+        url = 'https://drupal.org/project/project_module?page=%s'
+        css = '.node-project-module > h2 > a'
+        per_page = 25
+
+        do_resp = open('tests/resources/drupal_org_response.html').read()
+        do_resp_last = open('tests/resources/drupal_org_response_partial.html').read()
+        responses.add(responses.GET, 'https://drupal.org/project/project_module?page=0',
+                body=do_resp, match_querystring=True)
+        responses.add(responses.GET, 'https://drupal.org/project/project_module?page=1',
+                body=do_resp, match_querystring=True)
+        responses.add(responses.GET, 'https://drupal.org/project/project_module?page=2',
+                body=do_resp_last, match_querystring=True)
+
+        plugins = []
+        for plugin in modules_get(url, per_page, css):
+            plugins.append(plugin)
+
+        assert len(plugins) == 69
+
+    def test_drupal_update_plugins(self):
+        ret_val = [
+            {"href": "/project/module_1"},
+            {"href": "/project/module_2"},
+            {"href": "/project/module_3"},
+        ]
+
+        results = [
+            'module_1',
+            'module_2',
+            'module_3'
+        ]
+
+        m = mock_open()
+        with patch('common.update_api.modules_get', return_value=ret_val) as mg:
+            plugins, themes = self.scanner.update_plugins()
+
+            assert plugins == results
+            assert themes == results
+
+            assert len(mg.call_args_list) == 2
+            assert mg.call_args_list[0][0][0] != mg.call_args_list[1][0][0]
+
+    def test_drupal_plugins_updates_file(self):
+        plugins = ['plugin_1', 'plugin_2', 'plugin_3']
+        themes = ['theme_1', 'theme_2', 'theme_3']
+
+        self.scanner.update_plugins = Mock(spec=self.scanner.update_plugins,
+                return_value=(plugins, themes))
+
+        m = mock_open()
+        with patch('plugins.update.open', m, create=True) as o:
+            self.updater.update_plugins(self.scanner, "Drupal")
+
+            assert self.scanner.update_plugins.called == True
+            assert len(o.call_args_list) == 2
+
+            for i, call in enumerate(o().write.call_args_list):
+                if i < 3:
+                    check_against = plugins
+                else:
+                    check_against = themes
+
+                assert call[0][0].rstrip() == check_against[i % 3]

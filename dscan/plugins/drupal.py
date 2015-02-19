@@ -68,6 +68,10 @@ class Drupal(BasePlugin):
         return versions_file
 
     def update_plugins_check(self):
+        """
+            @return True if more than a month has passed since the last
+                plugin/theme update.
+        """
         today = datetime.today()
         mtime = ua.file_mtime(self.plugins_file)
         delta = today - mtime
@@ -75,7 +79,25 @@ class Drupal(BasePlugin):
         return delta > timedelta(days=30)
 
     def update_plugins(self):
-        pass
+        """
+            @return (plugins, themes) a tuple which contains two list of
+                strings, the plugins and the themes.
+        """
+        plugins_url = 'https://drupal.org/project/project_module?page=%s'
+        plugins_css = '.node-project-module > h2 > a'
+        themes_url = 'https://drupal.org/project/project_theme?page=%s'
+        themes_css = '.node-project-theme > h2 > a'
+        per_page = 25
+
+        plugins = []
+        for elem in ua.modules_get(plugins_url, per_page, plugins_css):
+            plugins.append(elem['href'].split("/")[-1])
+
+        themes = []
+        for elem in ua.modules_get(themes_url, per_page, themes_css):
+            themes.append(elem['href'].split("/")[-1])
+
+        return plugins, themes
 
 def load():
     handler.register(Drupal)

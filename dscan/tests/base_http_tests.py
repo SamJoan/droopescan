@@ -136,6 +136,7 @@ class BaseHttpTests(BaseTest):
         for plugin in plugins_generator:
             plugins.append(plugin)
 
+        print(plugins)
         assert 3 == len(plugins)
 
         themes_generator = self.scanner.themes_get("3")

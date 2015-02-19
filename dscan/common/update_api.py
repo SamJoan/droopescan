@@ -134,6 +134,34 @@ def file_mtime(file_path):
 
     return datetime.fromtimestamp(int(ut))
 
+def modules_get(url_tpl, per_page, css):
+    """
+        Gets a list of modules. Note that this function can also be used to get
+        themes.
+        @param url_tpl a string such as
+        https://drupal.org/project/project_module?page=%s.
+            %s will be replaced with the page number.
+        @param per_page how many items there are per page.
+        @param css the elements matched by this selector will be returned by the
+            iterator.
+        @return bs4.element.Tag
+        @see http://www.crummy.com/software/BeautifulSoup/bs4/doc/#css-selectors
+        @see http://www.crummy.com/software/BeautifulSoup/bs4/doc/#tag
+    """
+    page = 0
+    elements = False
+    while elements == False or len(elements) == per_page:
+        url = url_tpl % page
+
+        r = requests.get(url)
+        bs = BeautifulSoup(r.text)
+        elements = bs.select(css)
+
+        for element in elements:
+            yield element
+
+        page += 1
+
 class GitRepo():
 
     _initialized = False

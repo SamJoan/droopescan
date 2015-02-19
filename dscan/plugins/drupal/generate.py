@@ -1,5 +1,5 @@
 """
-Grabs a list of modules from drupal's online list of modules.
+    Grabs a list of modules from drupal's online list of modules.
 """
 
 import sys
