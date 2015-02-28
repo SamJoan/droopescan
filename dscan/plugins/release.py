@@ -3,7 +3,7 @@ from common import template
 from common.plugins_util import Plugin, plugins_get
 from distutils.util import strtobool
 from plugins import HumanBasePlugin
-from subprocess import call
+from subprocess import call, check_output
 import re
 import sys, tempfile, os
 
@@ -102,12 +102,14 @@ class Release(HumanBasePlugin):
                 self.prepend_to_file(CHANGELOG, final)
 
                 try:
+                    curr_branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+
                     c(['git', 'add', '..'])
                     c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
                         version_nb])
 
                     c(['git', 'checkout', 'master'])
-                    c(['git', 'merge', 'development'])
+                    c(['git', 'merge', curr_branch])
 
                     c(['git', 'tag', version_nb])
                     call('git remote | xargs -l git push --all', shell=True)
