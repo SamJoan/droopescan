@@ -1,3 +1,9 @@
+1.21.0
+======
+
+* Add new SS version.
+* Improved release process to allow the releasing from branches instead of only allowing releases from 'development'.
+
 1.20.0
 ======
 
