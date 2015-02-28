@@ -20,7 +20,7 @@ class Release(HumanBasePlugin):
 
     test_runs_base = ['../droopescan']
 
-    test_runs_append = ['-n', '100', '-t', '15']
+    test_runs_append = ['-n', '100', '-t', '2']
 
     test_runs = [
             ['scan', 'drupal', '--url', 'https://www.drupal.org'],
