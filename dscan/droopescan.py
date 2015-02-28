@@ -20,7 +20,7 @@ class DroopeScanBase(controller.CementBaseController):
         label = 'base'
         description = __doc__
 
-        epilog = template("help_epilog.tpl")
+        epilog = template("help_epilog.mustache")
 
     @controller.expose(hide=True)
     def default(self):

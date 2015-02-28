@@ -41,7 +41,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         argument_formatter = common.SmartFormatter
 
-        epilog = template('help_epilog.tpl')
+        epilog = template('help_epilog.mustache')
 
     def getattr(self, pargs, attr_name, default=None):
         val = getattr(pargs, attr_name)
@@ -123,17 +123,17 @@ class BasePluginInternal(controller.CementBaseController):
         all = {
             'plugins': {
                 'func': getattr(self, 'enumerate_plugins'),
-                'template': 'enumerate_plugins.tpl',
+                'template': 'enumerate_plugins.mustache',
                 'kwargs': kwargs_plugins
             },
             'themes': {
                 'func': getattr(self, 'enumerate_themes'),
-                'template': 'enumerate_plugins.tpl',
+                'template': 'enumerate_plugins.mustache',
                 'kwargs': kwargs_themes
             },
             'version': {
                 'func': getattr(self, 'enumerate_version'),
-                'template': 'enumerate_version.tpl',
+                'template': 'enumerate_version.mustache',
                 'kwargs': {
                     'versions_file': self.versions_file,
                     'verb': opts['verb'],
@@ -143,7 +143,7 @@ class BasePluginInternal(controller.CementBaseController):
             },
             'interesting urls': {
                 'func': getattr(self, 'enumerate_interesting'),
-                'template': 'enumerate_interesting.tpl',
+                'template': 'enumerate_interesting.mustache',
                 'kwargs': {
                     'verb': opts['verb'],
                     'interesting_urls': self.interesting_urls,

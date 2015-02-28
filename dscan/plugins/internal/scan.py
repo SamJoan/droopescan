@@ -14,7 +14,7 @@ class Scan(controller.CementBaseController):
         epilog = "\n"
 
         argument_formatter = common.SmartFormatter
-        epilog = template("help_epilog.tpl")
+        epilog = template("help_epilog.mustache")
 
         arguments = [
                 (['-u', '--url'], dict(action='store', help='')),
@@ -23,10 +23,10 @@ class Scan(controller.CementBaseController):
                     for debugging purposes. Disables threading and loading
                     bars.""", default=False)),
                 (['--enumerate', '-e'], dict(action='store', help='R|' +
-                    common.template('help_enumerate.tpl'),
+                    common.template('help_enumerate.mustache'),
                     choices=common.enum_list(common.Enumerate), default='a')),
                 (['--method'], dict(action='store', help='R|' +
-                    common.template('help_method.tpl'), choices=common.enum_list(common.ScanningMethod))),
+                    common.template('help_method.mustache'), choices=common.enum_list(common.ScanningMethod))),
                 (['--threads', '-t'], dict(action='store', help='''Number of
                     threads. Default 4.''', default=4, type=int)),
                 (['--number', '-n'], dict(action='store', help='''Number of

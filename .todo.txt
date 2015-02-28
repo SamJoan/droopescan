@@ -6,7 +6,7 @@ Version 1.x:
     - Reduce number of themes for Drupal.
     - Add CHANGELOG detection for drupal 6.
     - https://packagist.org/packages/?type=silverstripe-theme
-        https://packagist.org/packages/?type=silverstripe-module
+    https://packagist.org/packages/?type=silverstripe-module
 
 Version 2.x
 
