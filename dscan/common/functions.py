@@ -170,3 +170,12 @@ def version_gt(version, gt):
 def md5_file(filename):
     return hashlib.md5(open(filename).read()).hexdigest()
 
+def version_get():
+    """
+        Returns current droopescan version.
+    """
+    with open('../CHANGELOG', 'r') as f:
+        version = f.readline().strip()
+
+    return version
+
