@@ -132,6 +132,7 @@ class Release(HumanBasePlugin):
 
                 finally:
                     c(['git', 'checkout', 'development'])
+                    c(['git', 'merge', 'master'])
 
             else:
                 self.error('Canceled by user')
