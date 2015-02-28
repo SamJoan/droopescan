@@ -383,7 +383,7 @@ class UpdateTests(BaseTest):
 
         today = datetime.today()
         yesterday = datetime.today() - timedelta(days=1)
-        too_long_ago = today - timedelta(days=33)
+        too_long_ago = today - timedelta(days=400)
 
         o = mock_open()
         with patch('plugins.update.open', o, create=True):
