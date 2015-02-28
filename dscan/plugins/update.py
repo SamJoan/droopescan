@@ -59,7 +59,7 @@ class Update(HumanBasePlugin):
                     (len(plugins), len(themes)))
 
         else:
-            self.msg('%s plugins/themes don\'t need updating.' % plugin_name.capitalize())
+            self.msg('%s modules don\'t need updating.' % plugin_name.capitalize())
 
     @controller.expose(help='', hide=True)
     def default(self):

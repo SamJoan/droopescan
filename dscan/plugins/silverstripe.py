@@ -70,10 +70,6 @@ class SilverStripe(BasePlugin):
         return versions_file
 
     def update_plugins_check(self):
-        """
-            @return True if more than a month has passed since the last
-                plugin/theme update.
-        """
         return ua.update_modules_check(self)
 
     def update_plugins(self):

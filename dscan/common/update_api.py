@@ -182,14 +182,13 @@ def modules_get(url_tpl, per_page, css, max_modules=2000):
 
 def update_modules_check(plugin):
     """
-        @return True if more than a month has passed since the last
-            plugin/theme update.
+        @return True if modules need to be updated.
     """
     today = datetime.today()
     mtime = file_mtime(plugin.plugins_file)
     delta = today - mtime
 
-    return delta > timedelta(days=30)
+    return delta > timedelta(days=365)
 
 class GitRepo():
 
