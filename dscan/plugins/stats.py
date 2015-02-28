@@ -13,9 +13,8 @@ class Stats(controller.CementBaseController):
         plugins = plugins_get()
         version = version_get()
 
-        print(template('stats_plugin.mustache', {'version': version, 'plugins':
-            plugins}))
-
+        print(template('stats_plugin.mustache', {'version': version,
+            'plugins': plugins}))
 
 def load():
     handler.register(Stats)

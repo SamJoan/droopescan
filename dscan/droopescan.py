@@ -11,7 +11,7 @@
 from __future__ import print_function
 from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
-from common import template
+from common.functions import template, version_get
 from plugins import Scan
 import common, sys, signal
 
@@ -19,12 +19,12 @@ class DroopeScanBase(controller.CementBaseController):
     class Meta:
         label = 'base'
         description = __doc__
-
         epilog = template("help_epilog.mustache")
 
     @controller.expose(hide=True)
     def default(self):
-        raise RuntimeError(self.app.args.format_help())
+        print(template("intro.mustache", {'version': version_get()}))
+
 
 class DroopeScan(foundation.CementApp):
     testing = False
