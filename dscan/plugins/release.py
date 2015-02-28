@@ -102,7 +102,8 @@ class Release(HumanBasePlugin):
                 self.prepend_to_file(CHANGELOG, final)
 
                 try:
-                    curr_branch = check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+                    curr_branch = check_output(['git', 'rev-parse',
+                        '--abbrev-ref', 'HEAD']).strip()
 
                     c(['git', 'add', '..'])
                     c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
