@@ -1,10 +1,11 @@
 from cement.utils import test
 from common import file_len, base_url, ProgressBar, StandardOutput
+from common import ScanningMethod, Verb, Enumerate
 from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor, Future
 from mock import patch, MagicMock, ANY
 from plugins.drupal import Drupal
-from common import ScanningMethod, Verb, Enumerate
+from plugins.internal.base_plugin_internal import BasePluginInternal
 from requests.exceptions import ConnectionError
 from tests import BaseTest
 import common
@@ -706,3 +707,26 @@ class BaseHttpTests(BaseTest):
         assert len(final_found) == len(found)
         assert len(imu_final) == 1
         assert imu_final[0] == {'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/readme.txt', 'description': 'README file.'}
+
+    def test_less_themes_by_default(self):
+        self.add_argv(['--method', 'forbidden', '-u', self.base_url])
+
+        all_mocks = self.mock_all_enumerate('drupal')
+
+        self.app.run()
+
+        themes_ok = False
+        plugins_ok = False
+        for m in all_mocks:
+            args, kwargs = m.call_args
+            if 'max_plugins' in kwargs:
+                mp = kwargs['max_plugins']
+                if mp == BasePluginInternal.NUMBER_THEMES_DEFAULT:
+                    themes_ok = True
+
+                if mp == BasePluginInternal.NUMBER_PLUGINS_DEFAULT:
+                    plugins_ok = True
+
+
+        assert themes_ok
+        assert plugins_ok

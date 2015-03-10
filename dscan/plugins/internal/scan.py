@@ -1,4 +1,5 @@
 from __future__ import print_function
+from plugins.internal.base_plugin_internal import BasePluginInternal
 from cement.core import controller
 from common import template
 import common
@@ -31,7 +32,8 @@ class Scan(controller.CementBaseController):
                     threads. Default 4.''', default=4, type=int)),
                 (['--number', '-n'], dict(action='store', help='''Number of
                     words to attempt from the plugin/theme dictionary. Default
-                    is 1000. Use -n 'all' to use all available.''', default=1000)),
+                    is 1000. Use -n 'all' to use all available.''',
+                    default=BasePluginInternal.NUMBER_DEFAULT)),
                 (['--verb'], dict(action='store', help="""The HTTP verb to use;
                     the default option is head, except for version enumeration
                     requests, which are always get because we need to get the hash

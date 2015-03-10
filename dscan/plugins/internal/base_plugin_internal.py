@@ -29,11 +29,15 @@ try:
 except:
     pass
 
+
 class BasePluginInternal(controller.CementBaseController):
     requests = None
     out = None
     DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
     not_found_url = "misc/test/error/404/ispresent.html"
+    NUMBER_DEFAULT = 'number_default'
+    NUMBER_THEMES_DEFAULT = 350
+    NUMBER_PLUGINS_DEFAULT = 1000
 
     class Meta:
         label = 'baseplugin'
@@ -97,7 +101,6 @@ class BasePluginInternal(controller.CementBaseController):
         plugins_base_url = self.getattr(pargs, 'plugins_base_url')
         themes_base_url = self.getattr(pargs, 'themes_base_url')
 
-        # all variables here will be returned.
         return locals()
 
     def _base_kwargs(self, opts):
@@ -119,6 +122,10 @@ class BasePluginInternal(controller.CementBaseController):
 
         kwargs_themes = dict(kwargs_plugins)
         kwargs_themes['base_url'] = opts['themes_base_url']
+
+        if opts['number'] == self.NUMBER_DEFAULT:
+            kwargs_themes['max_plugins'] = self.NUMBER_THEMES_DEFAULT
+            kwargs_plugins['max_plugins'] = self.NUMBER_PLUGINS_DEFAULT
 
         all = {
             'plugins': {

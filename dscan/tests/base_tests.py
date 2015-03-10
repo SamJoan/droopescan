@@ -64,7 +64,6 @@ class BaseTests(BaseTest):
     def test_calls_theme(self):
         self.add_argv(['scan', 'drupal'])
         self.add_argv(self.param_themes)
-
         self.add_argv(['--method', 'forbidden'])
 
         self.app.run()
@@ -244,5 +243,4 @@ class BaseTests(BaseTest):
             ln = file_len("test")
             print(o.call_args_list)
             assert ln == 0
-
 
