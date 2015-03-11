@@ -23,7 +23,8 @@ class DroopeScanBase(controller.CementBaseController):
 
     @controller.expose(hide=True)
     def default(self):
-        print(template("intro.mustache", {'version': version_get()}))
+        print(template("intro.mustache", {'version': version_get(),
+            'color': True}))
 
 
 class DroopeScan(foundation.CementApp):

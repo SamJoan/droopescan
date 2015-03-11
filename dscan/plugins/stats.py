@@ -8,7 +8,7 @@ class Stats(controller.CementBaseController):
     class Meta:
         label = 'stats'
 
-    @controller.expose(help='shows scanner status & capabilities')
+    @controller.expose(help='shows scanner status & capabilities.')
     def stats(self):
         plugins = plugins_get()
         version = version_get()
