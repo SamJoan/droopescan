@@ -6,6 +6,7 @@ Version 1.x:
     - Add CHANGELOG detection for drupal 6.
     - https://packagist.org/packages/?type=silverstripe-theme
     https://packagist.org/packages/?type=silverstripe-module
+    - Handle 301 sites such as http://u.acquia.com/sites/?
 
 Version 2.x
 
