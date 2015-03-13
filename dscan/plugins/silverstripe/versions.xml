@@ -25,6 +25,9 @@
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.1.10-rc1" />
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.1.10" />
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.1.11-rc1" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.1.12" />
+      <version md5="a0c1db6fa2f9b459d8451ab1357c854a" nb="3.0.12" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.1.11" />
     </file>
     <file url="cms/css/layout.css">
       <version md5="5db089786a6d5487e16297ce36ab2421" nb="2.4.10" />
@@ -164,6 +167,9 @@
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.10-rc1" />
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.10" />
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.11-rc1" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.1.12" />
+      <version md5="973cc23b2694dc47649fdede3ec02710" nb="3.0.12" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.1.11" />
     </file>
     <file url="framework/javascript/HtmlEditorField.js">
       <version md5="255ea83eb97ed9634eae66326fb5ec20" nb="3.0.0" />
@@ -284,6 +290,8 @@
       <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.10-rc1" />
       <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.10" />
       <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.11-rc1" />
+      <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.12" />
+      <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.11" />
     </file>
     <file url="framework/css/AssetUploadField.css">
       <version md5="78fa54480405595296ea61da2b33c42b" nb="3.0.0" />
@@ -342,6 +350,9 @@
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.10-rc1" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.10" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.11-rc1" />
+      <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.12" />
+      <version md5="96593622bd92eb2d3349dbb315c2aee4" nb="3.0.12" />
+      <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.11" />
     </file>
     <file url="framework/css/UploadField.css">
       <version md5="2de8e72eb87b371b61b5204c61a2c3d0" nb="3.0.0" />
@@ -400,6 +411,9 @@
       <version md5="5735ae836a12809611fb4a0f010920ea" nb="3.1.10-rc1" />
       <version md5="5735ae836a12809611fb4a0f010920ea" nb="3.1.10" />
       <version md5="8a233eb53d1230bb831a91a864b4393c" nb="3.1.11-rc1" />
+      <version md5="8a233eb53d1230bb831a91a864b4393c" nb="3.1.12" />
+      <version md5="2f87b4d81b99a72d3adfcfd24a6c630f" nb="3.0.12" />
+      <version md5="8a233eb53d1230bb831a91a864b4393c" nb="3.1.11" />
     </file>
   </files>
 </cms>
