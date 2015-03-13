@@ -135,7 +135,21 @@ def file_mtime(file_path):
 
     return datetime.fromtimestamp(int(ut))
 
-def modules_get(url_tpl, per_page, css, max_modules=2000):
+class PT():
+    """
+        Pagination types.
+
+        Normal represents normal pagination, starts at page 0 and then 1, 2, 3
+        and so on.
+
+        Skip pagination represents paginations that require you to tell them how
+        many elements to skip. They start at 0, and then 10, 20, 30 and so on,
+        incrementing in per_page increments.
+    """
+    normal = 0
+    skip = 1
+
+def modules_get(url_tpl, per_page, css, max_modules=2000, pagination_type=PT.normal):
     """
         Gets a list of modules. Note that this function can also be used to get
         themes.
@@ -146,6 +160,8 @@ def modules_get(url_tpl, per_page, css, max_modules=2000):
         @param css the elements matched by this selector will be returned by the
             iterator.
         @param max_modules absolute maximum modules we will attempt to request.
+        @param pagination_type type of pagination. See the PaginationType enum
+            for more information.
         @return bs4.element.Tag
         @see http://www.crummy.com/software/BeautifulSoup/bs4/doc/#css-selectors
         @see http://www.crummy.com/software/BeautifulSoup/bs4/doc/#tag
@@ -178,7 +194,12 @@ def modules_get(url_tpl, per_page, css, max_modules=2000):
         if stop:
             break
 
-        page += 1
+        if pagination_type == PT.normal:
+            page += 1
+        elif pagination_type == PT.skip:
+            page += per_page
+        else:
+            assert False
 
 def update_modules_check(plugin):
     """

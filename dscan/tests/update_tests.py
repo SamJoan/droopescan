@@ -8,10 +8,12 @@ from common.update_api import GitRepo
 from datetime import datetime, timedelta
 from mock import patch, MagicMock, mock_open, Mock
 from plugins.drupal import Drupal
+from plugins.silverstripe import SilverStripe
 from plugins.update import Update
 from tests import BaseTest
 import codecs
 import common
+import json
 import responses
 
 @decallmethods(responses.activate)
@@ -484,3 +486,56 @@ class UpdateTests(BaseTest):
                     check_against = themes
 
                 assert call[0][0].rstrip() == check_against[i % 3]
+
+    def test_ss_calls_modules_get(self):
+        ss = SilverStripe()
+        o = mock_open()
+
+        with patch('plugins.update.open', o, create=True):
+            with patch('common.update_api.modules_get') as p:
+                self.updater.update_plugins(SilverStripe(), "Drupal")
+                assert p.called
+
+    def _mod_ss_modules_mock(self,):
+        do_resp = codecs.open('tests/resources/silverstripe_org_response.html', encoding='utf-8').read()
+        do_resp_last = codecs.open('tests/resources/silverstripe_org_response_partial.html').read()
+        ss_modules_file = open('tests/resources/silverstripe_modules.json').read()
+        packagist_with_installer = open('tests/resources/packagist_org_with_installer.json').read()
+        packagist_without_installer = open('tests/resources/packagist_org_without_installer.json').read()
+
+        responses.add(responses.GET, 'http://addons.silverstripe.org/add-ons?search=&type=module&sort=downloads&start=0',
+                body=do_resp, match_querystring=True)
+        responses.add(responses.GET, 'http://addons.silverstripe.org/add-ons?search=&type=module&sort=downloads&start=16',
+                body=do_resp, match_querystring=True)
+        responses.add(responses.GET, 'http://addons.silverstripe.org/add-ons?search=&type=module&sort=downloads&start=32',
+                body=do_resp_last, match_querystring=True)
+
+        responses.add(responses.GET, 'http://addons.silverstripe.org/add-ons?search=&type=theme&sort=downloads&start=0',
+                body=do_resp, match_querystring=True)
+        responses.add(responses.GET, 'http://addons.silverstripe.org/add-ons?search=&type=theme&sort=downloads&start=16',
+                body=do_resp_last, match_querystring=True)
+
+        ss_modules = json.loads(ss_modules_file)
+        base_url = 'https://packagist.org/p/%s.json'
+        for mod in ss_modules:
+            if mod == "ajshort/silverstripe-gridfieldextensions":
+                responses.add(responses.GET, base_url % mod,
+                        body=packagist_with_installer)
+            else:
+                responses.add(responses.GET, base_url % mod,
+                        body=packagist_without_installer)
+
+
+    def test_ss_calls_modules_get_proper(self):
+        self._mod_ss_modules_mock()
+
+        ss = SilverStripe()
+        o = mock_open()
+        plugins, themes = ss.update_plugins()
+
+        assert len(plugins) == 34
+        # verifies package -> folder conversion.
+        assert 'gridfieldextensions' in plugins
+        assert len(themes) == 18
+        assert 'gridfieldextensions' in themes
+
