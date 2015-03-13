@@ -112,7 +112,7 @@ class SilverStripe(BasePlugin):
                 folder_name = package.split('/')[1]
                 folders.append(folder_name)
             else:
-                splat = filter(None, re.split(r'[^a-z-]', r.text))
+                splat = list(filter(None, re.split(r'[^a-z-]', r.text)))
                 installer_name = splat[splat.index('installer-name') + 1]
                 folders.append(installer_name)
 

@@ -525,7 +525,6 @@ class UpdateTests(BaseTest):
                 responses.add(responses.GET, base_url % mod,
                         body=packagist_without_installer)
 
-
     def test_ss_calls_modules_get_proper(self):
         self._mod_ss_modules_mock()
 
