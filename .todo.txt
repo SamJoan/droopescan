@@ -2,10 +2,7 @@ Add;
 
 Version 1.x:
 
-    - Add automatic plugin & theme list generation for SS & Drupal.
     - Add CHANGELOG detection for drupal 6.
-    - https://packagist.org/packages/?type=silverstripe-theme
-    https://packagist.org/packages/?type=silverstripe-module
     - Handle 301 sites such as http://u.acquia.com/sites/?
     - https://github.com/evilpacket/DVCS-Pillage?
 
@@ -19,4 +16,3 @@ Version 2.x
 Relevant:
 - https://wappalyzer.com/ -
   http://www.opensourcecms.com/general/cms-marketshare.php
-- http://topdrops.org/

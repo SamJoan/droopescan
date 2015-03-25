@@ -148,7 +148,7 @@ class RequestsLogger():
         r = sess_method(*args, **kwargs)
 
         tpl = '[%s] %s %s %s'
-        if method == "get":
+        if method == "get" and r.status_code == 200:
             hsh = hashlib.md5(r.content).hexdigest()
         else:
             hsh = ""
