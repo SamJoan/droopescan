@@ -539,7 +539,3 @@ class UpdateTests(BaseTest):
         assert 'gridfieldextensions' in plugins
         assert len(themes) == 18
         assert 'gridfieldextensions' in themes
-
-    def test_regenerate_major(self):
-        assert False
-

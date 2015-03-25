@@ -99,12 +99,11 @@ def github_repo_new(repo_url, plugin_name, versions_file, update_majors):
 
     return gr, vf, new_tags
 
-def hashes_get(versions_file, majors, base_path):
+def hashes_get(versions_file, base_path):
     """
         Gets hashes for currently checked out version.
         @param versions_file a common.VersionsFile instance to
             check against.
-        @param majors a list of major branches to check. E.g. ['6', '7']
         @param base_path where to look for files. e.g. './.update-workspace/silverstripe/'
         @return sums {'file1':'hash1'}
     """
@@ -302,10 +301,9 @@ class GitRepo():
             Gets hashes for currently checked out version.
             @param versions_file a common.VersionsFile instance to
                 check against.
-            @param majors a list of major branches to check. E.g. ['6', '7']
             @return sums {'file1':'hash1'}
         """
-        return hashes_get(versions_file, major, self.path)
+        return hashes_get(versions_file, self.path)
 
     def _cmd(self, *args, **kwargs):
         if 'cwd' not in kwargs:
