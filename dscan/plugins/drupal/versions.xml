@@ -506,6 +506,41 @@
       <version md5="34335e648b3cbd720cc3ed86f88c1d26" nb="7.34" />
       <version md5="c8f86b7f810a0cb61803ec2c65112899" nb="6.35" />
       <version md5="0ec14c07158a08aab9dda25d1893ab34" nb="7.35" />
+      <version md5="222f47795c5a48909376cef9728b3652" nb="6.0" />
+      <version md5="e1eb1056c0ba8dd5302d64ea468ea7d0" nb="6.1" />
+      <version md5="9d3546e991ffba015a6b57ce445caf03" nb="6.10" />
+      <version md5="7e3cfdd79d80ab13517d784d8ad6a0b1" nb="6.11" />
+      <version md5="6d02acfa1a7f0856876d4c72706435d7" nb="6.12" />
+      <version md5="236916121a511de71b3ed271a7a9742c" nb="6.13" />
+      <version md5="41339a8f92c0b18bd02a5e9f93e1252b" nb="6.14" />
+      <version md5="79d4bfe249a6f0af26260be1aac06525" nb="6.15" />
+      <version md5="bcc6c6f2db3da0ae13908ba1e144b070" nb="6.16" />
+      <version md5="9cc81e3da698f965b95df9f8ff3cd16f" nb="6.17" />
+      <version md5="d1f718b79968e1d174bb91a9ee763998" nb="6.18" />
+      <version md5="004477c0cfaaa7a589a7d85b2cc505fa" nb="6.19" />
+      <version md5="efa6e411bb61444c020e931c4543b2f6" nb="6.2" />
+      <version md5="b54c033af08c823221535ed0677242ba" nb="6.20" />
+      <version md5="f6a6fefda7509ecd7a3dc7eba7e380be" nb="6.21" />
+      <version md5="6da86d0653cd749b7ef5c59d6560b1f1" nb="6.22" />
+      <version md5="aeb74a5dbcd3a1adcc0ca8b78449e50f" nb="6.23" />
+      <version md5="5f493f3c41807aadb2e34e2644d6186e" nb="6.24" />
+      <version md5="69067a08b19093a79ba8e620adf9dbe9" nb="6.25" />
+      <version md5="fe13f306dc2d18faef0781339205e269" nb="6.26" />
+      <version md5="fd8f769a1a4a770a9ff0ba4de7094b7a" nb="6.27" />
+      <version md5="8159c0b8908ab0780207006f509d8297" nb="6.28" />
+      <version md5="168eb5e9bdb2c43d62fe5de2ec25eafa" nb="6.29" />
+      <version md5="d46048e276a7f523ae1475b465bb6dbc" nb="6.3" />
+      <version md5="3cedd331b876ec30980aa595964b647c" nb="6.30" />
+      <version md5="d236b109c1f8fae45cf40586cc40e9c2" nb="6.31" />
+      <version md5="184984599c390685108fb03ed86db554" nb="6.32" />
+      <version md5="01f8136e06aee97852dc1547a211fc74" nb="6.33" />
+      <version md5="8e972000593092d3cf3cec0bd0f798ec" nb="6.34" />
+      <version md5="2f7fd8d84e99e61873fb06082a98a550" nb="6.4" />
+      <version md5="92306257e7bd195b662d851b6857c0db" nb="6.5" />
+      <version md5="33ab8648bf45397b455d665219beae54" nb="6.6" />
+      <version md5="6b94ca6e5c3daa847f3d24979b841973" nb="6.7" />
+      <version md5="90a55f1aaa3e31ed4736bee56ffde496" nb="6.8" />
+      <version md5="b854e8a96bd5b95dd4285c155878a990" nb="6.9" />
     </changelog>
     <changelog url="core/CHANGELOG.txt">
       <version md5="f50de9476bc30d736ec992dad35cf782" nb="8.0-alpha6" />
