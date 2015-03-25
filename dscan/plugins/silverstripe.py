@@ -87,9 +87,7 @@ class SilverStripe(BasePlugin):
         return versions_file
 
     def update_plugins_check(self):
-        #return ua.update_modules_check(self)
-        # @TODO remove
-        return True
+        return ua.update_modules_check(self)
 
     def update_plugins(self):
         css = '#layout > div.add-ons > table > tbody > tr > td > a'
