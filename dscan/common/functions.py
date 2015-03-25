@@ -172,10 +172,9 @@ def md5_file(filename):
 
 def version_get():
     """
-        Returns current droopescan version.
+        Returns current droopescan version. Not. It was broken and not a useful
+        feature, so I replaced it with a fake version.
     """
-    with open('../CHANGELOG', 'r') as f:
-        version = f.readline().strip()
-
+    version = '1.33.7'
     return version
 
