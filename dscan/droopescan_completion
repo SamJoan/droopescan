@@ -11,16 +11,16 @@ _droopescan()
     enumerations="p t v u a"
     outputs="json standard"
     
-    if [[ ${prev} == *"droopescan" ]]; then
+    if [[ ${prev} == "droopescan" || ${prev} == "./droopescan" ]]; then
         COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     elif [[ ${prev} == "scan" ]]; then
         COMPREPLY=( $(compgen -W "${cms}" -- ${cur}) )
         return 0
-    elif [[ ${prev} == "--enumerate" ]]; then
+    elif [[ ${prev} == "--enumerate" || ${prev} == "-e" ]]; then
         COMPREPLY=( $(compgen -W "${enumerations}" -- ${cur}) )
         return 0
-    elif [[ ${prev} == "--output" ]]; then
+    elif [[ ${prev} == "--output" || ${prev} == "-o" ]]; then
         COMPREPLY=( $(compgen -W "${outputs}" -- ${cur}) )
         return 0
     fi
@@ -30,5 +30,6 @@ _droopescan()
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
         return 0
     fi
+
 }
 complete -o default -F _droopescan droopescan

@@ -1,3 +1,12 @@
+1.23.0
+======
+
+* Increase "leetness" in invocations without arguments and in stats.
+* Improve documentation, github language detection.
+* Reduce number of themes scanned by default.
+* Improve SS module list.
+* Add fancy autocompletion for common command-line arguments.
+
 1.22.1
 ======
 
