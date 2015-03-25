@@ -1,0 +1,34 @@
+_droopescan() 
+{
+    local cur prev opts commands cms enumerations outputs
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    opts="--url --url-file --enumerate --help --debug-requests --threads --output"
+    commands="scan stats"
+    cms="drupal silverstripe"
+    enumerations="p t v u a"
+    outputs="json standard"
+    
+    if [[ ${prev} == "droopescan" ]]; then
+        COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
+        return 0
+    elif [[ ${prev} == "scan" ]]; then
+        COMPREPLY=( $(compgen -W "${cms}" -- ${cur}) )
+        return 0
+    elif [[ ${prev} == "--enumerate" ]]; then
+        COMPREPLY=( $(compgen -W "${enumerations}" -- ${cur}) )
+        return 0
+    elif [[ ${prev} == "--output" ]]; then
+        COMPREPLY=( $(compgen -W "${outputs}" -- ${cur}) )
+        return 0
+    fi
+
+    # if starts with dash or is inside $cms
+    if [[ ${cur} == -* || $cms == *"${prev}"* ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    fi
+}
+complete -F _droopescan droopescan

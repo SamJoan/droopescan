@@ -24,6 +24,9 @@ setup(
     packages=find_packages('.', exclude=['tests', '.update-workspace']),
     url='http://github.com/droope/droopescan/',
     scripts=['droopescan'],
+    data_files=[
+        ('/etc/bash_completion.d/', ['dscan/droopescan_completion'])
+    ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: GNU General Public License (GPL)',
