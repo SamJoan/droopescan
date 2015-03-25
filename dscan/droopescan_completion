@@ -31,4 +31,4 @@ _droopescan()
         return 0
     fi
 }
-complete -F _droopescan droopescan
+complete -o default -F _droopescan droopescan
