@@ -189,14 +189,15 @@ def modules_get(url_tpl, per_page, css, max_modules=2000, pagination_type=PT.nor
                 stop = True
                 break
 
-        print('Finished parsing page %s.' % page)
 
         if stop:
             break
 
         if pagination_type == PT.normal:
+            print('Finished parsing page %s.' % page)
             page += 1
         elif pagination_type == PT.skip:
+            print('Finished parsing page %s.' % (page / per_page))
             page += per_page
         else:
             assert False

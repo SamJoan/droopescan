@@ -1,5 +1,6 @@
 from cement.core import handler, controller
 from plugins import BasePlugin
+from concurrent.futures import ThreadPoolExecutor
 import common
 import common.update_api as ua
 import re
@@ -100,24 +101,36 @@ class SilverStripe(BasePlugin):
         """
             Silverstripe's page contains a list of composer packages. This
             function converts those to folder names. These may be different due
-            to installer_name.
+            to installer-name.
             @see https://github.com/composer/installers#custom-install-names
             @see https://github.com/richardsjoqvist/silverstripe-localdate/issues/7
         """
-        folders = []
-        url = 'https://packagist.org/p/%s.json'
-        for package in packages:
-            r = requests.get(url % package)
-            if not 'installer-name' in r.text:
-                folder_name = package.split('/')[1]
-                folders.append(folder_name)
-            else:
-                splat = list(filter(None, re.split(r'[^a-z-]', r.text)))
-                installer_name = splat[splat.index('installer-name') + 1]
-                folders.append(installer_name)
+        print('lelelele')
+        url = 'http://packagist.org/p/%s.json'
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            futures = []
+            for package in packages:
+                r = requests.get(url % package)
+                future = executor.submit(requests.get, url % package)
+                futures.append({
+                    'future': future,
+                    'package': package
+                })
+
+            folders = []
+            for i, future in enumerate(futures):
+                r = future['future'].result()
+                package = future['package']
+                print("Processing %s package..." % package)
+                if not 'installer-name' in r.text:
+                    folder_name = package.split('/')[1]
+                    folders.append(folder_name)
+                else:
+                    splat = list(filter(None, re.split(r'[^a-z-]', r.text)))
+                    installer_name = splat[splat.index('installer-name') + 1]
+                    folders.append(installer_name)
 
         return folders
-
 
 def load():
     handler.register(SilverStripe)
