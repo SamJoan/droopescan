@@ -533,7 +533,8 @@ class UpdateTests(BaseTest):
         o = mock_open()
         plugins, themes = ss.update_plugins()
 
-        assert len(plugins) == 34
+        # verify removes duplicates.
+        assert len(plugins) == 18
         # verifies package -> folder conversion.
         assert 'gridfieldextensions' in plugins
         assert len(themes) == 18

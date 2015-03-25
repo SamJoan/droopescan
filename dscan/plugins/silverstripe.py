@@ -1,11 +1,24 @@
 from cement.core import handler, controller
 from plugins import BasePlugin
 from concurrent.futures import ThreadPoolExecutor
+from requests.exceptions import ConnectionError
 import common
 import common.update_api as ua
 import re
 import requests
 import sys
+
+try:
+    from retrying import Retrying
+except:
+    pass
+
+def _retry_msg(exception):
+    if isinstance(exception, ConnectionError):
+        print("Caught connection error, retrying.")
+        return True
+    else:
+        return False
 
 class SilverStripe(BasePlugin):
 
@@ -79,11 +92,10 @@ class SilverStripe(BasePlugin):
         return True
 
     def update_plugins(self):
-        plugins_url = 'http://addons.silverstripe.org/add-ons?search=&type=module&sort=downloads&start=%s'
-        themes_url = 'http://addons.silverstripe.org/add-ons?search=&type=theme&sort=downloads&start=%s'
         css = '#layout > div.add-ons > table > tbody > tr > td > a'
         per_page = 16
-
+        plugins_url = 'http://addons.silverstripe.org/add-ons?search=&type=module&sort=downloads&start=%s'
+        themes_url = 'http://addons.silverstripe.org/add-ons?search=&type=theme&sort=downloads&start=%s'
         update_amount = 100
 
         plugins = []
@@ -94,7 +106,7 @@ class SilverStripe(BasePlugin):
         for elem in ua.modules_get(themes_url, per_page, css, update_amount, pagination_type=ua.PT.skip):
             themes.append(elem.string)
 
-        notification = "Converting composer packages into folder names %s/2. This will take ages."
+        notification = "Converting composer packages into folder names %s/2."
         print(notification % (1))
         plugins_folder = self._convert_to_folder(plugins)
         print(notification % (2))
@@ -102,50 +114,53 @@ class SilverStripe(BasePlugin):
 
         return plugins_folder, themes_folder
 
+    def _get(self, url, package):
+        retry = Retrying(wait_exponential_multiplier=2000, wait_exponential_max=120000,
+            retry_on_exception=_retry_msg)
+
+        return retry.call(requests.get, url % package)
+
     def _convert_to_folder(self, packages):
         """
             Silverstripe's page contains a list of composer packages. This
             function converts those to folder names. These may be different due
             to installer-name.
+
+            Implemented exponential backoff in order to prevent packager from
+            being overly sensitive about the number of requests I was making.
+
             @see https://github.com/composer/installers#custom-install-names
             @see https://github.com/richardsjoqvist/silverstripe-localdate/issues/7
         """
         url = 'http://packagist.org/p/%s.json'
-        print("a")
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            print("b")
+        with ThreadPoolExecutor(max_workers=2) as executor:
             futures = []
             for package in packages:
-                r = requests.get(url % package)
-                future = executor.submit(requests.get, url % package)
+                future = executor.submit(self._get, url, package)
                 futures.append({
                     'future': future,
                     'package': package
                 })
 
-            print("c")
-
             folders = []
-            for i, future in enumerate(futures):
+            for i, future in enumerate(futures, start=1):
                 r = future['future'].result()
                 package = future['package']
-                print("d")
 
                 if not 'installer-name' in r.text:
                     folder_name = package.split('/')[1]
                 else:
-                    splat = list(filter(None, re.split(r'[^a-z-_.,\']', r.text)))
+                    splat = list(filter(None, re.split(r'[^a-zA-Z0-9-_.,]', r.text)))
                     folder_name = splat[splat.index('installer-name') + 1]
 
                 if not folder_name in folders:
                     folders.append(folder_name)
                 else:
-                    print("Folder %s is duplicated (from %s)" % (folder_name,
-                        package))
+                    print("Folder %s is duplicated (current %s, previous %s)" % (folder_name,
+                        package, folders.index(folder_name)))
 
-                #@TODO prevent duplicate writes
-
-                sys.stdout.flush()
+                if i % 25 == 0:
+                    print("Done %s." % i)
 
         return folders
 
