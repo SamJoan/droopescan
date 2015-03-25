@@ -96,7 +96,7 @@ class SilverStripe(BasePlugin):
         per_page = 16
         plugins_url = 'http://addons.silverstripe.org/add-ons?search=&type=module&sort=downloads&start=%s'
         themes_url = 'http://addons.silverstripe.org/add-ons?search=&type=theme&sort=downloads&start=%s'
-        update_amount = 100
+        update_amount = 2000
 
         plugins = []
         for elem in ua.modules_get(plugins_url, per_page, css, update_amount, pagination_type=ua.PT.skip):
@@ -133,7 +133,7 @@ class SilverStripe(BasePlugin):
             @see https://github.com/richardsjoqvist/silverstripe-localdate/issues/7
         """
         url = 'http://packagist.org/p/%s.json'
-        with ThreadPoolExecutor(max_workers=2) as executor:
+        with ThreadPoolExecutor(max_workers=12) as executor:
             futures = []
             for package in packages:
                 future = executor.submit(self._get, url, package)
