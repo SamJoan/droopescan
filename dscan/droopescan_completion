@@ -11,7 +11,7 @@ _droopescan()
     enumerations="p t v u a"
     outputs="json standard"
     
-    if [[ ${prev} == "droopescan" ]]; then
+    if [[ ${prev} == *"droopescan" ]]; then
         COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     elif [[ ${prev} == "scan" ]]; then
