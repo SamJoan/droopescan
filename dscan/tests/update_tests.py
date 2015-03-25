@@ -519,7 +519,6 @@ class UpdateTests(BaseTest):
         base_url = 'http://packagist.org/p/%s.json'
         for mod in ss_modules:
             url = base_url % mod
-            print(url)
             if mod == "ajshort/silverstripe-gridfieldextensions":
                 responses.add(responses.GET, url,
                         body=packagist_with_installer)
