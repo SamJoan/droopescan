@@ -1,34 +1,40 @@
-"""
-    A sample base plugin. Do not forget to add an init file in plugins.d
-"""
 from cement.core import handler, controller
 from plugins import BasePlugin
 import common
 
 class Example(BasePlugin):
-    # a file containing a list of plugins, one per line.
-    plugins_file = "plugins/drupal/wordlists/plugins_3500"
+    """
+        A sample base plugin. Remember to create:
+            In dscan/plugins.d/ an conf file.
+            In dscan/plugins/<plugin_name>/ three files:
+                - plugins.txt
+                - themes.txt
+                - versions.xml
+            At the end of this file, a register call.
+    """
+
     # the location of the plugins. If there are multiple locations, such as in
     # drupal, you can specify a list. First %s will be replaced with the site
     # url and the second will be replaced with the module name.
     plugins_base_url = ["%ssites/all/modules/%s/",
             "%ssites/default/modules/%s/"]
-    # same as above
-    themes_file = "plugins/drupal/wordlists/themes_1250"
     themes_base_url = ["%ssites/all/themes/%s/",
             "%ssites/default/themes/%s/"]
-    # a URL which commonly responds with forbidden (most frequently folders, but
-    # could be something else.)
+
+    # A URL which is known to usually be a folder.
     forbidden_url = "misc/"
     # a URL which you know results in a 200 OK. If item is a list, then all
     # items are tested to see if any responds with OK.
     regular_file_url = "misc/drupal.js"
-    # a file which always exists in the modules.
+    # a file which commonly exists in the modules.
     module_common_file = "README.txt"
+    # Major branches which are supported by the vendor. This is used for
+    # updating.
+    update_majors = ['6','7','8']
 
     # a list of tuples that contain on the index 0 a url, and on 1 a description
     # to be shown to the user if the URL replies with 200 found
-    interesting_urls = [("CHANGELOG", "This CMS' default changelog 200 OK.")]
+    interesting_urls = [("CHANGELOG", "This CMS' default changelog.")]
 
     # A list of interesting files which are normally present in modules,
     # relative to the module's folder.
@@ -36,18 +42,20 @@ class Example(BasePlugin):
         ('CHANGELOG.txt', 'Changelog file'),
     ]
 
-    # a file which validates against common/versions.xsd for version
-    # fingerprinting.
-    versions_file = "plugins/drupal/versions.xml"
-
-
     class Meta:
+        # The label is important, choose the CMS name in lowercase.
         label = 'example'
 
+    # This function is the entry point for the CMS.
     @controller.expose(help='example scanner')
     def example(self):
         self.plugin_init()
 
+    # The four functions below get called when ./droopescan update is called.
+    # They can make use of dscan.common.update_api in order to update the
+    # versions.xml and the *.txt files.
+    #
+    # See drupal and silverstripe for examples.
     def update_version_check(self):
         """
             @return True if new versions of this software have been found.
@@ -56,12 +64,20 @@ class Example(BasePlugin):
     def update_version(self):
         """
             This function needs to return an updated VersionsFile, which will
-                be written to disk. There are APIs on common.update_api which can
-                be used.
+            be written to disk. There are APIs on common.update_api which can
+            be used.
             @return updated VersionsFile
         """
 
-    # there is a plethora of functions to override in BasePlugin and BaseInternalPlugin.
+    def update_plugins_check(self):
+        return ua.update_modules_check(self)
+
+    def update_plugins(self):
+        """
+            This function needs to return two updated lists containing plugins
+            and themes. There are APIs on common.update_api which can be used.
+            @return (plugins, themes)
+        """
 
 def load():
     handler.register(Example)

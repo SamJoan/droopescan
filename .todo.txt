@@ -2,7 +2,8 @@ Add;
 
 Version 1.x:
 
-    - Add CHANGELOG detection for drupal 6.
+    - More DOCS. 
+    - Make plugins.txt and stuff static.
     - Handle 301 sites such as http://u.acquia.com/sites/?
         Done. Add precision for sites which do have reliable 301. There are two
         types of 301 that I can think of:

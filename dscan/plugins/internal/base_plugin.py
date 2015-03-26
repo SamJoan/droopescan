@@ -24,3 +24,10 @@ class BasePlugin(BasePluginInternal):
     can_enumerate_interesting = True
     can_enumerate_version = True
 
+    def __init__(self):
+        super(BasePlugin, self).__init__()
+
+        label = self._meta.label
+        self.plugins_file = "plugins/%s/plugins.txt" % label
+        self.themes_file = "plugins/%s/themes.txt" % label
+        self.versions_file = "plugins/%s/versions.xml" % label

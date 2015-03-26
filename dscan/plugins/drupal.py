@@ -6,17 +6,15 @@ import common.versions
 
 class Drupal(BasePlugin):
 
-    plugins_file = "plugins/drupal/plugins.txt"
     plugins_base_url = ["%ssites/all/modules/%s/",
             "%ssites/default/modules/%s/"]
-
-    themes_file = "plugins/drupal/themes.txt"
     themes_base_url = ["%ssites/all/themes/%s/",
             "%ssites/default/themes/%s/"]
 
     forbidden_url = "sites/"
     regular_file_url = ["misc/drupal.js", 'core/misc/drupal.js']
     module_common_file = "LICENSE.txt"
+    update_majors = ['6','7','8']
 
     interesting_urls = [
             ("CHANGELOG.txt", "Default changelog file"),
@@ -33,9 +31,6 @@ class Drupal(BasePlugin):
         ('LICENSE.txt', 'License file'),
         ('API.txt', 'Contains API documentation for the module')
     ]
-
-    versions_file = "plugins/drupal/versions.xml"
-    update_majors = ['6','7','8']
 
     class Meta:
         label = 'drupal'
