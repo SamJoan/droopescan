@@ -373,17 +373,20 @@ class BasePluginInternal(controller.CementBaseController):
                     doesn't seem to be running %s.""" % self._meta.label)
             ok_200 = False
 
+        folder_300 = 300 < folder_resp.status_code < 400
+
         if folder_resp.status_code == 403 and ok_200:
             return ScanningMethod.forbidden
-
         elif folder_resp.status_code == 404 and ok_200:
             self.out.warn('Known %s folders have returned 404 Not Found. If a module does not have a %s file it will not be detected.' %
                     (self._meta.label, self.module_common_file))
             return ScanningMethod.not_found
-
         elif folder_resp.status_code == 200 and ok_200:
-
             return ScanningMethod.ok
+        elif folder_300 and ok_200:
+            self.out.warn('Server returns redirects for folders. If a module does not have a %s file it will not be detected.' %
+                    self.module_common_file)
+            return ScanningMethod.not_found
         else:
             self._error_determine_scanning(url, folder_resp, ok_200)
 

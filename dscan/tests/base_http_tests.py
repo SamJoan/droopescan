@@ -269,6 +269,17 @@ class BaseHttpTests(BaseTest):
         # is drupal.
         self.app.run()
 
+    def test_detects_fake_redirect(self):
+        self.add_argv(self.param_plugins)
+        m = self.mock_controller('drupal', 'enumerate_plugins')
+        self.respond_several(self.base_url + "%s", {301: [Drupal.forbidden_url,
+            Drupal.not_found_folder], 200: ["misc/drupal.js"], 404:
+            [self.scanner.not_found_url]})
+
+        self.app.run()
+
+        self.assert_called_contains(m, 'scanning_method', ScanningMethod.not_found)
+
     def test_determine_with_multiple_ok(self):
         self.scanner.regular_file_url = ["misc/drupal_old.js", "misc/drupal.js"]
         self.respond_several(self.base_url + "%s", {200: [Drupal.forbidden_url,

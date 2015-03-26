@@ -4,6 +4,12 @@ Version 1.x:
 
     - Add CHANGELOG detection for drupal 6.
     - Handle 301 sites such as http://u.acquia.com/sites/?
+        Done. Add precision for sites which do have reliable 301. There are two
+        types of 301 that I can think of:
+            - 301 on folders only. /sites/ -> 301 /fake/ -> 404
+            - 301 on everything that looks like a folder. /sites/ -> 301 /fake/ -> 301
+            This is very common on Drupal installations because of some redirect
+            plugin.
     - https://github.com/evilpacket/DVCS-Pillage?
 
 Version 2.x
