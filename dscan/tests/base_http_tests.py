@@ -272,9 +272,8 @@ class BaseHttpTests(BaseTest):
     def test_detects_fake_redirect(self):
         self.add_argv(self.param_plugins)
         m = self.mock_controller('drupal', 'enumerate_plugins')
-        self.respond_several(self.base_url + "%s", {301: [Drupal.forbidden_url,
-            Drupal.not_found_folder], 200: ["misc/drupal.js"], 404:
-            [self.scanner.not_found_url]})
+        self.respond_several(self.base_url + "%s", {301: [Drupal.forbidden_url],
+            200: ["misc/drupal.js"], 404: [self.scanner.not_found_url]})
 
         self.app.run()
 
