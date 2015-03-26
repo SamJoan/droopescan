@@ -22,17 +22,13 @@ def _retry_msg(exception):
 
 class SilverStripe(BasePlugin):
 
-    plugins_file = 'plugins/silverstripe/plugins.txt'
     plugins_base_url = '%s%s/'
-
-    themes_file = 'plugins/silverstripe/themes.txt'
     themes_base_url = '%sthemes/%s/'
 
     forbidden_url = 'framework/'
     regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css']
     module_common_file = 'README.md'
-
-    versions_file = 'plugins/silverstripe/versions.xml'
+    update_majors = ['3.1', '3.0', '2.4']
 
     interesting_urls = [
             ('framework/docs/en/changelogs/index.md', 'Changelogs, there are other files in same dir, but \'index.md\' is frequently outdated.'),
@@ -45,7 +41,6 @@ class SilverStripe(BasePlugin):
         ('CHANGELOG', 'Default changelog file'),
     ]
 
-    update_majors = ['3.1', '3.0', '2.4']
     _repo_framework = 'silverstripe/silverstripe-framework/'
     _repo_cms = 'silverstripe/silverstripe-cms/'
 
