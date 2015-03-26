@@ -33,7 +33,7 @@ except:
 class BasePluginInternal(controller.CementBaseController):
     requests = None
     out = None
-    DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36'
+    DEFAULT_UA = 'Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)'
     not_found_url = "misc/test/error/404/ispresent.html"
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
