@@ -1,17 +1,16 @@
-"""
-    A sample base plugin. Do not forget to add an init file in plugins.d
-"""
 from cement.core import handler, controller
 from plugins import BasePlugin
 import common
 
 class Example(BasePlugin):
     """
-        Remember to create in dscan/plugins/<plugin_name>/ three files:
-
-            - plugins.txt
-            - themes.txt
-            - versions.xml
+        A sample base plugin. Remember to create:
+            In dscan/plugins.d/ an conf file.
+            In dscan/plugins/<plugin_name>/ three files:
+                - plugins.txt
+                - themes.txt
+                - versions.xml
+            At the end of this file, a register call.
     """
 
     # the location of the plugins. If there are multiple locations, such as in
