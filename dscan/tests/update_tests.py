@@ -6,7 +6,7 @@ from common.update_api import github_tags_newer, github_repo, _github_normalize,
     file_mtime, modules_get
 from common.update_api import GitRepo
 from datetime import datetime, timedelta
-from mock import patch, MagicMock, mock_open, Mock
+from mock import patch, MagicMock, mock_open, Mock, create_autospec
 from plugins.drupal import Drupal
 from plugins.silverstripe import SilverStripe
 from plugins.update import Update
@@ -539,3 +539,13 @@ class UpdateTests(BaseTest):
         assert 'gridfieldextensions' in plugins
         assert len(themes) == 18
         assert 'gridfieldextensions' in themes
+
+    def test_ss_hashes_get_signature(self):
+        ss = SilverStripe()
+
+        vf = MagicMock()
+        ret_val = (self.gr, vf, ['3.1.3'])
+
+        with patch('common.update_api.github_repo_new', return_value=ret_val, autospec=True) as m:
+            with patch('common.update_api.hashes_get', autospec=True):
+                ss.update_version()

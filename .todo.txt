@@ -27,6 +27,8 @@ Version 1.x:
     - Why is drupal 6.17 not detected as such?
     - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
     - https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
+    - Autospec tests. Especially in update_tests.py as API should be static.
+      http://www.voidspace.org.uk/python/mock/helpers.html#auto-speccing
 - https://github.com/evilpacket/DVCS-Pillage
     
 
