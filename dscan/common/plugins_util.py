@@ -36,14 +36,15 @@ class Plugin(object):
     version_can_enumerate = False
     version_highest = None
 
-    def __init__(self, plugin=None):
+    def __init__(self, PluginClass=None):
         """
             @param plugin as returned by handler.list('controller'). Must
                 extend BasePlugin.
         """
+        plugin = PluginClass()
         if plugin:
 
-            self.name = plugin.__name__
+            self.name = plugin._meta.label
 
             if plugin.can_enumerate_plugins:
                 self.plugins_can_enumerate = True

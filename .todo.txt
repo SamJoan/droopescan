@@ -26,6 +26,7 @@ Version 1.x:
     - Accept relative paths to -U
     - Why is drupal 6.17 not detected as such?
     - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
+    - https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
 - https://github.com/evilpacket/DVCS-Pillage
     
 
