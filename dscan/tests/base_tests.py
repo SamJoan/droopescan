@@ -33,13 +33,6 @@ class BaseTests(BaseTest):
         self.add_argv(['--url-file', '/tmp/NONEXISTANTFILE'])
         self.app.run()
 
-    @test.raises(RuntimeError)
-    def test_errors_when_invalid_url(self):
-        self.add_argv(['scan', 'drupal'])
-        self.add_argv(self.param_plugins)
-        self.add_argv(['--url', 'invalidurl'])
-        self.app.run()
-
     @test.raises(SystemExit)
     def test_errors_when_invalid_enumerate(self):
         self.add_argv(['scan', 'drupal'])

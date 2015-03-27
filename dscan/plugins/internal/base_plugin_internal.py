@@ -274,7 +274,7 @@ class BasePluginInternal(controller.CementBaseController):
     def url_scan(self, url, opts, functionality, enabled_functionality,
             hide_progressbar):
 
-        url = common.validate_url(url, self.out)
+        url = common.repair_url(url, self.out)
         if opts['follow_redirects']:
             url = self.determine_redirect(url, opts['verb'], opts['timeout'])
 
