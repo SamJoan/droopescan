@@ -12,6 +12,7 @@ Version 1.x:
             This is very common on Drupal installations because of some redirect
             plugin.
     - Ensure droopescan runs in kali.
+        - Add better error for old requests library.
     - https://github.com/evilpacket/DVCS-Pillage?
 
 Version 2.x
