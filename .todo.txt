@@ -13,6 +13,7 @@ Version 1.x:
             plugin.
     - Ensure droopescan runs in kali.
         - Add better error for old requests library.
+        - Increase --timeout-host
     - https://github.com/evilpacket/DVCS-Pillage?
 
 Version 2.x
