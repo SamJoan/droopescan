@@ -4,7 +4,7 @@ Version 1.x:
 
     - More DOCS. 
     - Make plugins.txt and stuff static.
-    - Handle 301 sites such as http://u.acquia.com/sites/?
+    - Handle 301 sites
         Done. Add precision for sites which do have reliable 301. There are two
         types of 301 that I can think of:
             - 301 on folders only. /sites/ -> 301 /fake/ -> 404
@@ -23,7 +23,10 @@ Version 1.x:
         MAINTAINERS.txt
         UPGRADE.txt
     - Accept relative paths to -U
-    - https://github.com/evilpacket/DVCS-Pillage
+    - Why is drupal 6.17 not detected as such?
+    - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
+- https://github.com/evilpacket/DVCS-Pillage
+    
 
 Version 2.x
 
