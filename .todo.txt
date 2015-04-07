@@ -22,6 +22,7 @@ Version 1.x:
         LICENSE.txt
         MAINTAINERS.txt
         UPGRADE.txt
+        ^ check fuzzdb for file goodness.
     - Accept relative paths to -U
     - Why is drupal 6.17 not detected as such?
     - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
