@@ -278,20 +278,12 @@
       <version md5="1810cc7c3bd05751cec5be36d37f349c" nb="3.1.6" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.10-rc2" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.10-rc1" />
-<<<<<<< HEAD
-      <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.10" />
-      <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.11-rc1" />
-      <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.12" />
-      <version md5="96593622bd92eb2d3349dbb315c2aee4" nb="3.0.12" />
-      <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.11" />
-=======
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.12" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.11" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.10" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.11-rc1" />
       <version md5="96593622bd92eb2d3349dbb315c2aee4" nb="3.0.12" />
       <version md5="96593622bd92eb2d3349dbb315c2aee4" nb="3.0.13" />
->>>>>>> new-drupal
     </file>
     <file url="framework/css/UploadField.css">
       <version md5="2de8e72eb87b371b61b5204c61a2c3d0" nb="3.0.0" />
