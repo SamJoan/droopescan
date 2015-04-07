@@ -119,6 +119,9 @@
       <version md5="0bb055ea361b208072be45e8e004117b" nb="7.33" />
       <version md5="1904f6fd4a4fe747d6b53ca9fd81f848" nb="6.34" />
       <version md5="0bb055ea361b208072be45e8e004117b" nb="7.34" />
+      <version md5="1904f6fd4a4fe747d6b53ca9fd81f848" nb="6.35" />
+      <version md5="0bb055ea361b208072be45e8e004117b" nb="7.36" />
+      <version md5="0bb055ea361b208072be45e8e004117b" nb="7.35" />
     </file>
     <file url="misc/tabledrag.js">
       <version md5="c6f7a28ffd7288909b207c0eb651298e" nb="6.0-rc1" />
@@ -211,6 +214,9 @@
       <version md5="caaf444bbba2811b4fa0d5aecfa837e5" nb="7.33" />
       <version md5="50ebbc8dc949d7cb8d4cc5e6e0a6c1ca" nb="6.34" />
       <version md5="caaf444bbba2811b4fa0d5aecfa837e5" nb="7.34" />
+      <version md5="50ebbc8dc949d7cb8d4cc5e6e0a6c1ca" nb="6.35" />
+      <version md5="c1bdc05ec3eab25853bec452e3addcd2" nb="7.36" />
+      <version md5="caaf444bbba2811b4fa0d5aecfa837e5" nb="7.35" />
     </file>
     <file url="misc/tableheader.js">
       <version md5="da96f76a7fef73f09e12ca207602a909" nb="6.0-rc1" />
@@ -303,6 +309,9 @@
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.33" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.34" />
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.34" />
+      <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.35" />
+      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.36" />
+      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.35" />
     </file>
     <file url="misc/ajax.js">
       <version md5="e9705a45006501b9e3ff1bc4fa2c7a37" nb="7.0-alpha1" />
@@ -354,6 +363,8 @@
       <version md5="30d9e08baa11f3836eca00425b550f82" nb="7.32" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.33" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.34" />
+      <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.36" />
+      <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.35" />
     </file>
     <file url="core/misc/drupal.js">
       <version md5="330a6a8916376627bdb21b0ce45804ca" nb="8.0-alpha6" />
@@ -497,6 +508,9 @@
       <version md5="85f9505fcf687b9fd4b55d2e60393436" nb="7.31" />
       <version md5="4ee104a47fbf9939cade2787e47b2c2a" nb="7.33" />
       <version md5="34335e648b3cbd720cc3ed86f88c1d26" nb="7.34" />
+      <version md5="c8f86b7f810a0cb61803ec2c65112899" nb="6.35" />
+      <version md5="38ab3c6e309efd8119ff6496ae7cbbc0" nb="7.36" />
+      <version md5="0ec14c07158a08aab9dda25d1893ab34" nb="7.35" />
     </changelog>
     <changelog url="core/CHANGELOG.txt">
       <version md5="f50de9476bc30d736ec992dad35cf782" nb="8.0-alpha6" />
