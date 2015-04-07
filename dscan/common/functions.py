@@ -5,21 +5,20 @@ import pystache
 import re
 import xml.etree.ElementTree as ET
 
-def validate_url(url, out):
+def repair_url(url, out):
     """
-        Checks if a URL is valid and calls fatal() if not. It also returns a
-        patched-up version of URL, with e.g. an ending slash, if it didn't have
-        one.
+        Newline characters are stripped from the URL string.
+        If the url string parameter does not start with http, it prepends http://
+        If the url string parameter does not end with a slash, appends a slash.
         @param url url to check
         @param out instance of StandardOutput as defined in this lib.
     """
     if not url:
-        out.fatal("--url parameter is required.")
+        out.fatal("--url parameter is blank.")
 
     url = url.strip('\n')
-
     if not re.match(r"^http", url):
-        out.fatal("--url parameter invalid.")
+        url = "http://" + url
 
     if not url.endswith("/"):
         return url + "/"

@@ -208,7 +208,19 @@ class BaseHttpTests(BaseTest):
         self.mock_controller('drupal', 'enumerate_plugins')
         self.app.run()
 
-        m.assert_called_with(self.base_url, 'head', 15)
+        self.assert_args_contains(m, 0, self.base_url)
+
+    def test_prepends_http_to_urls(self):
+        # Remove http:// from URL.
+        self.add_argv(['--url', self.base_url[7:], '--enumerate', 'p'])
+
+        m = self.mock_controller('drupal', 'determine_scanning_method',
+                side_effect=["forbidden"])
+
+        self.mock_controller('drupal', 'enumerate_plugins')
+        self.app.run()
+
+        self.assert_args_contains(m, 0, self.base_url)
 
     def test_determine_forbidden(self):
         self.add_argv(self.param_plugins)
@@ -515,19 +527,7 @@ class BaseHttpTests(BaseTest):
                 adding_headers={'location': self.base_url + "install.php"})
 
         ru = self.scanner.determine_redirect(self.base_url, 'head')
-        print(ru, self.base_url)
         assert ru == self.base_url
-
-    @patch.object(common.StandardOutput, 'warn')
-    def test_invalid_url_file_warns(self, warn):
-        invalid_url_file = 'tests/resources/url_file_invalid.txt'
-        self.add_argv(['--url-file', invalid_url_file])
-
-        all_mocks = self.mock_all_enumerate('drupal')
-        self.mock_all_url_file(invalid_url_file)
-        self.app.run()
-
-        assert warn.call_count == 2
 
     def test_url_file_calls_all(self):
         self.add_argv(['--url-file', self.valid_file])
