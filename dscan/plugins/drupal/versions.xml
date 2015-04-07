@@ -120,6 +120,7 @@
       <version md5="1904f6fd4a4fe747d6b53ca9fd81f848" nb="6.34" />
       <version md5="0bb055ea361b208072be45e8e004117b" nb="7.34" />
       <version md5="1904f6fd4a4fe747d6b53ca9fd81f848" nb="6.35" />
+      <version md5="0bb055ea361b208072be45e8e004117b" nb="7.36" />
       <version md5="0bb055ea361b208072be45e8e004117b" nb="7.35" />
     </file>
     <file url="misc/tabledrag.js">
@@ -214,6 +215,7 @@
       <version md5="50ebbc8dc949d7cb8d4cc5e6e0a6c1ca" nb="6.34" />
       <version md5="caaf444bbba2811b4fa0d5aecfa837e5" nb="7.34" />
       <version md5="50ebbc8dc949d7cb8d4cc5e6e0a6c1ca" nb="6.35" />
+      <version md5="c1bdc05ec3eab25853bec452e3addcd2" nb="7.36" />
       <version md5="caaf444bbba2811b4fa0d5aecfa837e5" nb="7.35" />
     </file>
     <file url="misc/tableheader.js">
@@ -308,6 +310,7 @@
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.34" />
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.34" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.35" />
+      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.36" />
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.35" />
     </file>
     <file url="misc/ajax.js">
@@ -360,6 +363,7 @@
       <version md5="30d9e08baa11f3836eca00425b550f82" nb="7.32" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.33" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.34" />
+      <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.36" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.35" />
     </file>
     <file url="core/misc/drupal.js">
@@ -541,6 +545,7 @@
       <version md5="6b94ca6e5c3daa847f3d24979b841973" nb="6.7" />
       <version md5="90a55f1aaa3e31ed4736bee56ffde496" nb="6.8" />
       <version md5="b854e8a96bd5b95dd4285c155878a990" nb="6.9" />
+      <version md5="38ab3c6e309efd8119ff6496ae7cbbc0" nb="7.36" />
     </changelog>
     <changelog url="core/CHANGELOG.txt">
       <version md5="f50de9476bc30d736ec992dad35cf782" nb="8.0-alpha6" />
