@@ -12,8 +12,16 @@ Version 1.x:
             This is very common on Drupal installations because of some redirect
             plugin.
     - Ensure droopescan runs in kali.
-        - Add better error for old requests library.
+        - Add better error for old requests library?
         - Increase --timeout-host
+    - install.php
+        CHANGELOG.txt
+        INSTALL.txt
+        INSTALL.mysql.txt
+        INSTALL.pgsql.txt
+        LICENSE.txt
+        MAINTAINERS.txt
+        UPGRADE.txt
     - Accept relative paths to -U
     - https://github.com/evilpacket/DVCS-Pillage
 
