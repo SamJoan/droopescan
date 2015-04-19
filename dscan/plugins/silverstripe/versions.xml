@@ -127,7 +127,6 @@
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.10" />
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.11-rc1" />
       <version md5="973cc23b2694dc47649fdede3ec02710" nb="3.0.12" />
-      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.1.11" />
       <version md5="973cc23b2694dc47649fdede3ec02710" nb="3.0.13" />
     </file>
     <file url="framework/javascript/HtmlEditorField.js">
