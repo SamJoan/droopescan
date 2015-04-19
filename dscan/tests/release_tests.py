@@ -10,7 +10,6 @@ import plugins.release
 class ReleaseTests(BaseTest):
 
     release = None
-    patchers = []
 
     def setUp(self):
         super(ReleaseTests, self).setUp()
@@ -18,14 +17,9 @@ class ReleaseTests(BaseTest):
         self.add_argv(['release'])
         self.release = plugins.release.Release()
 
-    def tearDown(self):
-        for patcher in self.patchers:
-            patcher.stop()
-
     def p(self, *args, **kwargs):
         patcher = patch(spec=True, *args, **kwargs)
-        self.patchers.append(patcher)
-
+        self.addCleanup(patcher.stop)
         return patcher.start()
 
     def mock_tests(self, raise_external=False, raise_human=False):
