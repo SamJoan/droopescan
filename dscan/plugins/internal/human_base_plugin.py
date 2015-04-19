@@ -1,14 +1,13 @@
 from __future__ import print_function
 from cement.core import handler, controller
 from distutils.util import strtobool
+import common.functions
 import sys
 
 class HumanBasePlugin(controller.CementBaseController):
 
-    def error(self, msg):
-        #'red': '\033[91m',
-        #'endc': '\033[0m',
-        raise RuntimeError('\033[91m%s\033[0m' % msg)
+    def error(self, *args, **kwargs):
+        common.functions.error(*args, **kwargs)
 
     def msg(self, msg, end='\n'):
         print(msg, end=end)

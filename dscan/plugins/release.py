@@ -4,6 +4,7 @@ from common.plugins_util import Plugin, plugins_get
 from distutils.util import strtobool
 from plugins import HumanBasePlugin
 from subprocess import call, check_output
+import common.release_api as ra
 import re
 import sys, tempfile, os
 
@@ -17,15 +18,6 @@ def c(*args, **kwargs):
     return ret
 
 class Release(HumanBasePlugin):
-
-    test_runs_base = ['../droopescan']
-
-    test_runs_append = ['-n', '100', '-t', '2']
-
-    test_runs = [
-            ['scan', 'drupal', '--url', 'https://www.drupal.org'],
-            ['scan', 'silverstripe', '--url', 'http://demo.silverstripe.org'],
-        ]
 
     class Meta:
         label = 'release'
@@ -52,96 +44,66 @@ class Release(HumanBasePlugin):
 
           return header + temp.read() + "\n"
 
-    def scan_external(self):
-        all_ok = True
-        for run in self.test_runs:
-            args = self.test_runs_base + run + self.test_runs_append
-            print(args)
-            ret_code = call(args)
-            if ret_code != 0:
-                all_ok = False
-                break
-            else:
-                print("OK")
+    def ship(self):
+        skip_external = self.app.pargs.skip_external
 
-        return all_ok
+        ra.check_pypirc()
+        ra.test_all(skip_external)
 
-    def _check_pypirc(self):
-        pypirc = os.path.expanduser("~/.pypirc")
-        if not os.path.isfile(pypirc):
-            self.error('File "%s" does not exist.' % pypirc)
+        prev_version_nb = self.read_first_line(CHANGELOG)
+        version_nb = self.get_input("Version number (prev %s):" %
+                prev_version_nb)
+
+        final = self.changelog(version_nb).strip() + "\n\n"
+
+        print("The following will be prepended to the CHANGELOG:\n---\n%s---" % final)
+
+        ok = self.confirm("Is that OK?")
+        if ok:
+            self.prepend_to_file(CHANGELOG, final)
+
+            try:
+                curr_branch = check_output(['git', 'rev-parse',
+                    '--abbrev-ref', 'HEAD']).strip()
+
+                c(['git', 'add', '..'])
+                c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
+                    version_nb])
+
+                c(['git', 'checkout', 'master'])
+                c(['git', 'merge', curr_branch])
+
+                c(['git', 'tag', version_nb])
+                call('git remote | xargs -l git push --all', shell=True)
+                call('git remote | xargs -l git push --tags', shell=True)
+
+                is_final_release = '^[0-9.]*$'
+                if re.match(is_final_release, version_nb):
+                    pypi_repo = 'pypi'
+                else:
+                    pypi_repo = 'test'
+
+                c(['git', 'clean', '-dXnff'])
+                ok = self.confirm("Is that OK?")
+                if ok:
+                    c(['git', 'clean', '-dXff'])
+                    c(['python', 'setup.py', 'sdist', 'upload', '-r',
+                        pypi_repo], cwd='..')
+                    c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r',
+                        pypi_repo], cwd='..')
+                else:
+                    self.error('Can\'t clean. Perform release manually.')
+
+            finally:
+                c(['git', 'checkout', 'development'])
+                c(['git', 'merge', 'master'])
+
+        else:
+            self.error('Canceled by user')
 
     @controller.expose(help='', hide=True)
     def default(self):
-        skip_external = self.app.pargs.skip_external
-        self._check_pypirc()
-
-        tests_passed = call(['../droopescan', 'test']) == 0
-        if not tests_passed:
-            self.error("Unit tests failed... abort.")
-            return
-
-        if not skip_external:
-            external_passed = self.scan_external()
-            if not external_passed:
-                self.error("External scans failed... abort.")
-                return
-
-        human_approves = self.confirm("Does that look OK for you?")
-        if human_approves:
-            prev_version_nb = self.read_first_line(CHANGELOG)
-            version_nb = self.get_input("Version number (prev %s):" %
-                    prev_version_nb)
-
-            final = self.changelog(version_nb).strip() + "\n\n"
-
-            print("The following will be prepended to the CHANGELOG:\n---\n%s---" % final)
-
-            ok = self.confirm("Is that OK?")
-            if ok:
-                self.prepend_to_file(CHANGELOG, final)
-
-                try:
-                    curr_branch = check_output(['git', 'rev-parse',
-                        '--abbrev-ref', 'HEAD']).strip()
-
-                    c(['git', 'add', '..'])
-                    c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
-                        version_nb])
-
-                    c(['git', 'checkout', 'master'])
-                    c(['git', 'merge', curr_branch])
-
-                    c(['git', 'tag', version_nb])
-                    call('git remote | xargs -l git push --all', shell=True)
-                    call('git remote | xargs -l git push --tags', shell=True)
-
-                    is_final_release = '^[0-9.]*$'
-                    if re.match(is_final_release, version_nb):
-                        pypi_repo = 'pypi'
-                    else:
-                        pypi_repo = 'test'
-
-                    c(['git', 'clean', '-dXnff'])
-                    ok = self.confirm("Is that OK?")
-                    if ok:
-                        c(['git', 'clean', '-dXff'])
-                        c(['python', 'setup.py', 'sdist', 'upload', '-r',
-                            pypi_repo], cwd='..')
-                        c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r',
-                            pypi_repo], cwd='..')
-                    else:
-                        self.error('Can\'t clean. Perform release manually.')
-
-                finally:
-                    c(['git', 'checkout', 'development'])
-                    c(['git', 'merge', 'master'])
-
-            else:
-                self.error('Canceled by user')
-
-        else:
-            self.error('Canceled by user.')
+        self.ship()
 
 def load():
     handler.register(Release)
