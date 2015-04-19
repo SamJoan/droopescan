@@ -127,10 +127,7 @@
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.10" />
       <version md5="33e888d268d7b416e8aa67ea6f0a23cf" nb="3.1.11-rc1" />
       <version md5="973cc23b2694dc47649fdede3ec02710" nb="3.0.12" />
-<<<<<<< HEAD
       <version md5="ce1538c17b4f3116993664219efa923e" nb="3.1.11" />
-=======
->>>>>>> a477ff1a0737e82889620f80cd2f74151715dc5f
       <version md5="973cc23b2694dc47649fdede3ec02710" nb="3.0.13" />
     </file>
     <file url="framework/javascript/HtmlEditorField.js">
@@ -221,13 +218,9 @@
       <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.10-rc2" />
       <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.10-rc1" />
       <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.12" />
-      <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.11" />
-<<<<<<< HEAD
-=======
       <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.10" />
       <version md5="ac2d710ee725a2da67ca1593e6172e04" nb="3.1.11-rc1" />
       <version md5="570fafc969764a6a4d4a262ca68ab3c3" nb="3.0.12" />
->>>>>>> a477ff1a0737e82889620f80cd2f74151715dc5f
       <version md5="570fafc969764a6a4d4a262ca68ab3c3" nb="3.0.13" />
     </file>
     <file url="framework/css/AssetUploadField.css">
@@ -290,10 +283,6 @@
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.10" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.11-rc1" />
       <version md5="96593622bd92eb2d3349dbb315c2aee4" nb="3.0.12" />
-<<<<<<< HEAD
-      <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.11" />
-=======
->>>>>>> a477ff1a0737e82889620f80cd2f74151715dc5f
       <version md5="96593622bd92eb2d3349dbb315c2aee4" nb="3.0.13" />
     </file>
     <file url="framework/css/UploadField.css">
@@ -356,10 +345,6 @@
       <version md5="5735ae836a12809611fb4a0f010920ea" nb="3.1.10" />
       <version md5="8a233eb53d1230bb831a91a864b4393c" nb="3.1.11-rc1" />
       <version md5="2f87b4d81b99a72d3adfcfd24a6c630f" nb="3.0.12" />
-<<<<<<< HEAD
-      <version md5="8a233eb53d1230bb831a91a864b4393c" nb="3.1.11" />
-=======
->>>>>>> a477ff1a0737e82889620f80cd2f74151715dc5f
       <version md5="2f87b4d81b99a72d3adfcfd24a6c630f" nb="3.0.13" />
     </file>
   </files>
