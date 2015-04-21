@@ -75,3 +75,13 @@ class ReleaseTests(BaseTest):
         with patch('os.path.isfile', return_value=False) as isfile:
             self.app.run()
 
+    def test_read_first_line(self):
+        real_version = "1.33.7"
+
+        with patch('common.release_api.open', create=True) as mock_open:
+             mock_open.return_value = MagicMock()
+             mock_open().__enter__().readline.return_value = "%s\n" % real_version
+             version = ra.read_first_line('../WHATEVER')
+
+             assert version == real_version
+

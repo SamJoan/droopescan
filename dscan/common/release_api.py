@@ -2,6 +2,7 @@ import common.functions as f
 import os.path
 import subprocess
 
+CHANGELOG = '../CHANGELOG'
 TEST_RUNS_BASE = ['../droopescan']
 TEST_RUNS_APPEND = ['-n', '100', '-t', '2']
 TEST_RUNS = [['scan', 'drupal', '--url', 'https://www.drupal.org'],
@@ -56,4 +57,35 @@ def check_pypirc():
     pypirc = os.path.expanduser("~/.pypirc")
     if not os.path.isfile(pypirc):
         f.error('File "%s" does not exist.' % pypirc)
+
+def read_first_line(file):
+    print(__name__)
+    with open(file, 'r') as f:
+      first_line = f.readline()
+
+    return first_line.strip()
+
+def changelog(self, version):
+    header = '%s\n%s\n\n*' % (version, ('='*len(version)))
+    with tempfile.NamedTemporaryFile(suffix=".tmp") as temp:
+      temp.write(header)
+      temp.flush()
+      call(['vim', temp.name])
+
+      return header + temp.read() + "\n"
+
+def changelog_modify():
+    prev_version_nb = read_first_line(CHANGELOG)
+    version_nb = self.get_input("Version number (prev %s):" %
+            prev_version_nb)
+
+    final = self.changelog(version_nb).strip() + "\n\n"
+
+    print("The following will be prepended to the CHANGELOG:\n---\n%s---" % final)
+
+    ok = self.confirm("Is that OK?")
+    if ok:
+        self.prepend_to_file(CHANGELOG, final)
+    else:
+        f.error("Cancelled by user.")
 

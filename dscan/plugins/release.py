@@ -8,8 +8,6 @@ import common.release_api as ra
 import re
 import sys, tempfile, os
 
-CHANGELOG = '../CHANGELOG'
-
 def c(*args, **kwargs):
     ret = call(*args, **kwargs)
     if ret != 0:
@@ -29,77 +27,47 @@ class Release(HumanBasePlugin):
                 required=False, default=False)),
         ]
 
-    def read_first_line(self, file):
-        with open(file, 'r') as f:
-          first_line = f.readline()
-
-        return first_line.strip()
-
-    def changelog(self, version):
-        header = '%s\n%s\n\n*' % (version, ('='*len(version)))
-        with tempfile.NamedTemporaryFile(suffix=".tmp") as temp:
-          temp.write(header)
-          temp.flush()
-          call(['vim', temp.name])
-
-          return header + temp.read() + "\n"
-
     def ship(self):
         skip_external = self.app.pargs.skip_external
 
         ra.check_pypirc()
         ra.test_all(skip_external)
 
-        prev_version_nb = self.read_first_line(CHANGELOG)
-        version_nb = self.get_input("Version number (prev %s):" %
-                prev_version_nb)
+        try:
+            curr_branch = check_output(['git', 'rev-parse',
+                '--abbrev-ref', 'HEAD']).strip()
 
-        final = self.changelog(version_nb).strip() + "\n\n"
+            c(['git', 'add', '..'])
+            c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
+                version_nb])
 
-        print("The following will be prepended to the CHANGELOG:\n---\n%s---" % final)
+            c(['git', 'checkout', 'master'])
+            c(['git', 'merge', curr_branch])
 
-        ok = self.confirm("Is that OK?")
-        if ok:
-            self.prepend_to_file(CHANGELOG, final)
+            c(['git', 'tag', version_nb])
+            call('git remote | xargs -l git push --all', shell=True)
+            call('git remote | xargs -l git push --tags', shell=True)
 
-            try:
-                curr_branch = check_output(['git', 'rev-parse',
-                    '--abbrev-ref', 'HEAD']).strip()
+            is_final_release = '^[0-9.]*$'
+            if re.match(is_final_release, version_nb):
+                pypi_repo = 'pypi'
+            else:
+                pypi_repo = 'test'
 
-                c(['git', 'add', '..'])
-                c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
-                    version_nb])
+            c(['git', 'clean', '-dXnff'])
+            ok = self.confirm("Is that OK?")
+            if ok:
+                c(['git', 'clean', '-dXff'])
+                c(['python', 'setup.py', 'sdist', 'upload', '-r',
+                    pypi_repo], cwd='..')
+                c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r',
+                    pypi_repo], cwd='..')
+            else:
+                self.error('Can\'t clean. Perform release manually.')
 
-                c(['git', 'checkout', 'master'])
-                c(['git', 'merge', curr_branch])
-
-                c(['git', 'tag', version_nb])
-                call('git remote | xargs -l git push --all', shell=True)
-                call('git remote | xargs -l git push --tags', shell=True)
-
-                is_final_release = '^[0-9.]*$'
-                if re.match(is_final_release, version_nb):
-                    pypi_repo = 'pypi'
-                else:
-                    pypi_repo = 'test'
-
-                c(['git', 'clean', '-dXnff'])
-                ok = self.confirm("Is that OK?")
-                if ok:
-                    c(['git', 'clean', '-dXff'])
-                    c(['python', 'setup.py', 'sdist', 'upload', '-r',
-                        pypi_repo], cwd='..')
-                    c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r',
-                        pypi_repo], cwd='..')
-                else:
-                    self.error('Can\'t clean. Perform release manually.')
-
-            finally:
-                c(['git', 'checkout', 'development'])
-                c(['git', 'merge', 'master'])
-
-        else:
-            self.error('Canceled by user')
+        finally:
+            c(['git', 'checkout', 'development'])
+            c(['git', 'merge', 'master'])
 
     @controller.expose(help='', hide=True)
     def default(self):
