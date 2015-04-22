@@ -40,12 +40,16 @@ class Release(HumanBasePlugin):
                 version_nb])
 
             # Merge into master. Reversible.
+            # git checkout master
+            # git reset --hard HEAD~1
+            # git revert HEAD -m 1????
             curr_branch = check_output(['git', 'rev-parse',
                 '--abbrev-ref', 'HEAD']).strip()
             c(['git', 'checkout', 'master'])
             c(['git', 'merge', curr_branch])
 
             # Create tag. Reversible.
+            # git tag -d 1.33.777-beta-test
             c(['git', 'tag', version_nb])
 
             # Clean. Doesn't matter.
