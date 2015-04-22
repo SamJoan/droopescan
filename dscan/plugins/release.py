@@ -34,33 +34,34 @@ class Release(HumanBasePlugin):
         version_nb = ra.changelog_modify()
 
         try:
-            curr_branch = check_output(['git', 'rev-parse',
-                '--abbrev-ref', 'HEAD']).strip()
-
+            # Commit CHANGELOG. Reversible.
             c(['git', 'add', '..'])
             c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
                 version_nb])
 
+            # Merge into master. Reversible.
+            curr_branch = check_output(['git', 'rev-parse',
+                '--abbrev-ref', 'HEAD']).strip()
             c(['git', 'checkout', 'master'])
             c(['git', 'merge', curr_branch])
 
+            # Create tag. Reversible.
             c(['git', 'tag', version_nb])
+
+            # Clean. Doesn't matter.
+            c(['git', 'clean', '-dXff'])
+
+            # Release. Non-reversible.
+            is_release = '^[0-9.]*$'
+            pypi_repo = 'pypi' if re.match(is_release, version_nb) else 'test'
+            c(['python', 'setup.py', 'sdist', 'upload', '-r', pypi_repo], cwd='..')
+            c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r', pypi_repo], cwd='..')
+
+            # Push all branches and tags into GH. Non-reversible.
             call('git remote | xargs -l git push --all', shell=True)
             call('git remote | xargs -l git push --tags', shell=True)
-
-            is_final_release = '^[0-9.]*$'
-            if re.match(is_final_release, version_nb):
-                pypi_repo = 'pypi'
-            else:
-                pypi_repo = 'test'
-
-            c(['git', 'clean', '-dXff'])
-            c(['python', 'setup.py', 'sdist', 'upload', '-r',
-                pypi_repo], cwd='..')
-            c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r',
-                pypi_repo], cwd='..')
-
         finally:
+            # Go back to development with the new commits from master.
             c(['git', 'checkout', 'development'])
             c(['git', 'merge', 'master'])
 
