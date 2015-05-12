@@ -177,3 +177,6 @@ def version_get():
     version = '1.33.7'
     return version
 
+def error(msg):
+    raise RuntimeError('\033[91m%s\033[0m' % msg)
+

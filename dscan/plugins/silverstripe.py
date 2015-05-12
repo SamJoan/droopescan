@@ -76,7 +76,7 @@ class SilverStripe(BasePlugin):
             fw_gr.tag_checkout(version)
             cms_gr.tag_checkout(version)
 
-            hashes[version] = ua.hashes_get(versions_file, self.update_majors, './.update-workspace/silverstripe/')
+            hashes[version] = ua.hashes_get(versions_file, './.update-workspace/silverstripe/')
 
         versions_file.update(hashes)
         return versions_file

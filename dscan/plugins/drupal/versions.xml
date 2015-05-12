@@ -120,8 +120,8 @@
       <version md5="1904f6fd4a4fe747d6b53ca9fd81f848" nb="6.34" />
       <version md5="0bb055ea361b208072be45e8e004117b" nb="7.34" />
       <version md5="1904f6fd4a4fe747d6b53ca9fd81f848" nb="6.35" />
-      <version md5="0bb055ea361b208072be45e8e004117b" nb="7.36" />
       <version md5="0bb055ea361b208072be45e8e004117b" nb="7.35" />
+      <version md5="0bb055ea361b208072be45e8e004117b" nb="7.36" />
     </file>
     <file url="misc/tabledrag.js">
       <version md5="c6f7a28ffd7288909b207c0eb651298e" nb="6.0-rc1" />
@@ -215,8 +215,8 @@
       <version md5="50ebbc8dc949d7cb8d4cc5e6e0a6c1ca" nb="6.34" />
       <version md5="caaf444bbba2811b4fa0d5aecfa837e5" nb="7.34" />
       <version md5="50ebbc8dc949d7cb8d4cc5e6e0a6c1ca" nb="6.35" />
-      <version md5="c1bdc05ec3eab25853bec452e3addcd2" nb="7.36" />
       <version md5="caaf444bbba2811b4fa0d5aecfa837e5" nb="7.35" />
+      <version md5="c1bdc05ec3eab25853bec452e3addcd2" nb="7.36" />
     </file>
     <file url="misc/tableheader.js">
       <version md5="da96f76a7fef73f09e12ca207602a909" nb="6.0-rc1" />
@@ -244,7 +244,7 @@
       <version md5="9f42b75075f35fbe361ea1f0da81cba8" nb="6.19" />
       <version md5="9f42b75075f35fbe361ea1f0da81cba8" nb="6.20" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.29" />
-      <version md5="3cedd331b876ec30980aa595964b647c" nb="6.30" />
+      <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.30" />
       <version md5="d236b109c1f8fae45cf40586cc40e9c2" nb="6.31" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.32" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.33" />
@@ -310,8 +310,8 @@
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.34" />
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.34" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.35" />
-      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.36" />
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.35" />
+      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.36" />
     </file>
     <file url="misc/ajax.js">
       <version md5="e9705a45006501b9e3ff1bc4fa2c7a37" nb="7.0-alpha1" />
@@ -363,8 +363,8 @@
       <version md5="30d9e08baa11f3836eca00425b550f82" nb="7.32" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.33" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.34" />
-      <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.36" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.35" />
+      <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.36" />
     </file>
     <file url="core/misc/drupal.js">
       <version md5="330a6a8916376627bdb21b0ce45804ca" nb="8.0-alpha6" />

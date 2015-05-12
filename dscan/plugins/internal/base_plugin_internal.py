@@ -47,7 +47,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         epilog = template('help_epilog.mustache')
 
-    def getattr(self, pargs, attr_name, default=None):
+    def _getattr(self, pargs, attr_name, default=None):
         val = getattr(pargs, attr_name)
         if val:
             return val
@@ -98,8 +98,8 @@ class BasePluginInternal(controller.CementBaseController):
         follow_redirects = pargs.follow_redirects
         number = pargs.number if not pargs.number == 'all' else 100000
 
-        plugins_base_url = self.getattr(pargs, 'plugins_base_url')
-        themes_base_url = self.getattr(pargs, 'themes_base_url')
+        plugins_base_url = self._getattr(pargs, 'plugins_base_url')
+        themes_base_url = self._getattr(pargs, 'themes_base_url')
 
         return locals()
 
@@ -129,17 +129,17 @@ class BasePluginInternal(controller.CementBaseController):
 
         all = {
             'plugins': {
-                'func': getattr(self, 'enumerate_plugins'),
+                'func': self.enumerate_plugins,
                 'template': 'enumerate_plugins.mustache',
                 'kwargs': kwargs_plugins
             },
             'themes': {
-                'func': getattr(self, 'enumerate_themes'),
+                'func': self.enumerate_themes,
                 'template': 'enumerate_plugins.mustache',
                 'kwargs': kwargs_themes
             },
             'version': {
-                'func': getattr(self, 'enumerate_version'),
+                'func': self.enumerate_version,
                 'template': 'enumerate_version.mustache',
                 'kwargs': {
                     'versions_file': self.versions_file,
@@ -149,7 +149,7 @@ class BasePluginInternal(controller.CementBaseController):
                 }
             },
             'interesting urls': {
-                'func': getattr(self, 'enumerate_interesting'),
+                'func': self.enumerate_interesting,
                 'template': 'enumerate_interesting.mustache',
                 'kwargs': {
                     'verb': opts['verb'],
@@ -480,7 +480,6 @@ class BasePluginInternal(controller.CementBaseController):
             no_results = True
             found = []
             for future_array in futures:
-
                 if shutdown:
                     future_array['future'].cancel()
                     continue

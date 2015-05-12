@@ -1,9 +1,13 @@
+1.25.0
+======
+
+* Bug fix.
+
 1.24.0
 ======
 
-* New versions for SS & Drupal.
-* Fix issues identified during UAT ^^
-* Changed UA. Removed RC for old SS versions.
+* Drupal 7.36, SS 3.0.13.
+* Fixed `stats`.
 
 1.23.1
 ======
