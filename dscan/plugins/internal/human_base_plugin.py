@@ -23,15 +23,6 @@ class HumanBasePlugin(controller.CementBaseController):
         f.write(temp)
         f.close()
 
-    def confirm(self, question):
-        sys.stdout.write('%s [y/n]\n' % question)
-        while True:
-            try:
-                user_input = raw_input().lower()
-                return strtobool(user_input)
-            except ValueError:
-                sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
-
     def get_input(self, question):
         print(question, end=' ')
         return raw_input()

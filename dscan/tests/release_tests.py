@@ -85,3 +85,12 @@ class ReleaseTests(BaseTest):
 
              assert version == real_version
 
+    def test_human(self):
+        with patch('common.release_api.confirm') as mc:
+            ra.test_human()
+
+            assert mc.called
+
+    def test_changelog_modify(self):
+        pass
+

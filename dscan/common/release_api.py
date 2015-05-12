@@ -44,6 +44,15 @@ def test_human():
     if not human_approves:
         f.error("Cancelled by user.")
 
+def confirm(self, question):
+    sys.stdout.write('%s [y/n]\n' % question)
+    while True:
+        try:
+            user_input = raw_input().lower()
+            return strtobool(user_input)
+        except ValueError:
+            sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
+
 def _scan_external():
     for run in TEST_RUNS:
         args = TEST_RUNS_BASE + run + TEST_RUNS_APPEND
@@ -88,4 +97,3 @@ def changelog_modify():
         self.prepend_to_file(CHANGELOG, final)
     else:
         f.error("Cancelled by user.")
-
