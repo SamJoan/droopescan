@@ -1,3 +1,4 @@
+from __future__ import print_function
 import common.functions as f
 import os.path
 import subprocess
@@ -36,12 +37,45 @@ def test_external():
     if not external_passed:
         f.error("External scans failed... abort.")
 
+def _scan_external():
+    for run in TEST_RUNS:
+        args = TEST_RUNS_BASE + run + TEST_RUNS_APPEND
+        ret_code = subprocess.call(args)
+        if ret_code != 0:
+            return False
+
+    return True
+
 def test_human():
     """
         Final human sanity check.
     """
     human_approves = confirm("Does that look OK for you?")
     if not human_approves:
+        f.error("Cancelled by user.")
+
+def changelog(self, version):
+    header = '%s\n%s\n\n*' % (version, ('='*len(version)))
+    with tempfile.NamedTemporaryFile(suffix=".tmp") as temp:
+      temp.write(header)
+      temp.flush()
+      call(['vim', temp.name])
+
+      return header + temp.read() + "\n"
+
+def changelog_modify():
+    prev_version_nb = read_first_line(CHANGELOG)
+    version_nb = get_input("Version number (prev %s):" %
+            prev_version_nb)
+
+    final = changelog(version_nb).strip() + "\n\n"
+
+    print("The following will be prepended to the CHANGELOG:\n---\n%s---" % final)
+
+    ok = confirm("Is that OK?")
+    if ok:
+        prepend_to_file(CHANGELOG, final)
+    else:
         f.error("Cancelled by user.")
 
 def confirm(self, question):
@@ -53,14 +87,9 @@ def confirm(self, question):
         except ValueError:
             sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
 
-def _scan_external():
-    for run in TEST_RUNS:
-        args = TEST_RUNS_BASE + run + TEST_RUNS_APPEND
-        ret_code = subprocess.call(args)
-        if ret_code != 0:
-            return False
-
-    return True
+def get_input(self, question):
+    print(question, end=' ')
+    return raw_input()
 
 def check_pypirc():
     pypirc = os.path.expanduser("~/.pypirc")
@@ -74,26 +103,13 @@ def read_first_line(file):
 
     return first_line.strip()
 
-def changelog(self, version):
-    header = '%s\n%s\n\n*' % (version, ('='*len(version)))
-    with tempfile.NamedTemporaryFile(suffix=".tmp") as temp:
-      temp.write(header)
-      temp.flush()
-      call(['vim', temp.name])
+def prepend_to_file(self, filename, prepend_text):
+    f = open(filename,'r')
+    temp = f.read()
+    f.close()
 
-      return header + temp.read() + "\n"
+    f = open(filename, 'w')
+    f.write(prepend_text)
 
-def changelog_modify():
-    prev_version_nb = read_first_line(CHANGELOG)
-    version_nb = self.get_input("Version number (prev %s):" %
-            prev_version_nb)
-
-    final = self.changelog(version_nb).strip() + "\n\n"
-
-    print("The following will be prepended to the CHANGELOG:\n---\n%s---" % final)
-
-    ok = self.confirm("Is that OK?")
-    if ok:
-        self.prepend_to_file(CHANGELOG, final)
-    else:
-        f.error("Cancelled by user.")
+    f.write(temp)
+    f.close()
