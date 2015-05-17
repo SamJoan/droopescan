@@ -1,7 +1,6 @@
 from cement.core import handler, controller
 from common import template
 from common.plugins_util import Plugin, plugins_get
-from distutils.util import strtobool
 from plugins import HumanBasePlugin
 from subprocess import call, check_output
 import common.release_api as ra
@@ -32,6 +31,7 @@ class Release(HumanBasePlugin):
 
         ra.check_pypirc()
         ra.test_all(skip_external)
+        ra.changelog_modify()
 
         try:
             curr_branch = check_output(['git', 'rev-parse',

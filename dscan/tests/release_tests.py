@@ -36,6 +36,35 @@ class ReleaseTests(BaseTest):
 
         return internal, external, human
 
+    def mock_input(self, ret_val=None, side_eff=None):
+        if sys.version_info < (3, 0, 0):
+            builtin = "__builtin__"
+            inp = "raw_input"
+        else:
+            builtin = "builtins"
+            inp = "input"
+
+        inp = self.p("%s.%s" % (builtin, inp))
+
+        if ret_val:
+            inp.return_value = ret_val
+
+        if side_eff:
+            inp.side_effect = side_eff
+
+        return (builtin, inp)
+
+    def _mock_cm(self):
+        mocks = []
+
+        mocks.append(self.p("common.release_api.read_first_line"))
+        mocks.append(self.p("common.release_api.get_input"))
+        mocks.append(self.p("common.release_api.changelog"))
+        mocks.append(self.p("common.release_api.confirm", return_value=True))
+        mocks.append(self.p("common.release_api.prepend_to_file"))
+
+        return mocks
+
     def test_tests_called(self):
         internal, external, _ = self.mock_tests(raise_external=True)
         raised = False
@@ -101,15 +130,8 @@ class ReleaseTests(BaseTest):
         question = "Is this a question?"
         return_value = "Yes."
 
-        if sys.version_info < (3, 0, 0):
-            builtin = "__builtin__"
-            inp = "raw_input"
-        else:
-            builtin = "builtins"
-            inp = "input"
-
+        builtin, ri = self.mock_input(return_value)
         with patch("%s.print" % builtin) as p:
-            with patch("%s.%s" % (builtin, inp), return_value=return_value) as ri:
                 response = ra.get_input(question)
 
                 assert p.called
@@ -134,6 +156,43 @@ class ReleaseTests(BaseTest):
                 assert version in header
                 assert ret_val == header + changes
 
+    def test_confirm(self):
+        side_eff = ["HA!", "y"]
+        builtins, inp = self.mock_input(side_eff=side_eff)
+
+        result = ra.confirm("")
+        assert inp.call_count == 2
+        assert result == True
+
+    def test_confirm_false(self):
+        side_eff = ["n"]
+        builtins, inp = self.mock_input(side_eff=side_eff)
+
+        result = ra.confirm("")
+        assert result == False
+
+    def test_prepend_to_file(self):
+        f = "CHANGELOL"
+
+        prev = "adadadad\n"
+        new = "bsbbssbbs\n"
+
+        with patch('common.release_api.open', create=True) as mo:
+            mo().read.return_value = prev
+            ra.prepend_to_file(f, new)
+
+            w = mo().write
+            first_write = w.call_args_list[0][0][0]
+            second_write = w.call_args_list[1][0][0]
+
+            assert w.call_count == 2
+            assert first_write == new
+            assert second_write == prev
+
     def test_changelog_modify(self):
-        pass
+        all_mocks = self._mock_cm()
+        ra.changelog_modify()
+
+        for mock in all_mocks:
+            assert mock.called
 

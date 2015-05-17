@@ -1,7 +1,9 @@
 from __future__ import print_function
+from distutils.util import strtobool
 import common.functions as f
 import os.path
 import subprocess
+import sys
 import tempfile
 
 CHANGELOG = '../CHANGELOG'
@@ -102,21 +104,19 @@ def confirm(question):
         except ValueError:
             sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
 
-
 def check_pypirc():
     pypirc = os.path.expanduser("~/.pypirc")
     if not os.path.isfile(pypirc):
         f.error('File "%s" does not exist.' % pypirc)
 
 def read_first_line(file):
-    print(__name__)
     with open(file, 'r') as f:
       first_line = f.readline()
 
     return first_line.strip()
 
 def prepend_to_file(filename, prepend_text):
-    f = open(filename,'r')
+    f = open(filename, 'r')
     temp = f.read()
     f.close()
 
