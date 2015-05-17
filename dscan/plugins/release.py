@@ -31,7 +31,7 @@ class Release(HumanBasePlugin):
 
         ra.check_pypirc()
         ra.test_all(skip_external)
-        ra.changelog_modify()
+        version_nb = ra.changelog_modify()
 
         try:
             curr_branch = check_output(['git', 'rev-parse',

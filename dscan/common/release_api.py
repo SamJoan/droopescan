@@ -79,6 +79,7 @@ def changelog_modify():
     ok = confirm("Is that OK?")
     if ok:
         prepend_to_file(CHANGELOG, final)
+        return version_nb
     else:
         f.error("Cancelled by user.")
 
