@@ -1,3 +1,10 @@
+1.26.0
+======
+
+* Update Drupal and SilverStripe. No security updates.
+* Improve version detection.
+* Added notice for legacy requests library (for Kali users.)
+
 1.25.0
 ======
 
