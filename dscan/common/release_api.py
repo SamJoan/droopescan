@@ -2,6 +2,7 @@ from __future__ import print_function
 import common.functions as f
 import os.path
 import subprocess
+import tempfile
 
 CHANGELOG = '../CHANGELOG'
 TEST_RUNS_BASE = ['../droopescan']
@@ -54,14 +55,15 @@ def test_human():
     if not human_approves:
         f.error("Cancelled by user.")
 
-def changelog(self, version):
+def changelog(version):
     header = '%s\n%s\n\n*' % (version, ('='*len(version)))
     with tempfile.NamedTemporaryFile(suffix=".tmp") as temp:
       temp.write(header)
-      temp.flush()
-      call(['vim', temp.name])
 
-      return header + temp.read() + "\n"
+      temp.flush()
+      subprocess.call(['vim', temp.name])
+
+      return header + temp.read()
 
 def changelog_modify():
     prev_version_nb = read_first_line(CHANGELOG)
@@ -78,18 +80,28 @@ def changelog_modify():
     else:
         f.error("Cancelled by user.")
 
-def confirm(self, question):
+def get_input(question):
+    print(question, end=' ')
+    try:
+        inp =  raw_input()
+    except NameError:
+        inp = input()
+
+    return inp
+
+def confirm(question):
     sys.stdout.write('%s [y/n]\n' % question)
     while True:
         try:
-            user_input = raw_input().lower()
+            try:
+                user_input = raw_input().lower()
+            except NameError:
+                user_input = input().lower()
+
             return strtobool(user_input)
         except ValueError:
             sys.stdout.write('Please respond with \'y\' or \'n\'.\n')
 
-def get_input(self, question):
-    print(question, end=' ')
-    return raw_input()
 
 def check_pypirc():
     pypirc = os.path.expanduser("~/.pypirc")
@@ -103,7 +115,7 @@ def read_first_line(file):
 
     return first_line.strip()
 
-def prepend_to_file(self, filename, prepend_text):
+def prepend_to_file(filename, prepend_text):
     f = open(filename,'r')
     temp = f.read()
     f.close()

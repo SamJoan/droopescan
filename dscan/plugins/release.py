@@ -6,7 +6,7 @@ from plugins import HumanBasePlugin
 from subprocess import call, check_output
 import common.release_api as ra
 import re
-import sys, tempfile, os
+import sys, os
 
 def c(*args, **kwargs):
     ret = call(*args, **kwargs)

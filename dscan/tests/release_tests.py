@@ -2,9 +2,10 @@ from cement.utils import test
 from common.testutils import decallmethods
 from mock import patch, MagicMock, mock_open, Mock, create_autospec
 from tests import BaseTest
-import responses
 import common.release_api as ra
 import plugins.release
+import responses
+import sys
 
 @decallmethods(responses.activate)
 class ReleaseTests(BaseTest):
@@ -95,6 +96,43 @@ class ReleaseTests(BaseTest):
     def test_human_raises(self):
         with patch('common.release_api.confirm', return_value=False) as mc:
             ra.test_human()
+
+    def test_get_input(self):
+        question = "Is this a question?"
+        return_value = "Yes."
+
+        if sys.version_info < (3, 0, 0):
+            builtin = "__builtin__"
+            inp = "raw_input"
+        else:
+            builtin = "builtins"
+            inp = "input"
+
+        with patch("%s.print" % builtin) as p:
+            with patch("%s.%s" % (builtin, inp), return_value=return_value) as ri:
+                response = ra.get_input(question)
+
+                assert p.called
+                assert p.call_args[0][0] == question
+
+                assert ri.called
+                assert response == return_value
+
+    def test_changelog(self):
+        version = "1.33.7"
+        changes = " Change stuff."
+        with patch("tempfile.NamedTemporaryFile") as ntf:
+            with patch('subprocess.call', return_value=0) as c:
+                w = ntf().__enter__().write
+                r = ntf().__enter__().read
+                r.return_value = changes
+
+                ret_val = ra.changelog(version)
+
+                header = w.call_args[0][0]
+
+                assert version in header
+                assert ret_val == header + changes
 
     def test_changelog_modify(self):
         pass
