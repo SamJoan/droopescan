@@ -40,7 +40,7 @@ def test_human():
     """
         Final human sanity check.
     """
-    human_approves = self.confirm("Does that look OK for you?")
+    human_approves = confirm("Does that look OK for you?")
     if not human_approves:
         f.error("Cancelled by user.")
 

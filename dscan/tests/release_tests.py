@@ -91,6 +91,11 @@ class ReleaseTests(BaseTest):
 
             assert mc.called
 
+    @test.raises(RuntimeError)
+    def test_human_raises(self):
+        with patch('common.release_api.confirm', return_value=False) as mc:
+            ra.test_human()
+
     def test_changelog_modify(self):
         pass
 
