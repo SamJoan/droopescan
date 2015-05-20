@@ -8,10 +8,6 @@ Version 1.x:
             - 301 on everything that looks like a folder. /sites/ -> 301 /fake/ -> 301
             This is very common on Drupal installations because of some redirect
             plugin.
-    - Ensure droopescan runs in kali.
-        - Add better error for old requests library?
-            - Done. Add test for bug.
-        - Increase --timeout-host
     - install.php
         CHANGELOG.txt
         INSTALL.txt
