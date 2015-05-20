@@ -68,7 +68,6 @@ class BasePluginInternal(controller.CementBaseController):
         # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
         try:
             a = requests.adapters.HTTPAdapter(pool_maxsize=5000)
-            print(requests.adapters)
             self.session.mount('http://', a)
             self.session.mount('https://', a)
         except AttributeError:
