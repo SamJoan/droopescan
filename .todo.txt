@@ -10,6 +10,7 @@ Version 1.x:
             plugin.
     - Ensure droopescan runs in kali.
         - Add better error for old requests library?
+            - Done. Add test for bug.
         - Increase --timeout-host
     - install.php
         CHANGELOG.txt

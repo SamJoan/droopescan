@@ -60,12 +60,18 @@ class BasePluginInternal(controller.CementBaseController):
     def _general_init(self, output=None, user_agent=None, debug_requests=False):
         self.session = Session()
 
+        if not output:
+            self.out = StandardOutput()
+        else:
+            self.out = output
+
         # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
         try:
             a = requests.adapters.HTTPAdapter(pool_maxsize=5000)
+            print(requests.adapters)
             self.session.mount('http://', a)
             self.session.mount('https://', a)
-        except:
+        except AttributeError:
             # https://github.com/droope/droopescan/issues/6
             old_req = """Running a very old version of requests! Please `pip
                 install -U requests`."""
@@ -78,11 +84,6 @@ class BasePluginInternal(controller.CementBaseController):
         self.session.headers['User-Agent'] = user_agent
         if debug_requests:
             self.session = RequestsLogger(self.session)
-
-        if not output:
-            self.out = StandardOutput()
-        else:
-            self.out = output
 
     def _options(self):
         pargs = self.app.pargs

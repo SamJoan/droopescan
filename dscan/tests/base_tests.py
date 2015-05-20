@@ -1,4 +1,3 @@
-
 from __future__ import unicode_literals
 from cement.utils import test
 from common import file_len, ProgressBar, JsonOutput, StandardOutput
@@ -8,6 +7,7 @@ from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
 from requests import Session
 from tests import BaseTest
+import common
 import responses
 import sys
 import io
@@ -237,3 +237,10 @@ class BaseTests(BaseTest):
             print(o.call_args_list)
             assert ln == 0
 
+    @patch.object(common.StandardOutput, 'warn')
+    def test_kali_old_requests_bug(self, warn):
+        drupal = Drupal()
+        with patch('requests.adapters', spec_set=["force_attr_error"]):
+            drupal._general_init()
+
+            assert warn.called
