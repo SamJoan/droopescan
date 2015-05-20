@@ -3,6 +3,8 @@ Add;
 Version 1.x:
     - More DOCS. 
         Done. Add precision for sites which do have reliable 301. There are two
+    - Fix failing test in travis.
+    - Handle 301 sites
         types of 301 that I can think of:
             - 301 on folders only. /sites/ -> 301 /fake/ -> 404
             - 301 on everything that looks like a folder. /sites/ -> 301 /fake/ -> 301
@@ -23,8 +25,7 @@ Version 1.x:
     - Inline documentation in dscan is currently compatible with epydoc:
         http://stackoverflow.com/questions/3898572/what-is-the-standard-python-docstring-format
     - Autospec tests. Especially in update_tests.py as API should be static.
-      http://www.voidspace.org.uk/python/mock/helpers.html#auto-speccing
-    - Handle 301 sites
+          http://www.voidspace.org.uk/python/mock/helpers.html#auto-speccing
 
 Version 2.x
 
