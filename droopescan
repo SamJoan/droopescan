@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import dscan, sys, os
 
+prev_cwd = os.getcwd()
+
 p = os.path.dirname(dscan.__file__)
 sys.path.append(p)
 os.chdir(p)
 
 import droopescan
-droopescan.main()
+droopescan.main(prev_cwd)

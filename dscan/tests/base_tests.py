@@ -11,6 +11,7 @@ import common
 import responses
 import sys
 import io
+import os
 
 @decallmethods(responses.activate)
 class BaseTests(BaseTest):
@@ -244,3 +245,17 @@ class BaseTests(BaseTest):
             drupal._general_init()
 
             assert warn.called
+
+    def test_url_file_accepts_relative(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['--url-file', self.valid_file])
+
+        m = mock_open()
+        with patch('plugins.internal.base_plugin_internal.open', m, create=True) as o:
+            url_scan = self.mock_controller('drupal', 'url_scan')
+            self.app.run()
+
+            assert os.getcwd() + "/" + self.valid_file == o.call_args_list[0][0][0]
+
+    def test_url_file_leaves_full(self):
+        assert False

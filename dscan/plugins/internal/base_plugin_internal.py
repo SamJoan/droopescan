@@ -8,7 +8,9 @@ from datetime import datetime
 from os.path import dirname
 from requests import Session
 import common
+import droopescan
 import hashlib
+import os
 import requests
 import signal
 import sys
@@ -28,7 +30,6 @@ try:
     requests.packages.urllib3.disable_warnings()
 except:
     pass
-
 
 class BasePluginInternal(controller.CementBaseController):
     requests = None

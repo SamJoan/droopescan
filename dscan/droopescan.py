@@ -14,6 +14,10 @@ from cement.utils.misc import init_defaults
 from common.functions import template, version_get
 from plugins import Scan
 import common, sys, signal
+import droopescan
+import os
+
+CWD = os.getcwd()
 
 class DroopeScanBase(controller.CementBaseController):
     class Meta:
@@ -26,20 +30,21 @@ class DroopeScanBase(controller.CementBaseController):
         print(template("intro.mustache", {'version': version_get(),
             'color': True}))
 
-
 class DroopeScan(foundation.CementApp):
     testing = False
     class Meta:
         label = 'droopescan'
         base_controller = DroopeScanBase
 
-def main():
+def main(script_location):
     ds = DroopeScan("DroopeScan",
             plugin_config_dir="./plugins.d",
             plugin_dir="./plugins",
             catch_signals=None)
 
     handler.register(Scan)
+
+    droopescan.CWD = script_location
 
     try:
         ds.setup()

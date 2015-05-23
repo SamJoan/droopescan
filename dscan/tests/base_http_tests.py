@@ -3,7 +3,7 @@ from common import file_len, base_url, ProgressBar, StandardOutput
 from common import ScanningMethod, Verb, Enumerate
 from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor, Future
-from mock import patch, MagicMock, ANY
+from mock import patch, MagicMock, ANY, mock_open
 from plugins.drupal import Drupal
 from plugins.internal.base_plugin_internal import BasePluginInternal
 from requests.exceptions import ConnectionError
@@ -741,12 +741,5 @@ class BaseHttpTests(BaseTest):
         assert themes_ok
         assert plugins_ok
 
-    def test_url_file_accepts_relative(self):
-        assert False
-        self.add_argv(['--url-file', self.valid_file])
 
-        url_scan = self.mock_controller('drupal', 'url_scan')
-        self.app.run()
-
-        assert url_scan.call_count == 3
 
