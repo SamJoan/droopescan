@@ -740,3 +740,13 @@ class BaseHttpTests(BaseTest):
 
         assert themes_ok
         assert plugins_ok
+
+    def test_url_file_accepts_relative(self):
+        assert False
+        self.add_argv(['--url-file', self.valid_file])
+
+        url_scan = self.mock_controller('drupal', 'url_scan')
+        self.app.run()
+
+        assert url_scan.call_count == 3
+

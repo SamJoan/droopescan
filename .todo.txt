@@ -5,6 +5,7 @@ Version 1.x:
     - Why is drupal 6.17 not detected as such?
     - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
     - More DOCS. 
+    - Improve loading bars.
     - install.php
         CHANGELOG.txt
         INSTALL.txt
