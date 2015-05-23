@@ -24,6 +24,7 @@ class ReleaseTests(BaseTest):
         return patcher.start()
 
     def mock_tests(self, raise_external=False, raise_human=False):
+        check_pypirc = self.p('common.release_api.check_pypirc')
         internal = self.p('common.release_api.test_internal')
         external = self.p('common.release_api.test_external')
         human = self.p('common.release_api.test_human')
