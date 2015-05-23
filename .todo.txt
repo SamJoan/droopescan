@@ -1,8 +1,10 @@
 Add;
 
 Version 1.x:
+    - Accept relative paths to -U
+    - Why is drupal 6.17 not detected as such?
+    - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
     - More DOCS. 
-    - Fix failing test in travis.
     - install.php
         CHANGELOG.txt
         INSTALL.txt
@@ -12,9 +14,6 @@ Version 1.x:
         MAINTAINERS.txt
         UPGRADE.txt
         ^ check fuzzdb for file goodness.
-    - Accept relative paths to -U
-    - Why is drupal 6.17 not detected as such?
-    - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
     - Inline documentation in dscan is currently compatible with epydoc:
         http://stackoverflow.com/questions/3898572/what-is-the-standard-python-docstring-format
     - Autospec tests. Especially in update_tests.py as API should be static.
