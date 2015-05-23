@@ -2,15 +2,7 @@ Add;
 
 Version 1.x:
     - More DOCS. 
-        Done. Add precision for sites which do have reliable 301. There are two
     - Fix failing test in travis.
-    - Handle 301 sites
-        types of 301 that I can think of:
-            - 301 on folders only. /sites/ -> 301 /fake/ -> 404
-            - 301 on everything that looks like a folder. /sites/ -> 301 /fake/ -> 301
-            This is very common on Drupal installations because of some redirect
-            plugin.
-
     - install.php
         CHANGELOG.txt
         INSTALL.txt
@@ -29,7 +21,6 @@ Version 1.x:
           http://www.voidspace.org.uk/python/mock/helpers.html#auto-speccing
 
 Version 2.x
-
     - Break API to remove finds, isempty. Instead, simply return finds.
     - Break API to replace 'interesting urls' key with 'interesting_urls'.
     - Break API to add url (the URL which was requested to be scanned) and final_url which is the URL after redirects.

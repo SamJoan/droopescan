@@ -68,10 +68,11 @@ class ReleaseTests(BaseTest):
     def test_tests_called(self):
         internal, external, _ = self.mock_tests(raise_external=True)
         raised = False
-        try:
-            self.app.run()
-        except RuntimeError:
-            raised = True
+        #try:
+        self.app.run()
+        #except RuntimeError as e:
+            #print(e)
+            #raised = True
 
         assert internal.called
         assert external.called
