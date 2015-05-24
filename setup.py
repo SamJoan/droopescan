@@ -16,7 +16,7 @@ setup(
     name='droopescan',
     version=read_first_line('CHANGELOG'),
     description='A plugin-based scanner that aids security researchers in identifying issues with several CMSs, mainly Drupal & SilverStripe. https://github.com/droope/droopescan',
-    author_email='pedro.worcel@security-assessment.com',
+    author_email='pedro@worcel.com',
     author='Pedro Worcel',
     include_package_data=True,
     license='GPL',

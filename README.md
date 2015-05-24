@@ -127,7 +127,7 @@ Another option is to use a .netrc file for basic authentication. An example
 
 <pre>
 machine secret.google.com
-    login pedro.worcel@security-assessment.com
+    login admin@google.com
     password Winter01
 </pre>
 
