@@ -681,6 +681,7 @@ class BaseHttpTests(BaseTest):
         total_show_progressbar = 0
         for mock in mocks:
             args, kwargs = mock.call_args
+            print(kwargs)
             if kwargs['hide_progressbar'] == False:
                 total_show_progressbar += 1
 

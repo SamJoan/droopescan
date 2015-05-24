@@ -280,8 +280,7 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             sys.exit(130)
 
-    def url_scan(self, url, opts, functionality, enabled_functionality,
-            hide_progressbar):
+    def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
 
         url = common.repair_url(url, self.out)
         if opts['follow_redirects']:
@@ -307,9 +306,9 @@ class BasePluginInternal(controller.CementBaseController):
             # Get the arguments for the function.
             kwargs = dict(enum['kwargs'])
             kwargs['url'] = url
+            kwargs['hide_progressbar'] = hide_progressbar
             if enumerate in ['themes', 'plugins']:
                 kwargs['scanning_method'] = scanning_method
-                kwargs['hide_progressbar'] = hide_progressbar
 
             # Call to the respective functions occurs here.
             finds, is_empty = enum['func'](**kwargs)
@@ -638,11 +637,11 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             raise RuntimeError("File '%s' returned status code '%s'." % (file_url, r.status_code))
 
-    def _enumerate_plugin_if(self, found_list, verb, threads, imu_list,
-            hide_progressbar):
+    def _enumerate_plugin_if(self, found_list, verb, threads, imu_list, hide_progressbar):
         """
             Finds interesting urls within a plugin folder which return 200.
-            @param found_list as returned in self.enumerate. E.g. [{'name': 'this_exists', 'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/'}]
+            @param found_list as returned in self.enumerate.
+                E.g. [{'name': 'this_exists', 'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/'}]
             @param verb the verb to use.
             @param threads the number of threads to use.
             @param imu Interesting module urls.
