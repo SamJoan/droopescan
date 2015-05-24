@@ -264,7 +264,6 @@ class BasePluginInternal(controller.CementBaseController):
                         self._process_results_multisite(results, functionality,
                                 timeout_host)
                         results = []
-
         else:
             output = self.url_scan(opts['url'], opts, functionality,
                     enabled_functionality, hide_progressbar=hide_progressbar)
@@ -300,6 +299,9 @@ class BasePluginInternal(controller.CementBaseController):
         result = {}
         for enumerate in enabled_functionality:
             enum = functionality[enumerate]
+
+            if shutdown:
+                continue
 
             # Get the arguments for the function.
             kwargs = dict(enum['kwargs'])
@@ -555,7 +557,7 @@ class BasePluginInternal(controller.CementBaseController):
             if resp.status_code == 200 or resp.status_code == 301:
                 found.append({
                     'url': interesting_url,
-                    'description': description,
+                    'description': description
                 })
 
         return found, len(found) == 0
@@ -637,6 +639,10 @@ class BasePluginInternal(controller.CementBaseController):
                     })
 
             for f in futures:
+                if shutdown:
+                    futures[file_url].cancel()
+                    continue
+
                 r = f['future'].result()
                 if r.status_code == 200:
                     found_list[f['i']]['imu'].append({
