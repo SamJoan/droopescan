@@ -1,7 +1,6 @@
 Add;
 
 Version 1.x:
-    - Improve shutdown.
     - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
     - More DOCS. 
     - Improve loading bars.
