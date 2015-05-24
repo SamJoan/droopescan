@@ -88,8 +88,11 @@ class BasePluginInternal(controller.CementBaseController):
     def _options(self):
         pargs = self.app.pargs
 
+        pwd = self.app.config.get('general', 'pwd')
         if pargs.url_file != None:
             url_file = pargs.url_file
+            if not url_file.startswith('/'):
+                url_file = pwd + "/" + url_file
         else:
             url = pargs.url
 

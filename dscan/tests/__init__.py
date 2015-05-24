@@ -1,11 +1,13 @@
 from cement.core import controller, foundation, backend, handler
 from cement.utils import test
+from cement.utils.misc import init_defaults
 from common.testutils import decallmethods
 from droopescan import DroopeScan
 from lxml import etree
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
 from plugins import Scan
+import os
 import responses
 
 class MockHash():
@@ -38,9 +40,14 @@ class BaseTest(test.CementTestCase):
     def setUp(self):
         super(BaseTest, self).setUp()
         self.reset_backend()
+
+        defaults = init_defaults('DroopeScan', 'general')
+        defaults['general']['pwd'] = os.getcwd()
         self.app = DroopeScan(argv=[],
             plugin_config_dir="./plugins.d",
-            plugin_dir="./plugins")
+            plugin_dir="./plugins",
+            config_defaults=defaults)
+
         handler.register(Scan)
         self.app.testing = True
         self.app.setup()

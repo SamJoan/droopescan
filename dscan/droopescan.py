@@ -17,8 +17,6 @@ import common, sys, signal
 import droopescan
 import os
 
-CWD = os.getcwd()
-
 class DroopeScanBase(controller.CementBaseController):
     class Meta:
         label = 'base'
@@ -36,15 +34,15 @@ class DroopeScan(foundation.CementApp):
         label = 'droopescan'
         base_controller = DroopeScanBase
 
-def main(script_location):
-    ds = DroopeScan("DroopeScan",
-            plugin_config_dir="./plugins.d",
-            plugin_dir="./plugins",
-            catch_signals=None)
+def main(pwd):
+    defaults = init_defaults('DroopeScan', 'general')
+    defaults['general']['pwd'] = pwd
+
+    ds = DroopeScan("DroopeScan", plugin_config_dir="./plugins.d",
+            plugin_dir="./plugins", catch_signals=None,
+            config_defaults=defaults)
 
     handler.register(Scan)
-
-    droopescan.CWD = script_location
 
     try:
         ds.setup()
