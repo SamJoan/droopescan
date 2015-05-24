@@ -635,7 +635,12 @@ class BaseHttpTests(BaseTest):
 
     @patch.object(ProgressBar, 'set')
     def test_progressbar_url_file_hidden_in_enumerate_interesting(self, p):
-        assert False
+        try:
+            self.scanner.enumerate_interesting(self.base_url,
+                    self.scanner.plugins_base_url, hide_progressbar=True,
+                    max_plugins=5)
+        except:
+            pass
 
     @patch.object(ProgressBar, 'set')
     def test_progressbar_url_file_hidden_in_enumerate_version(self, p):
@@ -661,13 +666,10 @@ class BaseHttpTests(BaseTest):
         total_hide_progressbar = 0
         for mock in mocks:
             args, kwargs = mock.call_args
-            try:
-                if kwargs['hide_progressbar'] == True:
-                    total_hide_progressbar += 1
-            except KeyError:
-                pass
+            if kwargs['hide_progressbar'] == True:
+                total_hide_progressbar += 1
 
-        assert total_hide_progressbar == 2
+        assert total_hide_progressbar == 4
 
     def test_progressbar_url_displays(self):
         mocks = self.mock_all_enumerate('drupal')
@@ -679,13 +681,10 @@ class BaseHttpTests(BaseTest):
         total_show_progressbar = 0
         for mock in mocks:
             args, kwargs = mock.call_args
-            try:
-                if kwargs['hide_progressbar'] == False:
-                    total_show_progressbar += 1
-            except KeyError:
-                pass
+            if kwargs['hide_progressbar'] == False:
+                total_show_progressbar += 1
 
-        assert total_show_progressbar == 2
+        assert total_show_progressbar == 4
 
     @patch.object(Drupal, 'plugins_get', return_value=["this_exists"])
     def test_enumerate_calls_detect_file(self, m):
@@ -696,7 +695,7 @@ class BaseHttpTests(BaseTest):
         with patch.object(Drupal, '_enumerate_plugin_if', return_value=ret_val) as epif:
             result, is_empty = self.scanner.enumerate_plugins(self.base_url, "%s" + pbu, imu=imu)
 
-            epif.assert_called_with(ANY, ANY, ANY, imu)
+            epif.assert_called_with(ANY, ANY, ANY, imu, ANY)
             assert result == ret_val
             assert is_empty == False
 
@@ -719,7 +718,8 @@ class BaseHttpTests(BaseTest):
         pbu = "sites/all/modules/%s"
         self.respond_several(self.base_url + pbu, http_responses_map)
 
-        final_found = self.scanner._enumerate_plugin_if(found, 'head', 4, imu)
+        final_found = self.scanner._enumerate_plugin_if(found, 'head', 4, imu,
+                True)
         imu_final = final_found[0]['imu']
 
         assert len(final_found) == len(found)

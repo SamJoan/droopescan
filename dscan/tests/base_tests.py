@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from cement.utils import test
 from common import file_len, ProgressBar, JsonOutput, StandardOutput
-from common.output import SimpleProgressBar
 from common.testutils import decallmethods, MockBuffer
 from mock import patch, MagicMock, mock_open
 from plugins.drupal import Drupal
@@ -262,7 +261,7 @@ class BaseTests(BaseTest):
 
     def test_progressbar_simple(self):
         u = MockBuffer()
-        p = ProgressBar(u, 100)
+        p = ProgressBar(u, 100, 'test')
 
         for _ in range(10):
             p.increment_progress()
