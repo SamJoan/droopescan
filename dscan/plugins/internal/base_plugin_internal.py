@@ -8,7 +8,6 @@ from datetime import datetime
 from os.path import dirname
 from requests import Session
 import common
-import droopescan
 import hashlib
 import os
 import requests
