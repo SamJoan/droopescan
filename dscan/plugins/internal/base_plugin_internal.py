@@ -513,7 +513,7 @@ class BasePluginInternal(controller.CementBaseController):
             if not hide_progressbar:
                 p.hide()
 
-        if imu != None and not no_results:
+        if not shutdown and (imu != None and not no_results):
             found = self._enumerate_plugin_if(found, verb, threads, imu)
 
         return found, no_results
