@@ -88,6 +88,7 @@ pip install -r requirements.txt
 
 The master branch corresponds to the latest release (what is in pypi).
 Development branch is unstable and all pull requests must be made against it.
+More notes regarding installation can be [found here](https://droope.github.io/droopescan-docs/_build/html/installation.html).
 
 # Features
 ## Scan types.
@@ -106,6 +107,8 @@ listing of all plugins found to be installed in the target host.
 files, returns a list of all possible versions.
 * *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
+
+More notes regarding scanning can be [found here](https://droope.github.io/droopescan-docs/_build/html/intro.html).
 
 ## Authentication.
 
