@@ -622,39 +622,46 @@ class BaseHttpTests(BaseTest):
 
         result.assert_called_with(timeout=150)
 
-    @patch.object(ProgressBar, 'set')
-    def test_progressbar_url_file_hidden_in_enumerate_plugins(self, p):
-        try:
-            self.scanner.enumerate_plugins(self.base_url,
-                    self.scanner.plugins_base_url, hide_progressbar=True,
-                    max_plugins=5)
-        except:
-            pass
+    def test_progressbar_url_file_hidden_in_enumerate_plugins(self):
+        with patch("plugins.internal.base_plugin_internal.ProgressBar") as p:
+            try:
+                self.scanner.enumerate_plugins(self.base_url,
+                        self.scanner.plugins_base_url, hide_progressbar=True)
+            except:
+                pass
 
-        assert p.called == False
-
-    @patch.object(ProgressBar, 'set')
-    def test_progressbar_url_file_hidden_in_enumerate_interesting(self, p):
-        try:
-            self.scanner.enumerate_interesting(self.base_url,
-                    self.scanner.plugins_base_url, hide_progressbar=True,
-                    max_plugins=5)
-        except:
-            pass
-
-    @patch.object(ProgressBar, 'set')
-    def test_progressbar_url_file_hidden_in_enumerate_version(self, p):
-        assert False
+            assert p.called == False
 
     @patch.object(ProgressBar, 'set')
     def test_progressbar_url_file_hidden_in_enumerate_themes(self, p):
-        try:
-            self.scanner.enumerate_themes(self.base_url,
-                    self.scanner.plugins_base_url, hide_progressbar=True, max_plugins=5)
-        except:
-            pass
+        with patch("plugins.internal.base_plugin_internal.ProgressBar") as p:
+            try:
+                self.scanner.enumerate_themes(self.base_url,
+                        self.scanner.plugins_base_url, hide_progressbar=True)
+            except:
+                pass
 
-        assert p.called == False
+            assert p.called == False
+
+    def test_progressbar_url_file_hidden_in_enumerate_interesting(self):
+        with patch("plugins.internal.base_plugin_internal.ProgressBar") as p:
+            try:
+                self.scanner.enumerate_interesting(self.base_url,
+                        self.scanner.plugins_base_url, hide_progressbar=True)
+            except:
+                pass
+
+            assert p.called == False
+
+    def test_progressbar_url_file_hidden_in_enumerate_version(self):
+        with patch("plugins.internal.base_plugin_internal.ProgressBar") as p:
+            try:
+                self.scanner.enumerate_version(self.base_url,
+                        self.scanner.versions_file, hide_progressbar=True)
+            except:
+                pass
+
+            assert p.called == False
 
     def test_progressbar_url_file_hidden(self):
         mocks = self.mock_all_enumerate('drupal')
@@ -681,7 +688,6 @@ class BaseHttpTests(BaseTest):
         total_show_progressbar = 0
         for mock in mocks:
             args, kwargs = mock.call_args
-            print(kwargs)
             if kwargs['hide_progressbar'] == False:
                 total_show_progressbar += 1
 
