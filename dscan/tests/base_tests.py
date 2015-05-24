@@ -115,16 +115,6 @@ class BaseTests(BaseTest):
 
         assert self.scanner.session.verify == False
 
-    def test_progressbar(self):
-        u = MockBuffer()
-        p = ProgressBar(u)
-        p.set(10, 100)
-
-        a = u.get()[-4:]
-
-        assert a == '10%)'
-        assert " ===== " in u.get()
-
     def test_can_choose_output(self):
         output = JsonOutput()
         self.scanner._general_init(output=output)
@@ -272,7 +262,7 @@ class BaseTests(BaseTest):
 
     def test_progressbar_simple(self):
         u = MockBuffer()
-        p = SimpleProgressBar(u, 100)
+        p = ProgressBar(u, 100)
 
         for _ in range(10):
             p.increment_progress()

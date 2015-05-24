@@ -3,7 +3,7 @@ from cement.core import handler, controller
 from common import ScanningMethod, StandardOutput, JsonOutput, \
         VersionsFile, RequestsLogger
 from common import template, enum_list, dict_combine, base_url, file_len
-from common.output import ProgressBar, SimpleProgressBar
+from common.output import ProgressBar
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from os.path import dirname
@@ -484,10 +484,9 @@ class BasePluginInternal(controller.CementBaseController):
                     })
 
             if not hide_progressbar:
-                p = ProgressBar(sys.stderr)
-                items_progressed = 0
                 max_possible = max_iterator if int(max_iterator) < int(iterator_len) else iterator_len
                 items_total = int(max_possible) * len(base_urls)
+                p = ProgressBar(sys.stderr, items_total, "modules")
 
             no_results = True
             found = []
@@ -497,8 +496,7 @@ class BasePluginInternal(controller.CementBaseController):
                     continue
 
                 if not hide_progressbar:
-                    items_progressed += 1
-                    p.set(items_progressed, items_total)
+                    p.increment_progress()
 
                 r = future_array['future'].result()
                 if r.status_code in [200, 403]:
@@ -549,7 +547,8 @@ class BasePluginInternal(controller.CementBaseController):
         requests_verb = getattr(self.session, verb)
 
         if not hide_progressbar:
-            p = SimpleProgressBar(sys.stderr, items_total=len(interesting_urls))
+            p = ProgressBar(sys.stderr, len(interesting_urls),
+                    "interesting")
 
         found = []
         for path, description in interesting_urls:
@@ -580,8 +579,8 @@ class BasePluginInternal(controller.CementBaseController):
         changelogs = vf.changelogs_get()
 
         if not hide_progressbar:
-            p = SimpleProgressBar(sys.stderr, items_total=len(files) +
-                    len(changelogs))
+            p = ProgressBar(sys.stderr, len(files) +
+                    len(changelogs), "version")
 
         hashes = {}
         futures = {}
@@ -651,8 +650,8 @@ class BasePluginInternal(controller.CementBaseController):
         """
 
         if not hide_progressbar:
-            p = SimpleProgressBar(sys.stderr, items_total=len(found_list) *
-                    len(imu_list))
+            p = ProgressBar(sys.stderr, len(found_list) *
+                    len(imu_list), name="IMU")
 
         requests_verb = getattr(self.session, verb)
         with ThreadPoolExecutor(max_workers=threads) as executor:
