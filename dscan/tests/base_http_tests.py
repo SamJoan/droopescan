@@ -623,7 +623,7 @@ class BaseHttpTests(BaseTest):
         result.assert_called_with(timeout=150)
 
     @patch.object(ProgressBar, 'set')
-    def test_progressbar_url_file_hidden_in_ennumerate_plugins(self, p):
+    def test_progressbar_url_file_hidden_in_enumerate_plugins(self, p):
         try:
             self.scanner.enumerate_plugins(self.base_url,
                     self.scanner.plugins_base_url, hide_progressbar=True,
@@ -634,7 +634,15 @@ class BaseHttpTests(BaseTest):
         assert p.called == False
 
     @patch.object(ProgressBar, 'set')
-    def test_progressbar_url_file_hidden_in_ennumerate_themes(self, p):
+    def test_progressbar_url_file_hidden_in_enumerate_interesting(self, p):
+        assert False
+
+    @patch.object(ProgressBar, 'set')
+    def test_progressbar_url_file_hidden_in_enumerate_version(self, p):
+        assert False
+
+    @patch.object(ProgressBar, 'set')
+    def test_progressbar_url_file_hidden_in_enumerate_themes(self, p):
         try:
             self.scanner.enumerate_themes(self.base_url,
                     self.scanner.plugins_base_url, hide_progressbar=True, max_plugins=5)

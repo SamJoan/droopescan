@@ -1,8 +1,9 @@
 from __future__ import print_function
 from cement.core import handler, controller
-from common import ScanningMethod, ProgressBar, StandardOutput, JsonOutput, \
+from common import ScanningMethod, StandardOutput, JsonOutput, \
         VersionsFile, RequestsLogger
 from common import template, enum_list, dict_combine, base_url, file_len
+from common.output import ProgressBar, SimpleProgressBar
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from os.path import dirname
@@ -543,8 +544,11 @@ class BasePluginInternal(controller.CementBaseController):
                 hide_progressbar, imu)
 
     def enumerate_interesting(self, url, interesting_urls, threads=10,
-            verb='head', timeout=15):
+            verb='head', timeout=15, hide_progressbar=False):
         requests_verb = getattr(self.session, verb)
+
+        if not hide_progressbar:
+            p = SimpleProgressBar(sys.stderr, items_total=len(interesting_urls))
 
         found = []
         for path, description in interesting_urls:
@@ -559,6 +563,12 @@ class BasePluginInternal(controller.CementBaseController):
                     'url': interesting_url,
                     'description': description
                 })
+
+            if not hide_progressbar:
+                p.increment_progress()
+
+        if not hide_progressbar:
+            p.hide()
 
         return found, len(found) == 0
 

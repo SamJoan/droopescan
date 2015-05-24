@@ -14,7 +14,8 @@ class SmartFormatter(argparse.RawDescriptionHelpFormatter):
             return text[2:].splitlines()
         return argparse.HelpFormatter._split_lines(self, text, width)
 
-class ProgressBar():
+class ProgressBar(object):
+
     def __init__(self, stream):
         self.stream = stream
 
@@ -39,6 +40,17 @@ class ProgressBar():
         self.stream.write("\r")
         self.stream.write(" " * 80)
         self.stream.write("\r")
+
+class SimpleProgressBar(ProgressBar):
+    progress = 0
+
+    def __init__(self, stream, items_total):
+        super(SimpleProgressBar, self).__init__(stream)
+        self.items_total = items_total
+
+    def increment_progress(self):
+        self.progress += 1
+        self.set(self.progress, self.items_total)
 
 class StandardOutput():
 
