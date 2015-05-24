@@ -594,14 +594,14 @@ class BasePluginInternal(controller.CementBaseController):
                     futures[file_url].cancel()
                     continue
 
-
                 try:
                     hsh = futures[file_url].result()
                     hashes[file_url] = hsh
-                    if not hide_progressbar:
-                        p.increment_progress()
                 except RuntimeError:
                     pass
+
+                if not hide_progressbar:
+                    p.increment_progress()
 
         version = vf.version_get(hashes)
 
