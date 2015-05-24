@@ -572,7 +572,6 @@ class BasePluginInternal(controller.CementBaseController):
                         url, file_url=file_url, timeout=timeout)
 
             for file_url in futures:
-
                 if shutdown:
                     futures[file_url].cancel()
                     continue
