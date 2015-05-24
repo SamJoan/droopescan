@@ -1,10 +1,7 @@
 Add;
 
 Version 1.x:
-    - More DOCS. 
-    - Improve loading bars.
     - Update cement.
-    - Add /var/www/cms-forsest tests to release script, automate testing. Improve release script.
     - install.php
         CHANGELOG.txt
         INSTALL.txt
