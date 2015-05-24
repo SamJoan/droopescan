@@ -29,6 +29,8 @@ class Tests(HumanBasePlugin):
         arguments = [
             (['-s', '--single-test'], dict(action='store', help='Name of test to run',
                 required=False, default=None)),
+            (['--just-three'], dict(action='store_true', help='Just run python 3 tests.',
+                required=False, default=None)),
             (['-c', '--with-coverage'], dict(action='store_true', help='Do test coverage',
                 required=False, default=False)),
         ]
@@ -38,6 +40,7 @@ class Tests(HumanBasePlugin):
         env = {'PYTHONPATH': os.getcwd()}
         single_test = self.app.pargs.single_test
         with_coverage = self.app.pargs.with_coverage
+        just_three = self.app.pargs.just_three
 
         if single_test and with_coverage:
             self.error('Cannot run with both -c and -s.')
@@ -50,7 +53,9 @@ class Tests(HumanBasePlugin):
                 call_base += ['--with-coverage', '--cover-package', 'dscan',
                         '--cover-inclusive', '--cover-html']
 
-            e1 = call(['python2'] + call_base, env=env)
+            if not just_three:
+                e1 = call(['python2'] + call_base, env=env)
+
             e2 = call(['python3'] + call_base, env=env)
             if e1 != 0 or e2 != 0:
                 exit = 1
