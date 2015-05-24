@@ -517,7 +517,8 @@ class BasePluginInternal(controller.CementBaseController):
                 p.hide()
 
         if not shutdown and (imu != None and not no_results):
-            found = self._enumerate_plugin_if(found, verb, threads, imu)
+            found = self._enumerate_plugin_if(found, verb, threads, imu,
+                    hide_progressbar)
 
         return found, no_results
 
@@ -572,12 +573,18 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found, len(found) == 0
 
-    def enumerate_version(self, url, versions_file, threads=10, verb='head', timeout=15):
+    def enumerate_version(self, url, versions_file, threads=10, verb='head',
+            timeout=15, hide_progressbar=False):
         vf = VersionsFile(versions_file)
+        files = vf.files_get()
+        changelogs = vf.changelogs_get()
+
+        if not hide_progressbar:
+            p = SimpleProgressBar(sys.stderr, items_total=len(files) +
+                    len(changelogs))
 
         hashes = {}
         futures = {}
-        files = vf.files_get()
         with ThreadPoolExecutor(max_workers=threads) as executor:
             for file_url in files:
                 futures[file_url] = executor.submit(self.enumerate_file_hash,
@@ -588,9 +595,12 @@ class BasePluginInternal(controller.CementBaseController):
                     futures[file_url].cancel()
                     continue
 
+
                 try:
                     hsh = futures[file_url].result()
                     hashes[file_url] = hsh
+                    if not hide_progressbar:
+                        p.increment_progress()
                 except RuntimeError:
                     pass
 
@@ -599,6 +609,10 @@ class BasePluginInternal(controller.CementBaseController):
         # Narrow down using changelog, if accurate.
         if vf.has_changelog():
             version = self.enumerate_version_changelog(url, version, vf, timeout)
+
+        if not hide_progressbar:
+            p.increment_progress()
+            p.hide()
 
         return version, len(version) == 0
 
@@ -625,14 +639,21 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             raise RuntimeError("File '%s' returned status code '%s'." % (file_url, r.status_code))
 
-    def _enumerate_plugin_if(self, found_list, verb, threads, imu_list):
+    def _enumerate_plugin_if(self, found_list, verb, threads, imu_list,
+            hide_progressbar):
         """
             Finds interesting urls within a plugin folder which return 200.
             @param found_list as returned in self.enumerate. E.g. [{'name': 'this_exists', 'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/'}]
             @param verb the verb to use.
             @param threads the number of threads to use.
             @param imu Interesting module urls.
+            @param hide_progressbar whether to display a progressbar.
         """
+
+        if not hide_progressbar:
+            p = SimpleProgressBar(sys.stderr, items_total=len(found_list) *
+                    len(imu_list))
+
         requests_verb = getattr(self.session, verb)
         with ThreadPoolExecutor(max_workers=threads) as executor:
             futures = []
@@ -659,5 +680,11 @@ class BasePluginInternal(controller.CementBaseController):
                         'url': f['url'],
                         'description': f['description']
                     })
+
+                if not hide_progressbar:
+                    p.increment_progress()
+
+        if not hide_progressbar:
+            p.hide()
 
         return found_list
