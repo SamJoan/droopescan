@@ -55,6 +55,8 @@ class Tests(HumanBasePlugin):
 
             if not just_three:
                 e1 = call(['python2'] + call_base, env=env)
+            else:
+                e1 = 0
 
             e2 = call(['python3'] + call_base, env=env)
             if e1 != 0 or e2 != 0:
