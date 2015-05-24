@@ -1,3 +1,10 @@
+1.27.0-beta
+===========
+
+* Version detection improvement.
+* Accept relative paths in -U.
+* Internal improvements.
+
 1.26.1
 ======
 
