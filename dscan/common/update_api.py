@@ -202,8 +202,8 @@ def modules_get(url_tpl, per_page, css, max_modules=2000, pagination_type=PT.nor
 
 def update_modules_check(plugin):
     """
-        @param plugin: plugin to check.
-        @return: True if modules need to be updated.
+    @param plugin: plugin to check.
+    @return: True if modules need to be updated.
     """
     today = datetime.today()
     mtime = file_mtime(plugin.plugins_file)

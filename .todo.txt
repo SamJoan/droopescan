@@ -11,8 +11,6 @@ Version 1.x:
         MAINTAINERS.txt
         UPGRADE.txt
         ^ check fuzzdb for file goodness.
-    - Autospec tests. Especially in update_tests.py as API should be static.
-          http://www.voidspace.org.uk/python/mock/helpers.html#auto-speccing
 
 Version 2.x
     - Break API to remove finds, isempty. Instead, simply return finds.

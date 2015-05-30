@@ -48,9 +48,10 @@ class UpdateTests(BaseTest):
                 ret_val = [self.controller_get('drupal')]
 
             if ret_val != None:
-                self.patchers.append(patch(mod, return_value=ret_val))
+                self.patchers.append(patch(mod, return_value=ret_val,
+                    autospec=True))
             else:
-                self.patchers.append(patch(mod))
+                self.patchers.append(patch(mod, autospec=True))
 
             attr_name = "mock_%s" % (mod_name)
             setattr(self, attr_name, self.patchers[-1].start())
@@ -104,13 +105,13 @@ class UpdateTests(BaseTest):
             assert github_tags_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
 
     def test_github_repo(self):
-        with patch('common.update_api.GitRepo.__init__', return_value=None) as gri:
-            with patch('common.update_api.GitRepo.init') as grii:
+        with patch('common.update_api.GitRepo.__init__', return_value=None, autospec=True) as gri:
+            with patch('common.update_api.GitRepo.init', autospec=True) as grii:
                 returned_gh = github_repo(self.drupal_repo_path, self.plugin_name)
                 args, kwargs = gri.call_args
 
-                assert args[0] == self.drupal_gh
-                assert args[1] == self.plugin_name
+                assert args[1] == self.drupal_gh
+                assert args[2] == self.plugin_name
 
                 assert gri.called
                 assert grii.called
@@ -131,7 +132,7 @@ class UpdateTests(BaseTest):
         assert gr.path == path_on_disk
 
     def test_create_fetch(self):
-        with patch('common.update_api.GitRepo.clone') as clone:
+        with patch('common.update_api.GitRepo.clone', autospec=True) as clone:
             with patch('os.path.isdir', return_value=False) as isdir:
                 self.gr.init()
 
@@ -181,7 +182,7 @@ class UpdateTests(BaseTest):
         tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
         update_majors = ['6', '7']
         with patch('common.update_api.VersionsFile') as vf:
-            with patch('common.update_api.GitRepo.tags_get') as tg:
+            with patch('common.update_api.GitRepo.tags_get', autospec=True) as tg:
                 vf.highest_version_major.return_value = {'6': '6.34', '7': '7.34'}
                 tg.return_value = tags_get_ret
                 exceptioned = False
@@ -193,7 +194,7 @@ class UpdateTests(BaseTest):
         tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
         update_majors = ['6', '7']
         with patch('common.update_api.VersionsFile') as vf:
-            with patch('common.update_api.GitRepo.tags_get') as tg:
+            with patch('common.update_api.GitRepo.tags_get', autospec=True) as tg:
                 vf.highest_version_major.return_value = {'6': '6.33', '7': '7.33'}
                 tg.return_value = tags_get_ret
 
@@ -221,24 +222,24 @@ class UpdateTests(BaseTest):
             assert t in out
 
     def test_drupal_update_calls_gh_update(self):
-        with patch('common.update_api.github_tags_newer') as m:
+        with patch('common.update_api.github_tags_newer', autospec=True) as m:
             self.scanner.update_version_check()
 
             assert m.called
 
     def test_drupal_update(self):
-        with patch('common.update_api.github_repo') as m:
+        with patch('common.update_api.github_repo', autospec=True) as m:
             self.scanner.update_version()
 
             assert m.called
 
     def test_drupal_update_calls_tags_newer(self):
-        with patch('plugins.drupal.GitRepo.tags_newer') as m:
+        with patch('plugins.drupal.GitRepo.tags_newer', autospec=True) as m:
             self.scanner.update_version()
 
             args, kwargs = m.call_args
-            assert isinstance(args[0], VersionsFile)
-            assert args[1] == self.scanner.update_majors
+            assert isinstance(args[1], VersionsFile)
+            assert args[2] == self.scanner.update_majors
 
     def test_drupal_calls_hashes_get(self):
         vf = MagicMock()
@@ -250,21 +251,21 @@ class UpdateTests(BaseTest):
                 'javascript/main.js': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
                 'css/jss.phs': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'}
 
-        with patch('common.update_api.github_repo_new', return_value=ret_val) as m:
-            with patch('plugins.drupal.GitRepo.tag_checkout') as tc:
-                with patch('plugins.drupal.GitRepo.hashes_get', return_value=ret_hashes_get) as hg:
+        with patch('common.update_api.github_repo_new', return_value=ret_val, autospec=True) as m:
+            with patch('plugins.drupal.GitRepo.tag_checkout', autospec=True) as tc:
+                with patch('plugins.drupal.GitRepo.hashes_get', return_value=ret_hashes_get, autospec=True) as hg:
                     self.scanner.update_version()
 
                     tccl = tc.call_args_list
                     assert len(tc.call_args_list) == 2
                     for args, kwargs in tccl:
-                        assert args[0] in new_versions
+                        assert args[1] in new_versions
 
                     hgcl = hg.call_args_list
                     assert len(hg.call_args_list) == 2
                     for args, kwargs in hgcl:
-                        assert args[0] == vf
-                        assert args[1] == self.scanner.update_majors
+                        assert args[1] == vf
+                        assert args[2] == self.scanner.update_majors
 
         version = '7.34'
         expected = tuple([['git', 'checkout', version]])
@@ -306,7 +307,7 @@ class UpdateTests(BaseTest):
         versions = ['7.34', '6.34']
         ret_val = (self.gr, vf, versions)
 
-        with patch('common.update_api.github_repo_new', return_value=ret_val) as m:
+        with patch('common.update_api.github_repo_new', return_value=ret_val, autospec=True) as m:
             fpv_before = vf.files_per_version()
             out = self.scanner.update_version()
             fpv_after = vf.files_per_version()
@@ -370,7 +371,7 @@ class UpdateTests(BaseTest):
 
         o = mock_open()
         with patch('plugins.update.open', o, create=True):
-            with patch('plugins.update.Update.is_valid', return_value=False) as iv:
+            with patch('plugins.update.Update.is_valid', return_value=False, autospec=True) as iv:
                 self.updater.update_version(self.controller_get('drupal')(), "Drupal")
 
                 args, kwargs = iv.call_args
@@ -389,7 +390,7 @@ class UpdateTests(BaseTest):
 
         o = mock_open()
         with patch('plugins.update.open', o, create=True):
-            with patch('common.update_api.file_mtime', return_value=yesterday):
+            with patch('common.update_api.file_mtime', return_value=yesterday, autospec=True):
                 self.updater.update_plugins(self.controller_get('drupal')(), 'Drupal')
                 assert not up.called
 
@@ -400,7 +401,7 @@ class UpdateTests(BaseTest):
     @test.raises(IOError)
     def test_file_mtime_raises(self):
         filename = "filename"
-        with patch('os.path.isfile', return_value=False):
+        with patch('os.path.isfile', return_value=False, autospec=True):
             file_mtime(filename)
 
     def test_file_mtime(self):
@@ -417,7 +418,7 @@ class UpdateTests(BaseTest):
     def test_drupal_calls_modules_get(self):
         o = mock_open()
         with patch('plugins.update.open', o, create=True):
-            with patch('common.update_api.modules_get') as p:
+            with patch('common.update_api.modules_get', autospec=True) as p:
                 self.updater.update_plugins(self.scanner, "Drupal")
                 assert p.called
 
@@ -456,7 +457,7 @@ class UpdateTests(BaseTest):
         ]
 
         m = mock_open()
-        with patch('common.update_api.modules_get', return_value=ret_val) as mg:
+        with patch('common.update_api.modules_get', return_value=ret_val, autospec=True) as mg:
             plugins, themes = self.scanner.update_plugins()
 
             assert plugins == results
@@ -492,7 +493,7 @@ class UpdateTests(BaseTest):
         o = mock_open()
 
         with patch('plugins.update.open', o, create=True):
-            with patch('common.update_api.modules_get') as p:
+            with patch('common.update_api.modules_get', autospec=True) as p:
                 self.updater.update_plugins(SilverStripe(), "Drupal")
                 assert p.called
 
