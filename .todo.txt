@@ -1,33 +1,6 @@
 Add;
 
 Version 1.x:
-    Fix broken build on new debian installs. Dependencies in working state:
-        diff /tmp/now /tmp/prev
-        50c49
-        < responses==0.4.0
-        ---
-        > responses==0.3.0
-
-        Heh, funny story, my tests started to fail with the same error you mention
-        above.
-
-        I put the following line before the setattr of my class decorator:
-
-        <pre>
-            print(cls, name, decorator, m, decorator(m))
-        </pre>
-
-        (<class 'dscan.tests.base_http_tests.BaseHttpTests'>, 'test_add_slash_to_urls', <bound method RequestsMock.activate of <responses.RequestsMock object at 0xb5b7aa8c>>, <unbound method BaseHttpTests.test_add_slash_to_urls>, <function test_add_slash_to_urls at 0xb5b96144>)
-        (<class 'dscan.tests.base_http_tests.BaseHttpTests'>, 'test_add_slash_to_urls', <bound method RequestsMock.activate of <responses.RequestsMock object at 0xb5bcaa6c>>, <unbound method BaseHttpTests.test_add_slash_to_urls>, <unbound method NoneType.test_add_slash_to_urls>)
-
-        This means there's been a modification to the return values of
-        responses.activate between responses 0.3.0 and 0.4.0 (last parameter is
-        different).
-
-        I think it is due to this:
-
-        https://github.com/getsentry/responses/commit/96d36d1457724823e76367de6b4c69ddd7b7907a?diff=split
-
     - error-log not working.
         example:
         
