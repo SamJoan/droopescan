@@ -38,7 +38,7 @@ class Plugin(object):
 
     def __init__(self, PluginClass=None):
         """
-            @param plugin as returned by handler.list('controller'). Must
+            @param PluginClass: as returned by handler.list('controller'). Must
                 extend BasePlugin.
         """
         plugin = PluginClass()

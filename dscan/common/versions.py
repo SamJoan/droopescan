@@ -15,7 +15,7 @@ class VersionsFile():
 
     def files_get(self):
         """
-            Returns a list of files which must be used for fingerprinting.
+        @return: a list of files which must be used for fingerprinting.
         """
         files = []
         for file in self.root.iter('file'):
@@ -25,7 +25,7 @@ class VersionsFile():
 
     def files_get_all(self):
         """
-            Returns a list of files which includes the changelog.
+        @return: a list of files which includes the changelog.
         """
         files = []
         for file in self.root.iter('file'):
@@ -38,9 +38,9 @@ class VersionsFile():
 
     def changelogs_get(self):
         """
-            @return A list of possible changelogs. More than one may be returned
-                in cases where the location of the changelog varies between major
-                versions of a CMS.
+        @return: a list of possible changelogs. More than one may be returned
+            in cases where the location of the changelog varies between major
+            versions of a CMS.
         """
         changelogs_elem = self.root.findall(self.changelog_xpath)
         changelogs = []
@@ -77,7 +77,7 @@ class VersionsFile():
 
     def files_per_version_major(self, major_numbers):
         """
-            @param major_numbers Numbers which mean a major. In drupal 7.x is
+        @param major_numbers: numbers which mean a major. In drupal 7.x is
             the major seven, so input 1. In SS, 3.1 is the major (two numbers),
             os input two.
         """
@@ -130,9 +130,9 @@ class VersionsFile():
         return sorted(final_matches)
 
     def highest_version(self):
-        '''
-            Returns the highest version number in the XML file.
-        '''
+        """
+            @return: the highest version number in the XML file.
+        """
         xpath = './files/file/version'
         versions = self.root.findall(xpath)
         highest = 0
@@ -148,13 +148,13 @@ class VersionsFile():
 
     def highest_version_major(self, majors_include):
         """
-            Returns highest version per major release.
-            @majors_include a list of majors. Returns only majors
-                that are included in that list.
-            @return e.g. {'7': '7.28', '6': '6.15'}
-                If a major in majors_include is not present in the XML file, it
-                returns a version which is lesser to all versions in that major.
-                E.g. 8.0 -> 7.9999
+        @param majors_include: a list of majors. Returns only majors
+            that are included in that list.
+        @return: highest version per major release.
+            e.g. {'7': '7.28', '6': '6.15'}
+            If a major in majors_include is not present in the XML file, it
+            returns a version which is lesser to all versions in that major.
+            E.g. 8.0 -> 7.9999
         """
         xpath = './files/file/version'
         versions = self.root.findall(xpath)
@@ -185,14 +185,14 @@ class VersionsFile():
 
     def version_exists(self, file, check_version, expected_hash):
         """
-            Returns True if version is present within a file element, False if
-            it is not.
-            @param file a file element (ElementTree element)
-            @param check_version version to check for.
-            @param expected_hash the hash that the file should have if it is
-                present.
-            @raises If element exists but has a different hash than the one
-                expected, it raises a RuntimeError.
+        @param file: a file element (ElementTree element)
+        @param check_version: version to check for.
+        @param expected_hash: the hash that the file should have if it is
+            present.
+        @return: True if version is present within a file element, False if
+        it is not.
+        @raise RuntimeError: If element exists but has a different hash than the
+        one expected.
         """
         versions = file.findall('./version')
         for version in versions:
@@ -207,8 +207,8 @@ class VersionsFile():
 
     def update(self, sums):
         """
-            Update self.et with the sums as returned by VersionsX.sums_get
-            @param sums {'version': {'file1':'hash1'}}
+        Update self.et with the sums as returned by VersionsX.sums_get
+        @param sums: {'version': {'file1':'hash1'}}
         """
         for version in sums:
             hashes = sums[version]

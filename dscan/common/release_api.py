@@ -14,9 +14,9 @@ TEST_RUNS = [['scan', 'drupal', '--url', 'https://www.drupal.org'],
 
 def test_all(skip_external):
     """
-        Runs several tests (unit, integration, and sanity checks.)
-        @param skip_external whether to run external tests.
-        @raises RuntimeError if tests fail.
+    Runs several tests (unit, integration, and sanity checks.)
+    @param skip_external: whether to run external tests.
+    @raises RuntimeError: if tests fail.
     """
     test_internal()
     if not skip_external:
@@ -26,7 +26,7 @@ def test_all(skip_external):
 
 def test_internal():
     """
-        Runs unit tests.
+    Runs unit tests.
     """
     tests_passed = subprocess.call(['../droopescan', 'test']) == 0
     if not tests_passed:
@@ -34,7 +34,7 @@ def test_internal():
 
 def test_external():
     """
-        Runs tests against known sites. Only exits on catastrophic failure.
+    Runs tests against known sites. Only exits on catastrophic failure.
     """
     external_passed = _scan_external()
     if not external_passed:
@@ -51,7 +51,7 @@ def _scan_external():
 
 def test_human():
     """
-        Final human sanity check.
+    Final human sanity check.
     """
     human_approves = confirm("Does that look OK for you?")
     if not human_approves:

@@ -7,11 +7,12 @@ import xml.etree.ElementTree as ET
 
 def repair_url(url, out):
     """
-        Newline characters are stripped from the URL string.
-        If the url string parameter does not start with http, it prepends http://
-        If the url string parameter does not end with a slash, appends a slash.
-        @param url url to check
-        @param out instance of StandardOutput as defined in this lib.
+        Fixes URL.
+        @param url: url to repair.
+        @param out: instance of StandardOutput as defined in this lib.
+        @return: Newline characters are stripped from the URL string.
+            If the url string parameter does not start with http, it prepends http://
+            If the url string parameter does not end with a slash, appends a slash.
     """
     if not url:
         out.fatal("--url parameter is blank.")
@@ -38,8 +39,9 @@ def enum_list(enum):
 
 def base_url(url):
     """
-        Returns the protocol, domain and port of a URL. If the URL is relative,
-            False is returned.
+    @param url: the url to get the base of.
+    @return: the protocol, domain and port of a URL, concatenated. If the
+        URL is relative, False is returned.
     """
 
     if 'http' not in url:

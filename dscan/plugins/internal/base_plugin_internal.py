@@ -319,11 +319,11 @@ class BasePluginInternal(controller.CementBaseController):
 
     def determine_redirect(self, url, verb, timeout=15):
         """
-            @param url the url to check
-            @param verb the verb, e.g. head, or get.
-            @param timeout the time, in seconds, that requests should wait
+            @param url: the url to check
+            @param verb: the verb, e.g. head, or get.
+            @param timeout: the time, in seconds, that requests should wait
                 before throwing an exception.
-            @return the url that needs to be scanned. It may be equal to the url
+            @return: the url that needs to be scanned. It may be equal to the url
                 parameter if no redirect is needed.
         """
         requests_verb = getattr(self.session, verb)
@@ -432,21 +432,21 @@ class BasePluginInternal(controller.CementBaseController):
             iterator_returning_method, iterator_len, max_iterator=500, threads=10,
             verb='head', timeout=15, hide_progressbar=False, imu=None):
         '''
-            @param url base URL for the website.
-            @param base_url_supplied Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
-            @param scanning_method see ScanningMethod
-            @param iterator_returning_method a function which returns an
+            @param url: base URL for the website.
+            @param base_url_supplied: Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
+            @param scanning_method: see ScanningMethod
+            @param iterator_returning_method: a function which returns an
                 element that, when iterated, will return a full list of plugins
-            @param iterator_len the number of items the above iterator can
+            @param iterator_len: the number of items the above iterator can
                 return, regardless of user preference.
-            @param max_iterator integer that will be passed unto iterator_returning_method
-            @param threads number of threads
-            @param verb what HTTP verb. Valid options are 'get' and 'head'.
-            @param timeout the time, in seconds, that requests should wait
+            @param max_iterator: integer that will be passed unto iterator_returning_method
+            @param threads: number of threads
+            @param verb: what HTTP verb. Valid options are 'get' and 'head'.
+            @param timeout: the time, in seconds, that requests should wait
                 before throwing an exception.
-            @param hide_progressbar if true, the progressbar will not be
+            @param hide_progressbar: if true, the progressbar will not be
                 displayed.
-            @param imu Interesting module urls. A list containing tuples in the
+            @param imu: Interesting module urls. A list containing tuples in the
                 following format [('readme.txt', 'default readme')].
         '''
         if common.is_string(base_url_supplied):
@@ -639,13 +639,13 @@ class BasePluginInternal(controller.CementBaseController):
 
     def _enumerate_plugin_if(self, found_list, verb, threads, imu_list, hide_progressbar):
         """
-            Finds interesting urls within a plugin folder which return 200.
-            @param found_list as returned in self.enumerate.
-                E.g. [{'name': 'this_exists', 'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/'}]
-            @param verb the verb to use.
-            @param threads the number of threads to use.
-            @param imu Interesting module urls.
-            @param hide_progressbar whether to display a progressbar.
+        Finds interesting urls within a plugin folder which respond with 200 OK.
+        @param found_list: as returned in self.enumerate. E.g. [{'name':
+            'this_exists', 'url': 'http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/sites/all/modules/this_exists/'}]
+        @param verb: the verb to use.
+        @param threads: the number of threads to use.
+        @param imu_list: Interesting module urls.
+        @param hide_progressbar: whether to display a progressbar.
         """
 
         if not hide_progressbar:

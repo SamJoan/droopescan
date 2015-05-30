@@ -4,13 +4,13 @@ import common
 
 class Example(BasePlugin):
     """
-        A sample base plugin. Remember to create:
-            In dscan/plugins.d/ an conf file.
-            In dscan/plugins/<plugin_name>/ three files:
-                - plugins.txt
-                - themes.txt
-                - versions.xml
-            At the end of this file, a register call.
+    A sample base plugin. Remember to create:
+    In dscan/plugins.d/ an conf file.
+    In dscan/plugins/<plugin_name>/ three files:
+        - plugins.txt
+        - themes.txt
+        - versions.xml
+    At the end of this file, a register call.
     """
 
     # the location of the plugins. If there are multiple locations, such as in
@@ -58,15 +58,15 @@ class Example(BasePlugin):
     # See drupal and silverstripe for examples.
     def update_version_check(self):
         """
-            @return True if new versions of this software have been found.
+        @return: True if new versions of this software have been found.
         """
 
     def update_version(self):
         """
-            This function needs to return an updated VersionsFile, which will
-            be written to disk. There are APIs on common.update_api which can
-            be used.
-            @return updated VersionsFile
+        This function needs to return an updated VersionsFile, which will be
+        written to disk. There are APIs on common.update_api which can be
+        used.
+        @return: updated VersionsFile
         """
 
     def update_plugins_check(self):
@@ -74,9 +74,9 @@ class Example(BasePlugin):
 
     def update_plugins(self):
         """
-            This function needs to return two updated lists containing plugins
-            and themes. There are APIs on common.update_api which can be used.
-            @return (plugins, themes)
+        This function needs to return two updated lists containing plugins
+        and themes. There are APIs on common.update_api which can be used.
+        @return: (plugins, themes)
         """
 
 def load():

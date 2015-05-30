@@ -57,14 +57,14 @@ class SilverStripe(BasePlugin):
 
     def update_version_check(self):
         """
-            @return True if new tags have been made in the github repository.
+            @return: True if new tags have been made in the github repository.
         """
         return ua.github_tags_newer(self._repo_framework, self.versions_file,
                 update_majors=self.update_majors)
 
     def update_version(self):
         """
-            @return updated VersionsFile
+            @return: updated VersionsFile
         """
         fw_gr, versions_file, new_tags = ua.github_repo_new(self._repo_framework,
                 'silverstripe/framework', self.versions_file, self.update_majors)
@@ -122,8 +122,8 @@ class SilverStripe(BasePlugin):
             Implemented exponential backoff in order to prevent packager from
             being overly sensitive about the number of requests I was making.
 
-            @see https://github.com/composer/installers#custom-install-names
-            @see https://github.com/richardsjoqvist/silverstripe-localdate/issues/7
+            @see: https://github.com/composer/installers#custom-install-names
+            @see: https://github.com/richardsjoqvist/silverstripe-localdate/issues/7
         """
         url = 'http://packagist.org/p/%s.json'
         with ThreadPoolExecutor(max_workers=12) as executor:

@@ -41,14 +41,14 @@ class Drupal(BasePlugin):
 
     def update_version_check(self):
         """
-            @return True if new tags have been made in the github repository.
+        @return: True if new tags have been made in the github repository.
         """
         return ua.github_tags_newer('drupal/drupal/', self.versions_file,
                 update_majors=self.update_majors)
 
     def update_version(self):
         """
-            @return updated VersionsFile
+        @return: updated VersionsFile
         """
         gr, versions_file, new_tags = ua.github_repo_new('drupal/drupal/',
                 'drupal/drupal', self.versions_file, self.update_majors)
@@ -66,8 +66,8 @@ class Drupal(BasePlugin):
 
     def update_plugins(self):
         """
-            @return (plugins, themes) a tuple which contains two list of
-                strings, the plugins and the themes.
+        @return: (plugins, themes) a tuple which contains two list of
+            strings, the plugins and the themes.
         """
         plugins_url = 'https://drupal.org/project/project_module?page=%s'
         plugins_css = '.node-project-module > h2 > a'

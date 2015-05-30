@@ -69,14 +69,14 @@ class StandardOutput():
 
     def echo(self, msg):
         """
-            For miscelaneous messages. E.g. "Initializing scanning".
+        For miscelaneous messages. E.g. "Initializing scanning".
         """
         print(msg)
 
     def result(self, result, functionality):
         """
-            For the final result of the scan.
-            @param result as returned by BasePluginInternal.url_scan
+        For the final result of the scan.
+        @param result: as returned by BasePluginInternal.url_scan
         """
         for enumerate in result:
 
@@ -100,9 +100,11 @@ class StandardOutput():
 
     def warn(self, msg, whitespace_strp=True):
         """
-            For things that have gone seriously wrong but don't merit a program
-            halt.
-            Outputs to stderr, so JsonOutput does not need to override.
+        For things that have gone seriously wrong but don't merit a program
+        halt.
+        Outputs to stderr, so JsonOutput does not need to override.
+        @param msg: warning to output.
+        @param whitespace_strp: whether to strip whitespace.
         """
         if self.errors_display:
             if whitespace_strp:
@@ -117,7 +119,7 @@ class StandardOutput():
 
     def fatal(self, msg):
         """
-            For errors so grave that the program cannot continue.
+        For errors so grave that the program cannot continue.
         """
         if not self.log_to_file:
             msg = strip_whitespace(colors['red'] + "[+] " + msg +
@@ -128,7 +130,6 @@ class StandardOutput():
         raise RuntimeError(msg)
 
 class JsonOutput(StandardOutput):
-
     errors_display = False
 
     def echo(self, msg):
@@ -143,14 +144,14 @@ class RequestsLogger():
 
     def __init__(self, session):
         """
-            @param session a requests.Session instance.
+        @param session: a requests.Session instance.
         """
         self._session = session
 
     def _print(self, method, *args, **kwargs):
         """
-            Output format affects integration tests.
-            @see IntegrationTests.mock_output
+        Output format affects integration tests.
+        @see: IntegrationTests.mock_output
         """
         sess_method = getattr(self._session, method)
         r = sess_method(*args, **kwargs)

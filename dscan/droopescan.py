@@ -1,13 +1,5 @@
 #!/usr/bin/env python
 
-"""
-    |
- ___| ___  ___  ___  ___  ___  ___  ___  ___  ___
-|   )|   )|   )|   )|   )|___)|___ |    |   )|   )
-|__/ |    |__/ |__/ |__/ |__   __/ |__  |__/||  /
-                    |
-=================================================
-"""
 from __future__ import print_function
 from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
@@ -20,7 +12,15 @@ import os
 class DroopeScanBase(controller.CementBaseController):
     class Meta:
         label = 'base'
-        description = __doc__
+        description = """
+    |
+ ___| ___  ___  ___  ___  ___  ___  ___  ___  ___
+|   )|   )|   )|   )|   )|___)|___ |    |   )|   )
+|__/ |    |__/ |__/ |__/ |__   __/ |__  |__/||  /
+                    |
+=================================================
+"""
+
         epilog = template("help_epilog.mustache")
 
     @controller.expose(hide=True)
