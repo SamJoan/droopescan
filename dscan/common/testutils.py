@@ -12,9 +12,6 @@ def decallmethods(decorator, prefix='test_'):
                 or ismethod(x)):
 
             if name.startswith(prefix):
-                print(cls, name, decorator, m, decorator(m))
-                import sys
-                sys.exit()
                 setattr(cls, name, decorator(m))
 
         return cls
