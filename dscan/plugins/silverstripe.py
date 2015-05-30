@@ -157,6 +157,6 @@ class SilverStripe(BasePlugin):
 
         return folders
 
-def load():
+def load(app=None):
     handler.register(SilverStripe)
 

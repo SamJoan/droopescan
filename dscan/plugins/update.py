@@ -81,5 +81,5 @@ class Update(HumanBasePlugin):
             except AttributeError:
                 self.msg('Skipping %s because update_version_check() or update_version() is not defined.' % plugin_name)
 
-def load():
+def load(app=None):
     handler.register(Update)

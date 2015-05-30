@@ -63,6 +63,6 @@ class Release(HumanBasePlugin):
     def default(self):
         self.ship()
 
-def load():
+def load(app=None):
     handler.register(Release)
 

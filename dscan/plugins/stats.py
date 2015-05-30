@@ -16,6 +16,6 @@ class Stats(controller.CementBaseController):
         print(template('stats_plugin.mustache', {'version': version,
             'plugins': plugins}))
 
-def load():
+def load(app=None):
     handler.register(Stats)
 

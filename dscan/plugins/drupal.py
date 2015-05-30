@@ -85,6 +85,6 @@ class Drupal(BasePlugin):
 
         return plugins, themes
 
-def load():
+def load(app=None):
     handler.register(Drupal)
 

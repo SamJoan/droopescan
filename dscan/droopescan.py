@@ -33,6 +33,7 @@ class DroopeScan(foundation.CementApp):
     class Meta:
         label = 'droopescan'
         base_controller = DroopeScanBase
+        exit_on_close = False
 
 def main(pwd):
     defaults = init_defaults('DroopeScan', 'general')

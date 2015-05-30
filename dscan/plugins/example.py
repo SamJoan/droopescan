@@ -79,6 +79,6 @@ class Example(BasePlugin):
         @return: (plugins, themes)
         """
 
-def load():
+def load(app=None):
     handler.register(Example)
 

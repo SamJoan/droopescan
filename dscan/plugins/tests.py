@@ -78,6 +78,6 @@ class Tests(HumanBasePlugin):
 
         sys.exit(exit)
 
-def load():
+def load(app=None):
     handler.register(Tests)
 
