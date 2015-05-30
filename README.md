@@ -3,7 +3,7 @@
 A plugin-based scanner that aids security researchers in identifying issues with
 several CMSs, mainly Drupal & Silverstripe.
 
-[![Build Status](https://travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan) [![PyPI version](https://badge.fury.io/py/droopescan.png)](https://pypi.python.org/pypi/droopescan)
+[![PyPI version](https://badge.fury.io/py/droopescan.png)](https://pypi.python.org/pypi/droopescan)
 
 <pre>
 computer:~/droopescan# ./droopescan scan drupal -u http://example.org/ -t 8
