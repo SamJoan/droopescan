@@ -63,17 +63,17 @@ class BaseTest(test.CementTestCase):
     def mock_controller(self, plugin_label, method, return_value = None,
             side_effect = None, mock = None):
         """
-            Mocks controller by label. Can only be used to test controllers
-            that get instantiated automatically by cement.
-            @param plugin_label e.g. 'drupal'
-            @param method e.g. 'enumerate_plugins'
-            @param return_value what to return. Default is None, unless the
-                method starts with enumerate_*, in which case the result is a
-                tuple as expected by BasePlugin.
-            @param mock the MagicMock to place. If None, a blank MagicMock is
-                created.
-            @param side_effect if set to an exception, it will raise an
-                exception.
+        Mocks controller by label. Can only be used to test controllers
+        that get instantiated automatically by cement.
+        @param plugin_label: e.g. 'drupal'
+        @param method: e.g. 'enumerate_plugins'
+        @param return_value: what to return. Default is None, unless the
+            method starts with enumerate_*, in which case the result is a
+            tuple as expected by BasePlugin.
+        @param mock: the MagicMock to place. If None, a blank MagicMock is
+            created.
+        @param side_effect: if set to an exception, it will raise an
+            exception.
         """
         if mock:
             m = mock
@@ -103,10 +103,10 @@ class BaseTest(test.CementTestCase):
 
     def assert_called_contains(self, mocked_method, kwarg_name, kwarg_value):
         """
-            Assert kwarg_name equals kwarg name in call to mocked_method.
-            @param mocked_method mock to check the call to.
-            @param kwarg_name name of the param. E.g. 'url'
-            @param kwarg_value expected value. E.g. 'https://www.drupal.org/'
+        Assert kwarg_name: equals kwarg name in call to mocked_method.
+        @param mocked_method: mock to check the call to.
+        @param kwarg_name: name of the param. E.g. 'url'
+        @param kwarg_value: expected value. E.g. 'https://www.drupal.org/'
         """
         args, kwargs = mocked_method.call_args
         assert kwargs[kwarg_name] == kwarg_value, "Parameter is not as expected."
@@ -121,7 +121,7 @@ class BaseTest(test.CementTestCase):
 
     def assert_args_contains(self, mocked_method, position, expected_value):
         """
-            Assert that the call contains this argument in the args at position position.
+        Assert that the call contains this argument in the args at position position.
         """
         args, kwargs = mocked_method.call_args
         assert args[position] == expected_value
@@ -159,15 +159,15 @@ class BaseTest(test.CementTestCase):
 
     def mock_xml(self, xml_file, version_to_mock):
         '''
-            Generates all mock data, and returns a MagicMock which can be used
-            to replace self.scanner.enumerate_file_hash.
+        Generates all mock data, and returns a MagicMock which can be used
+        to replace self.scanner.enumerate_file_hash.
 
-            @param xml_file a file, which contains the XML to mock.
-            @param version_to_mock the version which we will pretend to be.
-            @return a function which can be used to mock
-                BasePlugin.enumerate_file_hash
+        self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, "7.27")
 
-            @usage self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, "7.27")
+        @param xml_file: a file, which contains the XML to mock.
+        @param version_to_mock: the version which we will pretend to be.
+        @return: a function which can be used to mock
+            BasePlugin.enumerate_file_hash
         '''
         with open(xml_file) as f:
             doc = etree.fromstring(f.read())
