@@ -4,7 +4,7 @@ from inspect import getmembers, isfunction, ismethod
 
 def decallmethods(decorator, prefix='test_'):
     """
-    decorates all methods in class which begin with prefix test_ to prevent
+    Decorates all methods in class which begin with prefix test_ to prevent
     accidental external HTTP requests.
     """
     def dectheclass(cls):
@@ -12,16 +12,18 @@ def decallmethods(decorator, prefix='test_'):
                 or ismethod(x)):
 
             if name.startswith(prefix):
+                print(cls, name, decorator, m, decorator(m))
+                import sys
+                sys.exit()
                 setattr(cls, name, decorator(m))
 
         return cls
 
     return dectheclass
 
-
 def _validate(xmlparser, xmlfilename):
     """
-        Raises an exception if the XML file doesn't validate.
+    Raises an exception if the XML file doesn't validate.
     """
     with open(xmlfilename, 'r') as f:
         etree.fromstring(f.read(), xmlparser)
@@ -36,7 +38,6 @@ def xml_validate(xml_file, xsd_file):
     return _validate(xmlparser, xml_file)
 
 class MockBuffer():
-
     string = ""
 
     def write(self, data):

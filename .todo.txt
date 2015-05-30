@@ -3,52 +3,30 @@ Add;
 Version 1.x:
     Fix broken build on new debian installs. Dependencies in working state:
         diff /tmp/now /tmp/prev
-        26c25
-        < futures==3.0.2
-        ---
-        > futures==2.2.0
-        30c29
-        < lxml==3.4.0
-        ---
-        > lxml==3.4.2
-        34c33
-        < nose==1.3.7
-        ---
-        > nose==1.3.6
-        44c43
-        < python-debian==0.1.27
-        ---
-        > python-debian==0.1.23
         50c49
         < responses==0.4.0
         ---
         > responses==0.3.0
 
-Hello all,
+        Heh, funny story, my tests started to fail with the same error you mention
+        above.
 
-I apologize in advance as it is very likely this is an issue with my project and
-not on nose itself. I've been as thorough as I can in my investigation, however.
+        I put the following line before the setattr of my class decorator:
 
-*The issue:* Instead of each individual test being ran, tests fail with an error
-message similar to the following:
+        <pre>
+            print(cls, name, decorator, m, decorator(m))
+        </pre>
 
-<pre>
-TypeError: unbound method test_determine_detect_false_ok() must be called with
-NoneType instance as first argument (got nothing instead)
-</pre>
+        (<class 'dscan.tests.base_http_tests.BaseHttpTests'>, 'test_add_slash_to_urls', <bound method RequestsMock.activate of <responses.RequestsMock object at 0xb5b7aa8c>>, <unbound method BaseHttpTests.test_add_slash_to_urls>, <function test_add_slash_to_urls at 0xb5b96144>)
+        (<class 'dscan.tests.base_http_tests.BaseHttpTests'>, 'test_add_slash_to_urls', <bound method RequestsMock.activate of <responses.RequestsMock object at 0xb5bcaa6c>>, <unbound method BaseHttpTests.test_add_slash_to_urls>, <unbound method NoneType.test_add_slash_to_urls>)
 
-The location of the stack trace is not present on the errors, but is as follows
-(obtained with `--pdb`)
+        This means there's been a modification to the return values of
+        responses.activate between responses 0.3.0 and 0.4.0 (last parameter is
+        different).
 
-<pre>
- > /usr/lib/python2.7/unittest/case.py(329)run()
- -> testMethod()
-</pre>
+        I think it is due to this:
 
-*Expected result:* Tests are ran successfuly and fail or succeed on their own
-merit.
-
-*Steps to reproduce:* I apologize 
+        https://github.com/getsentry/responses/commit/96d36d1457724823e76367de6b4c69ddd7b7907a?diff=split
 
     - error-log not working.
         example:

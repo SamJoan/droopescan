@@ -1,6 +1,6 @@
 mock
 nose
-responses
+responses==0.3.0
 lxml
 BeautifulSoup4
 coverage
