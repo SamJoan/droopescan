@@ -216,7 +216,6 @@ class BasePluginInternal(controller.CementBaseController):
 
             except:
                 exc = traceback.format_exc()
-                print(exc)
                 self.out.warn(exc, whitespace_strp=False)
 
     def plugin_init(self):

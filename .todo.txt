@@ -1,41 +1,14 @@
 Add;
 
 Version 1.x:
-    - error-log not working.
-        example:
-        
-            Traceback (most recent call last):
-          File "/usr/local/lib/python2.7/dist-packages/dscan/plugins/internal/base_plugin_internal.py", line 211, in _process_results_multisite
-            output = result['future'].result(timeout=timeout_host)
-          File "/usr/local/lib/python2.7/dist-packages/concurrent/futures/_base.py", line 396, in result
-            return self.__get_result()
-          File "/usr/local/lib/python2.7/dist-packages/concurrent/futures/thread.py", line 55, in run
-            result = self.fn(*self.args, **self.kwargs)
-          File "/usr/local/lib/python2.7/dist-packages/dscan/plugins/internal/base_plugin_internal.py", line 314, in url_scan
-            finds, is_empty = enum['func'](**kwargs)
-          File "/usr/local/lib/python2.7/dist-packages/dscan/plugins/internal/base_plugin_internal.py", line 597, in enumerate_version
-            hsh = futures[file_url].result()
-          File "/usr/local/lib/python2.7/dist-packages/concurrent/futures/_base.py", line 403, in result
-            return self.__get_result()
-          File "/usr/local/lib/python2.7/dist-packages/concurrent/futures/thread.py", line 55, in run
-            result = self.fn(*self.args, **self.kwargs)
-          File "/usr/local/lib/python2.7/dist-packages/dscan/plugins/internal/base_plugin_internal.py", line 634, in enumerate_file_hash
-            r = self.session.get(url + file_url, timeout=timeout)
-          File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 477, in get
-            return self.request('GET', url, **kwargs)
-          File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 465, in request
-            resp = self.send(prep, **send_kwargs)
-          File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 573, in send
-            r = adapter.send(request, **kwargs)
-          File "/usr/local/lib/python2.7/dist-packages/requests/adapters.py", line 415, in send
-            raise ConnectionError(err, request=request)
-        ConnectionError: ('Connection aborted.', gaierror(-2, 'Name or service not known'))
 
-Version 2.x
+Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
     - Break API to replace 'interesting urls' key with 'interesting_urls'.
     - Break API to add url (the URL which was requested to be scanned) and final_url which is the URL after redirects.
     - Break API to detect plugin version.
+    - Joomla
+    - Wordpress?
 
 Relevant:
 - https://wappalyzer.com/ -

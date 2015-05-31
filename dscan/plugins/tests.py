@@ -29,7 +29,9 @@ class Tests(HumanBasePlugin):
         arguments = [
             (['-s', '--single-test'], dict(action='store', help='Name of test to run',
                 required=False, default=None)),
-            (['--just-three'], dict(action='store_true', help='Just run python 3 tests.',
+            (['-3', '--just-three'], dict(action='store_true', help='Just run python 3 tests.',
+                required=False, default=None)),
+            (['-2', '--just-two'], dict(action='store_true', help='Just run python 3 tests.',
                 required=False, default=None)),
             (['-c', '--with-coverage'], dict(action='store_true', help='Do test coverage',
                 required=False, default=False)),
@@ -41,6 +43,7 @@ class Tests(HumanBasePlugin):
         single_test = self.app.pargs.single_test
         with_coverage = self.app.pargs.with_coverage
         just_three = self.app.pargs.just_three
+        just_two = self.app.pargs.just_two
 
         if single_test and with_coverage:
             self.error('Cannot run with both -c and -s.')
@@ -58,7 +61,11 @@ class Tests(HumanBasePlugin):
             else:
                 e1 = 0
 
-            e2 = call(['python3'] + call_base, env=env)
+            if not just_two:
+                e2 = call(['python3'] + call_base, env=env)
+            else:
+                e2 = 0
+
             if e1 != 0 or e2 != 0:
                 exit = 1
 
@@ -74,7 +81,10 @@ class Tests(HumanBasePlugin):
 
             test = 'tests.%s_tests:%sTests.%s' % (underscore, upper, single_test)
 
-            exit = call(['python', '/usr/local/bin/nosetests', '--nocapture', test], env=env)
+            if just_two:
+                exit = call(['python2', '/usr/local/bin/nosetests', '--nocapture', test], env=env)
+            else:
+                exit = call(['python3', '/usr/local/bin/nosetests', '--nocapture', test], env=env)
 
         sys.exit(exit)
 

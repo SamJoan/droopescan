@@ -180,6 +180,28 @@ class BaseTests(BaseTest):
 
         assert val == b""
 
+    def test_no_output_when_exception(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['-U', self.valid_file])
+        self.add_argv(['--output', 'json'])
+        self.add_argv(['--method', 'forbidden'])
+
+        all_mocks = self.mock_all_enumerate('drupal')
+        if sys.version_info < (3, 0, 0):
+            mock_string_method = io.BytesIO
+        else:
+            mock_string_method = io.StringIO
+
+        with patch('sys.stdout', new=mock_string_method()) as fake_out:
+            self.app.run()
+            val = fake_out.getvalue()
+
+        # Expected output is one line of json followed by a newline.
+        lines = val.split("\n")
+        assert len(lines) == 2
+        assert lines[0].startswith('{')
+        assert lines[1] == ''
+
     def test_log_output_when_error_display_false(self):
 
         warn_string = 'warn_string'
