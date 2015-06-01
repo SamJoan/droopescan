@@ -3,6 +3,9 @@ from plugins import BasePlugin
 import common
 
 class Joomla(BasePlugin):
+    can_enumerate_plugins = False
+    can_enumerate_themes = False
+
     forbidden_url = "misc/"
     regular_file_url = "misc/drupal.js"
     module_common_file = "README.txt"
@@ -20,10 +23,8 @@ class Joomla(BasePlugin):
         label = 'joomla'
 
     # This function is the entry point for the CMS.
-    @controller.expose(help='example scanner')
-    def example(self):
-        self.can_enumerate_plugins = False
-        self.can_enumerate_themes = False
+    @controller.expose(help='joomla related scanning tools')
+    def joomla(self):
         self.plugin_init()
 
     # The four functions below get called when ./droopescan update is called.

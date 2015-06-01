@@ -35,7 +35,7 @@ class Drupal(BasePlugin):
     class Meta:
         label = 'drupal'
 
-    @controller.expose(help='drupal-related scanning tools')
+    @controller.expose(help='drupal related scanning tools')
     def drupal(self):
         self.plugin_init()
 
