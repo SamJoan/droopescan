@@ -1,14 +1,21 @@
 Add;
 
 Version 1.x:
+    - Joomla
+        http://www.whitefirdesign.com/resources/joomla-release-archive.html
+        media/system/js/validate.js
+        templates/system/css/offline.css
+        media/system/css/calendar-jos.css
+        templates/system/css/general.css
+        templates/system/css/system.css
+        templates/system/css/error.css
+        media/system/js/tabs.js
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
     - Break API to replace 'interesting urls' key with 'interesting_urls'.
     - Break API to add url (the URL which was requested to be scanned) and final_url which is the URL after redirects.
     - Break API to detect plugin version.
-    - Joomla
-        http://www.whitefirdesign.com/resources/joomla-release-archive.html
     - Wordpress?
 
 Relevant:
