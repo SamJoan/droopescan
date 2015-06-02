@@ -94,7 +94,6 @@ def version_gt(version, gt):
         Code for parsing simple, numeric versions. Letters will be stripped
         prior to comparison. Simple appendages such as 1-rc1 are supported.
     """
-    print(version, ">", gt)
     version_split = strip_letters(version).split('.')
     gt_split = strip_letters(gt).split('.')
 
@@ -117,7 +116,6 @@ def version_gt(version, gt):
 
             v = version_split[i]
             g = gt_split[i]
-            print(v, g)
 
             v_is_rc = '-' in v or '_' in v
             g_is_rc = '-' in g or '_' in g
