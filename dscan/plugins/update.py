@@ -15,6 +15,8 @@ class Update(HumanBasePlugin):
                 required=False, default=None)),
             (['--skip-modules'], dict(action='store_true', help='Skip module updates.',
                 required=False, default=None)),
+            (['--update', '-u'], dict(action='store', help='Run update for only this module',
+                required=False, default=None)),
         ]
 
     def is_valid(self, new_xml):
@@ -67,11 +69,15 @@ class Update(HumanBasePlugin):
 
         skip_version = self.app.pargs.skip_version
         skip_modules = self.app.pargs.skip_modules
+        update_only = self.app.pargs.update
 
         for Plugin in plugins:
             try:
                 plugin = Plugin()
                 plugin_name = plugin.Meta.label
+
+                if update_only != None and update_only != plugin_name:
+                    continue
 
                 if not skip_version:
                     self.update_version(plugin, plugin_name)

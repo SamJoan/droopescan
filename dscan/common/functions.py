@@ -87,13 +87,14 @@ def file_len(fname):
     return i
 
 def strip_letters(string):
-    return ''.join([c for c in str(string) if c in '1234567890.-'])
+    return ''.join([c for c in str(string) if c in '1234567890.-_'])
 
 def version_gt(version, gt):
     """
         Code for parsing simple, numeric versions. Letters will be stripped
         prior to comparison. Simple appendages such as 1-rc1 are supported.
     """
+    print(version, ">", gt)
     version_split = strip_letters(version).split('.')
     gt_split = strip_letters(gt).split('.')
 
@@ -108,7 +109,6 @@ def version_gt(version, gt):
         shortest_len = len(version_split)
         l = g_len
 
-    # in case of equality, return False
     gt = False
     for i in range(l):
         overcame_shortest = i >= shortest_len
@@ -117,19 +117,26 @@ def version_gt(version, gt):
 
             v = version_split[i]
             g = gt_split[i]
+            print(v, g)
 
-            v_is_rc = '-' in v
-            g_is_rc = '-' in g
+            v_is_rc = '-' in v or '_' in v
+            g_is_rc = '-' in g or '_' in g
 
             if v_is_rc:
-                v_split = v.split('-')
+                v_split = re.split(r'[-_]', v)
                 v = v_split[0]
-                v_rc_nb = int(''.join(v_split[1:]))
+                try:
+                    v_rc_nb = int(''.join(v_split[1:]))
+                except ValueError:
+                    g_rc_nb = 0
 
             if g_is_rc:
-                g_split = g.split('-')
+                g_split = re.split(r'[-_]', g)
                 g = g_split[0]
-                g_rc_nb = int(''.join(g_split[1:]))
+                try:
+                    g_rc_nb = int(''.join(g_split[1:]))
+                except ValueError:
+                    g_rc_nb = 0
 
             v = int(v)
             g = int(g)
@@ -155,11 +162,20 @@ def version_gt(version, gt):
         else:
             nb = longest[i]
 
-            is_rc = '-' in nb
+            is_rc = '-' in nb or '_' in nb
             if is_rc:
-                nb = nb.split('-')[0]
+                nb = re.split(r'[-_]', nb)[0]
 
-            if int(nb) > 0:
+            try:
+                nb_int = int(nb)
+            except ValueError:
+                if longest == version_split:
+                    break
+                else:
+                    gt = True
+                    break
+
+            if nb_int > 0:
                 if longest == version_split:
                     gt = True
                     break

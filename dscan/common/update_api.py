@@ -31,7 +31,7 @@ def github_tags_newer(github_repo, versions_file, update_majors):
     vf = VersionsFile(versions_file)
     current_highest = vf.highest_version_major(update_majors)
 
-    tags_url = '%s%sreleases' % (GH, github_repo)
+    tags_url = '%s%stags' % (GH, github_repo)
     resp = requests.get(tags_url)
     bs = BeautifulSoup(resp.text)
 
@@ -56,6 +56,7 @@ def _newer_tags_get(current_highest, versions):
     for major in current_highest:
         highest_version = current_highest[major]
         for version in versions:
+            print(version)
             if version.startswith(major) and version_gt(version,
                     highest_version):
                 newer.append(version)

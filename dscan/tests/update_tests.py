@@ -63,7 +63,7 @@ class UpdateTests(BaseTest):
     def gh_mock(self):
         # github_response.html has 7.34 & 6.34 as the latest tags.
         gh_resp = open('tests/resources/github_response.html').read()
-        responses.add(responses.GET, 'https://github.com/drupal/drupal/releases', body=gh_resp)
+        responses.add(responses.GET, 'https://github.com/drupal/drupal/tags', body=gh_resp)
         responses.add(responses.GET, 'https://github.com/silverstripe/silverstripe-framework/releases')
 
     def mock_update_all(self):
