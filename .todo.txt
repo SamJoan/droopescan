@@ -2,14 +2,8 @@ Add;
 
 Version 1.x:
     - Joomla
-        http://www.whitefirdesign.com/resources/joomla-release-archive.html
-        media/system/js/validate.js
-        templates/system/css/offline.css
-        media/system/css/calendar-jos.css
-        templates/system/css/general.css
-        templates/system/css/system.css
-        templates/system/css/error.css
-        media/system/js/tabs.js
+        May need to use https://github.com/joomla/joomla-cms/tags instead of
+        releases for joomla.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.

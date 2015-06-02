@@ -1,6 +1,8 @@
 from cement.core import handler, controller
+from common.update_api import GitRepo
 from plugins import BasePlugin
-import common
+import common.update_api as ua
+import common.versions
 
 class Joomla(BasePlugin):
     can_enumerate_plugins = False
@@ -27,18 +29,27 @@ class Joomla(BasePlugin):
     def joomla(self):
         self.plugin_init()
 
-    # The four functions below get called when ./droopescan update is called.
-    # They can make use of dscan.common.update_api in order to update the
-    # versions.xml and the *.txt files.
-    #
-    # See drupal and silverstripe for examples.
     def update_version_check(self):
         """
-        @return: True if new versions of this software have been found.
+        @return: True if new tags have been made in the github repository.
         """
+        return ua.github_tags_newer('joomla/joomla-cms/', self.versions_file,
+                update_majors=self.update_majors)
 
     def update_version(self):
-        pass
+        """
+        @return: updated VersionsFile
+        """
+        gr, versions_file, new_tags = ua.github_repo_new('joomla/joomla-cms/',
+                'joomla/joomla-cms/', self.versions_file, self.update_majors)
+
+        hashes = {}
+        for version in new_tags:
+            gr.tag_checkout(version)
+            hashes[version] = gr.hashes_get(versions_file, self.update_majors)
+
+        versions_file.update(hashes)
+        return versions_file
 
     def update_plugins_check(self):
         return False
