@@ -126,7 +126,7 @@ def version_gt(version, gt):
                 try:
                     v_rc_nb = int(''.join(v_split[1:]))
                 except ValueError:
-                    g_rc_nb = 0
+                    v_rc_nb = 0
 
             if g_is_rc:
                 g_split = re.split(r'[-_]', g)

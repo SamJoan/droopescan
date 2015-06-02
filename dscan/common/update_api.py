@@ -56,7 +56,6 @@ def _newer_tags_get(current_highest, versions):
     for major in current_highest:
         highest_version = current_highest[major]
         for version in versions:
-            print(version)
             if version.startswith(major) and version_gt(version,
                     highest_version):
                 newer.append(version)
