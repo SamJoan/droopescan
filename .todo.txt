@@ -8,6 +8,7 @@ Version 2.x:
     - Break API to add url (the URL which was requested to be scanned) and final_url which is the URL after redirects.
     - Break API to detect plugin version.
     - Joomla
+        http://www.whitefirdesign.com/resources/joomla-release-archive.html
     - Wordpress?
 
 Relevant:
