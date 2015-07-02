@@ -8,16 +8,15 @@ class Joomla(BasePlugin):
     can_enumerate_plugins = False
     can_enumerate_themes = False
 
-    forbidden_url = "misc/"
-    regular_file_url = "misc/drupal.js"
-    module_common_file = "README.txt"
+    forbidden_url = "media/"
+    regular_file_url = "media/system/js/validate.js"
+    module_common_file = ""
 
     update_majors = ['1','2','3']
 
-    interesting_urls = [("CHANGELOG", "This CMS' default changelog.")]
+    interesting_urls = [("joomla.xml", "This CMS' default changelog.")]
 
     interesting_module_urls = [
-        ('CHANGELOG.txt', 'Changelog file'),
     ]
 
     class Meta:
