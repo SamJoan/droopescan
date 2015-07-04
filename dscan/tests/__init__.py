@@ -208,3 +208,11 @@ class BaseTest(test.CementTestCase):
 
         return mock
 
+    def get_dispatched_controller(self, app):
+        """
+            This might be considered a hack. I should eventually get in touch
+            with the cement devs and ask for a better alternative :P.
+        """
+        return app.controller._dispatch_command['controller']\
+                ._dispatch_command['controller']
+

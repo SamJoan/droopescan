@@ -126,15 +126,12 @@ class BaseTests(BaseTest):
         self.add_argv(self.param_plugins)
         self.add_argv(['--output', 'json'])
 
-        #m = self.mock_controller('drupal', '_general_init')
         try:
             self.app.run()
         except:
             pass
 
-        from pprint import pprint
-        pprint(self.app._meta.__dict__)
-        # 'base_controller': <droopescan.DroopeScanBase object at 0xb655274c>,
+        drupal = self.get_dispatched_controller(self.app)
 
         assert isinstance(drupal.out, JsonOutput)
 
@@ -149,29 +146,25 @@ class BaseTests(BaseTest):
         self.add_argv(['scan', 'drupal'])
         self.add_argv(['--url-file', self.valid_file])
 
-        m = self.mock_controller('drupal', '_general_init')
-
         try:
             self.app.run()
         except:
             pass
 
-        args, kwargs = m.call_args
-        assert isinstance(kwargs['output'], JsonOutput)
+        drupal = self.get_dispatched_controller(self.app)
+        assert isinstance(drupal.out, JsonOutput)
 
     def test_output_standard_when_normal_url(self):
         self.add_argv(['scan', 'drupal'])
         self.add_argv(['--url-file', self.valid_file])
 
-        m = self.mock_controller('drupal', '_general_init')
-
         try:
             self.app.run()
         except:
             pass
 
-        args, kwargs = m.call_args
-        assert isinstance(kwargs['output'], StandardOutput)
+        drupal = self.get_dispatched_controller(self.app)
+        assert isinstance(drupal.out, StandardOutput)
 
     def test_no_output_when_error_display_false(self):
         with patch('sys.stdout', new=io.BytesIO()) as fake_out:
