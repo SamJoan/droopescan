@@ -1,10 +1,12 @@
 from __future__ import print_function
-from plugins.internal.base_plugin_internal import BasePluginInternal
 from cement.core import controller
 from common import template
+from plugins.internal.base_plugin import BasePlugin
+from plugins.internal.base_plugin_internal import BasePluginInternal
 import common
+import common.plugins_util as pu
 
-class Scan(controller.CementBaseController):
+class Scan(BasePlugin):
 
     class Meta:
         label = 'scan'
@@ -63,5 +65,8 @@ class Scan(controller.CementBaseController):
 
     @controller.expose(hide=True)
     def default(self):
-        raise RuntimeError(self.app.args.format_help())
+        plugins = pu.plugins_base_get()
+        opts = self._options()
+        print(opts)
+
 

@@ -104,10 +104,9 @@ class BaseTests(BaseTest):
         assert not kwargs_p == kwargs_t
 
     def test_user_agent(self):
-        user_agent = "user_agent_string"
-        self.scanner._general_init(user_agent=user_agent)
+        self.scanner._general_init()
 
-        assert self.scanner.session.headers['User-Agent'] == user_agent
+        assert self.scanner.session.headers['User-Agent'] == self.scanner.DEFAULT_UA
 
     def test_no_verify(self):
         self.scanner._general_init()
@@ -115,8 +114,10 @@ class BaseTests(BaseTest):
         assert self.scanner.session.verify == False
 
     def test_can_choose_output(self):
-        output = JsonOutput()
-        self.scanner._general_init(output=output)
+        opts = self.scanner.default_opts
+        opts['output'] = 'json'
+
+        self.scanner._general_init(opts)
 
         assert isinstance(self.scanner.out, JsonOutput)
 
@@ -125,15 +126,17 @@ class BaseTests(BaseTest):
         self.add_argv(self.param_plugins)
         self.add_argv(['--output', 'json'])
 
-        m = self.mock_controller('drupal', '_general_init')
-
+        #m = self.mock_controller('drupal', '_general_init')
         try:
             self.app.run()
         except:
             pass
 
-        args, kwargs = m.call_args
-        assert isinstance(kwargs['output'], JsonOutput)
+        from pprint import pprint
+        pprint(self.app._meta.__dict__)
+        # 'base_controller': <droopescan.DroopeScanBase object at 0xb655274c>,
+
+        assert isinstance(drupal.out, JsonOutput)
 
     def test_output_defaults(self):
         jo = JsonOutput()

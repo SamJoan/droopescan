@@ -39,6 +39,11 @@ class BasePluginInternal(controller.CementBaseController):
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
     NUMBER_PLUGINS_DEFAULT = 1000
+    default_opts = {
+        "output": "standard",
+        "debug_requests": False,
+        "error_log": "-"
+    }
 
     class Meta:
         label = 'baseplugin'
@@ -57,33 +62,6 @@ class BasePluginInternal(controller.CementBaseController):
                 return getattr(self, attr_name)
             except AttributeError:
                 return default
-
-    def _general_init(self, output=None, user_agent=None, debug_requests=False):
-        self.session = Session()
-
-        if not output:
-            self.out = StandardOutput()
-        else:
-            self.out = output
-
-        # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
-        try:
-            a = requests.adapters.HTTPAdapter(pool_maxsize=5000)
-            self.session.mount('http://', a)
-            self.session.mount('https://', a)
-        except AttributeError:
-            # https://github.com/droope/droopescan/issues/6
-            old_req = """Running a very old version of requests! Please `pip
-                install -U requests`."""
-            self.out.warn(old_req)
-
-        self.session.verify = False
-        if not user_agent:
-            user_agent = self.DEFAULT_UA
-
-        self.session.headers['User-Agent'] = user_agent
-        if debug_requests:
-            self.session = RequestsLogger(self.session)
 
     def _options(self):
         pargs = self.app.pargs
@@ -218,21 +196,51 @@ class BasePluginInternal(controller.CementBaseController):
                 exc = traceback.format_exc()
                 self.out.warn(exc, whitespace_strp=False)
 
-    def plugin_init(self):
-        time_start = datetime.now()
-        opts = self._options()
-
+    def _output(self, opts):
         if opts['output'] == 'json' or 'url_file' in opts:
             output = JsonOutput(error_log=opts['error_log'])
         else:
             output = StandardOutput(error_log=opts['error_log'])
 
-        debug_requests = opts['debug_requests']
-        self._general_init(output=output, debug_requests=debug_requests)
+        return output
 
-        hide_progressbar = True if debug_requests else False
+    def _general_init(self, opts=default_opts):
+        """
+            Initializes a variety of variables depending on user input.
+            @return: a boolean value indicating whether progressbars should be
+                hidden.
+        """
+        self.out = self._output(opts)
+        self.session = Session()
+
+        # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
+        try:
+            a = requests.adapters.HTTPAdapter(pool_maxsize=5000)
+            self.session.mount('http://', a)
+            self.session.mount('https://', a)
+        except AttributeError:
+            old_req = """Running a very old version of requests! Please `pip
+                install -U requests`."""
+            self.out.warn(old_req)
+
+        self.session.verify = False
+        self.session.headers['User-Agent'] = self.DEFAULT_UA
+
+        debug_requests = opts['debug_requests']
         if debug_requests:
+            hide_progressbar = True
             opts['threads'] = 1
+            self.session = RequestsLogger(self.session)
+        else:
+            hide_progressbar = False
+
+        return hide_progressbar
+
+    def plugin_init(self):
+        time_start = datetime.now()
+        opts = self._options()
+
+        hide_progressbar = self._general_init(opts)
 
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)

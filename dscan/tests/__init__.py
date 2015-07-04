@@ -101,6 +101,9 @@ class BaseTest(test.CementTestCase):
         """
         self.app._meta.argv += argv
 
+    def clear_argv(self):
+        self.app._meta.argv = []
+
     def assert_called_contains(self, mocked_method, kwarg_name, kwarg_value):
         """
         Assert kwarg_name: equals kwarg name in call to mocked_method.

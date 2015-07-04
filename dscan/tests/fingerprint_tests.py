@@ -5,6 +5,7 @@ from glob import glob
 from lxml import etree
 from mock import patch, MagicMock
 from plugins.drupal import Drupal
+from plugins.internal.scan import Scan
 from requests.exceptions import ConnectionError
 from tests import BaseTest
 import hashlib
@@ -293,3 +294,9 @@ class FingerprintTests(BaseTest):
                 mock_versions, v_changelog)
 
         assert result == mock_versions
+
+    def test_identify_cms_called(self):
+        self.clear_argv()
+        self.add_argv(['scan', '-u', self.base_url])
+        self.app.run()
+

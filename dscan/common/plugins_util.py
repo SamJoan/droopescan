@@ -1,6 +1,6 @@
 from cement.core import handler
 from common import file_len, VersionsFile
-from plugins import BasePlugin
+from plugins.internal.base_plugin import BasePlugin
 import subprocess
 
 def plugins_get():
@@ -20,6 +20,7 @@ def plugins_base_get():
     return plugins
 
 class Plugin(object):
+    plugin = None
     name = None
 
     plugins_can_enumerate = False
@@ -70,8 +71,4 @@ class Plugin(object):
             file_path]).strip()
 
         return out
-
-
-
-
 
