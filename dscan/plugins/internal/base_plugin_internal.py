@@ -234,16 +234,16 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             hide_progressbar = False
 
-        return hide_progressbar
+        functionality = self._functionality(opts)
+        enabled_functionality = self._enabled_functionality(functionality, opts)
+
+        return (hide_progressbar, functionality, enabled_functionality)
 
     def plugin_init(self):
         time_start = datetime.now()
         opts = self._options()
+        hide_progressbar, functionality, enabled_functionality = self._general_init(opts)
 
-        hide_progressbar = self._general_init(opts)
-
-        functionality = self._functionality(opts)
-        enabled_functionality = self._enabled_functionality(functionality, opts)
         if 'url_file' in opts:
             with open(opts['url_file']) as url_file:
                 timeout_host = opts['timeout_host']
