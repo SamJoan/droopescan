@@ -104,17 +104,17 @@ class BaseTests(BaseTest):
         assert not kwargs_p == kwargs_t
 
     def test_user_agent(self):
-        self.scanner._general_init()
+        self.scanner._general_init(self.test_opts)
 
         assert self.scanner.session.headers['User-Agent'] == self.scanner.DEFAULT_UA
 
     def test_no_verify(self):
-        self.scanner._general_init()
+        self.scanner._general_init(self.test_opts)
 
         assert self.scanner.session.verify == False
 
     def test_can_choose_output(self):
-        opts = self.scanner.default_opts
+        opts = self.test_opts
         opts['output'] = 'json'
 
         self.scanner._general_init(opts)
@@ -250,7 +250,7 @@ class BaseTests(BaseTest):
     def test_kali_old_requests_bug(self, warn):
         drupal = Drupal()
         with patch('requests.adapters', spec_set=["force_attr_error"]):
-            drupal._general_init()
+            drupal._general_init(self.test_opts)
 
             assert warn.called
 

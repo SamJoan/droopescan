@@ -39,11 +39,6 @@ class BasePluginInternal(controller.CementBaseController):
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
     NUMBER_PLUGINS_DEFAULT = 1000
-    default_opts = {
-        "output": "standard",
-        "debug_requests": False,
-        "error_log": "-"
-    }
 
     class Meta:
         label = 'baseplugin'
@@ -63,9 +58,7 @@ class BasePluginInternal(controller.CementBaseController):
             except AttributeError:
                 return default
 
-    def _options(self):
-        pargs = self.app.pargs
-
+    def _options(self, pargs):
         pwd = self.app.config.get('general', 'pwd')
         if pargs.url_file != None:
             url_file = pargs.url_file
@@ -204,7 +197,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return output
 
-    def _general_init(self, opts=default_opts):
+    def _general_init(self, opts):
         """
             Initializes a variety of variables depending on user input.
             @return: a boolean value indicating whether progressbars should be
@@ -241,43 +234,13 @@ class BasePluginInternal(controller.CementBaseController):
 
     def plugin_init(self):
         time_start = datetime.now()
-        opts = self._options()
+        opts = self._options(self.app.pargs)
         hide_progressbar, functionality, enabled_functionality = self._general_init(opts)
 
         if 'url_file' in opts:
-            with open(opts['url_file']) as url_file:
-                timeout_host = opts['timeout_host']
-                i = 0
-                with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
-                    results = []
-                    for url in url_file:
-                        args = [url, opts, functionality, enabled_functionality,
-                                True]
-
-                        future = executor.submit(self.url_scan, *args)
-
-                        results.append({
-                            'future': future,
-                            'url': url.rstrip('\n'),
-                        })
-
-                        if i % 1000 == 0 and i != 0:
-                            self._process_results_multisite(results,
-                                    functionality, timeout_host)
-                            results = []
-
-                        i += 1
-
-                    if len(results) > 0:
-                        self._process_results_multisite(results, functionality,
-                                timeout_host)
-                        results = []
+            self._process_url_file(opts, functionality, enabled_functionality)
         else:
-            output = self.url_scan(opts['url'], opts, functionality,
-                    enabled_functionality, hide_progressbar=hide_progressbar)
-
-            if not shutdown:
-                self.out.result(output, functionality)
+            self._process_url(opts, functionality, enabled_functionality, hide_progressbar)
 
         self.out.close()
 
@@ -287,8 +250,43 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             sys.exit(130)
 
-    def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
+    def _process_url(self, opts, functionality, enabled_functionality, hide_progressbar):
+        output = self.url_scan(opts['url'], opts, functionality,
+                enabled_functionality, hide_progressbar=hide_progressbar)
 
+        if not shutdown:
+            self.out.result(output, functionality)
+
+    def _process_url_file(self, opts, functionality, enabled_functionality):
+        with open(opts['url_file']) as url_file:
+            timeout_host = opts['timeout_host']
+            i = 0
+            with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
+                results = []
+                for url in url_file:
+                    args = [url, opts, functionality, enabled_functionality,
+                            True]
+
+                    future = executor.submit(self.url_scan, *args)
+
+                    results.append({
+                        'future': future,
+                        'url': url.rstrip('\n'),
+                    })
+
+                    if i % 1000 == 0 and i != 0:
+                        self._process_results_multisite(results,
+                                functionality, timeout_host)
+                        results = []
+
+                    i += 1
+
+                if len(results) > 0:
+                    self._process_results_multisite(results, functionality,
+                            timeout_host)
+                    results = []
+
+    def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
         url = common.repair_url(url, self.out)
         if opts['follow_redirects']:
             url = self.determine_redirect(url, opts['verb'], opts['timeout'])

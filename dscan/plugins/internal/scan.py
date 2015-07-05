@@ -66,7 +66,7 @@ class Scan(BasePlugin):
     @controller.expose(hide=True)
     def default(self):
         plugins = pu.plugins_base_get()
-        opts = self._options()
+        opts = self._options(self.app.pargs)
         print(opts)
 
 

@@ -37,6 +37,19 @@ class BaseTest(test.CementTestCase):
     versions_xsd = 'common/versions.xsd'
     xml_file = 'tests/resources/versions.xml'
 
+    test_opts = {
+        'output': 'standard',
+        'debug_requests': False,
+        'error_log': '-',
+        'threads': 1,
+        'verb': 'head',
+        'timeout': 300,
+        'plugins_base_url': None,
+        'themes_base_url': None,
+        'number': 10,
+        'enumerate': 'a'
+    }
+
     def setUp(self):
         super(BaseTest, self).setUp()
         self.reset_backend()
@@ -55,7 +68,7 @@ class BaseTest(test.CementTestCase):
 
     def _init_scanner(self):
         self.scanner = Drupal()
-        self.scanner._general_init()
+        self.scanner._general_init(self.test_opts)
 
     def tearDown(self):
         self.app.close()
