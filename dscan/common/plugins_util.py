@@ -15,7 +15,12 @@ def plugins_get():
 
 def plugins_base_get():
     controllers = handler.list('controller')
-    plugins = [c for c in controllers if issubclass(c, BasePlugin)]
+    plugins = []
+
+    for c in controllers:
+        is_base_scan = c.__name__.lower() == 'scan'
+        if issubclass(c, BasePlugin) and not is_base_scan:
+            plugins.append(c)
 
     return plugins
 

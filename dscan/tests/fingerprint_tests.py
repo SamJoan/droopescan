@@ -19,6 +19,7 @@ class FingerprintTests(BaseTest):
     '''
 
     xml_file_changelog = 'tests/resources/versions_with_changelog.xml'
+    cms_identify_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.cms_identify'
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
@@ -295,8 +296,26 @@ class FingerprintTests(BaseTest):
 
         assert result == mock_versions
 
-    def test_identify_cms_called(self):
+    def _prepare_identify(self):
         self.clear_argv()
         self.add_argv(['scan', '-u', self.base_url])
-        self.app.run()
+
+    def test_cms_identify_called(self):
+        self._prepare_identify()
+        with patch(self.cms_identify_module, autospec=True) as m:
+            self.app.run()
+
+        assert m.called
+
+    def test_cms_identify_respected(self):
+        self._prepare_identify()
+        return_value = [False, False, True]
+
+        try:
+            with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
+                self.app.run()
+        except ConnectionError:
+            pass
+
+        assert m.called
 

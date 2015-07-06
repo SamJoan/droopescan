@@ -238,9 +238,9 @@ class BasePluginInternal(controller.CementBaseController):
         hide_progressbar, functionality, enabled_functionality = self._general_init(opts)
 
         if 'url_file' in opts:
-            self._process_url_file(opts, functionality, enabled_functionality)
+            self.process_url_file(opts, functionality, enabled_functionality)
         else:
-            self._process_url(opts, functionality, enabled_functionality, hide_progressbar)
+            self.process_url(opts, functionality, enabled_functionality, hide_progressbar)
 
         self.out.close()
 
@@ -250,14 +250,14 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             sys.exit(130)
 
-    def _process_url(self, opts, functionality, enabled_functionality, hide_progressbar):
+    def process_url(self, opts, functionality, enabled_functionality, hide_progressbar):
         output = self.url_scan(opts['url'], opts, functionality,
                 enabled_functionality, hide_progressbar=hide_progressbar)
 
         if not shutdown:
             self.out.result(output, functionality)
 
-    def _process_url_file(self, opts, functionality, enabled_functionality):
+    def process_url_file(self, opts, functionality, enabled_functionality):
         with open(opts['url_file']) as url_file:
             timeout_host = opts['timeout_host']
             i = 0
@@ -691,3 +691,14 @@ class BasePluginInternal(controller.CementBaseController):
             p.hide()
 
         return found_list
+
+    def cms_identify(self, url):
+        """
+            Function called when attempting to determine if a URL is identified
+            as being this particular CMS.
+            @param url: the URL to attempt to identify.
+            @return: a boolean value indiciating whether this CMS is identified
+                as being this particular CMS.
+        """
+        pass
+

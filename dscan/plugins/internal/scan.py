@@ -67,6 +67,27 @@ class Scan(BasePlugin):
     def default(self):
         plugins = pu.plugins_base_get()
         opts = self._options(self.app.pargs)
-        print(opts)
 
+        instances = {}
+        for plugin in plugins:
+            inst = plugin()
+            hp, func, enabled_func = inst._general_init(opts)
+            name = inst._meta.label
+
+            instances[name] = {
+                'inst': inst,
+                'hide_progressbar': hp,
+                'functionality': func,
+                'enabled_functionality': enabled_func
+            }
+
+        if 'url_file' in opts:
+           pass
+        else:
+           for cms_name in instances:
+               inst_dict = instances[cms_name]
+               inst = inst_dict['inst']
+               del inst_dict['inst']
+               if inst.cms_identify(opts['url']) == True:
+                   pass
 
