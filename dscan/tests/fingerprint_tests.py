@@ -401,7 +401,16 @@ class FingerprintTests(BaseTest):
             assert is_cms == False
 
     def test_cms_identify_false_notexist(self):
-        assert False
+        fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        rfu = "test/topst/tust.txt"
+        has_hash = 'common.versions.VersionsFile.has_hash'
+
+        with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
+            with patch(has_hash, autospec=True, return_value=False) as hh:
+                self.scanner.regular_file_url = rfu
+                is_cms = self.scanner.cms_identify(self.test_opts, self.v, self.base_url)
+
+                assert is_cms == False
 
     def test_has_hash(self):
         existant_hash = 'b1946ac92492d2347c6235b4d2611184'
