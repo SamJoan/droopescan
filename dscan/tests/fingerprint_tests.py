@@ -153,6 +153,10 @@ class FingerprintTests(BaseTest):
         assert self.v.version_gt("2.5.0", "2.5.0_RC1")
         assert self.v.version_gt("2.5.0_RC1", "2.5.0") == False
 
+    def test_weird_joomla_again(self):
+        assert self.v.version_gt('2.5.28.rc', '2.5.28.rc2') == False
+        assert self.v.version_gt('2.5.28.rc2', '2.5.28.rc')
+
     def test_version_highest(self):
         assert self.v.highest_version() == '7.28'
 

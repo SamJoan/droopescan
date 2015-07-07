@@ -136,8 +136,15 @@ def version_gt(version, gt):
                 except ValueError:
                     g_rc_nb = 0
 
-            v = int(v)
-            g = int(g)
+            try:
+                v = int(v)
+            except ValueError:
+                v = 0
+
+            try:
+                g = int(g)
+            except ValueError:
+                g = 0
 
             if v > g:
                 gt = True
