@@ -22,6 +22,7 @@ class FingerprintTests(BaseTest):
     bpi_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.'
     cms_identify_module = bpi_module + 'cms_identify'
     process_url_module = bpi_module + 'process_url'
+    pui_module = bpi_module + 'process_url_iterable'
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
@@ -301,9 +302,9 @@ class FingerprintTests(BaseTest):
     def _prepare_identify(self, url_file=False):
         self.clear_argv()
         if url_file:
-            self.add_argv(['scan', '-u', self.base_url])
-        else:
             self.add_argv(['scan', '-U', self.valid_file])
+        else:
+            self.add_argv(['scan', '-u', self.base_url])
 
     def test_cms_identify_called(self):
         self._prepare_identify()
@@ -328,15 +329,16 @@ class FingerprintTests(BaseTest):
 
     def test_cms_identify_respected_multiple(self):
         self._prepare_identify(url_file=True)
-        return_value = [False, False, True, True, False, False, False, True, False]
+        return_value = [True, False, True, False, False, True]
 
         try:
-            with patch(self.process_url_module, autospec=True) as pu:
+            with patch(self.pui_module, autospec=True) as pui:
                 with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
                     self.app.run()
         except ConnectionError:
             pass
 
-        assert m.call_count == 9
-        assert pu.call_count == 3
+        print(m.call_count, pui.call_count)
+        assert m.call_count == 6
+        assert pui.call_count == 3
 

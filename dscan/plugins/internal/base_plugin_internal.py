@@ -257,34 +257,35 @@ class BasePluginInternal(controller.CementBaseController):
         if not shutdown:
             self.out.result(output, functionality)
 
+    def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
+        timeout_host = opts['timeout_host']
+        i = 0
+        with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
+            results = []
+            for url in iterable:
+                args = [url, opts, functionality, enabled_functionality, True]
+                future = executor.submit(self.url_scan, *args)
+
+                results.append({
+                    'future': future,
+                    'url': url.rstrip('\n'),
+                })
+
+                if i % 1000 == 0 and i != 0:
+                    self._process_results_multisite(results,
+                            functionality, timeout_host)
+                    results = []
+
+                i += 1
+
+            if len(results) > 0:
+                self._process_results_multisite(results, functionality,
+                        timeout_host)
+                results = []
+
     def process_url_file(self, opts, functionality, enabled_functionality):
         with open(opts['url_file']) as url_file:
-            timeout_host = opts['timeout_host']
-            i = 0
-            with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
-                results = []
-                for url in url_file:
-                    args = [url, opts, functionality, enabled_functionality,
-                            True]
-
-                    future = executor.submit(self.url_scan, *args)
-
-                    results.append({
-                        'future': future,
-                        'url': url.rstrip('\n'),
-                    })
-
-                    if i % 1000 == 0 and i != 0:
-                        self._process_results_multisite(results,
-                                functionality, timeout_host)
-                        results = []
-
-                    i += 1
-
-                if len(results) > 0:
-                    self._process_results_multisite(results, functionality,
-                            timeout_host)
-                    results = []
+            self.process_url_iterable(url_file, opts, functionality, enabled_functionality)
 
     def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
         url = common.repair_url(url, self.out)

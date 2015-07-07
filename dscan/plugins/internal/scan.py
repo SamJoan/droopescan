@@ -82,7 +82,29 @@ class Scan(BasePlugin):
             }
 
         if 'url_file' in opts:
-           pass
+            i = 0
+            with open(opts['url_file']) as url_file:
+                to_scan = {}
+                for url in url_file:
+                    url = url.strip()
+                    for cms_name in instances:
+                        inst_dict = instances[cms_name]
+                        if inst.cms_identify(url) == True:
+                            if cms_name not in to_scan:
+                                to_scan[cms_name] = []
+
+                            to_scan[cms_name].append(url)
+                            break
+
+                    if i % 1000 == 0 and i != 0:
+                       self._process_identify(opts, instances, to_scan)
+                       to_scan = {}
+
+                    i += 1
+
+                if to_scan:
+                    self._process_identify(opts, instances, to_scan)
+
         else:
            for cms_name in instances:
                inst_dict = instances[cms_name]
@@ -90,4 +112,14 @@ class Scan(BasePlugin):
                del inst_dict['inst']
                if inst.cms_identify(opts['url']) == True:
                    inst.process_url(opts, **inst_dict)
+
+    def _process_identify(self, opts, instances, to_scan):
+        print(to_scan)
+        for cms_name in to_scan:
+            inst_dict = instances[cms_name]
+            cms_urls = to_scan[cms_name]
+            inst = inst_dict['inst']
+            del inst_dict['inst'], inst_dict['hide_progressbar']
+            if len(cms_urls) > 0:
+                inst.process_url_iterable(cms_urls, opts, **inst_dict)
 
