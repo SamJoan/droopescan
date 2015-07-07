@@ -252,3 +252,9 @@ class VersionsFile():
         changelogs = self.root.findall(self.changelog_xpath)
 
         return len(changelogs) > 0
+
+    def has_hash(self, hash):
+        file_xpath = './/version[@md5="%s"]' % hash
+        print(file_xpath)
+        return self.et.find(file_xpath)
+

@@ -23,6 +23,7 @@ class FingerprintTests(BaseTest):
     cms_identify_module = bpi_module + 'cms_identify'
     process_url_module = bpi_module + 'process_url'
     pui_module = bpi_module + 'process_url_iterable'
+    efh_module = bpi_module + 'enumerate_file_hash'
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
@@ -338,7 +339,42 @@ class FingerprintTests(BaseTest):
         except ConnectionError:
             pass
 
-        print(m.call_count, pui.call_count)
         assert m.call_count == 6
         assert pui.call_count == 3
 
+    def test_cms_identify(self):
+        fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        rfu = "test/topst/tust.txt"
+        has_hash = 'common.versions.VersionsFile.has_hash'
+        vf = VersionsFile(self.xml_file)
+
+        with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
+            with patch(has_hash, autospec=True, return_value=True) as hh:
+                self.scanner.regular_file_url = rfu
+                is_cms = self.scanner.cms_identify(self.test_opts, vf, self.base_url)
+
+                args, kwargs = efh.call_args
+                assert args[1] == self.base_url
+                assert args[2] == rfu
+                assert args[3] == self.test_opts['timeout']
+
+                args, kwargs = hh.call_args
+                assert hh.called
+                assert args[1] == fake_hash
+                assert is_cms == True
+
+    def test_cms_identify_false(self):
+        rfu = "test/topst/tust.txt"
+        with patch(self.efh_module, autospec=True, side_effect=RuntimeError) as m:
+            self.scanner.regular_file_url = rfu
+            is_cms = self.scanner.cms_identify(self.test_opts, self.base_url)
+
+            assert is_cms == False
+
+    def test_has_hash(self):
+        vf = VersionsFile(self.xml_file)
+        existant_hash = 'b1946ac92492d2347c6235b4d2611184'
+        nonexistant_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+
+        assert vf.has_hash(existant_hash) == True
+        assert vf.has_hash(nonexistant_hash) == False

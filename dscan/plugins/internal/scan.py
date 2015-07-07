@@ -5,6 +5,7 @@ from plugins.internal.base_plugin import BasePlugin
 from plugins.internal.base_plugin_internal import BasePluginInternal
 import common
 import common.plugins_util as pu
+import common.versions as v
 
 class Scan(BasePlugin):
 
@@ -67,19 +68,7 @@ class Scan(BasePlugin):
     def default(self):
         plugins = pu.plugins_base_get()
         opts = self._options(self.app.pargs)
-
-        instances = {}
-        for plugin in plugins:
-            inst = plugin()
-            hp, func, enabled_func = inst._general_init(opts)
-            name = inst._meta.label
-
-            instances[name] = {
-                'inst': inst,
-                'hide_progressbar': hp,
-                'functionality': func,
-                'enabled_functionality': enabled_func
-            }
+        instances = self._instances_get(opts, plugins)
 
         if 'url_file' in opts:
             i = 0
@@ -89,7 +78,8 @@ class Scan(BasePlugin):
                     url = url.strip()
                     for cms_name in instances:
                         inst_dict = instances[cms_name]
-                        if inst.cms_identify(url) == True:
+                        vf = inst_dict['vf']
+                        if inst.cms_identify(opts, vf, url) == True:
                             if cms_name not in to_scan:
                                 to_scan[cms_name] = []
 
@@ -109,17 +99,36 @@ class Scan(BasePlugin):
            for cms_name in instances:
                inst_dict = instances[cms_name]
                inst = inst_dict['inst']
-               del inst_dict['inst']
-               if inst.cms_identify(opts['url']) == True:
-                   inst.process_url(opts, **inst_dict)
+               vf = inst_dict['vf']
+               if inst.cms_identify(opts, vf, opts['url']) == True:
+                   inst.process_url(opts, **inst_dict['kwargs'])
 
     def _process_identify(self, opts, instances, to_scan):
-        print(to_scan)
         for cms_name in to_scan:
             inst_dict = instances[cms_name]
             cms_urls = to_scan[cms_name]
             inst = inst_dict['inst']
-            del inst_dict['inst'], inst_dict['hide_progressbar']
+            del inst_dict['kwargs']['hide_progressbar']
             if len(cms_urls) > 0:
                 inst.process_url_iterable(cms_urls, opts, **inst_dict)
+
+    def _instances_get(self, opts, plugins):
+        instances = {}
+        for plugin in plugins:
+            inst = plugin()
+            hp, func, enabled_func = inst._general_init(opts)
+            name = inst._meta.label
+            vf = v.VersionsFile(inst.versions_file)
+
+            instances[name] = {
+                'inst': inst,
+                'vf': vf,
+                'kwargs': {
+                    'hide_progressbar': hp,
+                    'functionality': func,
+                    'enabled_functionality': enabled_func
+                }
+            }
+
+        return instances
 

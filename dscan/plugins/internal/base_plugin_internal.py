@@ -693,7 +693,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found_list
 
-    def cms_identify(self, url):
+    def cms_identify(self, opts, vf, url):
         """
             Function called when attempting to determine if a URL is identified
             as being this particular CMS.
@@ -701,5 +701,9 @@ class BasePluginInternal(controller.CementBaseController):
             @return: a boolean value indiciating whether this CMS is identified
                 as being this particular CMS.
         """
-        pass
+        try:
+            hash = self.enumerate_file_hash(url, self.regular_file_url, opts['timeout'])
+        except RuntimeError:
+            return False
 
+        return vf.has_hash(hash)
