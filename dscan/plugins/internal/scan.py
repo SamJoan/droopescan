@@ -78,6 +78,7 @@ class Scan(BasePlugin):
                     url = url.strip()
                     for cms_name in instances:
                         inst_dict = instances[cms_name]
+                        inst = inst_dict['inst']
                         vf = inst_dict['vf']
                         if inst.cms_identify(opts, vf, url) == True:
                             if cms_name not in to_scan:
@@ -110,7 +111,7 @@ class Scan(BasePlugin):
             inst = inst_dict['inst']
             del inst_dict['kwargs']['hide_progressbar']
             if len(cms_urls) > 0:
-                inst.process_url_iterable(cms_urls, opts, **inst_dict)
+                inst.process_url_iterable(cms_urls, opts, **inst_dict['kwargs'])
 
     def _instances_get(self, opts, plugins):
         instances = {}
