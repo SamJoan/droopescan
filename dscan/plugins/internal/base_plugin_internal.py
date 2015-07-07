@@ -48,16 +48,6 @@ class BasePluginInternal(controller.CementBaseController):
 
         epilog = template('help_epilog.mustache')
 
-    def _getattr(self, pargs, attr_name, default=None):
-        val = getattr(pargs, attr_name)
-        if val:
-            return val
-        else:
-            try:
-                return getattr(self, attr_name)
-            except AttributeError:
-                return default
-
     def _options(self, pargs):
         pwd = self.app.config.get('general', 'pwd')
         if pargs.url_file != None:
@@ -79,8 +69,8 @@ class BasePluginInternal(controller.CementBaseController):
         follow_redirects = pargs.follow_redirects
         number = pargs.number if not pargs.number == 'all' else 100000
 
-        plugins_base_url = self._getattr(pargs, 'plugins_base_url')
-        themes_base_url = self._getattr(pargs, 'themes_base_url')
+        plugins_base_url = pargs.plugins_base_url
+        themes_base_url = pargs.themes_base_url
 
         return locals()
 
@@ -96,13 +86,21 @@ class BasePluginInternal(controller.CementBaseController):
 
     def _functionality(self, opts):
         kwargs_base = self._base_kwargs(opts)
+
+        plugins_base_url = opts['plugins_base_url']
+        themes_base_url = opts['themes_base_url']
+        if not plugins_base_url:
+            plugins_base_url = self.plugins_base_url
+        if not themes_base_url:
+            themes_base_url = self.themes_base_url
+
         kwargs_plugins = dict_combine(kwargs_base, {
-            'base_url': opts['plugins_base_url'],
+            'base_url': plugins_base_url,
             'max_plugins': opts['number']
         })
 
         kwargs_themes = dict(kwargs_plugins)
-        kwargs_themes['base_url'] = opts['themes_base_url']
+        kwargs_themes['base_url'] = themes_base_url
 
         if opts['number'] == self.NUMBER_DEFAULT:
             kwargs_themes['max_plugins'] = self.NUMBER_THEMES_DEFAULT
@@ -391,7 +389,6 @@ class BasePluginInternal(controller.CementBaseController):
             ok_200 = False
 
         folder_300 = 300 < folder_resp.status_code < 400
-
         if folder_resp.status_code == 403 and ok_200:
             return ScanningMethod.forbidden
         elif folder_resp.status_code == 404 and ok_200:
