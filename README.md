@@ -5,7 +5,7 @@ several CMSs, mainly Drupal & Silverstripe.
 
 [![Build Status](https://travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan) [![PyPI version](https://badge.fury.io/py/droopescan.png)](https://pypi.python.org/pypi/droopescan)
 <pre>
-computer:~/droopescan# ./droopescan scan drupal -u http://example.org/ -t 8
+computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 8
 [+] No themes found.
 
 [+] Possible interesting urls found:
@@ -53,8 +53,8 @@ computer:~/droopescan# ./droopescan scan drupal -u http://example.org/ -t 8
 You can get a full list of options by running:
 
 <pre>
-python droopescan.py --help
-python droopescan.py scan --help
+droopescan --help
+droopescan scan --help
 </pre>
 
 # Why not X?
@@ -82,7 +82,7 @@ Manual installation is as follows:
 git clone https://github.com/droope/droopescan.git
 cd droopescan
 pip install -r requirements.txt
-./droopescan scan --help
+droopescan scan --help
 </pre>
 
 The master branch corresponds to the latest release (what is in pypi).
@@ -107,7 +107,7 @@ files, returns a list of all possible versions.
 * *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
-More notes regarding scanning can be [found here](https://droope.github.io/droopescan-docs/_build/html/intro.html).
+More notes regarding scanning can be [found here](https://droope.github.i/droopescan-docs/_build/html/intro.html).
 
 ## Authentication.
 
@@ -121,7 +121,7 @@ authentication (e.g. Fiddler, ZAP, Burp)
 <pre>
 export http_proxy='localhost:8080'
 export https_proxy='localhost:8080'
-python droopescan.py drupal --url http://localhost/drupal
+droopescan drupal --url http://localhost/drupal
 </pre>
 
 Another option is to use a .netrc file for basic authentication. An example
@@ -136,6 +136,48 @@ machine secret.google.com
 *WARNING:* By design, to allow intercepting proxies and the testing of
 applications with bad SSL, droopescan allows self-signed or otherwise invalid
 certificates. ˙ ͜ʟ˙
+
+## Target specification.
+
+You can specify a particular host to scan by passing the `-u` or `--url`
+parameter:
+
+<pre>
+    droopescan scan drupal -u example.org
+</pre>
+
+You can also omit the `drupal` argument, like so:
+
+<pre>
+    droopescan scan -u example.org
+</pre>
+
+Multiple URLs may be scanned utilising the `-U` or `--url-file` parameter. This
+parameter should be set to that of a file which contains a list of URLs. 
+
+<pre>
+    droopescan scan drupal -U list_of_urls.txt
+</pre>
+
+The `drupal` parameter may also be ommited in this example. For each site, it
+will make a GET request in order to perform CMS identification, and if the site
+is deemed to be a supported CMS, it is scanned and added to the output list.
+This can be useful, for example, to run `droopescan` across all your
+organisation's sites.
+
+<pre>
+    droopescan scan -U list_of_urls.txt
+</pre>
+
+The code block below contains an example list of URLs:
+
+<pre>
+http://localhost/drupal/6.0/
+http://localhost/drupal/6.1/
+http://localhost/drupal/6.10/
+http://localhost/drupal/6.11/
+http://localhost/drupal/6.12/
+<pre>
 
 ## Output.
 
@@ -195,7 +237,7 @@ This is how multi-site output looks like; each line contains a valid JSON object
 as shown above.
 
 <pre>
-    $ ./droopescan scan drupal -U six_and_above.txt -e v
+    $ droopescan scan drupal -U six_and_above.txt -e v
     {"host": "http://localhost/drupal-7.6/", "version": {"is_empty": false, "finds": ["7.6"]}}
     {"host": "http://localhost/drupal-7.7/", "version": {"is_empty": false, "finds": ["7.7"]}}
     {"host": "http://localhost/drupal-7.8/", "version": {"is_empty": false, "finds": ["7.8"]}}
@@ -235,7 +277,7 @@ When things are not going exactly your way, you can check why by using the
 Some output might look like this:
 
 <pre>
-computer:~/droopescan# ./droopescan scan silverstripe -u http://localhost -n 10 -e p --debug-requests
+computer:~/droopescan# droopescan scan silverstripe -u http://localhost -n 10 -e p --debug-requests
 [head] http://localhost/framework/... 403
 [head] http://localhost/cms/css/layout.css... 404
 [head] http://localhost/framework/css/UploadField.css... 200
@@ -264,23 +306,25 @@ You can get an up to date report on the capabilities of the scanner by running
 the following command
 
 <pre>
-    ./droopescan stats
+    droopescan stats
 </pre>
 
 Some sample output might look as follows:
 
 <pre>
-Functionality available for 'Drupal':
-    - Enumerate plugins (XXX plugins, last updated X months ago)
-    - Enumerate themes (XX themes, last updated X months ago)
-    - Enumerate interesting urls (X urls)
-    - Enumerate version (up to version X.X.X)
-
-Functionality available for 'SilverStripe':
-    - Enumerate plugins (XXX plugins, last updated X months ago)
-    - Enumerate themes (XX themes, last updated X months ago)
-    - Enumerate interesting urls (X urls)
-    - Enumerate version (up to version X.X.X)
+    Functionality available for 'drupal':
+    - Enumerate plugins (X plugins.)
+    - Enumerate themes (X themes.)
+    - Enumerate interesting urls (X urls.)
+    - Enumerate version (up to version X)
+    Functionality available for 'joomla':
+    - Enumerate interesting urls (X urls.)
+    - Enumerate version (up to version X)
+    Functionality available for 'silverstripe':
+    - Enumerate plugins (X plugins.)
+    - Enumerate themes (X themes.)
+    - Enumerate interesting urls (X urls.)
+    - Enumerate version (up to version X)
 </pre>
 
 # Contribute.
@@ -325,7 +369,7 @@ enable_plugin = true
 We should now be in a state which looks as follows:
 
 <pre>
-$ ./droopescan scan joomla
+$ droopescan scan joomla
 [+] --url parameter is required.
 </pre>
 
@@ -352,13 +396,13 @@ commands will result in them being installed and the tests being ran:
     apt-get install python-dev libxslt1-dev libxml2-dev python3 zlib1g-dev python3-pip python3-dev
     pip install -r requirements_test.txt
     pip3 install -r requirements.txt -r requirements_test.txt
-    ./droopescan test
+    droopescan test
 </pre>
 
 You can run individual tests with the `-s` flag.
 
 <pre>
-./droopescan test -s test_integration_drupal
+droopescan test -s test_integration_drupal
 </pre>
 
 # License.
