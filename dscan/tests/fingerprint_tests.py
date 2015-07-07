@@ -362,6 +362,36 @@ class FingerprintTests(BaseTest):
                 assert args[1] == fake_hash
                 assert is_cms == True
 
+    def test_cms_identify_array(self):
+        def _efh_side_effect(self, *args):
+            if args[1] != second_url:
+                raise RuntimeError
+            else:
+                return fake_hash
+
+        fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        second_url = "test/tstatat/deststat.js"
+        rfu = ["test/topst/tust.txt", second_url]
+        has_hash = 'common.versions.VersionsFile.has_hash'
+
+        with patch(self.efh_module, autospec=True, side_effect=_efh_side_effect) as efh:
+            with patch(has_hash, autospec=True, return_value=True) as hh:
+                self.scanner.regular_file_url = rfu
+                is_cms = self.scanner.cms_identify(self.test_opts, self.v, self.base_url)
+
+                assert efh.call_count == 2
+                i = 0
+                for args, kwargs in efh.call_args_list:
+                    assert args[1] == self.base_url
+                    assert args[2] == rfu[i]
+                    assert args[3] == self.test_opts['timeout']
+                    i += 1
+
+                args, kwargs = hh.call_args
+                assert hh.called
+                assert args[1] == fake_hash
+                assert is_cms == True
+
     def test_cms_identify_false(self):
         rfu = "test/topst/tust.txt"
         with patch(self.efh_module, autospec=True, side_effect=RuntimeError) as m:
@@ -369,6 +399,9 @@ class FingerprintTests(BaseTest):
             is_cms = self.scanner.cms_identify(self.test_opts, self.v, self.base_url)
 
             assert is_cms == False
+
+    def test_cms_identify_false_notexist(self):
+        assert False
 
     def test_has_hash(self):
         existant_hash = 'b1946ac92492d2347c6235b4d2611184'

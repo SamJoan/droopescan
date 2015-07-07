@@ -701,9 +701,24 @@ class BasePluginInternal(controller.CementBaseController):
             @return: a boolean value indiciating whether this CMS is identified
                 as being this particular CMS.
         """
-        try:
-            hash = self.enumerate_file_hash(url, self.regular_file_url, opts['timeout'])
-        except RuntimeError:
-            return False
+        if isinstance(self.regular_file_url, str):
+            rfu = [self.regular_file_url]
+        else:
+            rfu = self.regular_file_url
 
-        return vf.has_hash(hash)
+        is_cms = False
+        for regular_file_url in rfu:
+            try:
+                hash = self.enumerate_file_hash(url, regular_file_url, opts['timeout'])
+            except RuntimeError:
+                continue
+
+            hash_exists = vf.has_hash(hash)
+            if hash_exists:
+                is_cms = True
+                break
+
+        return is_cms
+
+
+
