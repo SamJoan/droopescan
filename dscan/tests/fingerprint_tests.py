@@ -314,6 +314,22 @@ class FingerprintTests(BaseTest):
 
         assert m.called
 
+    def test_cms_identify_repairs_url(self):
+        url_simple = self.base_url[7:-1]
+        self.clear_argv()
+        self.add_argv(['scan', '-u', url_simple])
+
+        ru_module = "common.functions.repair_url"
+        ru_return = self.base_url
+
+        with patch(self.cms_identify_module, autospec=True, return_value=False) as ci:
+            with patch(ru_module, return_value=self.base_url, autospec=True) as ru:
+                self.app.run()
+
+                args, kwargs = ci.call_args
+                assert ru.called
+                assert args[3] == self.base_url
+
     def test_cms_identify_respected(self):
         self._prepare_identify()
         return_value = [False, False, True]

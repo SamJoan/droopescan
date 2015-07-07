@@ -4,6 +4,7 @@ from common import template
 from plugins.internal.base_plugin import BasePlugin
 from plugins.internal.base_plugin_internal import BasePluginInternal
 import common
+import common.functions as f
 import common.plugins_util as pu
 import common.versions as v
 
@@ -84,6 +85,7 @@ class Scan(BasePlugin):
                             if cms_name not in to_scan:
                                 to_scan[cms_name] = []
 
+                            url = f.repair_url(url, self.out)
                             to_scan[cms_name].append(url)
                             break
 
@@ -101,7 +103,10 @@ class Scan(BasePlugin):
                inst_dict = instances[cms_name]
                inst = inst_dict['inst']
                vf = inst_dict['vf']
-               if inst.cms_identify(opts, vf, opts['url']) == True:
+
+               url = f.repair_url(opts['url'], self.out)
+
+               if inst.cms_identify(opts, vf, url) == True:
                    inst.process_url(opts, **inst_dict['kwargs'])
 
     def _process_identify(self, opts, instances, to_scan):
