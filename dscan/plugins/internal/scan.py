@@ -89,5 +89,5 @@ class Scan(BasePlugin):
                inst = inst_dict['inst']
                del inst_dict['inst']
                if inst.cms_identify(opts['url']) == True:
-                   pass
+                   inst.process_url(opts, **inst_dict)
 

@@ -19,7 +19,9 @@ class FingerprintTests(BaseTest):
     '''
 
     xml_file_changelog = 'tests/resources/versions_with_changelog.xml'
-    cms_identify_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.cms_identify'
+    bpi_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.'
+    cms_identify_module = bpi_module + 'cms_identify'
+    process_url_module = bpi_module + 'process_url'
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
@@ -296,9 +298,12 @@ class FingerprintTests(BaseTest):
 
         assert result == mock_versions
 
-    def _prepare_identify(self):
+    def _prepare_identify(self, url_file=False):
         self.clear_argv()
-        self.add_argv(['scan', '-u', self.base_url])
+        if url_file:
+            self.add_argv(['scan', '-u', self.base_url])
+        else:
+            self.add_argv(['scan', '-U', self.valid_file])
 
     def test_cms_identify_called(self):
         self._prepare_identify()
@@ -312,10 +317,26 @@ class FingerprintTests(BaseTest):
         return_value = [False, False, True]
 
         try:
-            with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
-                self.app.run()
+            with patch(self.process_url_module, autospec=True) as pu:
+                with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
+                    self.app.run()
         except ConnectionError:
             pass
 
-        assert m.called
+        assert m.call_count == 3
+        assert pu.call_count == 1
+
+    def test_cms_identify_respected_multiple(self):
+        self._prepare_identify(url_file=True)
+        return_value = [False, False, True, True, False, False, False, True, False]
+
+        try:
+            with patch(self.process_url_module, autospec=True) as pu:
+                with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
+                    self.app.run()
+        except ConnectionError:
+            pass
+
+        assert m.call_count == 9
+        assert pu.call_count == 3
 
