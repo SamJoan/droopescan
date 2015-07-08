@@ -97,14 +97,15 @@ target server due to excessive concurrent requests. Due to this, by default, a
 large number of requests will be made with four threads; change these settings
 by using the `--number` and `--threads` arguments respectively.
 
-This tool is able to perform four kinds of tests:
+This tool is able to perform four kinds of tests. By default all tests are ran,
+but you can specify one of the following with the `-e` or `--enumerate` flag:
 
-* *Plugin checks*: Performs several thousand HTTP requests and returns a
+* p -- *Plugin checks*: Performs several thousand HTTP requests and returns a
 listing of all plugins found to be installed in the target host.
-* *Theme checks*: As above, but for themes.
-* *Version checks*: Downloads several files and, based on the checksums of these
+* t -- *Theme checks*: As above, but for themes.
+* v -- *Version checks*: Downloads several files and, based on the checksums of these
 files, returns a list of all possible versions.
-* *Interesting url checks*: Checks for interesting urls (admin panels, readme
+* i -- *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
 More notes regarding scanning can be [found here](https://droope.github.i/droopescan-docs/_build/html/intro.html).
