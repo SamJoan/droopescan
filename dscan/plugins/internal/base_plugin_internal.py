@@ -67,10 +67,9 @@ class BasePluginInternal(controller.CementBaseController):
         error_log = pargs.error_log
         debug_requests = pargs.debug_requests
         follow_redirects = pargs.follow_redirects
-        number = pargs.number if not pargs.number == 'all' else 100000
-
         plugins_base_url = pargs.plugins_base_url
         themes_base_url = pargs.themes_base_url
+        number = pargs.number if not pargs.number == 'all' else 100000
 
         return locals()
 
@@ -170,23 +169,6 @@ class BasePluginInternal(controller.CementBaseController):
 
         return enabled_functionality
 
-    def _process_results_multisite(self, results, functionality, timeout_host):
-        for result in results:
-            try:
-                if shutdown:
-                    result['future'].cancel()
-                    continue
-
-                output = result['future'].result(timeout=timeout_host)
-
-                output['host'] = result['url']
-                if not shutdown:
-                    self.out.result(output, functionality)
-
-            except:
-                exc = traceback.format_exc()
-                self.out.warn(exc, whitespace_strp=False)
-
     def _output(self, opts):
         if opts['output'] == 'json' or 'url_file' in opts:
             output = JsonOutput(error_log=opts['error_log'])
@@ -254,6 +236,24 @@ class BasePluginInternal(controller.CementBaseController):
 
         if not shutdown:
             self.out.result(output, functionality)
+
+    def _process_results_multisite(self, results, functionality, timeout_host):
+        for result in results:
+            try:
+                if shutdown:
+                    result['future'].cancel()
+                    continue
+
+                output = result['future'].result(timeout=timeout_host)
+
+                output['host'] = result['url']
+                output['cms_name'] = self._meta.label
+                if not shutdown:
+                    self.out.result(output, functionality)
+
+            except:
+                exc = traceback.format_exc()
+                self.out.warn(exc, whitespace_strp=False)
 
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
         timeout_host = opts['timeout_host']

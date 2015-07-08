@@ -1,5 +1,6 @@
 from __future__ import print_function
 from cement.core import controller
+from common.functions import template
 from common import template
 from plugins.internal.base_plugin import BasePlugin
 from plugins.internal.base_plugin_internal import BasePluginInternal
@@ -107,6 +108,8 @@ class Scan(BasePlugin):
                url = f.repair_url(opts['url'], self.out)
 
                if inst.cms_identify(opts, vf, url) == True:
+                   inst.out.echo(template("enumerate_cms.mustache",
+                       {"cms_name": cms_name}))
                    inst.process_url(opts, **inst_dict['kwargs'])
 
     def _process_identify(self, opts, instances, to_scan):

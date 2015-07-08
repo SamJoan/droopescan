@@ -77,11 +77,13 @@ class StandardOutput():
         """
         For the final result of the scan.
         @param result: as returned by BasePluginInternal.url_scan
+        @param functionality: functionality as returned by
+            BasePluginInternal._general_init
         """
         for enumerate in result:
 
             # The host is a special header, we must not attempt to display it.
-            if enumerate == "host":
+            if enumerate == "host" or enumerate == "cms_name":
                 continue
 
             result_ind = result[enumerate]
@@ -119,7 +121,7 @@ class StandardOutput():
 
     def fatal(self, msg):
         """
-        For errors so grave that the program cannot continue.
+        For errors so grave that the program (or thread) cannot continue.
         """
         if not self.log_to_file:
             msg = strip_whitespace(colors['red'] + "[+] " + msg +
