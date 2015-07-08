@@ -1,3 +1,11 @@
+1.29.0
+======
+
+* CMS identification functionality. This enables droopescan to automatically detect CMS.
+* Prototype implementation for Joomla version detection.
+* New Joomla versions (security fixes.)
+* General output improvements.
+
 1.28.0
 ======
 
