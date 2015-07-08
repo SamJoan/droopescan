@@ -125,7 +125,7 @@ You can also omit the `drupal` argument, like so:
 </pre>
 
 Multiple URLs may be scanned utilising the `-U` or `--url-file` parameter. This
-parameter should be set to that of a file which contains a list of URLs. 
+parameter should be set to the path of a file which contains a list of URLs. 
 
 <pre>
     droopescan scan drupal -U list_of_urls.txt
