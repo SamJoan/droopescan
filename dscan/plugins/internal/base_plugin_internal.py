@@ -717,5 +717,3 @@ class BasePluginInternal(controller.CementBaseController):
 
         return is_cms
 
-
-
