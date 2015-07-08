@@ -109,34 +109,6 @@ files, etc.)
 
 More notes regarding scanning can be [found here](https://droope.github.i/droopescan-docs/_build/html/intro.html).
 
-## Authentication.
-
-The application fully supports `.netrc` files and `http_proxy` environment
-variables.
-
-You can set the `http_proxy` and `https_proxy` variables. These allow you to
-set a parent HTTP proxy, in which you can handle more complex types of
-authentication (e.g. Fiddler, ZAP, Burp)
-
-<pre>
-export http_proxy='localhost:8080'
-export https_proxy='localhost:8080'
-droopescan drupal --url http://localhost/drupal
-</pre>
-
-Another option is to use a .netrc file for basic authentication. An example
-`~/.netrc` file could look as follows:
-
-<pre>
-machine secret.google.com
-    login admin@google.com
-    password Winter01
-</pre>
-
-*WARNING:* By design, to allow intercepting proxies and the testing of
-applications with bad SSL, droopescan allows self-signed or otherwise invalid
-certificates. ˙ ͜ʟ˙
-
 ## Target specification.
 
 You can specify a particular host to scan by passing the `-u` or `--url`
@@ -177,7 +149,35 @@ http://localhost/drupal/6.1/
 http://localhost/drupal/6.10/
 http://localhost/drupal/6.11/
 http://localhost/drupal/6.12/
+</pre>
+
+## Authentication.
+
+The application fully supports `.netrc` files and `http_proxy` environment
+variables.
+
+You can set the `http_proxy` and `https_proxy` variables. These allow you to
+set a parent HTTP proxy, in which you can handle more complex types of
+authentication (e.g. Fiddler, ZAP, Burp)
+
 <pre>
+export http_proxy='localhost:8080'
+export https_proxy='localhost:8080'
+droopescan drupal --url http://localhost/drupal
+</pre>
+
+Another option is to use a .netrc file for basic authentication. An example
+`~/.netrc` file could look as follows:
+
+<pre>
+machine secret.google.com
+    login admin@google.com
+    password Winter01
+</pre>
+
+*WARNING:* By design, to allow intercepting proxies and the testing of
+applications with bad SSL, droopescan allows self-signed or otherwise invalid
+certificates. ˙ ͜ʟ˙
 
 ## Output.
 
