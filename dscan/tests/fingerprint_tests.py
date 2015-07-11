@@ -336,7 +336,7 @@ class FingerprintTests(BaseTest):
 
     def test_cms_identify_respected(self):
         self._prepare_identify()
-        return_value = [False, False, True]
+        return_value = [False, False, True, False]
 
         try:
             with patch(self.process_url_module, autospec=True) as pu:
@@ -345,7 +345,7 @@ class FingerprintTests(BaseTest):
         except ConnectionError:
             pass
 
-        assert m.call_count == 3
+        assert m.call_count == 4
         assert pu.call_count == 1
 
     def test_cms_identify_respected_multiple(self):
