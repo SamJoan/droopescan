@@ -164,7 +164,7 @@ authentication (e.g. Fiddler, ZAP, Burp)
 <pre>
 export http_proxy='localhost:8080'
 export https_proxy='localhost:8080'
-droopescan drupal --url http://localhost/drupal
+droopescan scan drupal --url http://localhost/drupal
 </pre>
 
 Another option is to use a .netrc file for basic authentication. An example
