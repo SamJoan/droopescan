@@ -79,21 +79,25 @@ class Scan(BasePlugin):
                 for url in url_file:
                     url = url.strip()
                     found = False
-                    for cms_name in instances:
-                        inst_dict = instances[cms_name]
-                        inst = inst_dict['inst']
-                        vf = inst_dict['vf']
-                        if inst.cms_identify(opts, vf, url) == True:
-                            if cms_name not in to_scan:
-                                to_scan[cms_name] = []
+                    try:
+                        for cms_name in instances:
+                            inst_dict = instances[cms_name]
+                            inst = inst_dict['inst']
+                            vf = inst_dict['vf']
+                            if inst.cms_identify(opts, vf, url) == True:
+                                if cms_name not in to_scan:
+                                    to_scan[cms_name] = []
 
-                            url = f.repair_url(url, self.out)
-                            to_scan[cms_name].append(url)
-                            found = True
-                            break
+                                url = f.repair_url(url, self.out)
+                                to_scan[cms_name].append(url)
+                                found = True
+                                break
 
-                    if not found:
-                        inst.out.warn("'%s' not identified as being a CMS we support." % url)
+                        if not found:
+                            inst.out.warn("'%s' not identified as being a CMS we support." % url)
+                    except e:
+                        exc = traceback.format_exc()
+                        self.out.warn(exc, whitespace_strp=False)
 
                     if i % 1000 == 0 and i != 0:
                        self._process_identify(opts, instances, to_scan)
