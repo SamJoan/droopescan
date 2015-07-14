@@ -162,8 +162,8 @@ set a parent HTTP proxy, in which you can handle more complex types of
 authentication (e.g. Fiddler, ZAP, Burp)
 
 <pre>
-export http_proxy='localhost:8080'
-export https_proxy='localhost:8080'
+export http_proxy='user:password@localhost:8080'
+export https_proxy='user:password@localhost:8080'
 droopescan scan drupal --url http://localhost/drupal
 </pre>
 
