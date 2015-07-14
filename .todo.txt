@@ -4,7 +4,7 @@ Version 1.x:
     - Joomla
         May need to use https://github.com/joomla/joomla-cms/tags instead of
         releases for joomla.
-    - Stats broken.
+    - Add documentation regarding authentication using http_proxy.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
