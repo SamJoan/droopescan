@@ -72,42 +72,11 @@ class Scan(BasePlugin):
         opts = self._options(self.app.pargs)
         instances = self._instances_get(opts, plugins)
 
+        follow_redirects = opts['follow_redirects']
+        opts['follow_redirects'] = False
+
         if 'url_file' in opts:
-            i = 0
-            with open(opts['url_file']) as url_file:
-                to_scan = {}
-                for url in url_file:
-                    url = url.strip()
-                    found = False
-                    try:
-                        for cms_name in instances:
-                            inst_dict = instances[cms_name]
-                            inst = inst_dict['inst']
-                            vf = inst_dict['vf']
-                            if inst.cms_identify(opts, vf, url) == True:
-                                if cms_name not in to_scan:
-                                    to_scan[cms_name] = []
-
-                                url = f.repair_url(url, self.out)
-                                to_scan[cms_name].append(url)
-                                found = True
-                                break
-
-                        if not found:
-                            inst.out.warn("'%s' not identified as being a CMS we support." % url)
-                    except e:
-                        exc = traceback.format_exc()
-                        self.out.warn(exc, whitespace_strp=False)
-
-                    if i % 1000 == 0 and i != 0:
-                       self._process_identify(opts, instances, to_scan)
-                       to_scan = {}
-
-                    i += 1
-
-                if to_scan:
-                    self._process_identify(opts, instances, to_scan)
-
+            self._process_scan_url_file(opts, instances, follow_redirects)
         else:
            for cms_name in instances:
                inst_dict = instances[cms_name]
@@ -115,11 +84,57 @@ class Scan(BasePlugin):
                vf = inst_dict['vf']
 
                url = f.repair_url(opts['url'], self.out)
+               if follow_redirects:
+                   url = self.determine_redirect(url, opts['verb'], opts['timeout'])
 
                if inst.cms_identify(opts, vf, url) == True:
                    inst.out.echo(template("enumerate_cms.mustache",
                        {"cms_name": cms_name}))
                    inst.process_url(opts, **inst_dict['kwargs'])
+
+    def _process_scan_url_file(self, opts, instances, follow_redirects):
+            i = 0
+            with open(opts['url_file']) as url_file:
+                to_scan = {}
+                for url in url_file:
+                    url = url.strip()
+                    cms_name, repaired_url = self._process_cms_identify(url, opts, instances, follow_redirects)
+
+                    if cms_name != None:
+                        if cms_name not in to_scan:
+                            to_scan[cms_name] = []
+
+                        to_scan[cms_name].append(repaired_url)
+
+                if i % 1000 == 0 and i != 0:
+                   self._process_identify(opts, instances, to_scan)
+                   to_scan = {}
+
+                i += 1
+
+            if to_scan:
+                self._process_identify(opts, instances, to_scan)
+
+    def _process_cms_identify(self, url, opts, instances, follow_redirects):
+        url = f.repair_url(url, self.out)
+        if follow_redirects:
+            url = instances['drupal']['inst'].determine_redirect(url,
+                    opts['verb'], opts['timeout'])
+
+        found = False
+        for cms_name in instances:
+            inst_dict = instances[cms_name]
+            inst = inst_dict['inst']
+            vf = inst_dict['vf']
+
+            if inst.cms_identify(opts, vf, url) == True:
+                found = True
+                break
+
+        if not found:
+            return None, None
+        else:
+            return cms_name, url
 
     def _process_identify(self, opts, instances, to_scan):
         for cms_name in to_scan:
