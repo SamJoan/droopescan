@@ -353,13 +353,13 @@ class FingerprintTests(BaseTest):
         self._prepare_identify(url_file=True)
         return_value = [True, False, True, False, False, True]
 
-        try:
-            with patch(self.redir_module, return_value=self.base_url):
-                with patch(self.pui_module, autospec=True) as pui:
-                    with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
-                        self.app.run()
-        except ConnectionError:
-            pass
+        #try:
+        with patch(self.redir_module, return_value=self.base_url):
+            with patch(self.pui_module, autospec=True) as pui:
+                with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
+                    self.app.run()
+        #except ConnectionError:
+            #pass
 
         assert m.call_count == 6
         assert pui.call_count == 3

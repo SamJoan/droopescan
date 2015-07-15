@@ -2,6 +2,7 @@ from __future__ import print_function
 from cement.core import controller
 from common.functions import template
 from common import template
+from concurrent.futures import ThreadPoolExecutor
 from plugins.internal.base_plugin import BasePlugin
 from plugins.internal.base_plugin_internal import BasePluginInternal
 import common
@@ -94,27 +95,38 @@ class Scan(BasePlugin):
                    inst.process_url(opts, **inst_dict['kwargs'])
 
     def _process_scan_url_file(self, opts, instances, follow_redirects):
-            i = 0
-            with open(opts['url_file']) as url_file:
-                to_scan = {}
+        futures = []
+        with open(opts['url_file']) as url_file:
+            with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
+                i = 0
                 for url in url_file:
                     url = url.strip()
-                    cms_name, repaired_url = self._process_cms_identify(url, opts, instances, follow_redirects)
+                    future = executor.submit(self._process_cms_identify, url,
+                            opts, instances, follow_redirects)
 
-                    if cms_name != None:
-                        if cms_name not in to_scan:
-                            to_scan[cms_name] = []
+                    futures.append(future)
 
-                        to_scan[cms_name].append(repaired_url)
+                    if i % 1000 == 0 and i != 0:
+                        self._process_identify_futures(futures, opts, instances)
+                        futures = []
 
-                if i % 1000 == 0 and i != 0:
-                   self._process_identify(opts, instances, to_scan)
-                   to_scan = {}
+                    i += 1
 
-                i += 1
+                if len(futures) > 0:
+                    self._process_identify_futures(futures, opts, instances)
 
-            if to_scan:
-                self._process_identify(opts, instances, to_scan)
+    def _process_identify_futures(self, futures, opts, instances):
+        to_scan = {}
+        for future in futures:
+           cms_name, repaired_url = future.result(timeout=opts['timeout_host'])
+
+           if cms_name != None:
+               if cms_name not in to_scan:
+                    to_scan[cms_name] = []
+
+               to_scan[cms_name].append(repaired_url)
+
+        self._process_identify(opts, instances, to_scan)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         url = f.repair_url(url, self.out)
