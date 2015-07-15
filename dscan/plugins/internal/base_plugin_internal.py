@@ -253,7 +253,8 @@ class BasePluginInternal(controller.CementBaseController):
 
             except:
                 exc = traceback.format_exc()
-                self.out.warn(exc, whitespace_strp=False)
+                self.out.warn(("'%s' raised:\n" % result['url']) + exc,
+                        whitespace_strp=False)
 
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
         timeout_host = opts['timeout_host']
