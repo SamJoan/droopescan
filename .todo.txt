@@ -1,10 +1,9 @@
 Add;
 
 Version 1.x:
-    - Error handling for CMS deteciton.
-    - Threading.
     - ./droopescan scan -u drupal.org fails
-    - better error for empty file.
+    - better error for empty file when `scan`
+    - Add composer.json to interesting URLs for all CMS.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
