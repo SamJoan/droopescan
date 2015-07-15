@@ -3,6 +3,7 @@ Add;
 Version 1.x:
     - ./droopescan scan -u drupal.org fails
     - better error for empty file when `scan`
+    - SIGINT capture for new scanning.
     - Add composer.json to interesting URLs for all CMS.
 
 Version 2.x:

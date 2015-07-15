@@ -81,14 +81,14 @@ class Scan(BasePlugin):
         if 'url_file' in opts:
             self._process_scan_url_file(opts, instances, follow_redirects)
         else:
+           url = f.repair_url(opts['url'], self.out)
+           if follow_redirects:
+               url = self.determine_redirect(url, opts['verb'], opts['timeout'])
+
            for cms_name in instances:
                inst_dict = instances[cms_name]
                inst = inst_dict['inst']
                vf = inst_dict['vf']
-
-               url = f.repair_url(opts['url'], self.out)
-               if follow_redirects:
-                   url = self.determine_redirect(url, opts['verb'], opts['timeout'])
 
                if inst.cms_identify(opts, vf, url) == True:
                    inst.out.echo(template("enumerate_cms.mustache",
