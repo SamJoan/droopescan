@@ -27,6 +27,8 @@ class FingerprintTests(BaseTest):
     redir_module = bpi_module + 'determine_redirect'
     warn_module = 'common.output.StandardOutput.warn'
 
+    p_list = None
+
     def setUp(self):
         super(FingerprintTests, self).setUp()
         self.add_argv(['scan', 'drupal'])
@@ -350,28 +352,50 @@ class FingerprintTests(BaseTest):
         assert m.call_count == 4
         assert pu.call_count == 1
 
-    def test_cms_identify_respected_multiple(self):
+    def _mock_cms_multiple(self, cms_ident_side_eff):
         self._prepare_identify(url_file=True)
+        self.p_list = []
+
+        r_p = patch(self.redir_module, return_value=self.base_url,
+            autospec=True)
+        r_p.start()
+        self.p_list.append(r_p)
+
+        pui_p = patch(self.pui_module, autospec=True)
+        pui = pui_p.start()
+        self.p_list.append(pui_p)
+
+        cim_p = patch(self.cms_identify_module, side_effect=cms_ident_side_eff,
+                autospec=True)
+        cim = cim_p.start()
+        self.p_list.append(cim_p)
+
+        return cim, pui
+
+    def _mock_cms_multiple_stop(self):
+        for p in self.p_list:
+            p.stop()
+
+    def test_cms_identify_respected_multiple(self):
         return_value = [True, False, True, False, False, True]
+        cim, pui = self._mock_cms_multiple(cms_ident_side_eff=return_value)
 
-        with patch(self.redir_module, return_value=self.base_url):
-            with patch(self.pui_module, autospec=True) as pui:
-                with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
-                    self.app.run()
+        self.app.run()
 
-        assert m.call_count == 6
+        assert cim.call_count == 6
         assert pui.call_count == 3
 
+        self._mock_cms_multiple_stop()
+
     def test_cms_identify_multiple_doesnt_crash(self):
-        self._prepare_identify(url_file=True)
+        self._mock_cms_multiple(cms_ident_side_eff=ConnectionError)
 
         with patch(self.warn_module) as warn:
-            with patch(self.redir_module, return_value=self.base_url):
-                with patch(self.pui_module, autospec=True) as pui:
-                    with patch(self.cms_identify_module, side_effect=ConnectionError, autospec=True) as m:
-                        self.app.run()
+            self.app.run()
 
             assert warn.called
+
+        self._mock_cms_multiple_stop()
 
     def test_cms_identify(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'

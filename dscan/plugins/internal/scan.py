@@ -13,6 +13,8 @@ import traceback
 
 class Scan(BasePlugin):
 
+    IDENTIFY_BATCH_SIZE = 30
+
     class Meta:
         label = 'scan'
         description = 'cms scanning functionality.'
@@ -110,7 +112,7 @@ class Scan(BasePlugin):
                         'future': future
                     })
 
-                    if i % 30 == 0 and i != 0:
+                    if i % self.IDENTIFY_BATCH_SIZE == 0 and i != 0:
                         self._process_identify_futures(futures, opts, instances)
                         futures = []
 
@@ -165,9 +167,11 @@ class Scan(BasePlugin):
             inst_dict = instances[cms_name]
             cms_urls = to_scan[cms_name]
             inst = inst_dict['inst']
-            del inst_dict['kwargs']['hide_progressbar']
+            kwargs = dict(inst_dict['kwargs'])
+            del kwargs['hide_progressbar']
+
             if len(cms_urls) > 0:
-                inst.process_url_iterable(cms_urls, opts, **inst_dict['kwargs'])
+                inst.process_url_iterable(cms_urls, opts, **kwargs)
 
     def _instances_get(self, opts, plugins):
         instances = {}
