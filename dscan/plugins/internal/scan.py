@@ -110,7 +110,7 @@ class Scan(BasePlugin):
                         'future': future
                     })
 
-                    if i % 1000 == 0 and i != 0:
+                    if i % 30 == 0 and i != 0:
                         self._process_identify_futures(futures, opts, instances)
                         futures = []
 
