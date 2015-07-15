@@ -8,6 +8,27 @@ Version 1.x:
     - Add "output to file" functionality.
         - resume when -U and "output to file"
     - Add composer.json to interesting URLs for all CMS.
+    - WTH
+Traceback (most recent call last):
+  File "./droopescan", line 11, in <module>
+    droopescan.main(prev_cwd)
+  File "/root/droopescan/dscan/droopescan.py", line 50, in main
+    ds.run()
+  File "/usr/local/lib/python2.7/dist-packages/cement/core/foundation.py", line 764, in run
+    self.controller._dispatch()
+  File "/usr/local/lib/python2.7/dist-packages/cement/core/controller.py", line 466, in _dispatch
+    return func()
+  File "/usr/local/lib/python2.7/dist-packages/cement/core/controller.py", line 472, in _dispatch
+    return func()
+  File "/root/droopescan/dscan/plugins/internal/scan.py", line 82, in default
+    self._process_scan_url_file(opts, instances, follow_redirects)
+  File "/root/droopescan/dscan/plugins/internal/scan.py", line 114, in _process_scan_url_file
+    self._process_identify_futures(futures, opts, instances)
+  File "/root/droopescan/dscan/plugins/internal/scan.py", line 141, in _process_identify_futures
+    self._process_identify(opts, instances, to_scan)
+  File "/root/droopescan/dscan/plugins/internal/scan.py", line 168, in _process_identify
+    del inst_dict['kwargs']['hide_progressbar']
+KeyError: 'hide_progressbar'
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
