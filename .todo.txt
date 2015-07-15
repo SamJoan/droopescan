@@ -5,6 +5,7 @@ Version 1.x:
         May need to use https://github.com/joomla/joomla-cms/tags instead of
         releases for joomla.
     - Add documentation regarding authentication using http_proxy.
+    - Add composer.json to interesting URLs for all CMS.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
