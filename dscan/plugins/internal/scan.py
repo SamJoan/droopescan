@@ -9,6 +9,7 @@ import common
 import common.functions as f
 import common.plugins_util as pu
 import common.versions as v
+import traceback
 
 class Scan(BasePlugin):
 
@@ -71,6 +72,7 @@ class Scan(BasePlugin):
     def default(self):
         plugins = pu.plugins_base_get()
         opts = self._options(self.app.pargs)
+        self._general_init(opts)
         instances = self._instances_get(opts, plugins)
 
         follow_redirects = opts['follow_redirects']
@@ -86,8 +88,7 @@ class Scan(BasePlugin):
 
                url = f.repair_url(opts['url'], self.out)
                if follow_redirects:
-                   url = instances['drupal']['inst'].determine_redirect(url,
-                            opts['verb'], opts['timeout'])
+                   url = self.determine_redirect(url, opts['verb'], opts['timeout'])
 
                if inst.cms_identify(opts, vf, url) == True:
                    inst.out.echo(template("enumerate_cms.mustache",
@@ -118,21 +119,25 @@ class Scan(BasePlugin):
     def _process_identify_futures(self, futures, opts, instances):
         to_scan = {}
         for future in futures:
-           cms_name, repaired_url = future.result(timeout=opts['timeout_host'])
+            try:
+                cms_name, repaired_url = future.result(timeout=opts['timeout_host'])
 
-           if cms_name != None:
-               if cms_name not in to_scan:
-                    to_scan[cms_name] = []
+                if cms_name != None:
+                    if cms_name not in to_scan:
+                        to_scan[cms_name] = []
 
-               to_scan[cms_name].append(repaired_url)
+                    to_scan[cms_name].append(repaired_url)
+            except:
+                exc = traceback.format_exc()
+                self.out.warn(exc, whitespace_strp=False)
 
-        self._process_identify(opts, instances, to_scan)
+        if to_scan:
+            self._process_identify(opts, instances, to_scan)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         url = f.repair_url(url, self.out)
         if follow_redirects:
-            url = instances['drupal']['inst'].determine_redirect(url,
-                    opts['verb'], opts['timeout'])
+            url = self.determine_redirect(url, opts['verb'], opts['timeout'])
 
         found = False
         for cms_name in instances:

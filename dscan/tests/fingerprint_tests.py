@@ -25,6 +25,7 @@ class FingerprintTests(BaseTest):
     pui_module = bpi_module + 'process_url_iterable'
     efh_module = bpi_module + 'enumerate_file_hash'
     redir_module = bpi_module + 'determine_redirect'
+    warn_module = 'common.output.StandardOutput.warn'
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
@@ -353,16 +354,24 @@ class FingerprintTests(BaseTest):
         self._prepare_identify(url_file=True)
         return_value = [True, False, True, False, False, True]
 
-        #try:
         with patch(self.redir_module, return_value=self.base_url):
             with patch(self.pui_module, autospec=True) as pui:
                 with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
                     self.app.run()
-        #except ConnectionError:
-            #pass
 
         assert m.call_count == 6
         assert pui.call_count == 3
+
+    def test_cms_identify_multiple_doesnt_crash(self):
+        self._prepare_identify(url_file=True)
+
+        with patch(self.warn_module) as warn:
+            with patch(self.redir_module, return_value=self.base_url):
+                with patch(self.pui_module, autospec=True) as pui:
+                    with patch(self.cms_identify_module, side_effect=ConnectionError, autospec=True) as m:
+                        self.app.run()
+
+            assert warn.called
 
     def test_cms_identify(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
