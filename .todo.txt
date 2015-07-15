@@ -3,6 +3,8 @@ Add;
 Version 1.x:
     - Error handling for CMS deteciton.
     - Threading.
+    - ./droopescan scan -u drupal.org fails
+    - better error for empty file.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.

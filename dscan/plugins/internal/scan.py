@@ -105,7 +105,10 @@ class Scan(BasePlugin):
                     future = executor.submit(self._process_cms_identify, url,
                             opts, instances, follow_redirects)
 
-                    futures.append(future)
+                    futures.append({
+                        'url': url,
+                        'future': future
+                    })
 
                     if i % 1000 == 0 and i != 0:
                         self._process_identify_futures(futures, opts, instances)
@@ -118,7 +121,9 @@ class Scan(BasePlugin):
 
     def _process_identify_futures(self, futures, opts, instances):
         to_scan = {}
-        for future in futures:
+        for future_dict in futures:
+            future = future_dict['future']
+
             try:
                 cms_name, repaired_url = future.result(timeout=opts['timeout_host'])
 
@@ -129,7 +134,8 @@ class Scan(BasePlugin):
                     to_scan[cms_name].append(repaired_url)
             except:
                 exc = traceback.format_exc()
-                self.out.warn(exc, whitespace_strp=False)
+                self.out.warn(("'%s' raised:\n" % future_dict['url']) + exc,
+                        whitespace_strp=False)
 
         if to_scan:
             self._process_identify(opts, instances, to_scan)
