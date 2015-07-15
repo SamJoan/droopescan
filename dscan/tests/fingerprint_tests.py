@@ -24,6 +24,7 @@ class FingerprintTests(BaseTest):
     process_url_module = bpi_module + 'process_url'
     pui_module = bpi_module + 'process_url_iterable'
     efh_module = bpi_module + 'enumerate_file_hash'
+    redir_module = bpi_module + 'determine_redirect'
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
@@ -353,9 +354,10 @@ class FingerprintTests(BaseTest):
         return_value = [True, False, True, False, False, True]
 
         try:
-            with patch(self.pui_module, autospec=True) as pui:
-                with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
-                    self.app.run()
+            with patch(self.redir_module, return_value=self.base_url):
+                with patch(self.pui_module, autospec=True) as pui:
+                    with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
+                        self.app.run()
         except ConnectionError:
             pass
 

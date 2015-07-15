@@ -85,7 +85,8 @@ class Scan(BasePlugin):
 
                url = f.repair_url(opts['url'], self.out)
                if follow_redirects:
-                   url = self.determine_redirect(url, opts['verb'], opts['timeout'])
+                   url = instances['drupal']['inst'].determine_redirect(url,
+                            opts['verb'], opts['timeout'])
 
                if inst.cms_identify(opts, vf, url) == True:
                    inst.out.echo(template("enumerate_cms.mustache",

@@ -1,7 +1,8 @@
 Add;
 
 Version 1.x:
-    - Add detection of redirects prior to CMS fingerprint.
+    - Error handling for CMS deteciton.
+    - Threading.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
