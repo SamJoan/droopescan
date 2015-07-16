@@ -87,6 +87,9 @@ class Scan(BasePlugin):
            if follow_redirects:
                url = self.determine_redirect(url, opts['verb'], opts['timeout'])
 
+           opts_clone = dict(opts)
+           opts_clone['url'] = url
+
            for cms_name in instances:
                inst_dict = instances[cms_name]
                inst = inst_dict['inst']
@@ -95,7 +98,8 @@ class Scan(BasePlugin):
                if inst.cms_identify(opts, vf, url) == True:
                    inst.out.echo(template("enumerate_cms.mustache",
                        {"cms_name": cms_name}))
-                   inst.process_url(opts, **inst_dict['kwargs'])
+                   inst.process_url(opts_clone, **inst_dict['kwargs'])
+                   break
 
     def _process_scan_url_file(self, opts, instances, follow_redirects):
         futures = []
