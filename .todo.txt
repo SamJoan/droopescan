@@ -7,7 +7,6 @@ Version 1.x:
     - relative paths for --error-log
     - Add "output to file" functionality.
         - resume when -U and "output to file"
-    - Add composer.json to interesting URLs for all CMS.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.

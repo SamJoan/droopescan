@@ -48,15 +48,20 @@ class BasePluginInternal(controller.CementBaseController):
 
         epilog = template('help_epilog.mustache')
 
+    def _path(self, path, pwd):
+        if path.startswith('/'):
+            return path
+        else:
+            return pwd + "/" + path
+
     def _options(self, pargs):
         pwd = self.app.config.get('general', 'pwd')
         if pargs.url_file != None:
-            url_file = pargs.url_file
-            if not url_file.startswith('/'):
-                url_file = pwd + "/" + url_file
+            url_file = self._path(pargs.url_file, pwd)
         else:
             url = pargs.url
 
+        error_log = self._path(pargs.error_log, pwd)
         threads = pargs.threads
         enumerate = pargs.enumerate
         verb = pargs.verb
@@ -64,7 +69,6 @@ class BasePluginInternal(controller.CementBaseController):
         output = pargs.output
         timeout = pargs.timeout
         timeout_host = pargs.timeout_host
-        error_log = pargs.error_log
         debug_requests = pargs.debug_requests
         follow_redirects = pargs.follow_redirects
         plugins_base_url = pargs.plugins_base_url
