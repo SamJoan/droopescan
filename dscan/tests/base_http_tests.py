@@ -774,8 +774,15 @@ class BaseHttpTests(BaseTest):
             assert 'headers' in kwargs and 'host' in kwargs['headers']
             assert kwargs['headers']['host'] == 'example.org'
 
-    def test_respect_host_redirect(self):
-        assert False
+    @patch('requests.Session.head', return_value=FakeRequest())
+    def test_respects_host_redirect(self, mock_head):
+        try:
+            self.scanner.determine_redirect(self.base_url, 'head',
+                    headers=self.host_header)
+        except RuntimeError:
+            pass
+
+        self.assert_called_contains_all(mock_head, 'headers', self.host_header)
 
     @patch('requests.Session.head', return_value=FakeRequest())
     def test_respects_host_scanning_method(self, mock_head):

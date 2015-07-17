@@ -302,15 +302,17 @@ class BasePluginInternal(controller.CementBaseController):
 
     def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
         url = common.repair_url(url, self.out)
+        headers = {'host': opts['host']}
         if opts['follow_redirects']:
-            url = self.determine_redirect(url, opts['verb'], opts['timeout'])
+            url = self.determine_redirect(url, opts['verb'], opts['timeout'],
+                    headers)
 
         need_sm = opts['enumerate'] in ['a', 'p', 't']
         if need_sm and (self.can_enumerate_plugins or self.can_enumerate_themes):
             scanning_method = opts['method']
             if not scanning_method:
                 scanning_method = self.determine_scanning_method(url,
-                        opts['verb'], opts['timeout'], {'host': opts['host']})
+                        opts['verb'], opts['timeout'], headers)
         else:
             scanning_method = None
 
@@ -336,17 +338,18 @@ class BasePluginInternal(controller.CementBaseController):
 
         return result
 
-    def determine_redirect(self, url, verb, timeout=15):
+    def determine_redirect(self, url, verb, timeout=15, headers={}):
         """
             @param url: the url to check
             @param verb: the verb, e.g. head, or get.
             @param timeout: the time, in seconds, that requests should wait
                 before throwing an exception.
+            @param headers: a set of headers as expected by requests.
             @return: the url that needs to be scanned. It may be equal to the url
                 parameter if no redirect is needed.
         """
         requests_verb = getattr(self.session, verb)
-        r = requests_verb(url, timeout=timeout)
+        r = requests_verb(url, timeout=timeout, headers=headers)
 
         redirect = 300 <= r.status_code < 400
         url_new = url
