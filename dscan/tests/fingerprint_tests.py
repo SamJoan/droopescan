@@ -19,7 +19,6 @@ class FingerprintTests(BaseTest):
     '''
 
     xml_file_changelog = 'tests/resources/versions_with_changelog.xml'
-    bpi_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.'
     cms_identify_module = bpi_module + 'cms_identify'
     process_url_module = bpi_module + 'process_url'
     pui_module = bpi_module + 'process_url_iterable'
@@ -396,6 +395,9 @@ class FingerprintTests(BaseTest):
             assert warn.called
 
         self._mock_cms_multiple_stop()
+
+    def test_cms_identify_multiple_respects_host(self):
+        assert False
 
     def test_cms_identify(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'

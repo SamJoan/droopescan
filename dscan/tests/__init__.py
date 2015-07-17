@@ -47,8 +47,11 @@ class BaseTest(test.CementTestCase):
         'plugins_base_url': None,
         'themes_base_url': None,
         'number': 10,
-        'enumerate': 'a'
+        'enumerate': 'a',
+        'host': base_url[7:-1]
     }
+
+    bpi_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.'
 
     def setUp(self):
         super(BaseTest, self).setUp()

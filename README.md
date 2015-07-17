@@ -152,6 +152,17 @@ http://localhost/drupal/6.11/
 http://localhost/drupal/6.12/
 </pre>
 
+A file containing URLs and a value to override the default host header with
+separated by comma is also OK for URL files. This can be handy when conducting a
+scan through a large range of hosts and you want to prevent unnecessary DNS
+queries. To clarify, an example below:
+
+<pre>
+192.168.1.1,example.org
+http://192.168.1.1/,example.org
+http://192.168.1.2/drupal/,example.org
+</pre>
+
 ## Authentication.
 
 The application fully supports `.netrc` files and `http_proxy` environment

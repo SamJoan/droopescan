@@ -21,6 +21,9 @@ class BaseHttpTests(BaseTest):
     """
         Basic, generic tests that involve HTTP requests.
     """
+
+    host_header = {'host': 'example.com'}
+
     def setUp(self):
         super(BaseHttpTests, self).setUp()
         self.add_argv(["scan", "drupal"])
@@ -582,6 +585,9 @@ class BaseHttpTests(BaseTest):
 
         self.assert_called_contains_all(mock_head, 'timeout', 5)
 
+    def test_respects_timeout_interesting_files(self):
+        assert False
+
     @patch('requests.Session.get')
     def test_respects_timeout_version(self, mock_get):
         try:
@@ -756,5 +762,65 @@ class BaseHttpTests(BaseTest):
         assert themes_ok
         assert plugins_ok
 
+    def test_url_file_ip_url_list(self):
+        self.add_argv(['--url-file', 'tests/resources/url_file_ip_url.txt'])
+        with patch('requests.Session.head', autospec=True) as h:
+            self.app.run()
 
+            calls = h.call_args_list
+            args, kwargs = calls[0]
 
+            assert args[1] == 'http://192.168.1.1/'
+            assert 'headers' in kwargs and 'host' in kwargs['headers']
+            assert kwargs['headers']['host'] == 'example.org'
+
+    def test_respect_host_redirect(self):
+        assert False
+
+    @patch('requests.Session.head', return_value=FakeRequest())
+    def test_respects_host_scanning_method(self, mock_head):
+        try:
+            self.scanner.determine_scanning_method(self.base_url, 'head',
+                    headers=self.host_header)
+        except RuntimeError:
+            pass
+
+        self.assert_called_contains_all(mock_head, 'headers', self.host_header)
+
+    @patch('requests.Session.head', return_value=FakeRequest())
+    def test_respects_host_enumerate(self, mock_head):
+        self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, ScanningMethod.forbidden,
+                headers=self.host_header)
+
+        self.assert_called_contains_all(mock_head, 'headers', self.host_header)
+
+    def test_respects_host_interesting_files(self, mock_head):
+        assert False
+
+    @patch('requests.Session.get')
+    def test_respects_host_version(self, mock_get):
+        version, is_empty = self.scanner.enumerate_version(self.base_url,
+                self.xml_file, headers=self.host_header)
+
+        self.assert_called_contains_all(mock_get, 'headers', self.host_header)
+
+    @patch('requests.Session.head')
+    def test_respects_host_interesting(self, mock_head):
+        found, empty = self.scanner.enumerate_interesting(self.base_url,
+                self.scanner.interesting_urls, headers=self.host_header)
+
+        self.assert_called_contains(mock_head, 'headers', self.host_header)
+
+    def test_host_gets_passed(self):
+        self.add_argv(self.param_all)
+        self.add_argv(['--host', 'example.com'])
+        self.add_argv(['--method', 'forbidden'])
+
+        all_mocks = self.mock_all_enumerate('drupal')
+
+        self.app.run()
+
+        for mock in all_mocks:
+            self.assert_called_contains(mock, 'headers', self.host_header)

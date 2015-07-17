@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from os.path import dirname
 from requests import Session
+from functools import partial
 import common
 import hashlib
 import os
@@ -61,7 +62,6 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             url = pargs.url
 
-        error_log = self._path(pargs.error_log, pwd)
         threads = pargs.threads
         enumerate = pargs.enumerate
         verb = pargs.verb
@@ -73,7 +73,12 @@ class BasePluginInternal(controller.CementBaseController):
         follow_redirects = pargs.follow_redirects
         plugins_base_url = pargs.plugins_base_url
         themes_base_url = pargs.themes_base_url
+        host = pargs.host
         number = pargs.number if not pargs.number == 'all' else 100000
+        if pargs.error_log:
+            error_log = self._path(pargs.error_log, pwd)
+        else:
+            error_log = '-'
 
         return locals()
 
@@ -97,9 +102,12 @@ class BasePluginInternal(controller.CementBaseController):
         if not themes_base_url:
             themes_base_url = self.themes_base_url
 
+        headers = {'host': opts['host']}
+
         kwargs_plugins = dict_combine(kwargs_base, {
             'base_url': plugins_base_url,
-            'max_plugins': opts['number']
+            'max_plugins': opts['number'],
+            'headers': headers
         })
 
         kwargs_themes = dict(kwargs_plugins)
@@ -127,7 +135,8 @@ class BasePluginInternal(controller.CementBaseController):
                     'versions_file': self.versions_file,
                     'verb': opts['verb'],
                     'threads': opts['threads'],
-                    'timeout': opts['timeout']
+                    'timeout': opts['timeout'],
+                    'headers': headers
                 }
             },
             'interesting urls': {
@@ -137,7 +146,8 @@ class BasePluginInternal(controller.CementBaseController):
                     'verb': opts['verb'],
                     'interesting_urls': self.interesting_urls,
                     'threads': opts['threads'],
-                    'timeout': opts['timeout']
+                    'timeout': opts['timeout'],
+                    'headers': headers
                 }
             },
         }
@@ -300,7 +310,7 @@ class BasePluginInternal(controller.CementBaseController):
             scanning_method = opts['method']
             if not scanning_method:
                 scanning_method = self.determine_scanning_method(url,
-                        opts['verb'], opts['timeout'])
+                        opts['verb'], opts['timeout'], {'host': opts['host']})
         else:
             scanning_method = None
 
@@ -356,16 +366,16 @@ class BasePluginInternal(controller.CementBaseController):
 
         return url_new
 
-    def _determine_ok_200(self, requests_verb, url, timeout):
+    def _determine_ok_200(self, requests_verb, url):
         if common.is_string(self.regular_file_url):
             reg_url = url + self.regular_file_url
-            ok_resp = requests_verb(reg_url, timeout=timeout)
+            ok_resp = requests_verb(reg_url)
             ok_200 = ok_resp.status_code == 200
         else:
             ok_200 = False
             for path in self.regular_file_url:
                 reg_url = url + path
-                ok_resp = requests_verb(reg_url, timeout=timeout)
+                ok_resp = requests_verb(reg_url)
                 if ok_resp.status_code == 200:
                     ok_200 = True
                     break
@@ -374,17 +384,18 @@ class BasePluginInternal(controller.CementBaseController):
 
         return ok_200, len_content
 
-    def _determine_fake_200(self, requests_verb, url, timeout):
-        response = requests_verb(url + self.not_found_url,
-                    timeout=timeout)
+    def _determine_fake_200(self, requests_verb, url):
+        response = requests_verb(url + self.not_found_url)
 
         return response.status_code == 200, len(response.content)
 
-    def determine_scanning_method(self, url, verb, timeout=15):
-        requests_verb = getattr(self.session, verb)
-        folder_resp = requests_verb(url + self.forbidden_url, timeout=timeout)
-        ok_200, reg_url_len = self._determine_ok_200(requests_verb, url, timeout)
-        fake_200, fake_200_len = self._determine_fake_200(requests_verb, url, timeout)
+    def determine_scanning_method(self, url, verb, timeout=15, headers={}):
+        requests_verb = partial(getattr(self.session, verb), timeout=timeout,
+                headers=headers)
+
+        folder_resp = requests_verb(url + self.forbidden_url)
+        ok_200, reg_url_len = self._determine_ok_200(requests_verb, url)
+        fake_200, fake_200_len = self._determine_fake_200(requests_verb, url)
 
         # Websites which return 200 for not found URLs.
         diff_lengths_above_threshold = abs(fake_200_len - reg_url_len) > 25
@@ -438,7 +449,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def enumerate(self, url, base_url_supplied, scanning_method,
             iterator_returning_method, iterator_len, max_iterator=500, threads=10,
-            verb='head', timeout=15, hide_progressbar=False, imu=None):
+            verb='head', timeout=15, hide_progressbar=False, imu=None, headers={}):
         '''
             @param url: base URL for the website.
             @param base_url_supplied: Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
@@ -456,6 +467,7 @@ class BasePluginInternal(controller.CementBaseController):
                 displayed.
             @param imu: Interesting module urls. A list containing tuples in the
                 following format [('readme.txt', 'default readme')].
+            @param headers: List of custom headers as expected by requests.
         '''
         if common.is_string(base_url_supplied):
             base_urls = [base_url_supplied]
@@ -476,7 +488,7 @@ class BasePluginInternal(controller.CementBaseController):
                 for plugin_name in plugins:
                     plugin_url = url_template % (url, plugin_name)
                     future = executor.submit(requests_verb, plugin_url,
-                            timeout=timeout)
+                            timeout=timeout, headers=headers)
 
                     if plugin_url.endswith('/'):
                         final_url = plugin_url
@@ -523,34 +535,34 @@ class BasePluginInternal(controller.CementBaseController):
 
         if not shutdown and (imu != None and not no_results):
             found = self._enumerate_plugin_if(found, verb, threads, imu,
-                    hide_progressbar)
+                    hide_progressbar, timeout=timeout, headers=headers)
 
         return found, no_results
 
     def enumerate_plugins(self, url, base_url, scanning_method='forbidden',
             max_plugins=500, threads=10, verb='head', timeout=15,
-            hide_progressbar=False, imu=None):
+            hide_progressbar=False, imu=None, headers={}):
 
         iterator = self.plugins_get
         iterator_len = file_len(self.plugins_file)
 
         return self.enumerate(url, base_url, scanning_method, iterator,
                 iterator_len, max_plugins, threads, verb,
-                timeout, hide_progressbar, imu)
+                timeout, hide_progressbar, imu, headers)
 
     def enumerate_themes(self, url, base_url, scanning_method='forbidden',
             max_plugins=500, threads=10, verb='head', timeout=15,
-            hide_progressbar=False, imu=None):
+            hide_progressbar=False, imu=None, headers={}):
 
         iterator = self.themes_get
         iterator_len = file_len(self.themes_file)
 
         return self.enumerate(url, base_url, scanning_method, iterator,
                 iterator_len, max_plugins, threads, verb, timeout,
-                hide_progressbar, imu)
+                hide_progressbar, imu, headers)
 
     def enumerate_interesting(self, url, interesting_urls, threads=10,
-            verb='head', timeout=15, hide_progressbar=False):
+            verb='head', timeout=15, hide_progressbar=False, headers={}):
         requests_verb = getattr(self.session, verb)
 
         if not hide_progressbar:
@@ -564,7 +576,9 @@ class BasePluginInternal(controller.CementBaseController):
                 continue
 
             interesting_url = url + path
-            resp = requests_verb(interesting_url, timeout=timeout)
+            resp = requests_verb(interesting_url, timeout=timeout,
+                    headers=headers)
+
             if resp.status_code == 200 or resp.status_code == 301:
                 found.append({
                     'url': interesting_url,
@@ -580,7 +594,7 @@ class BasePluginInternal(controller.CementBaseController):
         return found, len(found) == 0
 
     def enumerate_version(self, url, versions_file, threads=10, verb='head',
-            timeout=15, hide_progressbar=False):
+            timeout=15, hide_progressbar=False, headers={}):
         vf = VersionsFile(versions_file)
         files = vf.files_get()
         changelogs = vf.changelogs_get()
@@ -594,7 +608,7 @@ class BasePluginInternal(controller.CementBaseController):
         with ThreadPoolExecutor(max_workers=threads) as executor:
             for file_url in files:
                 futures[file_url] = executor.submit(self.enumerate_file_hash,
-                        url, file_url=file_url, timeout=timeout)
+                        url, file_url=file_url, timeout=timeout, headers=headers)
 
             for file_url in futures:
                 if shutdown:
@@ -614,7 +628,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         # Narrow down using changelog, if accurate.
         if vf.has_changelog():
-            version = self.enumerate_version_changelog(url, version, vf, timeout)
+            version = self.enumerate_version_changelog(url, version, vf, timeout, headers=headers)
 
         if not hide_progressbar:
             p.increment_progress()
@@ -622,13 +636,14 @@ class BasePluginInternal(controller.CementBaseController):
 
         return version, len(version) == 0
 
-    def enumerate_version_changelog(self, url, versions_estimated, vf, timeout=15):
+    def enumerate_version_changelog(self, url, versions_estimated, vf,
+            timeout=15, headers={}):
         changelogs = vf.changelogs_get()
         ch_hash = None
         for ch_url in changelogs:
             try:
                 ch_hash = self.enumerate_file_hash(url, file_url=ch_url,
-                        timeout=timeout)
+                        timeout=timeout, headers=headers)
             except RuntimeError:
                 pass
 
@@ -638,14 +653,15 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             return versions_estimated
 
-    def enumerate_file_hash(self, url, file_url, timeout=15):
-        r = self.session.get(url + file_url, timeout=timeout)
+    def enumerate_file_hash(self, url, file_url, timeout=15, headers={}):
+        r = self.session.get(url + file_url, timeout=timeout, headers=headers)
         if r.status_code == 200:
             return hashlib.md5(r.content).hexdigest()
         else:
             raise RuntimeError("File '%s' returned status code '%s'." % (file_url, r.status_code))
 
-    def _enumerate_plugin_if(self, found_list, verb, threads, imu_list, hide_progressbar):
+    def _enumerate_plugin_if(self, found_list, verb, threads, imu_list,
+            hide_progressbar, timeout, headers):
         """
         Finds interesting urls within a plugin folder which respond with 200 OK.
         @param found_list: as returned in self.enumerate. E.g. [{'name':
@@ -654,6 +670,8 @@ class BasePluginInternal(controller.CementBaseController):
         @param threads: the number of threads to use.
         @param imu_list: Interesting module urls.
         @param hide_progressbar: whether to display a progressbar.
+        @param timeout: timeout in seconds for http requests.
+        @param headers: custom headers as expected by requests.
         """
 
         if not hide_progressbar:
@@ -667,7 +685,9 @@ class BasePluginInternal(controller.CementBaseController):
                 found_list[i]['imu'] = []
                 for imu in imu_list:
                     interesting_url = found['url'] + imu[0]
-                    future = executor.submit(requests_verb, interesting_url)
+                    future = executor.submit(requests_verb, interesting_url,
+                            timeout=timeout, headers=headers)
+
                     futures.append({
                         'url': interesting_url,
                         'future': future,
