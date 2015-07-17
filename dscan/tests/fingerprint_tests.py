@@ -349,7 +349,7 @@ class FingerprintTests(BaseTest):
         except ConnectionError:
             pass
 
-        assert m.call_count == 4
+        assert m.call_count == 3
         assert pu.call_count == 1
 
     def _mock_cms_multiple(self, cms_ident_side_eff):
