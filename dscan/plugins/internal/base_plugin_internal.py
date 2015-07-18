@@ -664,7 +664,7 @@ class BasePluginInternal(controller.CementBaseController):
             raise RuntimeError("File '%s' returned status code '%s'." % (file_url, r.status_code))
 
     def _enumerate_plugin_if(self, found_list, verb, threads, imu_list,
-            hide_progressbar, timeout, headers):
+            hide_progressbar, timeout=15, headers={}):
         """
         Finds interesting urls within a plugin folder which respond with 200 OK.
         @param found_list: as returned in self.enumerate. E.g. [{'name':

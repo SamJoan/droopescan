@@ -91,7 +91,8 @@ class BaseTests(BaseTest):
             'threads': 'a',
             'verb': 'a',
             'enumerate': 'p',
-            'timeout': 15
+            'timeout': 15,
+            'host': self.base_url
         }
         opts_t = dict(opts_p)
         opts_t['enumerate'] = 't'

@@ -581,12 +581,9 @@ class BaseHttpTests(BaseTest):
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.forbidden,
-                timeout=5)
+                imu=[('readme', '')], timeout=5)
 
         self.assert_called_contains_all(mock_head, 'timeout', 5)
-
-    def test_respects_timeout_interesting_files(self):
-        assert False
 
     @patch('requests.Session.get')
     def test_respects_timeout_version(self, mock_get):
@@ -708,7 +705,8 @@ class BaseHttpTests(BaseTest):
         with patch.object(Drupal, '_enumerate_plugin_if', return_value=ret_val) as epif:
             result, is_empty = self.scanner.enumerate_plugins(self.base_url, "%s" + pbu, imu=imu)
 
-            epif.assert_called_with(ANY, ANY, ANY, imu, ANY)
+            args, kwargs = epif.call_args
+            assert args[3] == imu
             assert result == ret_val
             assert is_empty == False
 
@@ -732,7 +730,7 @@ class BaseHttpTests(BaseTest):
         self.respond_several(self.base_url + pbu, http_responses_map)
 
         final_found = self.scanner._enumerate_plugin_if(found, 'head', 4, imu,
-                True)
+                True, 15, {})
         imu_final = final_found[0]['imu']
 
         assert len(final_found) == len(found)
@@ -799,12 +797,9 @@ class BaseHttpTests(BaseTest):
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.forbidden,
-                headers=self.host_header)
+                imu=[('readme', '')], headers=self.host_header)
 
         self.assert_called_contains_all(mock_head, 'headers', self.host_header)
-
-    def test_respects_host_interesting_files(self, mock_head):
-        assert False
 
     @patch('requests.Session.get')
     def test_respects_host_version(self, mock_get):

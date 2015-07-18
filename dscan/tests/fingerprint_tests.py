@@ -18,6 +18,7 @@ class FingerprintTests(BaseTest):
         Tests related to version fingerprinting for all plugins.
     '''
 
+    bpi_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.'
     xml_file_changelog = 'tests/resources/versions_with_changelog.xml'
     cms_identify_module = bpi_module + 'cms_identify'
     process_url_module = bpi_module + 'process_url'

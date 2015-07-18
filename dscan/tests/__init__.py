@@ -51,8 +51,6 @@ class BaseTest(test.CementTestCase):
         'host': base_url[7:-1]
     }
 
-    bpi_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.'
-
     def setUp(self):
         super(BaseTest, self).setUp()
         self.reset_backend()
