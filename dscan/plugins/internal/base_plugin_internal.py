@@ -718,11 +718,15 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found_list
 
-    def cms_identify(self, opts, vf, url):
+    def cms_identify(self, vf, url, timeout=15, headers={}):
         """
             Function called when attempting to determine if a URL is identified
             as being this particular CMS.
+            @param vf: a VersionsFile instance.
             @param url: the URL to attempt to identify.
+            @param timeout: number of seconds before a timeout occurs on a http
+                connection.
+            @param headers: custom HTTP headers as expected by requests.
             @return: a boolean value indiciating whether this CMS is identified
                 as being this particular CMS.
         """
@@ -734,7 +738,8 @@ class BasePluginInternal(controller.CementBaseController):
         is_cms = False
         for regular_file_url in rfu:
             try:
-                hash = self.enumerate_file_hash(url, regular_file_url, opts['timeout'])
+                hash = self.enumerate_file_hash(url, regular_file_url, timeout,
+                        headers)
             except RuntimeError:
                 continue
 

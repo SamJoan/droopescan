@@ -22,8 +22,6 @@ class BaseHttpTests(BaseTest):
         Basic, generic tests that involve HTTP requests.
     """
 
-    host_header = {'host': 'example.com'}
-
     def setUp(self):
         super(BaseHttpTests, self).setUp()
         self.add_argv(["scan", "drupal"])

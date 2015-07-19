@@ -6,6 +6,8 @@ Version 1.x:
     - SIGINT capture for new scanning.
     - Add "output to file" functionality.
         - resume when -U and "output to file"
+    - make "host" header uppercase.
+
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.

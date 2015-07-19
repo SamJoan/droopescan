@@ -397,9 +397,6 @@ class FingerprintTests(BaseTest):
 
         self._mock_cms_multiple_stop()
 
-    def test_cms_identify_multiple_respects_host(self):
-        assert False
-
     def test_cms_identify(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
         rfu = "test/topst/tust.txt"
@@ -476,3 +473,13 @@ class FingerprintTests(BaseTest):
 
         assert self.v.has_hash(existant_hash) == True
         assert self.v.has_hash(nonexistant_hash) == False
+
+    @patch('requests.Session.get')
+    def test_respects_host_cms_identify(self, mock_head):
+        self.scanner.cms_identify(self.v, self.base_url,
+                headers=self.host_header)
+
+        self.assert_called_contains(mock_head, 'headers', self.host_header)
+
+    def test_respects_timeout_cms_identify(self):
+        assert False

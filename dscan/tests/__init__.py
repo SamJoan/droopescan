@@ -51,6 +51,8 @@ class BaseTest(test.CementTestCase):
         'host': base_url[7:-1]
     }
 
+    host_header = {'host': 'example.com'}
+
     def setUp(self):
         super(BaseTest, self).setUp()
         self.reset_backend()
