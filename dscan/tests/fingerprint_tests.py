@@ -318,7 +318,10 @@ class FingerprintTests(BaseTest):
         self.add_argv(['--host', 'example.com'])
         self.add_argv(['--timeout', "1337"])
 
-    def test_cms_identify_called(self):
+    @patch('requests.Session.head')
+    def test_cms_identify_called(self, mock_head):
+        mock_head().status_code = 200
+
         self._prepare_identify()
         with patch(self.cms_identify_module, autospec=True) as cim:
             self.app.run()
@@ -331,6 +334,9 @@ class FingerprintTests(BaseTest):
 
         assert args[3] == 1337
         assert args[4] == self.host_header
+
+        self.assert_called_contains(mock_head, 'timeout', 1337)
+        self.assert_called_contains(mock_head, 'headers', self.host_header)
 
     def test_cms_identify_repairs_url(self):
         url_simple = self.base_url[7:-1]
@@ -346,7 +352,7 @@ class FingerprintTests(BaseTest):
 
                 args, kwargs = ci.call_args
                 assert ru.called
-                assert args[3] == self.base_url
+                assert args[2] == self.base_url
 
     def test_cms_identify_respected(self):
         self._prepare_identify()

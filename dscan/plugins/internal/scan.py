@@ -87,23 +87,15 @@ class Scan(BasePlugin):
         if 'url_file' in opts:
             self._process_scan_url_file(opts, instances, follow_redirects)
         else:
-           url = f.repair_url(opts['url'], self.out)
-           if follow_redirects:
-               url = self.determine_redirect(url, opts['verb'], opts['timeout'])
+            cms_name, url = self._process_cms_identify(opts['url'], opts, instances,
+                    follow_redirects)
 
-           opts_clone = dict(opts)
-           opts_clone['url'] = url
+            inst_dict = instances[cms_name]
+            inst = inst_dict['inst']
+            opts_clone = dict(opts)
+            opts_clone['url'] = url
 
-           for cms_name in instances:
-               inst_dict = instances[cms_name]
-               inst = inst_dict['inst']
-               vf = inst_dict['vf']
-
-               if inst.cms_identify(vf, url, opts['timeout'], opts['headers']) == True:
-                   inst.out.echo(template("enumerate_cms.mustache",
-                       {"cms_name": cms_name}))
-                   inst.process_url(opts_clone, **inst_dict['kwargs'])
-                   break
+            inst.process_url(opts_clone, **inst_dict['kwargs'])
 
     def _process_scan_url_file(self, opts, instances, follow_redirects):
         futures = []
@@ -153,7 +145,8 @@ class Scan(BasePlugin):
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         url = f.repair_url(url, self.out)
         if follow_redirects:
-            url = self.determine_redirect(url, opts['verb'], opts['timeout'])
+            url = self.determine_redirect(url, opts['verb'], opts['timeout'],
+                    opts['headers'])
 
         found = False
         for cms_name in instances:
