@@ -405,12 +405,11 @@ class FingerprintTests(BaseTest):
         with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
             with patch(has_hash, autospec=True, return_value=True) as hh:
                 self.scanner.regular_file_url = rfu
-                is_cms = self.scanner.cms_identify(self.test_opts, self.v, self.base_url)
+                is_cms = self.scanner.cms_identify(self.v, self.base_url)
 
                 args, kwargs = efh.call_args
                 assert args[1] == self.base_url
                 assert args[2] == rfu
-                assert args[3] == self.test_opts['timeout']
 
                 args, kwargs = hh.call_args
                 assert hh.called
@@ -432,14 +431,13 @@ class FingerprintTests(BaseTest):
         with patch(self.efh_module, autospec=True, side_effect=_efh_side_effect) as efh:
             with patch(has_hash, autospec=True, return_value=True) as hh:
                 self.scanner.regular_file_url = rfu
-                is_cms = self.scanner.cms_identify(self.test_opts, self.v, self.base_url)
+                is_cms = self.scanner.cms_identify(self.v, self.base_url)
 
                 assert efh.call_count == 2
                 i = 0
                 for args, kwargs in efh.call_args_list:
                     assert args[1] == self.base_url
                     assert args[2] == rfu[i]
-                    assert args[3] == self.test_opts['timeout']
                     i += 1
 
                 args, kwargs = hh.call_args
@@ -451,7 +449,7 @@ class FingerprintTests(BaseTest):
         rfu = "test/topst/tust.txt"
         with patch(self.efh_module, autospec=True, side_effect=RuntimeError) as m:
             self.scanner.regular_file_url = rfu
-            is_cms = self.scanner.cms_identify(self.test_opts, self.v, self.base_url)
+            is_cms = self.scanner.cms_identify(self.v, self.base_url)
 
             assert is_cms == False
 
@@ -463,7 +461,7 @@ class FingerprintTests(BaseTest):
         with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
             with patch(has_hash, autospec=True, return_value=False) as hh:
                 self.scanner.regular_file_url = rfu
-                is_cms = self.scanner.cms_identify(self.test_opts, self.v, self.base_url)
+                is_cms = self.scanner.cms_identify(self.v, self.base_url)
 
                 assert is_cms == False
 
@@ -481,5 +479,9 @@ class FingerprintTests(BaseTest):
 
         self.assert_called_contains(mock_head, 'headers', self.host_header)
 
-    def test_respects_timeout_cms_identify(self):
-        assert False
+    @patch('requests.Session.get')
+    def test_respects_timeout_cms_identify(self, mock_head):
+        self.scanner.cms_identify(self.v, self.base_url,
+                timeout=1337)
+
+        self.assert_called_contains(mock_head, 'timeout', 1337)
