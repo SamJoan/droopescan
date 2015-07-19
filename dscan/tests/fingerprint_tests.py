@@ -315,12 +315,22 @@ class FingerprintTests(BaseTest):
         else:
             self.add_argv(['scan', '-u', self.base_url])
 
+        self.add_argv(['--host', 'example.com'])
+        self.add_argv(['--timeout', "1337"])
+
     def test_cms_identify_called(self):
         self._prepare_identify()
-        with patch(self.cms_identify_module, autospec=True) as m:
+        with patch(self.cms_identify_module, autospec=True) as cim:
             self.app.run()
 
-        assert m.called
+        assert cim.called
+
+        args, kwargs = cim.call_args
+        assert isinstance(args[1], VersionsFile)
+        assert args[2] == self.base_url
+
+        assert args[3] == 1337
+        assert args[4] == self.host_header
 
     def test_cms_identify_repairs_url(self):
         url_simple = self.base_url[7:-1]
@@ -344,12 +354,12 @@ class FingerprintTests(BaseTest):
 
         try:
             with patch(self.process_url_module, autospec=True) as pu:
-                with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as m:
+                with patch(self.cms_identify_module, side_effect=return_value, autospec=True) as cim:
                     self.app.run()
         except ConnectionError:
             pass
 
-        assert m.call_count == 3
+        assert cim.call_count == 3
         assert pu.call_count == 1
 
     def _mock_cms_multiple(self, cms_ident_side_eff):
@@ -384,6 +394,13 @@ class FingerprintTests(BaseTest):
 
         assert cim.call_count == 6
         assert pui.call_count == 3
+
+        args, kwargs = cim.call_args
+        assert isinstance(args[1], VersionsFile)
+        assert args[2] == self.base_url
+
+        assert args[3] == 1337
+        assert args[4] == self.host_header
 
         self._mock_cms_multiple_stop()
 

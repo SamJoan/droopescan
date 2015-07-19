@@ -340,13 +340,13 @@ class BasePluginInternal(controller.CementBaseController):
 
     def determine_redirect(self, url, verb, timeout=15, headers={}):
         """
-            @param url: the url to check
-            @param verb: the verb, e.g. head, or get.
-            @param timeout: the time, in seconds, that requests should wait
-                before throwing an exception.
-            @param headers: a set of headers as expected by requests.
-            @return: the url that needs to be scanned. It may be equal to the url
-                parameter if no redirect is needed.
+        @param url: the url to check
+        @param verb: the verb, e.g. head, or get.
+        @param timeout: the time, in seconds, that requests should wait
+            before throwing an exception.
+        @param headers: a set of headers as expected by requests.
+        @return: the url that needs to be scanned. It may be equal to the url
+            parameter if no redirect is needed.
         """
         requests_verb = getattr(self.session, verb)
         r = requests_verb(url, timeout=timeout, headers=headers)

@@ -99,7 +99,7 @@ class Scan(BasePlugin):
                inst = inst_dict['inst']
                vf = inst_dict['vf']
 
-               if inst.cms_identify(opts, vf, url) == True:
+               if inst.cms_identify(vf, url, opts['timeout'], opts['headers']) == True:
                    inst.out.echo(template("enumerate_cms.mustache",
                        {"cms_name": cms_name}))
                    inst.process_url(opts_clone, **inst_dict['kwargs'])
@@ -161,7 +161,7 @@ class Scan(BasePlugin):
             inst = inst_dict['inst']
             vf = inst_dict['vf']
 
-            if inst.cms_identify(opts, vf, url) == True:
+            if inst.cms_identify(vf, url, opts['timeout'], opts['headers']) == True:
                 found = True
                 break
 
