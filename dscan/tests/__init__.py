@@ -48,10 +48,10 @@ class BaseTest(test.CementTestCase):
         'themes_base_url': None,
         'number': 10,
         'enumerate': 'a',
-        'host': base_url[7:-1]
+        'headers': {}
     }
 
-    host_header = {'host': 'example.com'}
+    host_header = {'Host': 'example.com'}
 
     def setUp(self):
         super(BaseTest, self).setUp()

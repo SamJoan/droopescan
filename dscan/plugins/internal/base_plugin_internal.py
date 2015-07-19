@@ -73,12 +73,15 @@ class BasePluginInternal(controller.CementBaseController):
         follow_redirects = pargs.follow_redirects
         plugins_base_url = pargs.plugins_base_url
         themes_base_url = pargs.themes_base_url
-        host = pargs.host
         number = pargs.number if not pargs.number == 'all' else 100000
         if pargs.error_log:
             error_log = self._path(pargs.error_log, pwd)
         else:
             error_log = '-'
+
+        headers = {}
+        if pargs.host:
+            headers = {'Host': pargs.host}
 
         return locals()
 
@@ -102,12 +105,10 @@ class BasePluginInternal(controller.CementBaseController):
         if not themes_base_url:
             themes_base_url = self.themes_base_url
 
-        headers = {'host': opts['host']}
-
         kwargs_plugins = dict_combine(kwargs_base, {
             'base_url': plugins_base_url,
             'max_plugins': opts['number'],
-            'headers': headers
+            'headers': opts['headers']
         })
 
         kwargs_themes = dict(kwargs_plugins)
@@ -136,7 +137,7 @@ class BasePluginInternal(controller.CementBaseController):
                     'verb': opts['verb'],
                     'threads': opts['threads'],
                     'timeout': opts['timeout'],
-                    'headers': headers
+                    'headers': opts['headers']
                 }
             },
             'interesting urls': {
@@ -147,7 +148,7 @@ class BasePluginInternal(controller.CementBaseController):
                     'interesting_urls': self.interesting_urls,
                     'threads': opts['threads'],
                     'timeout': opts['timeout'],
-                    'headers': headers
+                    'headers': opts['headers']
                 }
             },
         }
@@ -302,17 +303,16 @@ class BasePluginInternal(controller.CementBaseController):
 
     def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
         url = common.repair_url(url, self.out)
-        headers = {'host': opts['host']}
         if opts['follow_redirects']:
             url = self.determine_redirect(url, opts['verb'], opts['timeout'],
-                    headers)
+                    opts['headers'])
 
         need_sm = opts['enumerate'] in ['a', 'p', 't']
         if need_sm and (self.can_enumerate_plugins or self.can_enumerate_themes):
             scanning_method = opts['method']
             if not scanning_method:
                 scanning_method = self.determine_scanning_method(url,
-                        opts['verb'], opts['timeout'], headers)
+                        opts['verb'], opts['timeout'], opts['headers'])
         else:
             scanning_method = None
 
