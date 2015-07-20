@@ -259,7 +259,7 @@ class BasePluginInternal(controller.CementBaseController):
             results = []
             for url in iterable:
 
-                original_url = url
+                line = url
                 url, new_opts = self._process_multiline_host(url, opts)
                 try:
                     host_header = new_opts['headers']['Host']
@@ -272,7 +272,7 @@ class BasePluginInternal(controller.CementBaseController):
                 results.append({
                     'future': future,
                     'url': url.rstrip('\n'),
-                    'original_url': original_url,
+                    'line': line,
                     'host_header': host_header
                 })
 
@@ -299,7 +299,7 @@ class BasePluginInternal(controller.CementBaseController):
 
                 output['host'] = result['url']
                 output['cms_name'] = self._meta.label
-                output['original_url'] = result['original_url']
+                output['line'] = result['line']
                 output['host_header'] = result['host_header']
 
                 if not shutdown:
