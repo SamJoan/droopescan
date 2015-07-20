@@ -121,6 +121,29 @@ class Scan(BasePlugin):
                 if len(futures) > 0:
                     self._process_identify_futures(futures, opts, instances)
 
+    def _process_cms_identify(self, url, opts, instances, follow_redirects):
+        url, new_opts = self._process_multiline_host(url, opts)
+        url = f.repair_url(url, self.out)
+
+        if follow_redirects:
+            url = self.determine_redirect(url, new_opts['verb'], new_opts['timeout'],
+                    new_opts['headers'])
+
+        found = False
+        for cms_name in instances:
+            inst_dict = instances[cms_name]
+            inst = inst_dict['inst']
+            vf = inst_dict['vf']
+
+            if inst.cms_identify(vf, url, new_opts['timeout'], new_opts['headers']) == True:
+                found = True
+                break
+
+        if not found:
+            return None, None
+        else:
+            return cms_name, url
+
     def _process_identify_futures(self, futures, opts, instances):
         to_scan = {}
         for future_dict in futures:
@@ -133,42 +156,16 @@ class Scan(BasePlugin):
                     if cms_name not in to_scan:
                         to_scan[cms_name] = []
 
-                    to_scan[cms_name].append(repaired_url)
+                    to_scan[cms_name].append(future_dict['url'])
             except:
                 exc = traceback.format_exc()
-                self.out.warn(("'%s' raised:\n" % future_dict['url']) + exc,
+                self.out.warn(("Line '%s' raised:\n" % future_dict['url']) + exc,
                         whitespace_strp=False)
 
         if to_scan:
-            self._process_identify(opts, instances, to_scan)
+            self._process_scan(opts, instances, to_scan)
 
-    def _process_cms_identify(self, url, opts, instances, follow_redirects):
-        url, host = self._process_multiline_host(url)
-        if host:
-            opts['headers']['Host'] = host
-
-        url = f.repair_url(url, self.out)
-
-        if follow_redirects:
-            url = self.determine_redirect(url, opts['verb'], opts['timeout'],
-                    opts['headers'])
-
-        found = False
-        for cms_name in instances:
-            inst_dict = instances[cms_name]
-            inst = inst_dict['inst']
-            vf = inst_dict['vf']
-
-            if inst.cms_identify(vf, url, opts['timeout'], opts['headers']) == True:
-                found = True
-                break
-
-        if not found:
-            return None, None
-        else:
-            return cms_name, url
-
-    def _process_identify(self, opts, instances, to_scan):
+    def _process_scan(self, opts, instances, to_scan):
         for cms_name in to_scan:
             inst_dict = instances[cms_name]
             cms_urls = to_scan[cms_name]

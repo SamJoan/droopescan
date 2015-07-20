@@ -252,25 +252,6 @@ class BasePluginInternal(controller.CementBaseController):
         if not shutdown:
             self.out.result(output, functionality)
 
-    def _process_results_multisite(self, results, functionality, timeout_host):
-        for result in results:
-            try:
-                if shutdown:
-                    result['future'].cancel()
-                    continue
-
-                output = result['future'].result(timeout=timeout_host)
-
-                output['host'] = result['url']
-                output['cms_name'] = self._meta.label
-                if not shutdown:
-                    self.out.result(output, functionality)
-
-            except:
-                exc = traceback.format_exc()
-                self.out.warn(("'%s' raised:\n" % result['url']) + exc,
-                        whitespace_strp=False)
-
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
         timeout_host = opts['timeout_host']
         i = 0
@@ -278,16 +259,21 @@ class BasePluginInternal(controller.CementBaseController):
             results = []
             for url in iterable:
 
-                url, host = self._process_multiline_host(url)
-                if host:
-                    opts['headers']['Host'] = host
+                original_url = url
+                url, new_opts = self._process_multiline_host(url, opts)
+                try:
+                    host_header = new_opts['headers']['Host']
+                except KeyError:
+                    host_header = None
 
-                args = [url, opts, functionality, enabled_functionality, True]
+                args = [url, new_opts, functionality, enabled_functionality, True]
                 future = executor.submit(self.url_scan, *args)
 
                 results.append({
                     'future': future,
                     'url': url.rstrip('\n'),
+                    'original_url': original_url,
+                    'host_header': host_header
                 })
 
                 if i % 1000 == 0 and i != 0:
@@ -302,12 +288,35 @@ class BasePluginInternal(controller.CementBaseController):
                         timeout_host)
                 results = []
 
+    def _process_results_multisite(self, results, functionality, timeout_host):
+        for result in results:
+            try:
+                if shutdown:
+                    result['future'].cancel()
+                    continue
+
+                output = result['future'].result(timeout=timeout_host)
+
+                output['host'] = result['url']
+                output['cms_name'] = self._meta.label
+                output['original_url'] = result['original_url']
+                output['host_header'] = result['host_header']
+
+                if not shutdown:
+                    self.out.result(output, functionality)
+
+            except:
+                exc = traceback.format_exc()
+                self.out.warn(("'%s' raised:\n" % result['url']) + exc,
+                        whitespace_strp=False)
+
     def process_url_file(self, opts, functionality, enabled_functionality):
         with open(opts['url_file']) as url_file:
             self.process_url_iterable(url_file, opts, functionality, enabled_functionality)
 
     def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
         url = common.repair_url(url, self.out)
+
         if opts['follow_redirects']:
             url = self.determine_redirect(url, opts['verb'], opts['timeout'],
                     opts['headers'])
@@ -755,18 +764,22 @@ class BasePluginInternal(controller.CementBaseController):
 
         return is_cms
 
-    def _process_multiline_host(self, url):
+    def _process_multiline_host(self, url, opts):
         """
         Processes URLs and determines whether they are a tab-delimited CSV of
         url and host.
         @param url: the url to analyse.
-        @return: returns a tuple containing url and host if determined to have
-            be CSV, otherwise returns url, None.
+        @param opts: the options dictionary to modify.
+        @return: a tuple containing url, and opts with custom headers added.
         """
+        new_opts = dict(opts)
+
         contains_host = '\t' in url
         if contains_host:
             url, host = url.strip().split('\t')
-            return url, host
+            new_opts['headers']['Host'] = host
+            return url, new_opts
         else:
-            return url, None
+            return url, opts
+
 

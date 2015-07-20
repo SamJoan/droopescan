@@ -6,8 +6,38 @@ Version 1.x:
     - SIGINT capture for new scanning.
     - Add "output to file" functionality.
         - resume when -U and "output to file"
-    - make "host" header uppercase.
+    
+    real problems:
+        - when tab separated input file, output is not useful because "host"
+          field doesn't contain host.
+        - output differs on random 1000 hosts with -U when tab separated list is
+          provided.
+        - original URL before redirect is not provided.
 
+            root@personalChunk:~/droopescan# time ./droopescan scan -U ../head_1000_domain_only -t 100 -e v --timeout 5 --error-log ../head_1000.error
+            {"host": "http://0010.idv.tw/", "version": {"is_empty": false, "finds": ["2.5.18", "2.5.19", "2.5.20", "2.5.21", "2.5.22", "2.5.23", "2.5.24", "2.5.25", "2.5.26", "2.5.27"]}, "cms_name": "joomla"}
+            {"host": "http://0010.info/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "cms_name": "wordpress"}
+            {"host": "http://0010.ru/", "version": {"is_empty": false, "finds": ["3.6", "3.6.1"]}, "cms_name": "wordpress"}
+            {"host": "http://001081.com/", "version": {"is_empty": false, "finds": ["4.1.5"]}, "cms_name": "wordpress"}
+            {"host": "http://0014d1c9cdd8.click-network.com/", "version": {"is_empty": false, "finds": ["2.5.28", "2.5.28.rc2"]}, "cms_name": "joomla"}
+            {"host": "http://687008.com/016/", "version": {"is_empty": false, "finds": ["3.3.0", "3.3.1", "3.3.2", "3.3.3", "3.3.4", "3.3.5", "3.3.6"]}, "cms_name": "joomla"}
+            {"host": "http://00187.it/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "cms_name": "wordpress"}
+            {"host": "http://001bocai.com/", "version": {"is_empty": false, "finds": ["3.8.8"]}, "cms_name": "wordpress"}
+            {"host": "http://www.001d.com/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "cms_name": "wordpress"}
+
+            real    11m24.005s
+            user    4m45.642s
+            sys     2m17.017s
+
+
+            root@personalChunk:~/droopescan# time ./droopescan scan -U ../head_1000_tab -t 100 -e v --timeout 5 --error-log ../head_1000.error
+            {"host": "http://131.191.14.148/", "version": {"is_empty": false, "finds": ["2.5.28", "2.5.28.rc2"]}, "cms_name": "joomla"}
+            {"host": "http://92.222.25.156/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "cms_name": "wordpress"}
+            {"host": "http://www.001d.com/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "cms_name": "wordpress"}
+
+            real    7m4.703s
+            user    4m2.995s
+            sys     2m23.885s
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
