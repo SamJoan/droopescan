@@ -766,6 +766,7 @@ class BaseHttpTests(BaseTest):
             calls = h.call_args_list
 
             args, kwargs = calls[0]
+            print(args, kwargs)
             assert args[1] == 'http://192.168.1.1/'
             assert kwargs['headers']['Host'] == 'example.com'
 

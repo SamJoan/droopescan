@@ -12,6 +12,7 @@ from functools import partial
 import common
 import hashlib
 import os
+import re
 import requests
 import signal
 import sys
@@ -40,6 +41,7 @@ class BasePluginInternal(controller.CementBaseController):
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
     NUMBER_PLUGINS_DEFAULT = 1000
+    SPLIT_PATTERN = re.compile('[ \t]+')
 
     class Meta:
         label = 'baseplugin'
@@ -773,10 +775,9 @@ class BasePluginInternal(controller.CementBaseController):
         @return: a tuple containing url, and opts with custom headers added.
         """
         new_opts = dict(opts)
-
-        contains_host = '\t' in url
+        contains_host = re.search(self.SPLIT_PATTERN, url)
         if contains_host:
-            url, host = url.strip().split('\t')
+            url, host = re.split(self.SPLIT_PATTERN, url.strip())
             new_opts['headers']['Host'] = host
             return url, new_opts
         else:
