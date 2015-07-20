@@ -158,13 +158,18 @@ class RequestsLogger():
         sess_method = getattr(self._session, method)
         r = sess_method(*args, **kwargs)
 
-        tpl = '[%s] %s %s %s'
+        try:
+            headers = kwargs['headers']
+        except KeyError:
+            headers = {}
+
+        tpl = '[%s] %s %s %s %s'
         if method == "get" and r.status_code == 200:
             hsh = hashlib.md5(r.content).hexdigest()
         else:
             hsh = ""
 
-        print(tpl % (method, args[0], r.status_code, hsh))
+        print(tpl % (method, args[0], headers, r.status_code, hsh))
 
         return r
 
