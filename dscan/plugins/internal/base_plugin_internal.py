@@ -277,9 +277,9 @@ class BasePluginInternal(controller.CementBaseController):
         with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
             results = []
             for url in iterable:
-                contains_host = '\t' in url
-                if contains_host:
-                    url, host = url.strip().split('\t')
+
+                url, host = self._process_multiline_host(url)
+                if host:
                     opts['headers']['Host'] = host
 
                 args = [url, opts, functionality, enabled_functionality, True]
@@ -725,15 +725,15 @@ class BasePluginInternal(controller.CementBaseController):
 
     def cms_identify(self, vf, url, timeout=15, headers={}):
         """
-            Function called when attempting to determine if a URL is identified
+        Function called when attempting to determine if a URL is identified
+        as being this particular CMS.
+        @param vf: a VersionsFile instance.
+        @param url: the URL to attempt to identify.
+        @param timeout: number of seconds before a timeout occurs on a http
+            connection.
+        @param headers: custom HTTP headers as expected by requests.
+        @return: a boolean value indiciating whether this CMS is identified
             as being this particular CMS.
-            @param vf: a VersionsFile instance.
-            @param url: the URL to attempt to identify.
-            @param timeout: number of seconds before a timeout occurs on a http
-                connection.
-            @param headers: custom HTTP headers as expected by requests.
-            @return: a boolean value indiciating whether this CMS is identified
-                as being this particular CMS.
         """
         if isinstance(self.regular_file_url, str):
             rfu = [self.regular_file_url]
@@ -754,4 +754,19 @@ class BasePluginInternal(controller.CementBaseController):
                 break
 
         return is_cms
+
+    def _process_multiline_host(self, url):
+        """
+        Processes URLs and determines whether they are a tab-delimited CSV of
+        url and host.
+        @param url: the url to analyse.
+        @return: returns a tuple containing url and host if determined to have
+            be CSV, otherwise returns url, None.
+        """
+        contains_host = '\t' in url
+        if contains_host:
+            url, host = url.strip().split('\t')
+            return url, host
+        else:
+            return url, None
 

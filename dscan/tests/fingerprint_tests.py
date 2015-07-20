@@ -516,3 +516,14 @@ class FingerprintTests(BaseTest):
                 timeout=1337)
 
         self.assert_called_contains(mock_head, 'timeout', 1337)
+
+    def test_url_file_ip_url_list_identify(self):
+        self.clear_argv()
+        self.add_argv(['scan', '-U', 'tests/resources/url_file_ip_url.txt'])
+        with patch('requests.Session.head', autospec=True) as h:
+            self.app.run()
+
+            calls = h.call_args_list
+            self.assert_called_contains_all(h, 'headers',
+                    self.host_header)
+

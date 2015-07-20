@@ -143,7 +143,12 @@ class Scan(BasePlugin):
             self._process_identify(opts, instances, to_scan)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
+        url, host = self._process_multiline_host(url)
+        if host:
+            opts['headers']['Host'] = host
+
         url = f.repair_url(url, self.out)
+
         if follow_redirects:
             url = self.determine_redirect(url, opts['verb'], opts['timeout'],
                     opts['headers'])

@@ -767,15 +767,15 @@ class BaseHttpTests(BaseTest):
 
             args, kwargs = calls[0]
             assert args[1] == 'http://192.168.1.1/'
-            assert kwargs['headers']['Host'] == 'example.org'
+            assert kwargs['headers']['Host'] == 'example.com'
 
             args, kwargs = calls[1]
             assert args[1] == 'http://192.168.1.1/'
-            assert kwargs['headers']['Host'] == 'example.org'
+            assert kwargs['headers']['Host'] == 'example.com'
 
             args, kwargs = calls[2]
             assert args[1] == 'http://192.168.1.2/drupal/'
-            assert kwargs['headers']['Host'] == 'example.org'
+            assert kwargs['headers']['Host'] == 'example.com'
 
     @patch('requests.Session.head', return_value=FakeRequest())
     def test_respects_host_redirect(self, mock_head):
