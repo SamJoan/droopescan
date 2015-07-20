@@ -1,5 +1,6 @@
 from __future__ import print_function
 from cement.core import controller
+from collections import OrderedDict
 from common.functions import template
 from common import template
 from concurrent.futures import ThreadPoolExecutor
@@ -177,22 +178,36 @@ class Scan(BasePlugin):
                 inst.process_url_iterable(cms_urls, opts, **kwargs)
 
     def _instances_get(self, opts, plugins):
-        instances = {}
-        for plugin in plugins:
-            inst = plugin()
-            hp, func, enabled_func = inst._general_init(opts)
-            name = inst._meta.label
-            vf = v.VersionsFile(inst.versions_file)
+        instances = OrderedDict()
+        preferred_order = ['wordpress', 'joomla', 'drupal']
 
-            instances[name] = {
-                'inst': inst,
-                'vf': vf,
-                'kwargs': {
-                    'hide_progressbar': hp,
-                    'functionality': func,
-                    'enabled_functionality': enabled_func
-                }
-            }
+        for cms_name in preferred_order:
+            for plugin in plugins:
+                plugin_name = plugin.__name__.lower()
+
+                if cms_name == plugin_name:
+                    instances[plugin_name] = self._instance_get(plugin, opts)
+
+        for plugin in plugins:
+            plugin_name = plugin.__name__.lower()
+            if plugin_name not in preferred_order:
+                instances[plugin_name] = self._instance_get(plugin, opts)
 
         return instances
+
+    def _instance_get(self, plugin, opts):
+        inst = plugin()
+        hp, func, enabled_func = inst._general_init(opts)
+        name = inst._meta.label
+        vf = v.VersionsFile(inst.versions_file)
+
+        return {
+            'inst': inst,
+            'vf': vf,
+            'kwargs': {
+                'hide_progressbar': hp,
+                'functionality': func,
+                'enabled_functionality': enabled_func
+            }
+        }
 
