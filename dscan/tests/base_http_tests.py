@@ -764,11 +764,18 @@ class BaseHttpTests(BaseTest):
             self.app.run()
 
             calls = h.call_args_list
-            args, kwargs = calls[0]
 
+            args, kwargs = calls[0]
             assert args[1] == 'http://192.168.1.1/'
-            assert 'headers' in kwargs and 'host' in kwargs['headers']
-            assert kwargs['headers']['host'] == 'example.org'
+            assert kwargs['headers']['Host'] == 'example.org'
+
+            args, kwargs = calls[1]
+            assert args[1] == 'http://192.168.1.1/'
+            assert kwargs['headers']['Host'] == 'example.org'
+
+            args, kwargs = calls[2]
+            assert args[1] == 'http://192.168.1.2/drupal/'
+            assert kwargs['headers']['Host'] == 'example.org'
 
     @patch('requests.Session.head', return_value=FakeRequest())
     def test_respects_host_redirect(self, mock_head):

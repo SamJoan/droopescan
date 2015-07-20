@@ -277,6 +277,11 @@ class BasePluginInternal(controller.CementBaseController):
         with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
             results = []
             for url in iterable:
+                contains_host = '\t' in url
+                if contains_host:
+                    url, host = url.strip().split('\t')
+                    opts['headers']['Host'] = host
+
                 args = [url, opts, functionality, enabled_functionality, True]
                 future = executor.submit(self.url_scan, *args)
 
