@@ -7,6 +7,9 @@ Version 1.x:
     - Add "output to file" functionality.
         - resume when -U and "output to file"
     - URL after redirect is not provided?
+    - When mass-scanning with CMS provided, it sometimes says cms_name is
+          something it's not. Like, when versions: [] is empty true, but now even
+          more misleading.
     
     real problems:
         - ConnectionError is dodgy:
@@ -44,3 +47,17 @@ Version 2.x:
 Relevant:
 - https://wappalyzer.com/ -
   http://www.opensourcecms.com/general/cms-marketshare.php
+0010.idv.tw
+0010.info
+0010.ru
+001081.com
+0014d1c9cdd8.click-network.com
+00187.it
+001bocai.com
+157.7.235.109	0010.idv.tw
+96.8.117.140	0010.info
+37.140.192.125	0010.ru
+157.7.184.20	001081.com
+131.191.14.148	0014d1c9cdd8.click-network.com
+92.222.25.156	00187.it
+5.44.233.202	001bocai.com

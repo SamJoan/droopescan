@@ -775,12 +775,12 @@ class BasePluginInternal(controller.CementBaseController):
         @return: a tuple containing url, and opts with custom headers added.
         """
         new_opts = dict(opts)
+        import pdb
+        pdb.set_trace()
         contains_host = re.search(self.SPLIT_PATTERN, url)
         if contains_host:
             url, host = re.split(self.SPLIT_PATTERN, url.strip())
             new_opts['headers']['Host'] = host
-            return url, new_opts
-        else:
-            return url, opts
 
+        return url, new_opts
 
