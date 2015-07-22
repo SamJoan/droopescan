@@ -163,6 +163,7 @@ class Scan(BasePlugin):
                 self.out.warn(("Line '%s' raised:\n" % future_dict['url']) + exc,
                         whitespace_strp=False)
 
+        print(to_scan)
         if to_scan:
             self._process_scan(opts, instances, to_scan)
 

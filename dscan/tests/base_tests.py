@@ -289,3 +289,12 @@ class BaseTests(BaseTest):
 
         assert a == '10%)'
         assert " ===== " in u.get()
+
+    def test_multiline_host_reference(self):
+        url = self.base_url + "\texample.com"
+        opts = self.test_opts
+
+        url, new_opts = self.scanner._process_multiline_host(url, opts)
+        # If not true, then was modified within the function.
+        assert opts['headers'] == {}
+
