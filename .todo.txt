@@ -4,6 +4,7 @@ Version 1.x:
     - ./droopescan scan -u drupal.org fails
     - better error for empty file when `scan`
     - SIGINT capture for new scanning.
+    - vendor/composer/installed.json to SS.
     - Add "output to file" functionality.
         - resume when -U and "output to file"
     - URL after redirect is not provided?
