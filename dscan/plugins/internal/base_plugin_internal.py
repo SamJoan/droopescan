@@ -1,5 +1,6 @@
 from __future__ import print_function
 from cement.core import handler, controller
+from copy import deepcopy
 from common import ScanningMethod, StandardOutput, JsonOutput, \
         VersionsFile, RequestsLogger
 from common import template, enum_list, dict_combine, base_url, file_len
@@ -774,9 +775,11 @@ class BasePluginInternal(controller.CementBaseController):
         @param opts: the options dictionary to modify.
         @return: a tuple containing url, and opts with custom headers added.
         """
+
+        # Create copies to prevent modifying upstream references.
         new_opts = dict(opts)
-        import pdb
-        pdb.set_trace()
+        new_opts['headers'] = dict(new_opts['headers'])
+
         contains_host = re.search(self.SPLIT_PATTERN, url)
         if contains_host:
             url, host = re.split(self.SPLIT_PATTERN, url.strip())
