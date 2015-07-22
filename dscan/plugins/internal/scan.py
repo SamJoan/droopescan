@@ -105,7 +105,6 @@ class Scan(BasePlugin):
                 i = 0
                 for url in url_file:
                     url = url.strip()
-                    print(url, opts['verb'], opts['timeout'], opts['headers'])
                     future = executor.submit(self._process_cms_identify, url,
                             opts, instances, follow_redirects)
 
