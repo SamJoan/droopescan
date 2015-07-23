@@ -308,16 +308,6 @@ class FingerprintTests(BaseTest):
 
         assert result == mock_versions
 
-    def _prepare_identify(self, url_file=False):
-        self.clear_argv()
-        if url_file:
-            self.add_argv(['scan', '-U', self.valid_file])
-        else:
-            self.add_argv(['scan', '-u', self.base_url])
-
-        self.add_argv(['--host', 'example.com'])
-        self.add_argv(['--timeout', "1337"])
-
     @patch('requests.Session.head')
     def test_cms_identify_called(self, mock_head):
         mock_head().status_code = 200
@@ -376,12 +366,33 @@ class FingerprintTests(BaseTest):
         assert cim.call_count == 3
         assert pu.call_count == 1
 
-    def _mock_cms_multiple(self, cms_ident_side_eff):
-        self._prepare_identify(url_file=True)
+    def _prepare_identify(self, url_file=False, url_file_host=False):
+        self.clear_argv()
+        if url_file_host:
+            self.add_argv(['scan', '-U', 'tests/resources/url_file_ip_url.txt'])
+        elif url_file:
+            self.add_argv(['scan', '-U', self.valid_file])
+        else:
+            self.add_argv(['scan', '-u', self.base_url])
+            self.add_argv(['--host', 'example.com'])
+
+        self.add_argv(['--timeout', "1337"])
+
+    def _mock_cms_multiple(self, cms_ident_side_eff, redir_side_eff=None, url_file_host=False):
+        if not url_file_host:
+            self._prepare_identify(url_file=True)
+        else:
+            self._prepare_identify(url_file_host=True)
+
         self.p_list = []
 
-        r_p = patch(self.redir_module, return_value=self.base_url,
-            autospec=True)
+        if not redir_side_eff:
+            r_p = patch(self.redir_module, return_value=self.base_url,
+                autospec=True)
+        else:
+            r_p = patch(self.redir_module, return_value=self.base_url,
+                autospec=True, side_effect=redir_side_eff)
+
         r_p.start()
         self.p_list.append(r_p)
 
@@ -528,12 +539,48 @@ class FingerprintTests(BaseTest):
                     self.host_header)
 
     def test_redirect_identify_respects_new_host(self):
+        repaired_url = 'http://example.com/'
         _, pui = self._mock_cms_multiple(cms_ident_side_eff=[True, False, False,
-            False, False])
+            False, False], redir_side_eff=[repaired_url])
 
         self.app.run()
 
-        print(pui.call_args_list)
+        args, kwargs = pui.call_args
+        url, opts = args[1][0]
+
+        assert url == repaired_url
+        assert opts['headers'] == {}
+
+        self._mock_cms_multiple_stop()
+
+    def test_redirect_identify_ip_host_respects_new_host(self):
+        repaired_url = 'http://darf.com/'
+        _, pui = self._mock_cms_multiple(cms_ident_side_eff=[True, False, False,
+            False, False], redir_side_eff=[repaired_url], url_file_host=True)
+
+        self.app.run()
+
+        args, kwargs = pui.call_args
+        url, opts = args[1][0]
+
+        assert url == repaired_url
+        assert opts['headers'] == {}
+
+        self._mock_cms_multiple_stop()
+
+    def test_redirect_identify_ip_host_respects_same_host(self):
+        repaired_url = 'http://example.com/'
+        _, pui = self._mock_cms_multiple(cms_ident_side_eff=[True, False, False,
+            False, False], redir_side_eff=[repaired_url + "lel/"], url_file_host=True)
+
+        self.app.run()
+
+        args, kwargs = pui.call_args
+        url, opts = args[1][0]
+
+        print(url)
+        assert url == 'http://192.168.1.1/lel/'
+        assert opts['headers'] == self.host_header
 
         self._mock_cms_multiple_stop()
 

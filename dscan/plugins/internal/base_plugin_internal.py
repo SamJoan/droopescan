@@ -261,10 +261,15 @@ class BasePluginInternal(controller.CementBaseController):
         i = 0
         with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
             results = []
-            for url in iterable:
+            for elem in iterable:
+
+                if isinstance(elem, tuple):
+                    url, new_opts = elem
+                else:
+                    url, new_opts = self._process_multiline_host(url, opts)
 
                 line = url
-                url, new_opts = self._process_multiline_host(url, opts)
+
                 try:
                     host_header = new_opts['headers']['Host']
                 except KeyError:
@@ -768,6 +773,9 @@ class BasePluginInternal(controller.CementBaseController):
 
         return is_cms
 
+    def _line_contains_host(self, url):
+        return re.search(self.SPLIT_PATTERN, url)
+
     def _process_multiline_host(self, url, opts):
         """
         Processes URLs and determines whether they are a tab-delimited CSV of
@@ -781,8 +789,7 @@ class BasePluginInternal(controller.CementBaseController):
         new_opts = dict(opts)
         new_opts['headers'] = dict(new_opts['headers'])
 
-        contains_host = re.search(self.SPLIT_PATTERN, url)
-        if contains_host:
+        if self._line_contains_host(url):
             url, host = re.split(self.SPLIT_PATTERN, url.strip())
             new_opts['headers']['Host'] = host
 

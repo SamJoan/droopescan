@@ -4,6 +4,7 @@ from collections import OrderedDict
 from common.functions import template
 from common import template
 from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
 from plugins.internal.base_plugin import BasePlugin
 from plugins.internal.base_plugin_internal import BasePluginInternal
 import common
@@ -11,6 +12,11 @@ import common.functions as f
 import common.plugins_util as pu
 import common.versions as v
 import traceback
+
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 
 class Scan(BasePlugin):
 
@@ -123,12 +129,31 @@ class Scan(BasePlugin):
                     self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
-        url, new_opts = self._process_multiline_host(url, opts)
+        contains_host = self._line_contains_host(url)
+        if contains_host:
+            url, new_opts = self._process_multiline_host(url, opts)
+            host_header = new_opts['headers']['Host']
+        else:
+            new_opts = opts
+
         url = f.repair_url(url, self.out)
 
         if follow_redirects:
-            url = self.determine_redirect(url, new_opts['verb'], new_opts['timeout'],
+            redir_url = self.determine_redirect(url, new_opts['verb'], new_opts['timeout'],
                     new_opts['headers'])
+
+            if contains_host:
+                parsed = urlparse(redir_url)
+                if parsed.netloc != host_header:
+                    # DNS is necessary in this case.
+                    new_opts = opts
+                    url = redir_url
+                else:
+                    orig_parsed = urlparse(url)
+                    parsed = parsed._replace(netloc=orig_parsed.netloc)
+                    url = parsed.geturl()
+            else:
+                url = redir_url
 
         found = False
         for cms_name in instances:
@@ -143,7 +168,7 @@ class Scan(BasePlugin):
         if not found:
             return None, None
         else:
-            return cms_name, url
+            return cms_name, (url, new_opts)
 
     def _process_identify_futures(self, futures, opts, instances):
         to_scan = {}
@@ -151,13 +176,13 @@ class Scan(BasePlugin):
             future = future_dict['future']
 
             try:
-                cms_name, repaired_url = future.result(timeout=opts['timeout_host'])
+                cms_name, result_tuple = future.result(timeout=opts['timeout_host'])
 
                 if cms_name != None:
                     if cms_name not in to_scan:
                         to_scan[cms_name] = []
 
-                    to_scan[cms_name].append(future_dict['url'])
+                    to_scan[cms_name].append(result_tuple)
             except:
                 exc = traceback.format_exc()
                 self.out.warn(("Line '%s' raised:\n" % future_dict['url']) + exc,
