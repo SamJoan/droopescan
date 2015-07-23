@@ -266,6 +266,7 @@ class BasePluginInternal(controller.CementBaseController):
                 if isinstance(elem, tuple):
                     url, new_opts = elem
                 else:
+                    url = elem
                     url, new_opts = self._process_multiline_host(url, opts)
 
                 line = url

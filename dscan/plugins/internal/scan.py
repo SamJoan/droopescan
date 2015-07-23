@@ -139,6 +139,7 @@ class Scan(BasePlugin):
         url = f.repair_url(url, self.out)
 
         if follow_redirects:
+            print("lalal")
             redir_url = self.determine_redirect(url, new_opts['verb'], new_opts['timeout'],
                     new_opts['headers'])
 

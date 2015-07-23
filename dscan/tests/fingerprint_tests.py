@@ -413,7 +413,8 @@ class FingerprintTests(BaseTest):
 
     def test_cms_identify_respected_multiple(self):
         return_value = [True, False, True, False, False, True]
-        cim, pui = self._mock_cms_multiple(cms_ident_side_eff=return_value)
+        cim, pui = self._mock_cms_multiple(cms_ident_side_eff=return_value,
+                url_file_host=True)
 
         self.app.run()
 
@@ -578,7 +579,6 @@ class FingerprintTests(BaseTest):
         args, kwargs = pui.call_args
         url, opts = args[1][0]
 
-        print(url)
         assert url == 'http://192.168.1.1/lel/'
         assert opts['headers'] == self.host_header
 
