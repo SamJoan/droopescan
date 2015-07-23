@@ -156,20 +156,27 @@ class RequestsLogger():
         @see: IntegrationTests.mock_output
         """
         sess_method = getattr(self._session, method)
-        r = sess_method(*args, **kwargs)
 
         try:
             headers = kwargs['headers']
         except KeyError:
             headers = {}
 
-        tpl = '[%s] %s %s %s %s'
+        tpl = '[%s] %s %s'
+        print(tpl % (method, args[0], headers), end=' ')
+
+        try:
+            r = sess_method(*args, **kwargs)
+        except e:
+            print("FAILED (%s)" % type(e).__name__)
+            raise
+
         if method == "get" and r.status_code == 200:
             hsh = hashlib.md5(r.content).hexdigest()
         else:
             hsh = ""
 
-        print(tpl % (method, args[0], headers, r.status_code, hsh))
+        print(r.status_code, hsh)
 
         return r
 
