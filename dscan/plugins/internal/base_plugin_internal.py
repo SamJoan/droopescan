@@ -86,6 +86,7 @@ class BasePluginInternal(controller.CementBaseController):
         if pargs.host:
             headers = {'Host': pargs.host}
 
+        del pargs
         return locals()
 
     def _base_kwargs(self, opts):

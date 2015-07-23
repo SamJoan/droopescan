@@ -528,5 +528,12 @@ class FingerprintTests(BaseTest):
                     self.host_header)
 
     def test_redirect_identify_respects_new_host(self):
-        assert False
+        _, pui = self._mock_cms_multiple(cms_ident_side_eff=[True, False, False,
+            False, False])
+
+        self.app.run()
+
+        print(pui.call_args_list)
+
+        self._mock_cms_multiple_stop()
 
