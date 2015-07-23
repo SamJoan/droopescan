@@ -13,30 +13,8 @@ Version 1.x:
           more misleading.
     
     real problems:
-        - ConnectionError is dodgy:
-            [Mon Jul 20 22:56:33 2015] Line '112.126.68.4   00101.com' raised:
-            Traceback (most recent call last):
-              File "/root/droopescan/dscan/plugins/internal/scan.py", line 154, in _process_identify_futures
-                cms_name, repaired_url = future.result(timeout=opts['timeout_host'])
-              File "/usr/local/lib/python2.7/dist-packages/concurrent/futures/_base.py", line 396, in result
-                return self.__get_result()
-              File "/usr/local/lib/python2.7/dist-packages/concurrent/futures/thread.py", line 55, in run
-                result = self.fn(*self.args, **self.kwargs)
-              File "/root/droopescan/dscan/plugins/internal/scan.py", line 139, in _process_cms_identify
-                if inst.cms_identify(vf, url, new_opts['timeout'], new_opts['headers']) == True:
-              File "/root/droopescan/dscan/plugins/internal/base_plugin_internal.py", line 756, in cms_identify
-                headers)
-              File "/root/droopescan/dscan/plugins/internal/base_plugin_internal.py", line 674, in enumerate_file_hash
-                r = self.session.get(url + file_url, timeout=timeout, headers=headers)
-              File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 477, in get
-                return self.request('GET', url, **kwargs)
-              File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 465, in request
-                resp = self.send(prep, **send_kwargs)
-              File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 573, in send
-                r = adapter.send(request, **kwargs)
-              File "/usr/local/lib/python2.7/dist-packages/requests/adapters.py", line 415, in send
-                raise ConnectionError(err, request=request)
-            ConnectionError: ('Connection aborted.', gaierror(-2, 'Name or service not known'))
+        - does not follow redirects on 
+            80.245.61.238   00100web.it
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
