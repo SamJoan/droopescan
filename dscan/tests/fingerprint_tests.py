@@ -527,3 +527,6 @@ class FingerprintTests(BaseTest):
             self.assert_called_contains_all(h, 'headers',
                     self.host_header)
 
+    def test_redirect_identify_respects_new_host(self):
+        assert False
+

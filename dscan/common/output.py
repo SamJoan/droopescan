@@ -167,8 +167,10 @@ class RequestsLogger():
 
         try:
             r = sess_method(*args, **kwargs)
-        except e:
-            print("FAILED (%s)" % type(e).__name__)
+        except:
+            e = sys.exc_info()
+            e_str = "%s: %s" % (e[0], e[1])
+            print("FAILED (%s)" % e_str)
             raise
 
         if method == "get" and r.status_code == 200:
