@@ -8,15 +8,9 @@ from copy import deepcopy
 from plugins.internal.base_plugin import BasePlugin
 from plugins.internal.base_plugin_internal import BasePluginInternal
 import common
-import common.functions as f
 import common.plugins_util as pu
 import common.versions as v
 import traceback
-
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
 
 class Scan(BasePlugin):
 
@@ -94,12 +88,13 @@ class Scan(BasePlugin):
         if 'url_file' in opts:
             self._process_scan_url_file(opts, instances, follow_redirects)
         else:
-            cms_name, url = self._process_cms_identify(opts['url'], opts, instances,
+            cms_name, scan_out = self._process_cms_identify(opts['url'], opts, instances,
                     follow_redirects)
+
+            url, opts_clone = scan_out
 
             inst_dict = instances[cms_name]
             inst = inst_dict['inst']
-            opts_clone = dict(opts)
             opts_clone['url'] = url
 
             inst.process_url(opts_clone, **inst_dict['kwargs'])
@@ -129,32 +124,7 @@ class Scan(BasePlugin):
                     self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
-        contains_host = self._line_contains_host(url)
-        if contains_host:
-            url, new_opts = self._process_multiline_host(url, opts)
-            host_header = new_opts['headers']['Host']
-        else:
-            new_opts = opts
-
-        url = f.repair_url(url, self.out)
-
-        if follow_redirects:
-            print("lalal")
-            redir_url = self.determine_redirect(url, new_opts['verb'], new_opts['timeout'],
-                    new_opts['headers'])
-
-            if contains_host:
-                parsed = urlparse(redir_url)
-                if parsed.netloc != host_header:
-                    # DNS is necessary in this case.
-                    new_opts = opts
-                    url = redir_url
-                else:
-                    orig_parsed = urlparse(url)
-                    parsed = parsed._replace(netloc=orig_parsed.netloc)
-                    url = parsed.geturl()
-            else:
-                url = redir_url
+        url, new_opts = self.determine_redirect(url, opts, follow_redirects)
 
         found = False
         for cms_name in instances:
@@ -186,6 +156,8 @@ class Scan(BasePlugin):
                     to_scan[cms_name].append(result_tuple)
             except:
                 exc = traceback.format_exc()
+                if self.app.testing:
+                    print(exc)
                 self.out.warn(("Line '%s' raised:\n" % future_dict['url']) + exc,
                         whitespace_strp=False)
 

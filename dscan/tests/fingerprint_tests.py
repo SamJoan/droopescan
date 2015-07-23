@@ -24,7 +24,7 @@ class FingerprintTests(BaseTest):
     process_url_module = bpi_module + 'process_url'
     pui_module = bpi_module + 'process_url_iterable'
     efh_module = bpi_module + 'enumerate_file_hash'
-    redir_module = bpi_module + 'determine_redirect'
+    redir_module = bpi_module + '_determine_redirect'
     warn_module = 'common.output.StandardOutput.warn'
 
     p_list = None
@@ -378,7 +378,8 @@ class FingerprintTests(BaseTest):
 
         self.add_argv(['--timeout', "1337"])
 
-    def _mock_cms_multiple(self, cms_ident_side_eff, redir_side_eff=None, url_file_host=False):
+    def _mock_cms_multiple(self, cms_ident_side_eff, redir_side_eff=None,
+            url_file_host=False, mock_redir=True):
         if not url_file_host:
             self._prepare_identify(url_file=True)
         else:
@@ -386,15 +387,16 @@ class FingerprintTests(BaseTest):
 
         self.p_list = []
 
-        if not redir_side_eff:
-            r_p = patch(self.redir_module, return_value=self.base_url,
-                autospec=True)
-        else:
-            r_p = patch(self.redir_module, return_value=self.base_url,
-                autospec=True, side_effect=redir_side_eff)
-
-        r_p.start()
-        self.p_list.append(r_p)
+        if mock_redir:
+            if not redir_side_eff:
+                def _rdr(self, url, verb, timeout, headers):
+                    return url
+                r_p = patch(self.redir_module, autospec=True, side_effect=_rdr)
+            else:
+                r_p = patch(self.redir_module, autospec=True,
+                        side_effect=redir_side_eff)
+            r_p.start()
+            self.p_list.append(r_p)
 
         pui_p = patch(self.pui_module, autospec=True)
         pui = pui_p.start()
@@ -421,9 +423,9 @@ class FingerprintTests(BaseTest):
         assert cim.call_count == 6
         assert pui.call_count == 3
 
-        args, kwargs = cim.call_args
+        args, kwargs = cim.call_args_list[0]
         assert isinstance(args[1], VersionsFile)
-        assert args[2] == self.base_url
+        assert args[2] == "http://192.168.1.1/"
 
         assert args[3] == 1337
         assert args[4] == self.host_header

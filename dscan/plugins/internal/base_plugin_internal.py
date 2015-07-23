@@ -11,6 +11,7 @@ from os.path import dirname
 from requests import Session
 from functools import partial
 import common
+import common.functions as f
 import hashlib
 import os
 import re
@@ -18,6 +19,11 @@ import requests
 import signal
 import sys
 import traceback
+
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 
 global shutdown
 shutdown = False
@@ -362,7 +368,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return result
 
-    def determine_redirect(self, url, verb, timeout=15, headers={}):
+    def _determine_redirect(self, url, verb, timeout=15, headers={}):
         """
         @param url: the url to check
         @param verb: the verb, e.g. head, or get.
@@ -392,6 +398,34 @@ class BasePluginInternal(controller.CementBaseController):
                 url_new = url
 
         return url_new
+
+    def determine_redirect(self, url, opts, follow_redirects):
+        contains_host = self._line_contains_host(url)
+        if contains_host:
+            url, new_opts = self._process_multiline_host(url, opts)
+            host_header = new_opts['headers']['Host']
+        else:
+            new_opts = opts
+
+        url = f.repair_url(url, self.out)
+
+        if follow_redirects:
+            redir_url = self._determine_redirect(url, new_opts['verb'],
+                    new_opts['timeout'], new_opts['headers'])
+
+            if contains_host:
+                parsed = urlparse(redir_url)
+                orig_parsed = urlparse(url)
+
+                dns_lookup_required = parsed.netloc != orig_parsed.netloc
+                if dns_lookup_required:
+                    url = redir_url
+                    new_opts = opts
+
+            else:
+                url = redir_url
+
+        return url, new_opts
 
     def _determine_ok_200(self, requests_verb, url):
         if common.is_string(self.regular_file_url):
