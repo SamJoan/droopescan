@@ -333,20 +333,19 @@ class BasePluginInternal(controller.CementBaseController):
     def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
         url = common.repair_url(url, self.out)
 
-        if opts['follow_redirects']:
-            url = self.determine_redirect(url, opts['verb'], opts['timeout'],
-                    opts['headers'])
+        url, new_opts = self.determine_redirect(url, opts,
+                opts['follow_redirects'])
 
-        need_sm = opts['enumerate'] in ['a', 'p', 't']
+        need_sm = new_opts['enumerate'] in ['a', 'p', 't']
         if need_sm and (self.can_enumerate_plugins or self.can_enumerate_themes):
-            scanning_method = opts['method']
+            scanning_method = new_opts['method']
             if not scanning_method:
                 scanning_method = self.determine_scanning_method(url,
-                        opts['verb'], opts['timeout'], opts['headers'])
+                        new_opts['verb'], new_opts['timeout'], new_opts['headers'])
         else:
             scanning_method = None
 
-        enumerating_all = opts['enumerate'] == 'a'
+        enumerating_all = new_opts['enumerate'] == 'a'
         result = {}
         for enumerate in enabled_functionality:
             enum = functionality[enumerate]
