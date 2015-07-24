@@ -8,4 +8,8 @@ sys.path.append(p)
 os.chdir(p)
 
 import droopescan
-droopescan.main(prev_cwd)
+if os.getenv('DROOPESCAN_PROFILE'):
+    import cProfile
+    cProfile.run("droopescan.main(prev_cwd)", sort="cumtime")
+else:
+    droopescan.main(prev_cwd)
