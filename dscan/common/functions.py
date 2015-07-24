@@ -195,11 +195,10 @@ def md5_file(filename):
 def version_get():
     """
         Returns current droopescan version. Not. It was broken and not a useful
-        feature, so I replaced it with a fake version.
+        feature, so I replaced it with a way more elite version.
     """
     version = '1.33.7'
     return version
 
 def error(msg):
     raise RuntimeError('\033[91m%s\033[0m' % msg)
-
