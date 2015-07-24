@@ -395,8 +395,7 @@ class FingerprintTests(BaseTest):
         if mock_redir:
             if not redir_side_eff:
                 def _rdr(self, url, verb, timeout, headers):
-                    parsed = urlparse(url)._replace(netloc=headers['Host'])
-                    return parsed.geturl()
+                    return url
                 r_p = patch(self.redir_module, autospec=True, side_effect=_rdr)
             else:
                 r_p = patch(self.redir_module, autospec=True,
@@ -588,6 +587,21 @@ class FingerprintTests(BaseTest):
         url, opts = args[1][0]
 
         assert url == 'http://192.168.1.1/lel/'
+        assert opts['headers'] == self.host_header
+
+        self._mock_cms_multiple_stop()
+
+    def test_redirect_identify_ip_host_respects_no_redir(self):
+        repaired_url = 'http://example.com/'
+        _, pui = self._mock_cms_multiple(cms_ident_side_eff=[True, False, False,
+            False, False], url_file_host=True)
+
+        self.app.run()
+
+        args, kwargs = pui.call_args
+        url, opts = args[1][0]
+
+        assert url == 'http://192.168.1.1/'
         assert opts['headers'] == self.host_header
 
         self._mock_cms_multiple_stop()

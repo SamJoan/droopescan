@@ -412,19 +412,20 @@ class BasePluginInternal(controller.CementBaseController):
             redir_url = self._determine_redirect(url, new_opts['verb'],
                     new_opts['timeout'], new_opts['headers'])
 
-            if contains_host:
-                parsed = urlparse(redir_url)
-                dns_lookup_required = parsed.netloc != orig_host_header
-                if dns_lookup_required:
-                    url = redir_url
-                    new_opts = opts
+            redirected = redir_url != url
+            if redirected:
+                if contains_host:
+                    parsed = urlparse(redir_url)
+                    dns_lookup_required = parsed.netloc != orig_host_header
+                    if dns_lookup_required:
+                        url = redir_url
+                        new_opts = opts
+                    else:
+                        orig_parsed = urlparse(url)
+                        parsed = parsed._replace(netloc=orig_parsed.netloc)
+                        url = parsed.geturl()
                 else:
-                    orig_parsed = urlparse(url)
-                    parsed = parsed._replace(netloc=orig_parsed.netloc)
-                    url = parsed.geturl()
-
-            else:
-                url = redir_url
+                    url = redir_url
 
         return url, new_opts
 
