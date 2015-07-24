@@ -45,8 +45,6 @@ class Scan(BasePlugin):
                     requests, which are always get because we need to get the hash
                     from the file's contents""", default='head',
                     choices=common.enum_list(common.Verb))),
-                (['--threads', '-t'], dict(action='store', help='''Number of
-                    threads. Default 4.''', default=4, type=int)),
                 (['--number', '-n'], dict(action='store', help='''Number of
                     words to attempt from the plugin/theme dictionary. Default
                     is 1000. Use -n 'all' to use all available.''',
@@ -67,6 +65,8 @@ class Scan(BasePlugin):
                     the following of redirects.""", dest="follow_redirects", default=True)),
                 (['--host'], dict(action='store', help="""Override host header
                     with this value.""", default=None)),
+                (['--threads', '-t'], dict(action='store', help='''Number of
+                    threads. Default 4.''', default=4, type=int)),
 
                 (['--output', '-o'], dict(action='store', help='Output format',
                     choices=common.enum_list(common.ValidOutputs), default='standard')),

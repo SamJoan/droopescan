@@ -13,8 +13,7 @@ Version 1.x:
           more misleading.
     
     real problems:
-        - does not follow redirects on 
-            80.245.61.238   00100web.it
+        - need to tidy threads....
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
