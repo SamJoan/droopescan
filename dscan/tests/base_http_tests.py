@@ -440,7 +440,7 @@ class BaseHttpTests(BaseTest):
         self.add_argv(['--url', self.base_url, '--enumerate', 'p'])
 
         # Trigger redirect:
-        dr = self.mock_controller('drupal', 'determine_redirect',
+        dr = self.mock_controller('drupal', '_determine_redirect',
                 return_value=self.base_url_https)
         self.mock_controller('drupal', 'determine_scanning_method',
                 return_value=ScanningMethod.not_found)
@@ -454,7 +454,7 @@ class BaseHttpTests(BaseTest):
         self.add_argv(['--url', self.base_url, '--enumerate', 'p',
             '--no-follow-redirects'])
 
-        dr = self.mock_controller('drupal', 'determine_redirect',
+        dr = self.mock_controller('drupal', '_determine_redirect',
                 return_value=self.base_url_https)
         self.mock_controller('drupal', 'determine_scanning_method',
                 return_value=ScanningMethod.not_found)
@@ -470,7 +470,7 @@ class BaseHttpTests(BaseTest):
             '--enumerate', 'p'])
 
         # Trigger redirect:
-        dr = self.mock_controller('drupal', 'determine_redirect',
+        dr = self.mock_controller('drupal', '_determine_redirect',
                 return_value=self.base_url_https)
 
         enum = self.mock_controller('drupal', 'enumerate', side_effect=[([], True)])
@@ -484,14 +484,14 @@ class BaseHttpTests(BaseTest):
         self.respond_several(self.base_url + "%s", {301: [""]},
                 headers={'location': self.base_url_https})
 
-        result = self.scanner.determine_redirect(self.base_url,
+        result = self.scanner._determine_redirect(self.base_url,
                 Verb.head)
 
         assert result == self.base_url_https
 
     def test_redirect_no_relative(self):
         """
-            Relative redirects fuck shit up in many occasions, I've seen it.
+        Relative redirects fuck shit up in many occasions, I've seen it.
         """
         responses.reset()
         redirect_vals = {
@@ -504,7 +504,7 @@ class BaseHttpTests(BaseTest):
             responses.add(responses.HEAD, self.base_url,
                     status=301, adding_headers={'location': i})
 
-            ru = self.scanner.determine_redirect(self.base_url, 'head')
+            ru = self.scanner._determine_redirect(self.base_url, 'head')
             assert ru == redirect_vals[i]
 
             responses.reset()
@@ -514,20 +514,20 @@ class BaseHttpTests(BaseTest):
         responses.add(responses.HEAD, another_base, status=301,
                 adding_headers={'location': 'relative'})
 
-        ru = self.scanner.determine_redirect(another_base, 'head')
+        ru = self.scanner._determine_redirect(another_base, 'head')
 
         assert ru == another_base
 
     def test_redirect_no_same_url(self):
         """
-            If redirects take us somewhere within the same URL of base url, we
-            should return the base url.
+        If redirects take us somewhere within the same URL of base url, we
+        should return the base url.
         """
         responses.reset()
         responses.add(responses.HEAD, self.base_url, status=301,
                 adding_headers={'location': self.base_url + "install.php"})
 
-        ru = self.scanner.determine_redirect(self.base_url, 'head')
+        ru = self.scanner._determine_redirect(self.base_url, 'head')
         assert ru == self.base_url
 
     def test_url_file_calls_all(self):
@@ -780,7 +780,7 @@ class BaseHttpTests(BaseTest):
     @patch('requests.Session.head', return_value=FakeRequest())
     def test_respects_host_redirect(self, mock_head):
         try:
-            self.scanner.determine_redirect(self.base_url, 'head',
+            self.scanner._determine_redirect(self.base_url, 'head',
                     headers=self.host_header)
         except RuntimeError:
             pass
