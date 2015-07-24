@@ -403,7 +403,7 @@ class BasePluginInternal(controller.CementBaseController):
         contains_host = self._line_contains_host(url)
         if contains_host:
             url, new_opts = self._process_multiline_host(url, opts)
-            host_header = new_opts['headers']['Host']
+            orig_host_header = new_opts['headers']['Host']
         else:
             new_opts = opts
 
@@ -415,12 +415,14 @@ class BasePluginInternal(controller.CementBaseController):
 
             if contains_host:
                 parsed = urlparse(redir_url)
-                orig_parsed = urlparse(url)
-
-                dns_lookup_required = parsed.netloc != orig_parsed.netloc
+                dns_lookup_required = parsed.netloc != orig_host_header
                 if dns_lookup_required:
                     url = redir_url
                     new_opts = opts
+                else:
+                    orig_parsed = urlparse(url)
+                    parsed = parsed._replace(netloc=orig_parsed.netloc)
+                    url = parsed.geturl()
 
             else:
                 url = redir_url

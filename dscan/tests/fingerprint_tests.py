@@ -12,6 +12,11 @@ import hashlib
 import requests
 import responses
 
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
+
 @decallmethods(responses.activate)
 class FingerprintTests(BaseTest):
     '''
@@ -390,7 +395,8 @@ class FingerprintTests(BaseTest):
         if mock_redir:
             if not redir_side_eff:
                 def _rdr(self, url, verb, timeout, headers):
-                    return url
+                    parsed = urlparse(url)._replace(netloc=headers['Host'])
+                    return parsed.geturl()
                 r_p = patch(self.redir_module, autospec=True, side_effect=_rdr)
             else:
                 r_p = patch(self.redir_module, autospec=True,
