@@ -16,7 +16,7 @@ import traceback
 
 class Scan(BasePlugin):
 
-    IDENTIFY_BATCH_SIZE = 30
+    IDENTIFY_BATCH_SIZE = 1000
     quiet_exceptions = [ConnectionError, ReadTimeout, ConnectTimeout]
 
     class Meta:
@@ -65,6 +65,10 @@ class Scan(BasePlugin):
                     the following of redirects.""", dest="follow_redirects", default=True)),
                 (['--host'], dict(action='store', help="""Override host header
                     with this value.""", default=None)),
+                (['--massscan-defaults'], dict(action='store_true',
+                    help="""Overrides defaults with defaults convenient for
+                    mass-scanning of hosts.""", dest="massscan_defaults",
+                    default=False)),
 
                 (['--threads', '-t'], dict(action='store', help='''Number of
                     threads. Default 4.''', default=4, type=int)),

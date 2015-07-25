@@ -64,6 +64,25 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             return pwd + "/" + path
 
+    def _threads(self, pargs):
+        threads = pargs.threads
+        if pargs.threads_identify:
+            threads_identify = pargs.threads_identify
+        else:
+            threads_identify = threads
+
+        if pargs.threads_scan:
+            threads_scan = pargs.threads_scan
+        else:
+            threads_scan = threads
+
+        if pargs.threads_enumerate:
+            threads_enumerate = pargs.threads_enumerate
+        else:
+            threads_enumerate = threads
+
+        return threads, threads_identify, threads_scan, threads_enumerate
+
     def _options(self, pargs):
         pwd = self.app.config.get('general', 'pwd')
         if pargs.url_file != None:
@@ -91,21 +110,15 @@ class BasePluginInternal(controller.CementBaseController):
         if pargs.host:
             headers = {'Host': pargs.host}
 
-        threads = pargs.threads
-        if pargs.threads_identify:
-            threads_identify = pargs.threads_identify
-        else:
-            threads_identify = threads
+        threads, threads_identify, threads_scan, threads_enumerate = self._threads(pargs)
 
-        if pargs.threads_scan:
-            threads_scan = pargs.threads_scan
-        else:
-            threads_scan = threads
-
-        if pargs.threads_enumerate:
-            threads_enumerate = pargs.threads_enumerate
-        else:
-            threads_enumerate = threads
+        if pargs.massscan_defaults:
+            threads = 4
+            threads_identify = 1000
+            threads_scan = 200
+            threads_enumerate = 4
+            timeout = 10
+            timeout_host = 120
 
         del pargs
         return locals()
