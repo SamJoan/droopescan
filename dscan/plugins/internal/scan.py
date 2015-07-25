@@ -65,8 +65,15 @@ class Scan(BasePlugin):
                     the following of redirects.""", dest="follow_redirects", default=True)),
                 (['--host'], dict(action='store', help="""Override host header
                     with this value.""", default=None)),
+
                 (['--threads', '-t'], dict(action='store', help='''Number of
                     threads. Default 4.''', default=4, type=int)),
+                (['--threads-identify'], dict(action='store', help='''Number of
+                    threads used for CMS identification.''', default=None, type=int)),
+                (['--threads-scan'], dict(action='store', help='''Threads used
+                    for mass scanning.''', default=None, type=int)),
+                (['--threads-enumerate'], dict(action='store', help='''Threads
+                    used for plugin enumeration.''', default=None, type=int)),
 
                 (['--output', '-o'], dict(action='store', help='Output format',
                     choices=common.enum_list(common.ValidOutputs), default='standard')),
@@ -105,7 +112,7 @@ class Scan(BasePlugin):
     def _process_scan_url_file(self, opts, instances, follow_redirects):
         futures = []
         with open(opts['url_file']) as url_file:
-            with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
+            with ThreadPoolExecutor(max_workers=opts['threads_identify']) as executor:
                 i = 0
                 for url in url_file:
                     url = url.strip()

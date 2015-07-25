@@ -71,7 +71,6 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             url = pargs.url
 
-        threads = pargs.threads
         enumerate = pargs.enumerate
         verb = pargs.verb
         method = pargs.method
@@ -92,12 +91,28 @@ class BasePluginInternal(controller.CementBaseController):
         if pargs.host:
             headers = {'Host': pargs.host}
 
+        threads = pargs.threads
+        if pargs.threads_identify:
+            threads_identify = pargs.threads_identify
+        else:
+            threads_identify = threads
+
+        if pargs.threads_scan:
+            threads_scan = pargs.threads_scan
+        else:
+            threads_scan = threads
+
+        if pargs.threads_enumerate:
+            threads_enumerate = pargs.threads_enumerate
+        else:
+            threads_enumerate = threads
+
         del pargs
         return locals()
 
     def _base_kwargs(self, opts):
         kwargs_plugins = {
-            'threads': opts['threads'],
+            'threads': opts['threads_enumerate'],
             'verb': opts['verb'],
             'timeout': opts['timeout'],
             'imu': getattr(self, 'interesting_module_urls', None)
@@ -145,7 +160,7 @@ class BasePluginInternal(controller.CementBaseController):
                 'kwargs': {
                     'versions_file': self.versions_file,
                     'verb': opts['verb'],
-                    'threads': opts['threads'],
+                    'threads': opts['threads_enumerate'],
                     'timeout': opts['timeout'],
                     'headers': opts['headers']
                 }
@@ -156,7 +171,7 @@ class BasePluginInternal(controller.CementBaseController):
                 'kwargs': {
                     'verb': opts['verb'],
                     'interesting_urls': self.interesting_urls,
-                    'threads': opts['threads'],
+                    'threads': opts['threads_enumerate'],
                     'timeout': opts['timeout'],
                     'headers': opts['headers']
                 }
@@ -265,7 +280,7 @@ class BasePluginInternal(controller.CementBaseController):
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
         timeout_host = opts['timeout_host']
         i = 0
-        with ThreadPoolExecutor(max_workers=opts['threads']) as executor:
+        with ThreadPoolExecutor(max_workers=opts['threads_scan']) as executor:
             results = []
             for elem in iterable:
 
