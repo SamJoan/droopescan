@@ -137,7 +137,6 @@ class Scan(BasePlugin):
                     self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
-        print(url)
         url, new_opts = self.determine_redirect(url, opts, follow_redirects)
 
         found = False

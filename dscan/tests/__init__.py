@@ -26,6 +26,7 @@ class BaseTest(test.CementTestCase):
     base_url = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
     base_url_https = "https://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
     valid_file = 'tests/resources/url_file_valid.txt'
+    valid_file_ip = 'tests/resources/url_file_ip_url.txt'
 
     param_base = ["--url", base_url, '-n', '10']
     param_plugins = param_base + ["-e", 'p']

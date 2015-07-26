@@ -606,3 +606,16 @@ class FingerprintTests(BaseTest):
 
         self._mock_cms_multiple_stop()
 
+    @patch('requests.Session.get')
+    @patch('requests.Session.head')
+    def test_always_passes_header(self, mock_head, mock_get):
+        self.clear_argv()
+        mock_head.return_value.status_code = 200
+
+        self.add_argv(['scan', '-e', 'v'])
+        self.add_argv(['--url-file', self.valid_file_ip])
+        with patch(self.cms_identify_module, autospec=True, return_value=True) as cim :
+            self.app.run()
+
+        self.assert_called_contains_all(mock_get, 'headers', self.host_header)
+        self.assert_called_contains_all(mock_head, 'headers', self.host_header)
