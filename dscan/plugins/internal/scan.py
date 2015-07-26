@@ -65,10 +65,9 @@ class Scan(BasePlugin):
                     the following of redirects.""", dest="follow_redirects", default=True)),
                 (['--host'], dict(action='store', help="""Override host header
                     with this value.""", default=None)),
-                (['--massscan-defaults'], dict(action='store_true',
+                (['--massscan-override'], dict(action='store_true',
                     help="""Overrides defaults with defaults convenient for
-                    mass-scanning of hosts.""", dest="massscan_defaults",
-                    default=False)),
+                    mass-scanning of hosts.""", default=False)),
 
                 (['--threads', '-t'], dict(action='store', help='''Number of
                     threads. Default 4.''', default=4, type=int)),
@@ -138,6 +137,7 @@ class Scan(BasePlugin):
                     self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
+        print(url)
         url, new_opts = self.determine_redirect(url, opts, follow_redirects)
 
         found = False

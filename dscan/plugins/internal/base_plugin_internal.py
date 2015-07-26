@@ -112,7 +112,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         threads, threads_identify, threads_scan, threads_enumerate = self._threads(pargs)
 
-        if pargs.massscan_defaults:
+        if pargs.massscan_override:
             threads = 4
             threads_identify = 1000
             threads_scan = 200
@@ -255,7 +255,6 @@ class BasePluginInternal(controller.CementBaseController):
         debug_requests = opts['debug_requests']
         if debug_requests:
             hide_progressbar = True
-            opts['threads'] = 1
             self.session = RequestsLogger(self.session)
         else:
             hide_progressbar = False
@@ -387,6 +386,10 @@ class BasePluginInternal(controller.CementBaseController):
             kwargs['hide_progressbar'] = hide_progressbar
             if enumerate in ['themes', 'plugins']:
                 kwargs['scanning_method'] = scanning_method
+
+            headers = kwargs['headers'].copy()
+            headers.update(new_opts['headers'])
+            kwargs['headers'] = headers
 
             # Call to the respective functions occurs here.
             finds, is_empty = enum['func'](**kwargs)
