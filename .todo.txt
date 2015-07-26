@@ -11,6 +11,7 @@ Version 1.x:
     - When mass-scanning with CMS provided, it sometimes says cms_name is
           something it's not. Like, when versions: [] is empty true, but now even
           more misleading.
+    - 'line' does not refer to the actual line...
     
     real problems:
         - need to tidy threads....
@@ -25,17 +26,14 @@ Version 2.x:
 Relevant:
 - https://wappalyzer.com/ -
   http://www.opensourcecms.com/general/cms-marketshare.php
-0010.idv.tw
-0010.info
-0010.ru
-001081.com
-0014d1c9cdd8.click-network.com
-00187.it
-001bocai.com
-157.7.235.109	0010.idv.tw
-96.8.117.140	0010.info
-37.140.192.125	0010.ru
-157.7.184.20	001081.com
-131.191.14.148	0014d1c9cdd8.click-network.com
-92.222.25.156	00187.it
-5.44.233.202	001bocai.com
+
+{"host_header": "0010.idv.tw", "host": "http://157.7.235.109/", "version": {"is_empty": false, "finds": ["2.5.18", "2.5.19", "2.5.20", "2.5.21", "2.5.22", "2.5.23", "2.5.24", "2.5.25", "2.5.26", "2.5.27"]}, "line": "http://157.7.235.109/", "cms_name": "joomla"}
+{"host_header": "0014d1c9cdd8.click-network.com", "host": "http://131.191.14.148/", "version": {"is_empty": false, "finds": ["2.5.28", "2.5.28.rc2"]}, "line": "http://131.191.14.148/", "cms_name": "joomla"}
+{"host_header": "0010.info", "host": "http://96.8.117.140/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "line": "http://96.8.117.140/", "cms_name": "wordpress"}
+{"host_header": "0010.ru", "host": "http://37.140.192.125/", "version": {"is_empty": false, "finds": ["3.6", "3.6.1"]}, "line": "http://37.140.192.125/", "cms_name": "wordpress"}
+{"host_header": null, "host": "http://www.00100web.it/", "version": {"is_empty": false, "finds": ["3.4", "3.4.1", "3.4.2"]}, "line": "http://www.00100web.it/", "cms_name": "wordpress"}
+{"host_header": "001081.com", "host": "http://157.7.184.20/", "version": {"is_empty": false, "finds": ["4.1.1", "4.1.2", "4.1.3", "4.1.4", "4.1.5", "4.2", "4.2.1"]}, "line": "http://157.7.184.20/", "cms_name": "wordpress"}
+{"host_header": "0010878.com", "host": "http://198.55.121.100/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "line": "http://198.55.121.100/", "cms_name": "wordpress"}
+{"host_header": "00187.it", "host": "http://92.222.25.156/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "line": "http://92.222.25.156/", "cms_name": "wordpress"}
+{"host_header": "001bocai.com", "host": "http://5.44.233.202/", "version": {"is_empty": false, "finds": ["3.8.6", "3.8.7", "3.8.8"]}, "line": "http://5.44.233.202/", "cms_name": "wordpress"}
+{"host_header": null, "host": "http://www.001d.com/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "line": "http://www.001d.com/", "cms_name": "wordpress"}
