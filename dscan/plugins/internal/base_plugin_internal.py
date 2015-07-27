@@ -352,9 +352,7 @@ class BasePluginInternal(controller.CementBaseController):
                     self.out.result(output, functionality)
 
             except:
-                exc = traceback.format_exc()
-                self.out.warn(("'%s' raised:\n" % result['url']) + exc,
-                        whitespace_strp=False)
+                f.exc_handle(result['url'], self.out, self.app.testing)
 
     def process_url_file(self, opts, functionality, enabled_functionality):
         with open(opts['url_file']) as url_file:

@@ -181,6 +181,7 @@ class BaseTests(BaseTest):
         assert val == b""
 
     def test_no_output_when_exception(self):
+        self.app.testing = False
         self.add_argv(['scan', 'drupal'])
         self.add_argv(['-U', self.valid_file])
         self.add_argv(['--output', 'json'])

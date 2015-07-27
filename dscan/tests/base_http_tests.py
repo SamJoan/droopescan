@@ -761,21 +761,23 @@ class BaseHttpTests(BaseTest):
     def test_url_file_ip_url_list(self):
         self.add_argv(['--url-file', self.valid_file_ip])
         with patch('requests.Session.head', autospec=True) as h:
-            self.app.run()
+            with patch('plugins.internal.base_plugin_internal.BasePluginInternal.determine_scanning_method', side_effect=RuntimeError):
+                h.return_value.status_code = 200
+                self.app.run()
 
-            calls = h.call_args_list
+                calls = h.call_args_list
 
-            args, kwargs = calls[0]
-            assert args[1] == 'http://192.168.1.1/'
-            assert kwargs['headers']['Host'] == 'example.com'
+                args, kwargs = calls[0]
+                assert args[1] == 'http://192.168.1.1/'
+                assert kwargs['headers']['Host'] == 'example.com'
 
-            args, kwargs = calls[1]
-            assert args[1] == 'http://192.168.1.1/'
-            assert kwargs['headers']['Host'] == 'example.com'
+                args, kwargs = calls[1]
+                assert args[1] == 'http://192.168.1.1/'
+                assert kwargs['headers']['Host'] == 'example.com'
 
-            args, kwargs = calls[2]
-            assert args[1] == 'http://192.168.1.2/drupal/'
-            assert kwargs['headers']['Host'] == 'example.com'
+                args, kwargs = calls[2]
+                assert args[1] == 'http://192.168.1.2/drupal/'
+                assert kwargs['headers']['Host'] == 'example.com'
 
     @patch('requests.Session.head', return_value=FakeRequest())
     def test_respects_host_redirect(self, mock_head):

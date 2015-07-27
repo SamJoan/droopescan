@@ -70,7 +70,7 @@ class Tests(HumanBasePlugin):
                 exit = 1
 
         else:
-            test_file = recursive_grep('tests/', single_test)
+            test_file = recursive_grep('tests/', single_test + "(")
             if not test_file:
                 self.error('No test found with name "%s"' % single_test)
 

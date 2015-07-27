@@ -1,8 +1,11 @@
 from __future__ import print_function
 from common.enum import colors, ScanningMethod
+from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout
 import hashlib
 import pystache
 import re
+import sys
+import traceback
 import xml.etree.ElementTree as ET
 
 def repair_url(url, out):
@@ -194,11 +197,33 @@ def md5_file(filename):
 
 def version_get():
     """
-        Returns current droopescan version. Not. It was broken and not a useful
-        feature, so I replaced it with a way more elite version.
+    Returns current droopescan version. Not. It was broken and not a useful
+    feature, so I replaced it with a way more elite version.
     """
     version = '1.33.7'
     return version
 
 def error(msg):
     raise RuntimeError('\033[91m%s\033[0m' % msg)
+
+def exc_handle(url, out, testing):
+    """
+    Handle exception. If of a determinate subset, it is stored into a file as a
+    single type. Otherwise, full stack is stored. Furthermore, if testing, stack
+    is always shown.
+    @param url: url which was being scanned when exception was thrown.
+    @param out: Output object, usually self.out.
+    @param testing: whether we are currently running unit tests.
+    """
+    quiet_exceptions = [ConnectionError, ReadTimeout, ConnectTimeout]
+    type, value, _ = sys.exc_info()
+    if type not in quiet_exceptions or testing:
+        exc = traceback.format_exc()
+        exc_string = ("Line '%s' raised:\n" % url) + exc
+        out.warn(exc_string, whitespace_strp=False)
+
+        if testing:
+            print(exc)
+    else:
+        exc_string = "Line %s '%s: %s'" % (url, type, value)
+        out.warn(exc_string)

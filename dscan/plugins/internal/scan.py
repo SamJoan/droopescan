@@ -7,8 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from plugins.internal.base_plugin import BasePlugin
 from plugins.internal.base_plugin_internal import BasePluginInternal
-from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout
 import common
+import common.functions as f
 import common.plugins_util as pu
 import common.versions as v
 import sys
@@ -17,7 +17,6 @@ import traceback
 class Scan(BasePlugin):
 
     IDENTIFY_BATCH_SIZE = 1000
-    quiet_exceptions = [ConnectionError, ReadTimeout, ConnectTimeout]
 
     class Meta:
         label = 'scan'
@@ -168,17 +167,7 @@ class Scan(BasePlugin):
 
                     to_scan[cms_name].append(result_tuple)
             except:
-                type, value, _ = sys.exc_info()
-                if type not in self.quiet_exceptions or self.app.testing:
-                    exc = traceback.format_exc()
-                    exc_string = ("Line '%s' raised:\n" % future_dict['url']) + exc
-                    self.out.warn(exc_string, whitespace_strp=False)
-
-                    if self.app.testing:
-                        print(exc)
-                else:
-                    exc_string = "Line %s '%s: %s'" % (future_dict['url'], type, value)
-                    self.out.warn(exc_string)
+                f.exc_handle(future_dict['url'], self.out, self.app.testing)
 
         if to_scan:
             self._process_scan(opts, instances, to_scan)
