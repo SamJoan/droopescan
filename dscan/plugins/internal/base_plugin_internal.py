@@ -255,6 +255,9 @@ class BasePluginInternal(controller.CementBaseController):
         debug_requests = opts['debug_requests']
         if debug_requests:
             hide_progressbar = True
+            opts['threads_identify'] = 1
+            opts['threads_scan'] = 1
+            opts['threads_enumerate'] = 1
             self.session = RequestsLogger(self.session)
         else:
             hide_progressbar = False

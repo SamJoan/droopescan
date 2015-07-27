@@ -9,8 +9,12 @@ import tempfile
 CHANGELOG = '../CHANGELOG'
 TEST_RUNS_BASE = ['../droopescan']
 TEST_RUNS_APPEND = ['-n', '100', '-t', '2']
-TEST_RUNS = [['scan', 'drupal', '--url', 'https://www.drupal.org'],
-        ['scan', 'silverstripe', '--url', 'http://demo.silverstripe.org']]
+TEST_RUNS = [
+        ['scan', 'drupal', '--url', 'https://www.drupal.org'],
+        ['scan', 'silverstripe', '--url', 'http://demo.silverstripe.org'],
+        ['scan', 'wordpress', '--url', 'http://demosite.center/wordpress/'],
+        ['scan', 'joomla', '--url', 'http://www.joomla.org/']
+    ]
 
 def test_all(skip_external):
     """
