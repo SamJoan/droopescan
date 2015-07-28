@@ -12,9 +12,13 @@ Version 1.x:
           something it's not. Like, when versions: [] is empty true, but now even
           more misleading.
     - 'line' does not refer to the actual line...
+    - InvalidSchema: No connection adapters were found for 'd:/htdocs/404.html'
+    
     
     real problems:
         - need to tidy threads....
+        - Need to quiet TooManyRedirects
+        - Crashes after 3k hosts.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
