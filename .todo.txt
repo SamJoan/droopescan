@@ -19,6 +19,7 @@ Version 1.x:
         - Need to quiet TooManyRedirects
         - Crashes after 3k hosts.
             http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
+            https://pythonhosted.org/Pympler/muppy.html#muppy
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
