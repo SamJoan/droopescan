@@ -319,12 +319,7 @@ class FingerprintTests(BaseTest):
 
         self._prepare_identify()
         with patch(self.cms_identify_module, autospec=True, return_value=True) as cim:
-            try:
-                self.app.run()
-            except:
-                # This may throw the above exc. depending on which order the
-                # dicts are loaded.
-                pass
+            self.app.run()
 
         assert cim.called
 

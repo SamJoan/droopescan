@@ -103,13 +103,16 @@ class Scan(BasePlugin):
             cms_name, scan_out = self._process_cms_identify(opts['url'], opts, instances,
                     follow_redirects)
 
-            url, opts_clone = scan_out
+            url, host_header = scan_out
 
             inst_dict = instances[cms_name]
             inst = inst_dict['inst']
-            opts_clone['url'] = url
 
-            inst.process_url(opts_clone, **inst_dict['kwargs'])
+            opts['url'] = url
+            opts['headers'] = self._generate_headers(host_header)
+
+
+            inst.process_url(opts, **inst_dict['kwargs'])
 
     def _process_scan_url_file(self, opts, instances, follow_redirects):
         futures = []

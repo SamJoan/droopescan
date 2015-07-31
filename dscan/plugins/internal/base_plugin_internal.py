@@ -285,13 +285,6 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             sys.exit(130)
 
-    def process_url(self, opts, functionality, enabled_functionality, hide_progressbar):
-        output = self.url_scan(opts['url'], opts, functionality,
-                enabled_functionality, hide_progressbar=hide_progressbar)
-
-        if not shutdown:
-            self.out.result(output, functionality)
-
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
         timeout_host = opts['timeout_host']
         i = 0
@@ -351,21 +344,34 @@ class BasePluginInternal(controller.CementBaseController):
         with open(opts['url_file']) as url_file:
             self.process_url_iterable(url_file, opts, functionality, enabled_functionality)
 
+    def process_url(self, opts, functionality, enabled_functionality, hide_progressbar):
+        try:
+            host_header = opts['headers']['Host']
+        except:
+            host_header = None
+
+        output = self.url_scan(opts['url'], opts, functionality,
+                enabled_functionality, hide_progressbar=hide_progressbar,
+                host_header=host_header)
+
+        if not shutdown:
+            self.out.result(output, functionality)
+
     def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar, host_header):
         url = common.repair_url(url, self.out)
-        url, host_header = self.determine_redirect(url, opts,
-                opts['follow_redirects'])
+        url, host_header = self.determine_redirect(url, opts, opts['follow_redirects'])
 
-        need_sm = new_opts['enumerate'] in ['a', 'p', 't']
+        need_sm = opts['enumerate'] in ['a', 'p', 't']
         if need_sm and (self.can_enumerate_plugins or self.can_enumerate_themes):
-            scanning_method = new_opts['method']
+            scanning_method = opts['method']
             if not scanning_method:
                 scanning_method = self.determine_scanning_method(url,
-                        new_opts['verb'], new_opts['timeout'], new_opts['headers'])
+                        opts['verb'], opts['timeout'], self._generate_headers(host_header))
+
         else:
             scanning_method = None
 
-        enumerating_all = new_opts['enumerate'] == 'a'
+        enumerating_all = opts['enumerate'] == 'a'
         result = {}
         for enumerate in enabled_functionality:
             enum = functionality[enumerate]
@@ -380,9 +386,7 @@ class BasePluginInternal(controller.CementBaseController):
             if enumerate in ['themes', 'plugins']:
                 kwargs['scanning_method'] = scanning_method
 
-            headers = kwargs['headers'].copy()
-            headers.update(new_opts['headers'])
-            kwargs['headers'] = headers
+            kwargs['headers'] = self._generate_headers(host_header)
 
             # Call to the respective functions occurs here.
             finds, is_empty = enum['func'](**kwargs)
