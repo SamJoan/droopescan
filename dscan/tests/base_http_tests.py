@@ -832,5 +832,6 @@ class BaseHttpTests(BaseTest):
         self.app.run()
 
         for mock in all_mocks:
+            print(mock.call_args)
             self.assert_called_contains(mock, 'headers', self.host_header)
 

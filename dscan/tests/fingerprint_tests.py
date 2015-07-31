@@ -549,10 +549,10 @@ class FingerprintTests(BaseTest):
         self.app.run()
 
         args, kwargs = pui.call_args
-        url, opts = args[1][0]
+        url, host_header = args[1][0]
 
         assert url == repaired_url
-        assert opts['headers'] == {}
+        assert host_header == None
 
         self._mock_cms_multiple_stop()
 
@@ -564,10 +564,10 @@ class FingerprintTests(BaseTest):
         self.app.run()
 
         args, kwargs = pui.call_args
-        url, opts = args[1][0]
+        url, host_header = args[1][0]
 
         assert url == repaired_url
-        assert opts['headers'] == {}
+        assert host_header == None
 
         self._mock_cms_multiple_stop()
 

@@ -285,27 +285,31 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             sys.exit(130)
 
+    def process_url(self, opts, functionality, enabled_functionality, hide_progressbar):
+        try:
+            url = (opts['url'], opts['headers']['Host'])
+        except KeyError:
+            url = opts['url']
+
+        output = self.url_scan(url, opts, functionality, enabled_functionality,
+                hide_progressbar=hide_progressbar)
+
+        if not shutdown:
+            self.out.result(output, functionality)
+
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
         timeout_host = opts['timeout_host']
         i = 0
         with ThreadPoolExecutor(max_workers=opts['threads_scan']) as executor:
             results = []
-            for line in iterable:
+            for url in iterable:
 
-                if isinstance(elem, tuple):
-                    url, host_header = elem
-                else:
-                    url, host_header = self._process_host_line(line)
-
-                args = [url, opts, functionality, enabled_functionality, True,
-                        host_header]
+                args = [url, opts, functionality, enabled_functionality, True]
                 future = executor.submit(self.url_scan, *args)
 
                 results.append({
                     'future': future,
                     'url': url.rstrip('\n'),
-                    'line': line,
-                    'host_header': host_header
                 })
 
                 if i % 1000 == 0 and i != 0:
@@ -331,8 +335,6 @@ class BasePluginInternal(controller.CementBaseController):
 
                 output['host'] = result['url']
                 output['cms_name'] = self._meta.label
-                output['line'] = result['line']
-                output['host_header'] = result['host_header']
 
                 if not shutdown:
                     self.out.result(output, functionality)
@@ -344,22 +346,29 @@ class BasePluginInternal(controller.CementBaseController):
         with open(opts['url_file']) as url_file:
             self.process_url_iterable(url_file, opts, functionality, enabled_functionality)
 
-    def process_url(self, opts, functionality, enabled_functionality, hide_progressbar):
-        try:
-            host_header = opts['headers']['Host']
-        except:
-            host_header = None
+    def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
+        """
+        This is the main function called whenever a URL needs to be scanned.
+        This is called when a user specifies an individual CMS, or after CMS
+        identification has taken place. This function is called for individual
+        hosts specified by `-u` or for individual lines specified by `-U`.
+        @param url: this parameter can either be a URL or a (url, host_header)
+            tuple. The url, if a string, can be in the format of url + " " +
+            host_header.
+        @param opts: options object as returned by self._options().
+        @param functionality: as returned by self._general_init.
+        @param enabled_functionality: as returned by self._general_init.
+        @param hide_progressbar: whether to hide the progressbar.
+        @return: results dictionary.
+        """
+        if isinstance(url, tuple):
+            url, host_header = url
+        else:
+            url, host_header = self._process_host_line(url)
 
-        output = self.url_scan(opts['url'], opts, functionality,
-                enabled_functionality, hide_progressbar=hide_progressbar,
-                host_header=host_header)
-
-        if not shutdown:
-            self.out.result(output, functionality)
-
-    def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar, host_header):
         url = common.repair_url(url, self.out)
-        url, host_header = self.determine_redirect(url, opts, opts['follow_redirects'])
+        if opts['follow_redirects']:
+            url, host_header = self.determine_redirect(url, host_header, opts)
 
         need_sm = opts['enumerate'] in ['a', 'p', 't']
         if need_sm and (self.can_enumerate_plugins or self.can_enumerate_themes):
@@ -426,31 +435,40 @@ class BasePluginInternal(controller.CementBaseController):
 
         return url_new
 
-    def determine_redirect(self, url, opts, follow_redirects):
-        url, host_header = self._process_host_line(url)
+    def determine_redirect(self, url, host_header, opts):
+        """
+        Determines whether scanning a different request is suggested by the
+        remote host. This function should be called only if
+        opts['follow_redirects'] is true.
+        @param url: the base url.
+        @param host_header: host header value or none.
+        @param opts: the options as provided by self._options.
+        @return: a tuple of the final url, host header. This may be the same
+            objects passed in.
+        """
         orig_host_header = host_header
-        url = f.repair_url(url, self.out)
+        if not host_header:
+            url, host_header = self._process_host_line(url)
 
-        if follow_redirects:
-            redir_url = self._determine_redirect(url, opts['verb'],
-                    opts['timeout'], self._generate_headers(host_header))
+        redir_url = self._determine_redirect(url, opts['verb'],
+                opts['timeout'], self._generate_headers(host_header))
 
-            redirected = redir_url != url
-            if redirected:
-                contains_host = orig_host_header != None
-                if contains_host:
-                    parsed = urlparse(redir_url)
-                    dns_lookup_required = parsed.netloc != orig_host_header
-                    if dns_lookup_required:
-                        url = redir_url
-                        host_header = None
-                    else:
-                        orig_parsed = urlparse(url)
-                        parsed = parsed._replace(netloc=orig_parsed.netloc)
-                        url = parsed.geturl()
-
-                else:
+        redirected = redir_url != url
+        if redirected:
+            contains_host = orig_host_header != None
+            if contains_host:
+                parsed = urlparse(redir_url)
+                dns_lookup_required = parsed.netloc != orig_host_header
+                if dns_lookup_required:
                     url = redir_url
+                    host_header = None
+                else:
+                    orig_parsed = urlparse(url)
+                    parsed = parsed._replace(netloc=orig_parsed.netloc)
+                    url = parsed.geturl()
+
+            else:
+                url = redir_url
 
         return url, host_header
 
