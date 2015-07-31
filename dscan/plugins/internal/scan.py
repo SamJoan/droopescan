@@ -139,11 +139,11 @@ class Scan(BasePlugin):
                     self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
+        url, host_header = self._process_host_line(url)
         url = common.repair_url(url, self.out)
+
         if follow_redirects:
-            url, host_header = self.determine_redirect(url, opts, follow_redirects)
-        else:
-            url, host_header = self._process_host_line(url)
+            url, host_header = self.determine_redirect(url, host_header, opts)
 
         found = False
         for cms_name in instances:

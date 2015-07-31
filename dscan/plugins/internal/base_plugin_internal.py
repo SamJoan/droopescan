@@ -406,6 +406,8 @@ class BasePluginInternal(controller.CementBaseController):
 
     def _determine_redirect(self, url, verb, timeout=15, headers={}):
         """
+        Internal redirect function, focuses on HTTP and worries less about
+        application-y stuff.
         @param url: the url to check
         @param verb: the verb, e.g. head, or get.
         @param timeout: the time, in seconds, that requests should wait
@@ -440,16 +442,13 @@ class BasePluginInternal(controller.CementBaseController):
         Determines whether scanning a different request is suggested by the
         remote host. This function should be called only if
         opts['follow_redirects'] is true.
-        @param url: the base url.
-        @param host_header: host header value or none.
-        @param opts: the options as provided by self._options.
+        @param url: the base url as returned by self._process_host_line.
+        @param host_header: host header as returned by self._process_host_line.
+        @param opts: the options as returned by self._options.
         @return: a tuple of the final url, host header. This may be the same
             objects passed in.
         """
         orig_host_header = host_header
-        if not host_header:
-            url, host_header = self._process_host_line(url)
-
         redir_url = self._determine_redirect(url, opts['verb'],
                 opts['timeout'], self._generate_headers(host_header))
 
