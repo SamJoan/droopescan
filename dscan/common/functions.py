@@ -17,9 +17,6 @@ def repair_url(url, out):
             If the url string parameter does not start with http, it prepends http://
             If the url string parameter does not end with a slash, appends a slash.
     """
-    if not url:
-        out.fatal("--url parameter is blank.")
-
     url = url.strip('\n')
     if not re.match(r"^http", url):
         url = "http://" + url

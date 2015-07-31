@@ -100,7 +100,11 @@ class Scan(BasePlugin):
         if 'url_file' in opts:
             self._process_scan_url_file(opts, instances, follow_redirects)
         else:
-            cms_name, scan_out = self._process_cms_identify(opts['url'], opts, instances,
+            url = opts['url']
+            if not url:
+                self.out.fatal("--url parameter is blank.")
+
+            cms_name, scan_out = self._process_cms_identify(url, opts, instances,
                     follow_redirects)
 
             url, host_header = scan_out
@@ -110,7 +114,6 @@ class Scan(BasePlugin):
 
             opts['url'] = url
             opts['headers'] = self._generate_headers(host_header)
-
 
             inst.process_url(opts, **inst_dict['kwargs'])
 

@@ -28,6 +28,11 @@ class BaseTests(BaseTest):
         self.add_argv(['scan', 'drupal'])
         self.app.run()
 
+    @test.raises(RuntimeError)
+    def test_errors_when_no_url_identify(self):
+        self.add_argv(['scan'])
+        self.app.run()
+
     @test.raises(IOError)
     def test_fails_io_when_url_file(self):
         self.add_argv(['scan', 'drupal'])

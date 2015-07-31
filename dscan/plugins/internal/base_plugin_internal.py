@@ -291,6 +291,9 @@ class BasePluginInternal(controller.CementBaseController):
         except KeyError:
             url = opts['url']
 
+        if not url:
+            self.out.fatal("--url parameter is blank.")
+
         output = self.url_scan(url, opts, functionality, enabled_functionality,
                 hide_progressbar=hide_progressbar)
 
@@ -869,6 +872,9 @@ class BasePluginInternal(controller.CementBaseController):
         @return: a tuple containing url, and host header if any change is
             required. Otherwise, url, null is returned.
         """
+        if not url:
+            return None, None
+
         host = None
         if self._line_contains_host(url):
             url, host = re.split(self.SPLIT_PATTERN, url.strip())
