@@ -307,9 +307,14 @@ class BasePluginInternal(controller.CementBaseController):
                 args = [url, opts, functionality, enabled_functionality, True]
                 future = executor.submit(self.url_scan, *args)
 
+                try:
+                    url_to_log = url.rstrip()
+                except AttributeError:
+                    url_to_log = url
+
                 results.append({
                     'future': future,
-                    'url': url.rstrip('\n'),
+                    'url': url_to_log,
                 })
 
                 if i % 1000 == 0 and i != 0:

@@ -140,7 +140,7 @@ class Scan(BasePlugin):
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         url, host_header = self._process_host_line(url)
-        url = common.repair_url(url, self.out)
+        url = f.repair_url(url, self.out)
 
         if follow_redirects:
             url, host_header = self.determine_redirect(url, host_header, opts)
