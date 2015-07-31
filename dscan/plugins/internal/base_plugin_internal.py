@@ -454,7 +454,7 @@ class BasePluginInternal(controller.CementBaseController):
         @param host_header: host header as returned by self._process_host_line.
         @param opts: the options as returned by self._options.
         @return: a tuple of the final url, host header. This may be the same
-            objects passed in.
+            objects passed in if no change is required.
         """
         orig_host_header = host_header
         redir_url = self._determine_redirect(url, opts['verb'],

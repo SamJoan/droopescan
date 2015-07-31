@@ -32,7 +32,7 @@ class FingerprintTests(BaseTest):
     redir_module = bpi_module + '_determine_redirect'
     warn_module = 'common.output.StandardOutput.warn'
 
-    p_list = None
+    p_list = []
 
     def setUp(self):
         super(FingerprintTests, self).setUp()
@@ -41,6 +41,9 @@ class FingerprintTests(BaseTest):
         self.add_argv(self.param_version)
         self._init_scanner()
         self.v = VersionsFile(self.xml_file)
+
+    def tearDown(self):
+        self._mock_cms_multiple_stop()
 
     @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
     @patch('common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
@@ -413,6 +416,8 @@ class FingerprintTests(BaseTest):
         for p in self.p_list:
             p.stop()
 
+        self.p_list = []
+
     def test_cms_identify_respected_multiple(self):
         return_value = [True, False, True, False, False, True]
         cim, pui = self._mock_cms_multiple(cms_ident_side_eff=return_value,
@@ -430,8 +435,6 @@ class FingerprintTests(BaseTest):
         assert args[3] == 1337
         assert args[4] == self.host_header
 
-        self._mock_cms_multiple_stop()
-
     def test_cms_identify_multiple_doesnt_crash(self):
         self._mock_cms_multiple(cms_ident_side_eff=ConnectionError)
 
@@ -439,8 +442,6 @@ class FingerprintTests(BaseTest):
             self.app.run()
 
             assert warn.called
-
-        self._mock_cms_multiple_stop()
 
     def test_cms_identify(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
@@ -531,15 +532,20 @@ class FingerprintTests(BaseTest):
 
         self.assert_called_contains(mock_head, 'timeout', 1337)
 
+    def _mock_redir(self, url, verb, timeout, headers):
+        return url
+
     def test_url_file_ip_url_list_identify(self):
         self.clear_argv()
         self.add_argv(['scan', '-U', 'tests/resources/url_file_ip_url.txt'])
         with patch('requests.Session.head', autospec=True) as h:
-            self.app.run()
+            with patch('requests.Session.get', autospec=True) as g:
+                h.return_value.status_code = 200
+                self.app.run()
 
-            calls = h.call_args_list
-            self.assert_called_contains_all(h, 'headers',
-                    self.host_header)
+                calls = h.call_args_list
+                self.assert_called_contains_all(h, 'headers', self.host_header)
+                self.assert_called_contains_all(g, 'headers', self.host_header)
 
     def test_redirect_identify_respects_new_host(self):
         repaired_url = 'http://example.com/'
@@ -554,8 +560,6 @@ class FingerprintTests(BaseTest):
         assert url == repaired_url
         assert host_header == None
 
-        self._mock_cms_multiple_stop()
-
     def test_redirect_identify_ip_host_respects_new_host(self):
         repaired_url = 'http://darf.com/'
         _, pui = self._mock_cms_multiple(cms_ident_side_eff=[True, False, False,
@@ -568,8 +572,6 @@ class FingerprintTests(BaseTest):
 
         assert url == repaired_url
         assert host_header == None
-
-        self._mock_cms_multiple_stop()
 
     def test_redirect_identify_ip_host_respects_same_host(self):
         repaired_url = 'http://example.com/'
@@ -584,8 +586,6 @@ class FingerprintTests(BaseTest):
         assert url == 'http://192.168.1.1/lel/'
         assert host_header == self.host_header['Host']
 
-        self._mock_cms_multiple_stop()
-
     def test_redirect_identify_ip_host_respects_no_redir(self):
         repaired_url = 'http://example.com/'
         _, pui = self._mock_cms_multiple(cms_ident_side_eff=[True, False, False,
@@ -598,8 +598,6 @@ class FingerprintTests(BaseTest):
 
         assert url == 'http://192.168.1.1/'
         assert opts['headers'] == self.host_header
-
-        self._mock_cms_multiple_stop()
 
     @patch('requests.Session.get')
     @patch('requests.Session.head')

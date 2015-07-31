@@ -74,8 +74,6 @@ class IntegrationTests(BaseTest):
         status_code = int(splat[2].strip())
         hash = splat[3].strip()
 
-
-        #print(verb, url, status_code)
         return verb, url, status_code, hash
 
     def _unhandled_cb(self, request):
