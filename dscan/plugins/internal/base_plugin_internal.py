@@ -297,22 +297,15 @@ class BasePluginInternal(controller.CementBaseController):
         i = 0
         with ThreadPoolExecutor(max_workers=opts['threads_scan']) as executor:
             results = []
-            for elem in iterable:
+            for line in iterable:
 
                 if isinstance(elem, tuple):
-                    url, new_opts = elem
+                    url, host_header = elem
                 else:
-                    url = elem
-                    url, new_opts = self._process_multiline_host(url, opts)
+                    url, host_header = self._process_host_line(line)
 
-                line = url
-
-                try:
-                    host_header = new_opts['headers']['Host']
-                except KeyError:
-                    host_header = None
-
-                args = [url, new_opts, functionality, enabled_functionality, True]
+                args = [url, opts, functionality, enabled_functionality, True,
+                        host_header]
                 future = executor.submit(self.url_scan, *args)
 
                 results.append({
@@ -358,10 +351,9 @@ class BasePluginInternal(controller.CementBaseController):
         with open(opts['url_file']) as url_file:
             self.process_url_iterable(url_file, opts, functionality, enabled_functionality)
 
-    def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
+    def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar, host_header):
         url = common.repair_url(url, self.out)
-
-        url, new_opts = self.determine_redirect(url, opts,
+        url, host_header = self.determine_redirect(url, opts,
                 opts['follow_redirects'])
 
         need_sm = new_opts['enumerate'] in ['a', 'p', 't']
@@ -431,35 +423,32 @@ class BasePluginInternal(controller.CementBaseController):
         return url_new
 
     def determine_redirect(self, url, opts, follow_redirects):
-        contains_host = self._line_contains_host(url)
-        if contains_host:
-            url, new_opts = self._process_multiline_host(url, opts)
-            orig_host_header = new_opts['headers']['Host']
-        else:
-            new_opts = opts
-
+        url, host_header = self._process_host_line(url)
+        orig_host_header = host_header
         url = f.repair_url(url, self.out)
 
         if follow_redirects:
-            redir_url = self._determine_redirect(url, new_opts['verb'],
-                    new_opts['timeout'], new_opts['headers'])
+            redir_url = self._determine_redirect(url, opts['verb'],
+                    opts['timeout'], self._generate_headers(host_header))
 
             redirected = redir_url != url
             if redirected:
+                contains_host = orig_host_header != None
                 if contains_host:
                     parsed = urlparse(redir_url)
                     dns_lookup_required = parsed.netloc != orig_host_header
                     if dns_lookup_required:
                         url = redir_url
-                        new_opts = opts
+                        host_header = None
                     else:
                         orig_parsed = urlparse(url)
                         parsed = parsed._replace(netloc=orig_parsed.netloc)
                         url = parsed.geturl()
+
                 else:
                     url = redir_url
 
-        return url, new_opts
+        return url, host_header
 
     def _determine_ok_200(self, requests_verb, url):
         if common.is_string(self.regular_file_url):
@@ -845,22 +834,21 @@ class BasePluginInternal(controller.CementBaseController):
     def _line_contains_host(self, url):
         return re.search(self.SPLIT_PATTERN, url)
 
-    def _process_multiline_host(self, url, opts):
+    def _process_host_line(self, url):
         """
         Processes URLs and determines whether they are a tab-delimited CSV of
         url and host.
         @param url: the url to analyse.
         @param opts: the options dictionary to modify.
-        @return: a tuple containing url, and opts with custom headers added.
+        @return: a tuple containing url, and host header if any change is
+            required. Otherwise, url, null is returned.
         """
-
-        # Create copies to prevent modifying upstream references.
-        new_opts = dict(opts)
-        new_opts['headers'] = dict(new_opts['headers'])
-
+        host = None
         if self._line_contains_host(url):
             url, host = re.split(self.SPLIT_PATTERN, url.strip())
-            new_opts['headers']['Host'] = host
 
-        return url, new_opts
+        return url, host
+
+    def _generate_headers(self, host_header):
+        return {'Host': host_header}
 

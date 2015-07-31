@@ -136,7 +136,7 @@ class Scan(BasePlugin):
                     self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
-        url, new_opts = self.determine_redirect(url, opts, follow_redirects)
+        url, host_header = self.determine_redirect(url, opts, follow_redirects)
 
         found = False
         for cms_name in instances:
@@ -144,14 +144,14 @@ class Scan(BasePlugin):
             inst = inst_dict['inst']
             vf = inst_dict['vf']
 
-            if inst.cms_identify(vf, url, new_opts['timeout'], new_opts['headers']) == True:
+            if inst.cms_identify(vf, url, opts['timeout'], self._generate_headers(host_header)) == True:
                 found = True
                 break
 
         if not found:
             return None, None
         else:
-            return cms_name, (url, new_opts)
+            return cms_name, (url, host_header)
 
     def _process_identify_futures(self, futures, opts, instances):
         to_scan = {}

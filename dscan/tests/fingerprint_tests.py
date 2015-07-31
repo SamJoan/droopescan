@@ -584,10 +584,10 @@ class FingerprintTests(BaseTest):
         self.app.run()
 
         args, kwargs = pui.call_args
-        url, opts = args[1][0]
+        url, host_header = args[1][0]
 
         assert url == 'http://192.168.1.1/lel/'
-        assert opts['headers'] == self.host_header
+        assert host_header == self.host_header['Host']
 
         self._mock_cms_multiple_stop()
 
