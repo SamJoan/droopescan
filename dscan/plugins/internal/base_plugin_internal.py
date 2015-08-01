@@ -288,7 +288,7 @@ class BasePluginInternal(controller.CementBaseController):
     def process_url(self, opts, functionality, enabled_functionality, hide_progressbar):
         try:
             url = (opts['url'], opts['headers']['Host'])
-        except KeyError:
+        except:
             url = opts['url']
 
         if not url:
@@ -882,5 +882,8 @@ class BasePluginInternal(controller.CementBaseController):
         return url, host
 
     def _generate_headers(self, host_header):
-        return {'Host': host_header}
+        if host_header:
+            return {'Host': host_header}
+        else:
+            return None
 

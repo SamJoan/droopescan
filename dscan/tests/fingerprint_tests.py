@@ -322,14 +322,16 @@ class FingerprintTests(BaseTest):
 
         self._prepare_identify()
         with patch(self.cms_identify_module, autospec=True, return_value=True) as cim:
-            self.app.run()
+            try:
+                self.app.run()
+            except:
+                pass
 
         assert cim.called
 
         args, kwargs = cim.call_args
         assert isinstance(args[1], VersionsFile)
         assert args[2] == self.base_url
-
         assert args[3] == 1337
         assert args[4] == self.host_header
 
@@ -594,10 +596,10 @@ class FingerprintTests(BaseTest):
         self.app.run()
 
         args, kwargs = pui.call_args
-        url, opts = args[1][0]
+        url, host_header = args[1][0]
 
         assert url == 'http://192.168.1.1/'
-        assert opts['headers'] == self.host_header
+        assert host_header == self.host_header['Host']
 
     @patch('requests.Session.get')
     @patch('requests.Session.head')
