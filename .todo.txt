@@ -20,6 +20,7 @@ Version 1.x:
                 https://github.com/droope/droopescan/blob/development/dscan/plugins/internal/scan.py#L124-L146 
                 not freed
         - did not find base_plugin_internal.url_scan -> ('http://89.31.143.7/', '0049ev.com')
+            i.e. detected by fingerprint but not scanned by url_scan
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
