@@ -100,7 +100,7 @@ class Scan(BasePlugin):
 
         if url_file_input:
             self.out.debug('scan.default -> url_file')
-            self._process_scan_url_file(opts, instances, follow_redirects)
+            self._process_scan_url_file(opts['url_file'], follow_redirects)
         else:
             self.out.debug('scan.default -> url')
             url = opts['url']
@@ -120,30 +120,57 @@ class Scan(BasePlugin):
 
             inst.process_url(opts, **inst_dict['kwargs'])
 
-    def _process_scan_url_file(self, opts, instances, follow_redirects):
+    def _process_scan_url_file(self, file_location, follow_redirects):
         self.out.debug('scan._process_scan_url_file')
+        with open(file_location) as url_file:
+            i = 0
+            urls = []
+            for url in url_file:
+                if i % self.IDENTIFY_BATCH_SIZE == 0 and i != 0:
+                    plugins = pu.plugins_base_get()
+                    opts = self._options(self.app.pargs)
+                    executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
+                    instances = self._instances_get(opts, plugins,
+                            url_file_input=True)
+
+                    self._process_generate_futures(urls, executor, opts,
+                        instances, follow_redirects)
+
+                    executor.shutdown()
+                    del executor
+                    del plugins
+                    del opts
+                    del instances
+                else:
+                    urls.append(url)
+
+                i += 1
+
+            if len(urls) > 0:
+                plugins = pu.plugins_base_get()
+                opts = self._options(self.app.pargs)
+                executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
+                instances = self._instances_get(opts, plugins,
+                        url_file_input=True)
+
+                self._process_generate_futures(urls, executor, opts,
+                    instances, follow_redirects)
+
+    def _process_generate_futures(self, urls, executor, opts, instances,
+            follow_redirects):
+
         futures = []
-        with open(opts['url_file']) as url_file:
-            with ThreadPoolExecutor(max_workers=opts['threads_identify']) as executor:
-                i = 0
-                for url in url_file:
-                    url = url.strip()
-                    future = executor.submit(self._process_cms_identify, url,
-                            opts, instances, follow_redirects)
+        for url in urls:
+            url = url.strip()
+            future = executor.submit(self._process_cms_identify, url,
+                    opts, instances, follow_redirects)
 
-                    futures.append({
-                        'url': url,
-                        'future': future
-                    })
+            futures.append({
+                'url': url,
+                'future': future
+            })
 
-                    if i % self.IDENTIFY_BATCH_SIZE == 0 and i != 0:
-                        self._process_identify_futures(futures, opts, instances)
-                        futures = []
-
-                    i += 1
-
-                if len(futures) > 0:
-                    self._process_identify_futures(futures, opts, instances)
+        self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         self.out.debug('scan._process_cms_identify -> %s' % url)
