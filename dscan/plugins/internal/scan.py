@@ -16,8 +16,6 @@ import traceback
 
 class Scan(BasePlugin):
 
-    IDENTIFY_BATCH_SIZE = 1000
-
     class Meta:
         label = 'scan'
         description = 'cms scanning functionality.'
@@ -100,7 +98,8 @@ class Scan(BasePlugin):
 
         if url_file_input:
             self.out.debug('scan.default -> url_file')
-            self._process_scan_url_file(opts['url_file'], follow_redirects)
+            self._process_scan_url_file(opts['url_file'],
+                opts['threads_identify'], follow_redirects)
         else:
             self.out.debug('scan.default -> url')
             url = opts['url']
@@ -120,13 +119,13 @@ class Scan(BasePlugin):
 
             inst.process_url(opts, **inst_dict['kwargs'])
 
-    def _process_scan_url_file(self, file_location, follow_redirects):
+    def _process_scan_url_file(self, file_location, num_threads_identify, follow_redirects):
         self.out.debug('scan._process_scan_url_file')
         with open(file_location) as url_file:
             i = 0
             urls = []
             for url in url_file:
-                if i % self.IDENTIFY_BATCH_SIZE == 0 and i != 0:
+                if i % num_threads_identify == 0 and i != 0:
                     plugins = pu.plugins_base_get()
                     opts = self._options(self.app.pargs)
                     executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
