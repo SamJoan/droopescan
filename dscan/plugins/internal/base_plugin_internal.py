@@ -348,7 +348,12 @@ class BasePluginInternal(controller.CementBaseController):
                     self.out.result(output, functionality)
 
             except:
-                f.exc_handle(result['url'], self.out, self.app.testing)
+                if self.app != None:
+                    testing = self.app.testing
+                else:
+                    testing = None
+
+                f.exc_handle(result['url'], self.out, testing)
 
     def process_url_file(self, opts, functionality, enabled_functionality):
         with open(opts['url_file']) as url_file:

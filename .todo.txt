@@ -1,7 +1,6 @@
 Add;
 
 Version 1.x:
-    - ./droopescan scan -u drupal.org fails
     - better error for empty file when `scan`
     - SIGINT capture for new scanning.
     - vendor/composer/installed.json to SS.
@@ -11,12 +10,9 @@ Version 1.x:
     - When mass-scanning with CMS provided, it sometimes says cms_name is
           something it's not. Like, when versions: [] is empty true, but now even
           more misleading.
-    - 'line' does not refer to the actual line...
     - InvalidSchema: No connection adapters were found for 'd:/htdocs/404.html'
     
-    
     real problems:
-        - Need to quiet TooManyRedirects
         - Crashes after 3k hosts.
             http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
             https://pythonhosted.org/Pympler/muppy.html#muppy

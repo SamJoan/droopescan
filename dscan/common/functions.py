@@ -1,6 +1,7 @@
 from __future__ import print_function
 from common.enum import colors, ScanningMethod
-from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout
+from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout, \
+        TooManyRedirects
 import hashlib
 import pystache
 import re
@@ -212,7 +213,8 @@ def exc_handle(url, out, testing):
     @param out: Output object, usually self.out.
     @param testing: whether we are currently running unit tests.
     """
-    quiet_exceptions = [ConnectionError, ReadTimeout, ConnectTimeout]
+    quiet_exceptions = [ConnectionError, ReadTimeout, ConnectTimeout,
+            TooManyRedirects]
     type, value, _ = sys.exc_info()
     if type not in quiet_exceptions or testing:
         exc = traceback.format_exc()
