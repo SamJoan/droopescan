@@ -99,8 +99,10 @@ class Scan(BasePlugin):
         opts['follow_redirects'] = False
 
         if url_file_input:
+            self.out.debug('scan.default -> url_file')
             self._process_scan_url_file(opts, instances, follow_redirects)
         else:
+            self.out.debug('scan.default -> url')
             url = opts['url']
             if not url:
                 self.out.fatal("--url parameter is blank.")
@@ -119,6 +121,7 @@ class Scan(BasePlugin):
             inst.process_url(opts, **inst_dict['kwargs'])
 
     def _process_scan_url_file(self, opts, instances, follow_redirects):
+        self.out.debug('scan._process_scan_url_file')
         futures = []
         with open(opts['url_file']) as url_file:
             with ThreadPoolExecutor(max_workers=opts['threads_identify']) as executor:
@@ -143,6 +146,7 @@ class Scan(BasePlugin):
                     self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
+        self.out.debug('scan._process_cms_identify -> %s' % url)
         try:
             url, host_header = url, opts['headers']['Host']
         except:
@@ -169,6 +173,7 @@ class Scan(BasePlugin):
             return cms_name, (url, host_header)
 
     def _process_identify_futures(self, futures, opts, instances):
+        self.out.debug('scan._process_identify_futures')
         to_scan = {}
         for future_dict in futures:
             future = future_dict['future']
@@ -189,6 +194,7 @@ class Scan(BasePlugin):
             to_scan = {}
 
     def _process_scan(self, opts, instances, to_scan):
+        self.out.debug('scan._process_scan')
         for cms_name in to_scan:
             inst_dict = instances[cms_name]
             cms_urls = to_scan[cms_name]

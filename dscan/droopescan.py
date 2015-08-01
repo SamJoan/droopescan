@@ -34,6 +34,7 @@ class DroopeScan(foundation.CementApp):
         label = 'droopescan'
         base_controller = DroopeScanBase
         exit_on_close = False
+        framework_logging = False
 
 def main(pwd):
     defaults = init_defaults('DroopeScan', 'general')

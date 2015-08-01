@@ -100,6 +100,7 @@ class BasePluginInternal(controller.CementBaseController):
         follow_redirects = pargs.follow_redirects
         plugins_base_url = pargs.plugins_base_url
         themes_base_url = pargs.themes_base_url
+        debug = pargs.debug
         number = pargs.number if not pargs.number == 'all' else 100000
         if pargs.error_log:
             error_log = self._path(pargs.error_log, pwd)
@@ -228,6 +229,9 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             output = StandardOutput(error_log=opts['error_log'])
 
+        if opts['debug']:
+            output.debug_output = True
+
         return output
 
     def _general_init(self, opts):
@@ -301,6 +305,7 @@ class BasePluginInternal(controller.CementBaseController):
             self.out.result(output, functionality)
 
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
+        self.out.debug('base_plugin_internal.process_url_iterable')
         timeout_host = opts['timeout_host']
         i = 0
         with ThreadPoolExecutor(max_workers=opts['threads_scan']) as executor:
@@ -374,6 +379,7 @@ class BasePluginInternal(controller.CementBaseController):
         @param hide_progressbar: whether to hide the progressbar.
         @return: results dictionary.
         """
+        self.out.debug('base_plugin_internal.url_scan -> %s' % str(url))
         if isinstance(url, tuple):
             url, host_header = url
         else:

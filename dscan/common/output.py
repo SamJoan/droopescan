@@ -53,6 +53,7 @@ class StandardOutput():
     errors_display = True
     error_log = None
     log_to_file = False
+    debug_output = False
 
     def __init__(self, error_log='-'):
         self.log_to_file = error_log != '-'
@@ -72,6 +73,10 @@ class StandardOutput():
         For miscelaneous messages. E.g. "Initializing scanning".
         """
         print(msg)
+
+    def debug(self, msg):
+        if self.debug_output:
+            print(msg)
 
     def result(self, result, functionality):
         """

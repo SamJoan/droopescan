@@ -51,6 +51,7 @@ class BaseTest(test.CementTestCase):
         'plugins_base_url': None,
         'themes_base_url': None,
         'number': 10,
+        'debug': False,
         'enumerate': 'a',
         'headers': {}
     }
