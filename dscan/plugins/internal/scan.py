@@ -91,13 +91,14 @@ class Scan(BasePlugin):
     def default(self):
         plugins = pu.plugins_base_get()
         opts = self._options(self.app.pargs)
+        url_file_input = 'url_file' in opts
         self._general_init(opts)
-        instances = self._instances_get(opts, plugins)
+        instances = self._instances_get(opts, plugins, url_file_input)
 
         follow_redirects = opts['follow_redirects']
         opts['follow_redirects'] = False
 
-        if 'url_file' in opts:
+        if url_file_input:
             self._process_scan_url_file(opts, instances, follow_redirects)
         else:
             url = opts['url']
@@ -185,19 +186,26 @@ class Scan(BasePlugin):
 
         if to_scan:
             self._process_scan(opts, instances, to_scan)
+            to_scan = {}
 
     def _process_scan(self, opts, instances, to_scan):
         for cms_name in to_scan:
             inst_dict = instances[cms_name]
             cms_urls = to_scan[cms_name]
-            inst = inst_dict['inst']
-            kwargs = dict(inst_dict['kwargs'])
-            del kwargs['hide_progressbar']
 
             if len(cms_urls) > 0:
-                inst.process_url_iterable(cms_urls, opts, **kwargs)
+                inst_dict['inst'].process_url_iterable(cms_urls, opts, **inst_dict['kwargs'])
 
-    def _instances_get(self, opts, plugins):
+    def _instances_get(self, opts, plugins, url_file_input):
+        """
+        Creates and returns an ordered dictionary containing instances for all available
+        scanning plugins, sort of ordered by popularity.
+        @param opts: options as returned by self._options.
+        @param plugins: plugins as returned by plugins_util.plugins_base_get.
+        @param url_file_input: boolean value which indicates whether we are
+            scanning an individual URL or a file. This is used to determine
+            kwargs required.
+        """
         instances = OrderedDict()
         preferred_order = ['wordpress', 'joomla', 'drupal']
 
@@ -206,28 +214,39 @@ class Scan(BasePlugin):
                 plugin_name = plugin.__name__.lower()
 
                 if cms_name == plugin_name:
-                    instances[plugin_name] = self._instance_get(plugin, opts)
+                    instances[plugin_name] = self._instance_get(plugin, opts,
+                            url_file_input)
 
         for plugin in plugins:
             plugin_name = plugin.__name__.lower()
             if plugin_name not in preferred_order:
-                instances[plugin_name] = self._instance_get(plugin, opts)
+                instances[plugin_name] = self._instance_get(plugin, opts,
+                        url_file_input)
 
         return instances
 
-    def _instance_get(self, plugin, opts):
+    def _instance_get(self, plugin, opts, url_file_input):
+        """
+        Return an instance dictionary for an individual plugin.
+        @see Scan._instances_get.
+        """
         inst = plugin()
         hp, func, enabled_func = inst._general_init(opts)
         name = inst._meta.label
         vf = v.VersionsFile(inst.versions_file)
 
+        kwargs = {
+            'hide_progressbar': hp,
+            'functionality': func,
+            'enabled_functionality': enabled_func
+        }
+
+        if url_file_input:
+            del kwargs['hide_progressbar']
+
         return {
             'inst': inst,
             'vf': vf,
-            'kwargs': {
-                'hide_progressbar': hp,
-                'functionality': func,
-                'enabled_functionality': enabled_func
-            }
+            'kwargs': kwargs
         }
 
