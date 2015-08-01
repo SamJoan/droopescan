@@ -16,6 +16,7 @@ Version 1.x:
         - Crashes after 3k hosts.
             http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
             https://pythonhosted.org/Pympler/muppy.html#muppy
+        - did not find base_plugin_internal.url_scan -> ('http://89.31.143.7/', '0049ev.com')
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
