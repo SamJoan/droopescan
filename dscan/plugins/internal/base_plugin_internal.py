@@ -385,7 +385,7 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             url, host_header = self._process_host_line(url)
 
-        url = common.repair_url(url, self.out)
+        url = common.repair_url(url)
         if opts['follow_redirects']:
             url, host_header = self.determine_redirect(url, host_header, opts)
 

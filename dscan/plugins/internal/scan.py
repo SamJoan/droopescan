@@ -140,6 +140,7 @@ class Scan(BasePlugin):
                     del plugins
                     del opts
                     del instances
+                    urls = []
                 else:
                     urls.append(url)
 
@@ -178,7 +179,7 @@ class Scan(BasePlugin):
         except:
             url, host_header = self._process_host_line(url)
 
-        url = f.repair_url(url, self.out)
+        url = f.repair_url(url)
 
         if follow_redirects:
             url, host_header = self.determine_redirect(url, host_header, opts)
