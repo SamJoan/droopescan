@@ -76,6 +76,54 @@ root@personalChunk:~/droopescan# time python3 ./droopescan scan --massscan-overr
                                    function (weakref_cb) |          99 |     13.15 KB
                                     <class '_thread.lock |         297 |      9.28 KB
                                     
+Line #    Mem usage    Increment   Line Contents
+================================================
+   205     41.7 MiB      0.0 MiB       @profile
+   206                                 def _process_identify_futures(self, futures, opts, instances):
+   207     41.7 MiB      0.0 MiB           self.out.debug('scan._process_identify_futures')
+   208     41.7 MiB      0.0 MiB           to_scan = {}
+   209     42.8 MiB      1.1 MiB           for future_dict in futures:
+   210     42.8 MiB      0.0 MiB               future = future_dict['future']
+   211
+   212     42.8 MiB      0.0 MiB               try:
+   213     42.8 MiB      0.0 MiB                   cms_name, result_tuple = future.result(timeout=opts['timeout_host'])
+   214
+   215     42.8 MiB      0.0 MiB                   if cms_name != None:
+   216     42.8 MiB      0.0 MiB                       if cms_name not in to_scan:
+   217     42.8 MiB      0.0 MiB                           to_scan[cms_name] = []
+   218
+   219     42.8 MiB      0.0 MiB                       to_scan[cms_name].append(result_tuple)
+   220     42.8 MiB      0.0 MiB               except:
+   221                                             #f.exc_handle(future_dict['url'], self.out, self.app.testing)
+   222     42.8 MiB      0.0 MiB                   pass
+   223
+   224     42.8 MiB      0.0 MiB           if to_scan:
+   225     42.9 MiB      0.2 MiB               self._process_scan(opts, instances, to_scan)
+   226     42.9 MiB      0.0 MiB               to_scan = {}
+
+
+Filename: /root/droopescan/dscan/plugins/internal/scan.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+   161     36.9 MiB      0.0 MiB       @profile
+   162                                 def _process_generate_futures(self, urls, executor, opts, instances,
+   163                                         follow_redirects):
+   164
+   165     36.9 MiB      0.0 MiB           futures = []
+   166     41.7 MiB      4.7 MiB           for url in urls:
+   167     41.7 MiB      0.0 MiB               url = url.strip()
+   168     41.7 MiB      0.0 MiB               future = executor.submit(self._process_cms_identify, url,
+   169     41.7 MiB      0.0 MiB                       opts, instances, follow_redirects)
+   170
+   171     41.7 MiB      0.0 MiB               futures.append({
+   172     41.7 MiB      0.0 MiB                   'url': url,
+   173     41.7 MiB      0.0 MiB                   'future': future
+   174                                         })
+   175
+   176     42.9 MiB      1.3 MiB           self._process_identify_futures(futures, opts, instances)
+
+                                    
                                     
         - did not find base_plugin_internal.url_scan -> ('http://89.31.143.7/', '0049ev.com')
             i.e. detected by fingerprint but not scanned by url_scan
