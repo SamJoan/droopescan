@@ -19,6 +19,63 @@ Version 1.x:
             - Data in this loop: 
                 https://github.com/droope/droopescan/blob/development/dscan/plugins/internal/scan.py#L124-L146 
                 not freed
+                
+root@personalChunk:~/droopescan# time python3 ./droopescan scan --massscan-override -U ../1kk_scan/head_1kk.txt -e v --error-log ../1kk_scan/error-log.txt | tee ../1kk_scan/results.json
+                                  types |   # objects |   total size
+======================================= | =========== | ============
+                           <class 'list |        6094 |      2.58 MB
+                           <class 'dict |        4462 |      1.87 MB
+                            <class 'str |        6063 |    774.37 KB
+             <class '_io.BufferedReader |          27 |    216.85 KB
+  <class 'xml.etree.ElementTree.Element |        2287 |    142.94 KB
+     <class 'builtin_function_or_method |        1319 |     92.74 KB
+                      <class 'traceback |        1066 |     74.95 KB
+                            <class 'set |          71 |     45.09 KB
+                          <class 'tuple |         598 |     41.99 KB
+        <class 'collections.OrderedDict |          13 |     39.36 KB
+                        <class 'weakref |         366 |     31.45 KB
+           <class 'threading._Condition |         453 |     28.31 KB
+                            <class 'int |         901 |     25.22 KB
+                         <class 'method |         260 |     18.28 KB
+             <class '_io.BufferedWriter |           4 |     16.72 KB
+{"host": ["http://www.0041200.com/", null], "version": {"is_empty": false, "finds": ["4.2.3"]}, "cms_name": "wordpress"}
+                                                   types |   # objects |   total size
+======================================================== | =========== | ============
+                                            <class 'dict |        2669 |      1.61 MB
+                              <class '_io.BufferedReader |          42 |    343.55 KB
+                                             <class 'str |         690 |    101.16 KB
+                                       <class 'traceback |        1178 |     82.83 KB
+                      <class 'builtin_function_or_method |         990 |     69.61 KB
+                                            <class 'list |         818 |     62.90 KB
+                                           <class 'tuple |         593 |     41.17 KB
+                                         <class 'weakref |         293 |     25.18 KB
+                            <class 'threading._Condition |         297 |     18.56 KB
+                           <class 'http.cookiejar.Cookie |         293 |     18.31 KB
+                                          <class 'method |         243 |     17.09 KB
+                                   function (weakref_cb) |          99 |     13.15 KB
+                                             <class 'set |          56 |     12.69 KB
+  <class 'requests.packages.urllib3.util.timeout.Timeout |         185 |     11.56 KB
+                                    <class '_thread.lock |         297 |      9.28 KB
+{"host": ["http://www.0041200.com/", null], "version": {"is_empty": false, "finds": ["4.2.3"]}, "cms_name": "wordpress"}
+                                                   types |   # objects |   total size
+======================================================== | =========== | ============
+                                            <class 'dict |        4794 |      3.23 MB
+                              <class '_io.BufferedReader |          44 |    359.91 KB
+                                       <class 'traceback |        1814 |    127.55 KB
+                                             <class 'str |         673 |    102.40 KB
+                      <class 'builtin_function_or_method |         990 |     69.61 KB
+                           <class 'http.cookiejar.Cookie |         892 |     55.75 KB
+                                            <class 'list |         759 |     54.98 KB
+                                             <class 'set |          96 |     45.75 KB
+                                           <class 'tuple |         632 |     43.97 KB
+                                         <class 'weakref |         297 |     25.52 KB
+                                          <class 'method |         268 |     18.84 KB
+                            <class 'threading._Condition |         297 |     18.56 KB
+  <class 'requests.packages.urllib3.util.timeout.Timeout |         279 |     17.44 KB
+                                   function (weakref_cb) |          99 |     13.15 KB
+                                    <class '_thread.lock |         297 |      9.28 KB
+                                    
+                                    
         - did not find base_plugin_internal.url_scan -> ('http://89.31.143.7/', '0049ev.com')
             i.e. detected by fingerprint but not scanned by url_scan
 
