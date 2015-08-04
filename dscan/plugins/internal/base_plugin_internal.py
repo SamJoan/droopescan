@@ -727,6 +727,17 @@ class BasePluginInternal(controller.CementBaseController):
     @profile
     def enumerate_version(self, url, threads=10, verb='head',
             timeout=15, hide_progressbar=False, headers={}):
+        """
+        Determines which version of CMS is installed at url. This is done by
+        comparing file hashes against the database of hashes in
+        self.version_file, which is located at dscan/plugins/<plugin_name>/versions.xml
+        @param url: the url to check.
+        @param threads: the number of threads to use for this scan.
+        @param verb: HTTP verb to use.
+        @param timeout: time, in seconds, before timing out a request.
+        @param hide_progressbar: should the function hide the progressbar?
+        @param headers: a dict of headers to pass to requests.get.
+        """
 
         files = self.vf.files_get()
         changelogs = self.vf.changelogs_get()
@@ -770,6 +781,17 @@ class BasePluginInternal(controller.CementBaseController):
 
     def enumerate_version_changelog(self, url, versions_estimated, timeout=15,
             headers={}):
+        """
+        If we have a changelog in store for this CMS, this function will be
+        called, and a changelog will be used for narrowing down which version is
+        installed. If the changelog's version is outside our estimated range,
+        it is discarded.
+        @param url: the url to check against.
+        @param versions_estimated: the version other checks estimate the
+            installation is.
+        @param timeout: the number of seconds to wait before expiring a request.
+        @param headers: headers to pass to requests.get()
+        """
         changelogs = self.vf.changelogs_get()
         ch_hash = None
         for ch_url in changelogs:
@@ -786,6 +808,13 @@ class BasePluginInternal(controller.CementBaseController):
             return versions_estimated
 
     def enumerate_file_hash(self, url, file_url, timeout=15, headers={}):
+        """
+        Gets the MD5 of requests.get(url + file_url).
+        @param url: the installation's base URL.
+        @param file_url: the url of the file to hash.
+        @param timeout: the number of seconds to wait prior to a timeout.
+        @param headers: a dictionary to pass to requests.get()
+        """
         r = self.session.get(url + file_url, timeout=timeout, headers=headers)
         if r.status_code == 200:
             return hashlib.md5(r.content).hexdigest()
