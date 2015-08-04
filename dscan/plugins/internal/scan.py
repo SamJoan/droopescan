@@ -14,8 +14,6 @@ import common.versions as v
 import sys
 import traceback
 
-from memory_profiler import profile
-
 class Scan(BasePlugin):
 
     class Meta:
@@ -127,8 +125,7 @@ class Scan(BasePlugin):
             i = 0
             urls = []
             for url in url_file:
-                #if i % num_threads_identify == 0 and i != 0:
-                if i % 1 == 0 and i != 0:
+                if i % num_threads_identify == 0 and i != 0:
                     plugins = pu.plugins_base_get()
                     opts = self._options(self.app.pargs)
                     executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
@@ -147,7 +144,7 @@ class Scan(BasePlugin):
                     urls.append(url)
 
                 i += 1
-                if i == 15:
+                if i == 10000:
                     return
 
             if len(urls) > 0:
@@ -174,7 +171,7 @@ class Scan(BasePlugin):
         self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
-        #self.out.debug('scan._process_cms_identify -> %s' % url)
+        self.out.debug('scan._process_cms_identify -> %s' % url)
         try:
             url, host_header = url, opts['headers']['Host']
         except:
@@ -212,7 +209,7 @@ class Scan(BasePlugin):
 
                     to_scan[cms_name].append(result_tuple)
             except:
-                f.exc_handle(future_dict['url'], self.out, self.app.testing)
+                f.exc_handle("Unknown line", self.out, self.app.testing)
 
         if to_scan:
             self._process_scan(opts, instances, to_scan)

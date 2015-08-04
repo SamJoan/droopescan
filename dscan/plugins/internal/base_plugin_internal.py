@@ -5,6 +5,7 @@ from common import ScanningMethod, StandardOutput, JsonOutput, \
         VersionsFile, RequestsLogger
 from common import template, enum_list, dict_combine, base_url, file_len
 from common.output import ProgressBar
+from common.http import BlockAll
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from os.path import dirname
@@ -20,9 +21,6 @@ import signal
 import sys
 import traceback
 
-from memory_profiler import profile
-from mock import MagicMock
-
 try:
     from urlparse import urlparse
 except ImportError:
@@ -37,7 +35,6 @@ def handle_interrupt(signal, stack):
 
 signal.signal(signal.SIGINT, handle_interrupt)
 
-# https://github.com/kennethreitz/requests/issues/2214
 try:
     requests.packages.urllib3.disable_warnings()
 except:
@@ -256,6 +253,7 @@ class BasePluginInternal(controller.CementBaseController):
             a = requests.adapters.HTTPAdapter(pool_maxsize=5000)
             self.session.mount('http://', a)
             self.session.mount('https://', a)
+            self.session.cookies.set_policy(BlockAll())
         except AttributeError:
             old_req = """Running a very old version of requests! Please `pip
                 install -U requests`."""
@@ -724,7 +722,6 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found, len(found) == 0
 
-    @profile
     def enumerate_version(self, url, threads=10, verb='head',
             timeout=15, hide_progressbar=False, headers={}):
         """
@@ -817,7 +814,8 @@ class BasePluginInternal(controller.CementBaseController):
         """
         r = self.session.get(url + file_url, timeout=timeout, headers=headers)
         if r.status_code == 200:
-            return hashlib.md5(r.content).hexdigest()
+            hash = hashlib.md5(r.content).hexdigest()
+            return hash
         else:
             raise RuntimeError("File '%s' returned status code '%s'." % (file_url, r.status_code))
 
@@ -887,6 +885,7 @@ class BasePluginInternal(controller.CementBaseController):
         @return: a boolean value indiciating whether this CMS is identified
             as being this particular CMS.
         """
+        self.out.debug("cms_identify")
         if isinstance(self.regular_file_url, str):
             rfu = [self.regular_file_url]
         else:
