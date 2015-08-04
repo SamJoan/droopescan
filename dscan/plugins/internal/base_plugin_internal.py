@@ -20,6 +20,8 @@ import signal
 import sys
 import traceback
 
+from memory_profiler import profile
+
 try:
     from urlparse import urlparse
 except ImportError:
@@ -358,7 +360,7 @@ class BasePluginInternal(controller.CementBaseController):
                 else:
                     testing = None
 
-                f.exc_handle(result['url'], self.out, testing)
+                #f.exc_handle(result['url'], self.out, testing)
 
     def process_url_file(self, opts, functionality, enabled_functionality):
         with open(opts['url_file']) as url_file:
@@ -423,6 +425,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return result
 
+    @profile
     def _determine_redirect(self, url, verb, timeout=15, headers={}):
         """
         Internal redirect function, focuses on HTTP and worries less about
@@ -436,12 +439,14 @@ class BasePluginInternal(controller.CementBaseController):
             parameter if no redirect is needed.
         """
         requests_verb = getattr(self.session, verb)
-        r = requests_verb(url, timeout=timeout, headers=headers)
+        r = requests_verb(url, timeout=timeout, headers=headers, allow_redirects=False)
 
         redirect = 300 <= r.status_code < 400
         url_new = url
         if redirect:
-            redirect_url = url_new = r.headers['Location']
+            redirect_url = url
+            #redirect_url = r.headers['Location']
+            url_new = redirect_url
 
             relative_redirect = not redirect_url.startswith('http')
             if relative_redirect:
@@ -839,6 +844,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found_list
 
+    @profile
     def cms_identify(self, vf, url, timeout=15, headers={}):
         """
         Function called when attempting to determine if a URL is identified

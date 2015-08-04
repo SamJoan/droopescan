@@ -9,7 +9,7 @@ import sys
 import traceback
 import xml.etree.ElementTree as ET
 
-def repair_url(url, out):
+def repair_url(url):
     """
         Fixes URL.
         @param url: url to repair.

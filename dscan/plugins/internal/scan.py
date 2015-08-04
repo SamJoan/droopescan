@@ -14,6 +14,8 @@ import common.versions as v
 import sys
 import traceback
 
+from memory_profiler import profile
+
 class Scan(BasePlugin):
 
     class Meta:
@@ -119,13 +121,15 @@ class Scan(BasePlugin):
 
             inst.process_url(opts, **inst_dict['kwargs'])
 
+    @profile
     def _process_scan_url_file(self, file_location, num_threads_identify, follow_redirects):
         self.out.debug('scan._process_scan_url_file')
         with open(file_location) as url_file:
             i = 0
             urls = []
             for url in url_file:
-                if i % num_threads_identify == 0 and i != 0:
+                #if i % num_threads_identify == 0 and i != 0:
+                if i % 1 == 0 and i != 0:
                     plugins = pu.plugins_base_get()
                     opts = self._options(self.app.pargs)
                     executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
@@ -140,6 +144,9 @@ class Scan(BasePlugin):
                     del plugins
                     del opts
                     del instances
+                    urls = []
+                    import sys
+                    sys.exit()
                 else:
                     urls.append(url)
 
@@ -155,6 +162,7 @@ class Scan(BasePlugin):
                 self._process_generate_futures(urls, executor, opts,
                     instances, follow_redirects)
 
+    @profile
     def _process_generate_futures(self, urls, executor, opts, instances,
             follow_redirects):
 
@@ -164,21 +172,19 @@ class Scan(BasePlugin):
             future = executor.submit(self._process_cms_identify, url,
                     opts, instances, follow_redirects)
 
-            futures.append({
-                'url': url,
-                'future': future
-            })
+            futures.append(future)
 
         self._process_identify_futures(futures, opts, instances)
 
+    @profile
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
-        self.out.debug('scan._process_cms_identify -> %s' % url)
+        #self.out.debug('scan._process_cms_identify -> %s' % url)
         try:
             url, host_header = url, opts['headers']['Host']
         except:
             url, host_header = self._process_host_line(url)
 
-        url = f.repair_url(url, self.out)
+        url = f.repair_url(url)
 
         if follow_redirects:
             url, host_header = self.determine_redirect(url, host_header, opts)
@@ -198,12 +204,11 @@ class Scan(BasePlugin):
         else:
             return cms_name, (url, host_header)
 
+    @profile
     def _process_identify_futures(self, futures, opts, instances):
         self.out.debug('scan._process_identify_futures')
         to_scan = {}
-        for future_dict in futures:
-            future = future_dict['future']
-
+        for future in futures:
             try:
                 cms_name, result_tuple = future.result(timeout=opts['timeout_host'])
 
@@ -213,7 +218,8 @@ class Scan(BasePlugin):
 
                     to_scan[cms_name].append(result_tuple)
             except:
-                f.exc_handle(future_dict['url'], self.out, self.app.testing)
+                #f.exc_handle(future_dict['url'], self.out, self.app.testing)
+                pass
 
         if to_scan:
             self._process_scan(opts, instances, to_scan)
