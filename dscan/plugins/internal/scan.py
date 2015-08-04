@@ -121,7 +121,6 @@ class Scan(BasePlugin):
 
             inst.process_url(opts, **inst_dict['kwargs'])
 
-    @profile
     def _process_scan_url_file(self, file_location, num_threads_identify, follow_redirects):
         self.out.debug('scan._process_scan_url_file')
         with open(file_location) as url_file:
@@ -144,11 +143,12 @@ class Scan(BasePlugin):
                     del plugins
                     del opts
                     del instances
-                    urls = []
                 else:
                     urls.append(url)
 
                 i += 1
+                if i == 15:
+                    return
 
             if len(urls) > 0:
                 plugins = pu.plugins_base_get()
@@ -160,7 +160,6 @@ class Scan(BasePlugin):
                 self._process_generate_futures(urls, executor, opts,
                     instances, follow_redirects)
 
-    @profile
     def _process_generate_futures(self, urls, executor, opts, instances,
             follow_redirects):
 
@@ -174,7 +173,6 @@ class Scan(BasePlugin):
 
         self._process_identify_futures(futures, opts, instances)
 
-    @profile
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         #self.out.debug('scan._process_cms_identify -> %s' % url)
         try:
@@ -191,9 +189,8 @@ class Scan(BasePlugin):
         for cms_name in instances:
             inst_dict = instances[cms_name]
             inst = inst_dict['inst']
-            vf = inst_dict['vf']
 
-            if inst.cms_identify(vf, url, opts['timeout'], self._generate_headers(host_header)) == True:
+            if inst.cms_identify(url, opts['timeout'], self._generate_headers(host_header)) == True:
                 found = True
                 break
 
@@ -202,7 +199,6 @@ class Scan(BasePlugin):
         else:
             return cms_name, (url, host_header)
 
-    @profile
     def _process_identify_futures(self, futures, opts, instances):
         self.out.debug('scan._process_identify_futures')
         to_scan = {}
@@ -216,8 +212,7 @@ class Scan(BasePlugin):
 
                     to_scan[cms_name].append(result_tuple)
             except:
-                #f.exc_handle(future_dict['url'], self.out, self.app.testing)
-                pass
+                f.exc_handle(future_dict['url'], self.out, self.app.testing)
 
         if to_scan:
             self._process_scan(opts, instances, to_scan)
@@ -269,7 +264,6 @@ class Scan(BasePlugin):
         inst = plugin()
         hp, func, enabled_func = inst._general_init(opts)
         name = inst._meta.label
-        vf = v.VersionsFile(inst.versions_file)
 
         kwargs = {
             'hide_progressbar': hp,
@@ -282,7 +276,6 @@ class Scan(BasePlugin):
 
         return {
             'inst': inst,
-            'vf': vf,
             'kwargs': kwargs
         }
 

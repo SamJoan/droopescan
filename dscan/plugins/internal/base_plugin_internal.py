@@ -21,6 +21,7 @@ import sys
 import traceback
 
 from memory_profiler import profile
+from mock import MagicMock
 
 try:
     from urlparse import urlparse
@@ -43,14 +44,16 @@ except:
     pass
 
 class BasePluginInternal(controller.CementBaseController):
-    requests = None
-    out = None
     DEFAULT_UA = 'Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)'
     not_found_url = "misc/test/error/404/ispresent.html"
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
     NUMBER_PLUGINS_DEFAULT = 1000
     SPLIT_PATTERN = re.compile('[ \t]+')
+
+    out = None
+    session = None
+    vf = None
 
     class Meta:
         label = 'baseplugin'
@@ -174,7 +177,6 @@ class BasePluginInternal(controller.CementBaseController):
                 'func': self.enumerate_version,
                 'template': 'enumerate_version.mustache',
                 'kwargs': {
-                    'versions_file': self.versions_file,
                     'verb': opts['verb'],
                     'threads': opts['threads_enumerate'],
                     'timeout': opts['timeout'],
@@ -244,6 +246,10 @@ class BasePluginInternal(controller.CementBaseController):
         """
         self.out = self._output(opts)
         self.session = Session()
+
+        is_cms_plugin = self._meta.label != "scan"
+        if is_cms_plugin:
+            self.vf = VersionsFile(self.versions_file)
 
         # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
         try:
@@ -317,10 +323,7 @@ class BasePluginInternal(controller.CementBaseController):
                 args = [url, opts, functionality, enabled_functionality, True]
                 future = executor.submit(self.url_scan, *args)
 
-                try:
-                    url_to_log = url.rstrip()
-                except AttributeError:
-                    url_to_log = url
+                url_to_log = str(url).rstrip()
 
                 results.append({
                     'future': future,
@@ -360,7 +363,7 @@ class BasePluginInternal(controller.CementBaseController):
                 else:
                     testing = None
 
-                #f.exc_handle(result['url'], self.out, testing)
+                f.exc_handle(result['url'], self.out, testing)
 
     def process_url_file(self, opts, functionality, enabled_functionality):
         with open(opts['url_file']) as url_file:
@@ -425,7 +428,6 @@ class BasePluginInternal(controller.CementBaseController):
 
         return result
 
-    @profile
     def _determine_redirect(self, url, verb, timeout=15, headers={}):
         """
         Internal redirect function, focuses on HTTP and worries less about
@@ -722,11 +724,12 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found, len(found) == 0
 
-    def enumerate_version(self, url, versions_file, threads=10, verb='head',
+    @profile
+    def enumerate_version(self, url, threads=10, verb='head',
             timeout=15, hide_progressbar=False, headers={}):
-        vf = VersionsFile(versions_file)
-        files = vf.files_get()
-        changelogs = vf.changelogs_get()
+
+        files = self.vf.files_get()
+        changelogs = self.vf.changelogs_get()
 
         if not hide_progressbar:
             p = ProgressBar(sys.stderr, len(files) +
@@ -753,11 +756,11 @@ class BasePluginInternal(controller.CementBaseController):
                 if not hide_progressbar:
                     p.increment_progress()
 
-        version = vf.version_get(hashes)
+        version = self.vf.version_get(hashes)
 
         # Narrow down using changelog, if accurate.
-        if vf.has_changelog():
-            version = self.enumerate_version_changelog(url, version, vf, timeout, headers=headers)
+        if self.vf.has_changelog():
+            version = self.enumerate_version_changelog(url, version, timeout, headers=headers)
 
         if not hide_progressbar:
             p.increment_progress()
@@ -765,9 +768,9 @@ class BasePluginInternal(controller.CementBaseController):
 
         return version, len(version) == 0
 
-    def enumerate_version_changelog(self, url, versions_estimated, vf,
-            timeout=15, headers={}):
-        changelogs = vf.changelogs_get()
+    def enumerate_version_changelog(self, url, versions_estimated, timeout=15,
+            headers={}):
+        changelogs = self.vf.changelogs_get()
         ch_hash = None
         for ch_url in changelogs:
             try:
@@ -776,7 +779,7 @@ class BasePluginInternal(controller.CementBaseController):
             except RuntimeError:
                 pass
 
-        ch_version = vf.changelog_identify(ch_hash)
+        ch_version = self.vf.changelog_identify(ch_hash)
         if ch_version in versions_estimated:
             return [ch_version]
         else:
@@ -844,12 +847,10 @@ class BasePluginInternal(controller.CementBaseController):
 
         return found_list
 
-    @profile
-    def cms_identify(self, vf, url, timeout=15, headers={}):
+    def cms_identify(self, url, timeout=15, headers={}):
         """
         Function called when attempting to determine if a URL is identified
         as being this particular CMS.
-        @param vf: a VersionsFile instance.
         @param url: the URL to attempt to identify.
         @param timeout: number of seconds before a timeout occurs on a http
             connection.
@@ -870,7 +871,7 @@ class BasePluginInternal(controller.CementBaseController):
             except RuntimeError:
                 continue
 
-            hash_exists = vf.has_hash(hash)
+            hash_exists = self.vf.has_hash(hash)
             if hash_exists:
                 is_cms = True
                 break
