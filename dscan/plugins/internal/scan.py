@@ -145,8 +145,6 @@ class Scan(BasePlugin):
                     del opts
                     del instances
                     urls = []
-                    import sys
-                    sys.exit()
                 else:
                     urls.append(url)
 
