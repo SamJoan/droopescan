@@ -166,7 +166,10 @@ class Scan(BasePlugin):
             future = executor.submit(self._process_cms_identify, url,
                     opts, instances, follow_redirects)
 
-            futures.append(future)
+            futures.append({
+                'url': url,
+                'future': future
+            })
 
         self._process_identify_futures(futures, opts, instances)
 
@@ -199,8 +202,9 @@ class Scan(BasePlugin):
     def _process_identify_futures(self, futures, opts, instances):
         self.out.debug('scan._process_identify_futures')
         to_scan = {}
-        for future in futures:
+        for future_dict in futures:
             try:
+                future = future_dict['future']
                 cms_name, result_tuple = future.result(timeout=opts['timeout_host'])
 
                 if cms_name != None:
@@ -209,7 +213,7 @@ class Scan(BasePlugin):
 
                     to_scan[cms_name].append(result_tuple)
             except:
-                f.exc_handle("Unknown line", self.out, self.app.testing)
+                f.exc_handle(future_dict['url'], self.out, self.app.testing)
 
         if to_scan:
             self._process_scan(opts, instances, to_scan)
