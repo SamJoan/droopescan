@@ -254,5 +254,6 @@ class VersionsFile():
         return len(changelogs) > 0
 
     def has_hash(self, hash):
-        element = self.et.find('.//version[@md5="%s"]' % hash)
-        return element != None
+        file_xpath = './/version[@md5="%s"]' % hash
+        return self.et.find(file_xpath) != None
+

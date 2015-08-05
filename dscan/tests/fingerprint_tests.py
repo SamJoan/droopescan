@@ -355,7 +355,7 @@ class FingerprintTests(BaseTest):
 
                 args, kwargs = ci.call_args
                 assert ru.called
-                assert args[2] == self.base_url
+                assert args[1] == self.base_url
 
     def test_cms_identify_respected(self):
         self._prepare_identify()
