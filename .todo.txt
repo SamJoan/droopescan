@@ -18,6 +18,7 @@ Version 1.x:
             https://pythonhosted.org/Pympler/muppy.html#muppy
             http://www.huyng.com/posts/python-performance-analysis/
             http://stackoverflow.com/questions/14270053/python-requests-not-clearing-memory-when-downloading-with-sessions
+            https://gist.github.com/brianewing/994303
             - Data in this loop: 
                 https://github.com/droope/droopescan/blob/development/dscan/plugins/internal/scan.py#L124-L146 
                 not freed
