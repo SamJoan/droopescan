@@ -17,9 +17,11 @@ Version 1.x:
             http://www.lshift.net/blog/2008/11/14/tracing-python-memory-leaks/
             https://pythonhosted.org/Pympler/muppy.html#muppy
             http://www.huyng.com/posts/python-performance-analysis/
+            http://stackoverflow.com/questions/14270053/python-requests-not-clearing-memory-when-downloading-with-sessions
             - Data in this loop: 
                 https://github.com/droope/droopescan/blob/development/dscan/plugins/internal/scan.py#L124-L146 
                 not freed
+                
                 
 root@personalChunk:~/droopescan# time python3 ./droopescan scan --massscan-override -U ../1kk_scan/head_1kk.txt -e v --error-log ../1kk_scan/error-log.txt | tee ../1kk_scan/results.json
                                   types |   # objects |   total size
