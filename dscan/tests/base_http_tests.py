@@ -585,11 +585,8 @@ class BaseHttpTests(BaseTest):
 
     @patch('requests.Session.get')
     def test_respects_timeout_version(self, mock_get):
-        try:
-            version, is_empty = self.scanner.enumerate_version(self.base_url,
-                    self.xml_file, timeout=5)
-        except TypeError:
-            pass
+        version, is_empty = self.scanner.enumerate_version(self.base_url,
+                    timeout=5)
 
         self.assert_called_contains_all(mock_get, 'timeout', 5)
 
@@ -811,7 +808,7 @@ class BaseHttpTests(BaseTest):
     @patch('requests.Session.get')
     def test_respects_host_version(self, mock_get):
         version, is_empty = self.scanner.enumerate_version(self.base_url,
-                self.xml_file, headers=self.host_header)
+                headers=self.host_header)
 
         self.assert_called_contains_all(mock_get, 'headers', self.host_header)
 

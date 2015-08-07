@@ -448,8 +448,7 @@ class BasePluginInternal(controller.CementBaseController):
         redirect = 300 <= r.status_code < 400
         url_new = url
         if redirect:
-            redirect_url = url
-            #redirect_url = r.headers['Location']
+            redirect_url = r.headers['Location']
             url_new = redirect_url
 
             relative_redirect = not redirect_url.startswith('http')

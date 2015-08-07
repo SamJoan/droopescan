@@ -88,12 +88,9 @@ class Scan(BasePlugin):
 
     @controller.expose(hide=True)
     def default(self):
-        plugins = pu.plugins_base_get()
         opts = self._options(self.app.pargs)
         url_file_input = 'url_file' in opts
         self._general_init(opts)
-        instances = self._instances_get(opts, plugins, url_file_input)
-
         follow_redirects = opts['follow_redirects']
         opts['follow_redirects'] = False
 
@@ -102,11 +99,16 @@ class Scan(BasePlugin):
             self._process_scan_url_file(opts['url_file'],
                 opts['threads_identify'], follow_redirects)
         else:
+            plugins = pu.plugins_base_get()
+            instances = self._instances_get(opts, plugins, url_file_input,
+                    self.out)
+
             self.out.debug('scan.default -> url')
             url = opts['url']
             if not url:
                 self.out.fatal("--url parameter is blank.")
 
+            print("Llaldaldald")
             cms_name, scan_out = self._process_cms_identify(url, opts, instances,
                     follow_redirects)
 
@@ -279,7 +281,6 @@ class Scan(BasePlugin):
         plugins = pu.plugins_base_get()
         opts = self._options(self.app.pargs)
         executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
-        instances = self._instances_get(opts, plugins, self.out,
-                url_file_input=True)
+        instances = self._instances_get(opts, plugins, True, self.out)
 
         return plugins, opts, executor, instances

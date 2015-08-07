@@ -66,7 +66,8 @@ class FingerprintTests(BaseTest):
         real_version = '7.26'
         self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, real_version)
 
-        version, is_empty = self.scanner.enumerate_version(self.base_url, self.xml_file)
+        self.scanner.vf = VersionsFile(self.xml_file)
+        version, is_empty = self.scanner.enumerate_version(self.base_url)
 
         assert version[0] == real_version
         assert is_empty == False
@@ -74,7 +75,8 @@ class FingerprintTests(BaseTest):
     def test_determines_version_similar(self):
         real_version = '6.15'
         self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, real_version)
-        returned_version, is_empty = self.scanner.enumerate_version(self.base_url, self.xml_file)
+        self.scanner.vf = VersionsFile(self.xml_file)
+        returned_version, is_empty = self.scanner.enumerate_version(self.base_url)
 
         assert len(returned_version) == 2
         assert real_version in returned_version
@@ -106,8 +108,7 @@ class FingerprintTests(BaseTest):
         responses.add(responses.GET, self.base_url + 'CHANGELOG.txt')
 
         # will exception if attempts to HEAD
-        self.scanner.enumerate_version(self.base_url,
-                self.scanner.versions_file, verb='head')
+        self.scanner.enumerate_version(self.base_url, verb='head')
 
     def test_version_gt(self):
         assert self.v.version_gt("10.1", "9.1")
@@ -266,19 +267,21 @@ class FingerprintTests(BaseTest):
         self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file, "7.27")
         self.scanner.enumerate_version_changelog = m = MagicMock()
 
-        self.scanner.enumerate_version(self.base_url, self.xml_file)
+        self.scanner.vf = VersionsFile(self.xml_file)
+        self.scanner.enumerate_version(self.base_url)
         assert not m.called
 
-        self.scanner.enumerate_version(self.base_url, self.xml_file_changelog)
+        self.scanner.vf = VersionsFile(self.xml_file_changelog)
+        self.scanner.enumerate_version(self.base_url)
         assert m.called
 
     def test_narrow_down_changelog(self):
         mock_versions = ['7.26', '7.27', '7.28']
 
-        v_changelog = VersionsFile(self.xml_file_changelog)
+        self.scanner.vf = VersionsFile(self.xml_file_changelog)
         self.scanner.enumerate_file_hash = self.mock_xml(self.xml_file_changelog, "7.27")
         result = self.scanner.enumerate_version_changelog(self.base_url,
-                mock_versions, v_changelog)
+                mock_versions)
 
         assert result == ['7.27']
 
@@ -297,10 +300,10 @@ class FingerprintTests(BaseTest):
         mock_versions = ["8.0", "8.1", "8.2"]
         xml_multi_changelog = 'tests/resources/versions_multiple_changelog.xml'
 
-        v_changelog = VersionsFile(xml_multi_changelog)
+        self.scanner.vf = VersionsFile(xml_multi_changelog)
         self.scanner.enumerate_file_hash = self.mock_xml(xml_multi_changelog, "8.0")
         result = self.scanner.enumerate_version_changelog(self.base_url,
-                mock_versions, v_changelog)
+                mock_versions)
 
         assert result == ["8.0"]
 
@@ -330,10 +333,9 @@ class FingerprintTests(BaseTest):
         assert cim.called
 
         args, kwargs = cim.call_args
-        assert isinstance(args[1], VersionsFile)
-        assert args[2] == self.base_url
-        assert args[3] == 1337
-        assert args[4] == self.host_header
+        assert args[1] == self.base_url
+        assert args[2] == 1337
+        assert args[3] == self.host_header
 
         self.assert_called_contains(mock_head, 'timeout', 1337)
         self.assert_called_contains(mock_head, 'headers', self.host_header)
@@ -373,6 +375,7 @@ class FingerprintTests(BaseTest):
 
     def _prepare_identify(self, url_file=False, url_file_host=False):
         self.clear_argv()
+
         if url_file_host:
             self.add_argv(['scan', '-U', 'tests/resources/url_file_ip_url.txt'])
         elif url_file:
@@ -431,11 +434,9 @@ class FingerprintTests(BaseTest):
         assert pui.call_count == 3
 
         args, kwargs = cim.call_args_list[0]
-        assert isinstance(args[1], VersionsFile)
-        assert args[2] == "http://192.168.1.1/"
-
-        assert args[3] == 1337
-        assert args[4] == self.host_header
+        assert args[1] == "http://192.168.1.1/"
+        assert args[2] == 1337
+        assert args[3] == self.host_header
 
     def test_cms_identify_multiple_doesnt_crash(self):
         self._mock_cms_multiple(cms_ident_side_eff=ConnectionError)
@@ -453,7 +454,7 @@ class FingerprintTests(BaseTest):
         with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
             with patch(has_hash, autospec=True, return_value=True) as hh:
                 self.scanner.regular_file_url = rfu
-                is_cms = self.scanner.cms_identify(self.v, self.base_url)
+                is_cms = self.scanner.cms_identify(self.base_url)
 
                 args, kwargs = efh.call_args
                 assert args[1] == self.base_url
@@ -479,7 +480,7 @@ class FingerprintTests(BaseTest):
         with patch(self.efh_module, autospec=True, side_effect=_efh_side_effect) as efh:
             with patch(has_hash, autospec=True, return_value=True) as hh:
                 self.scanner.regular_file_url = rfu
-                is_cms = self.scanner.cms_identify(self.v, self.base_url)
+                is_cms = self.scanner.cms_identify(self.base_url)
 
                 assert efh.call_count == 2
                 i = 0
@@ -497,7 +498,7 @@ class FingerprintTests(BaseTest):
         rfu = "test/topst/tust.txt"
         with patch(self.efh_module, autospec=True, side_effect=RuntimeError) as m:
             self.scanner.regular_file_url = rfu
-            is_cms = self.scanner.cms_identify(self.v, self.base_url)
+            is_cms = self.scanner.cms_identify(self.base_url)
 
             assert is_cms == False
 
@@ -509,7 +510,7 @@ class FingerprintTests(BaseTest):
         with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
             with patch(has_hash, autospec=True, return_value=False) as hh:
                 self.scanner.regular_file_url = rfu
-                is_cms = self.scanner.cms_identify(self.v, self.base_url)
+                is_cms = self.scanner.cms_identify(self.base_url)
 
                 assert is_cms == False
 
@@ -522,14 +523,13 @@ class FingerprintTests(BaseTest):
 
     @patch('requests.Session.get')
     def test_respects_host_cms_identify(self, mock_head):
-        self.scanner.cms_identify(self.v, self.base_url,
-                headers=self.host_header)
+        self.scanner.cms_identify(self.base_url, headers=self.host_header)
 
         self.assert_called_contains(mock_head, 'headers', self.host_header)
 
     @patch('requests.Session.get')
     def test_respects_timeout_cms_identify(self, mock_head):
-        self.scanner.cms_identify(self.v, self.base_url,
+        self.scanner.cms_identify(self.base_url,
                 timeout=1337)
 
         self.assert_called_contains(mock_head, 'timeout', 1337)
