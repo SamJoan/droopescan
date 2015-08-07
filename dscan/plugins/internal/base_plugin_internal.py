@@ -235,14 +235,18 @@ class BasePluginInternal(controller.CementBaseController):
 
         return output
 
-    def _general_init(self, opts):
+    def _general_init(self, opts, out=None):
         """
             Initializes a variety of variables depending on user input.
             @return: a boolean value indicating whether progressbars should be
                 hidden.
         """
-        self.out = self._output(opts)
+
         self.session = Session()
+        if out:
+            self.out = out
+        else:
+            self.out = self._output(opts)
 
         is_cms_plugin = self._meta.label != "scan"
         if is_cms_plugin:

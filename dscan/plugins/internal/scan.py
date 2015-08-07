@@ -13,6 +13,7 @@ import common.plugins_util as pu
 import common.versions as v
 import sys
 import traceback
+import gc
 
 class Scan(BasePlugin):
 
@@ -119,6 +120,7 @@ class Scan(BasePlugin):
 
             inst.process_url(opts, **inst_dict['kwargs'])
 
+
     def _process_scan_url_file(self, file_location, num_threads_identify, follow_redirects):
         self.out.debug('scan._process_scan_url_file')
         with open(file_location) as url_file:
@@ -126,20 +128,14 @@ class Scan(BasePlugin):
             urls = []
             for url in url_file:
                 if i % num_threads_identify == 0 and i != 0:
-                    plugins = pu.plugins_base_get()
-                    opts = self._options(self.app.pargs)
-                    executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
-                    instances = self._instances_get(opts, plugins,
-                            url_file_input=True)
+
+                    plugins, opts, executor, instances = self._recreate_all()
 
                     self._process_generate_futures(urls, executor, opts,
                         instances, follow_redirects)
 
                     executor.shutdown()
-                    del executor
-                    del plugins
-                    del opts
-                    del instances
+                    gc.collect()
                 else:
                     urls.append(url)
 
@@ -148,14 +144,11 @@ class Scan(BasePlugin):
                     return
 
             if len(urls) > 0:
-                plugins = pu.plugins_base_get()
-                opts = self._options(self.app.pargs)
-                executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
-                instances = self._instances_get(opts, plugins,
-                        url_file_input=True)
+                plugins, opts, executor, instances = self._recreate_all()
 
                 self._process_generate_futures(urls, executor, opts,
                     instances, follow_redirects)
+                executor.shutdown()
 
     def _process_generate_futures(self, urls, executor, opts, instances,
             follow_redirects):
@@ -228,7 +221,7 @@ class Scan(BasePlugin):
             if len(cms_urls) > 0:
                 inst_dict['inst'].process_url_iterable(cms_urls, opts, **inst_dict['kwargs'])
 
-    def _instances_get(self, opts, plugins, url_file_input):
+    def _instances_get(self, opts, plugins, url_file_input, out):
         """
         Creates and returns an ordered dictionary containing instances for all available
         scanning plugins, sort of ordered by popularity.
@@ -237,6 +230,7 @@ class Scan(BasePlugin):
         @param url_file_input: boolean value which indicates whether we are
             scanning an individual URL or a file. This is used to determine
             kwargs required.
+        @param out: self.out
         """
         instances = OrderedDict()
         preferred_order = ['wordpress', 'joomla', 'drupal']
@@ -247,23 +241,23 @@ class Scan(BasePlugin):
 
                 if cms_name == plugin_name:
                     instances[plugin_name] = self._instance_get(plugin, opts,
-                            url_file_input)
+                            url_file_input, out)
 
         for plugin in plugins:
             plugin_name = plugin.__name__.lower()
             if plugin_name not in preferred_order:
                 instances[plugin_name] = self._instance_get(plugin, opts,
-                        url_file_input)
+                        url_file_input, out)
 
         return instances
 
-    def _instance_get(self, plugin, opts, url_file_input):
+    def _instance_get(self, plugin, opts, url_file_input, out):
         """
         Return an instance dictionary for an individual plugin.
         @see Scan._instances_get.
         """
         inst = plugin()
-        hp, func, enabled_func = inst._general_init(opts)
+        hp, func, enabled_func = inst._general_init(opts, out)
         name = inst._meta.label
 
         kwargs = {
@@ -280,3 +274,11 @@ class Scan(BasePlugin):
             'kwargs': kwargs
         }
 
+    def _recreate_all(self):
+        plugins = pu.plugins_base_get()
+        opts = self._options(self.app.pargs)
+        executor = ThreadPoolExecutor(max_workers=opts['threads_identify'])
+        instances = self._instances_get(opts, plugins, self.out,
+                url_file_input=True)
+
+        return plugins, opts, executor, instances
