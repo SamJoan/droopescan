@@ -120,6 +120,7 @@ class Scan(BasePlugin):
 
             inst.process_url(opts, **inst_dict['kwargs'])
 
+        self.out.close()
 
     def _process_scan_url_file(self, file_location, num_threads_identify, follow_redirects):
         self.out.debug('scan._process_scan_url_file')
