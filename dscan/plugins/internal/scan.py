@@ -180,8 +180,8 @@ class Scan(BasePlugin):
 
             i += 1
             if i % 100 == 0 and i != 0:
-                print('%s fully completed, time %s' % (i, checkpoint -
-                    datetime.now()))
+                print('%s fully completed, time %s' % (i, datetime.now() -
+                    checkpoint))
                 checkpoint = datetime.now()
 
         if to_scan:
