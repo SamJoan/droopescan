@@ -12,7 +12,7 @@ import common.functions as f
 import common.plugins_util as pu
 import common.versions as v
 import gc
-import datetime
+from datetime import datetime
 
 class Scan(BasePlugin):
 
