@@ -154,6 +154,7 @@ class Scan(BasePlugin):
         i = 0
         futures = []
         checkpoint = datetime.now()
+        print(len(urls))
         for url in urls:
             url = url.strip()
             future = executor.submit(self._process_cms_identify, url,
@@ -167,7 +168,7 @@ class Scan(BasePlugin):
             if i % 100 == 0 and i != 0:
                 self._process_identify_futures(futures, opts, instances)
                 futures = []
-                self.out.echo('%s fully complete, %s since last checkpoint' %
+                print('%s fully complete, %s since last checkpoint' %
                     (i, str(datetime.now() - checkpoint)))
                 checkpoint = datetime.now()
 
