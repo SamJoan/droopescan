@@ -153,6 +153,7 @@ class Scan(BasePlugin):
     def _process_generate_futures(self, urls, executor, opts, instances,
             follow_redirects):
 
+        i = 0
         futures = []
         for url in urls:
             url = url.strip()
@@ -164,7 +165,14 @@ class Scan(BasePlugin):
                 'future': future
             })
 
-        self._process_identify_futures(futures, opts, instances)
+            if i % 1000 and i != 0:
+                self._process_identify_futures(futures, opts, instances)
+                futures = []
+
+            i += 1
+
+        if futures:
+            self._process_identify_futures(futures, opts, instances)
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         self.out.debug('scan._process_cms_identify -> %s' % url)
