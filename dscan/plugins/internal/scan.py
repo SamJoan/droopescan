@@ -11,9 +11,8 @@ import common
 import common.functions as f
 import common.plugins_util as pu
 import common.versions as v
-import sys
-import traceback
 import gc
+import datetime
 
 class Scan(BasePlugin):
 
