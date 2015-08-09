@@ -179,9 +179,10 @@ class Scan(BasePlugin):
                 f.exc_handle(url, self.out, self.app.testing)
 
             i += 1
-            if i % 100 == 0 and i != 0:
-                print('%s fully completed, time %s' % (i, datetime.now() -
-                    checkpoint))
+            if i % 1000 == 0 and i != 0:
+                self._process_scan(opts, instances, to_scan)
+                to_scan = {}
+                print('%s fully completed, time %s' % (i, datetime.now() - checkpoint))
                 checkpoint = datetime.now()
 
         if to_scan:
