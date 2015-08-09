@@ -129,7 +129,7 @@ class Scan(BasePlugin):
             urls = []
             for url in url_file:
                 urls.append(url)
-                if i % 100 == 0 and i != 0:
+                if i % 20000 == 0 and i != 0:
                     time_start = datetime.now()
                     plugins, opts, executor, instances = self._recreate_all()
 
