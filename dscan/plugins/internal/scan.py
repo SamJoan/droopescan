@@ -129,6 +129,7 @@ class Scan(BasePlugin):
             i = 0
             urls = []
             for url in url_file:
+                urls.append(url)
                 if i % 100 == 0 and i != 0:
 
                     time_start = datetime.now()
@@ -141,9 +142,6 @@ class Scan(BasePlugin):
                     gc.collect()
                     self.out.echo('%s completed, %s since last checkpoint' %
                         (i, str(datetime.now() - time_start)))
-
-                else:
-                    urls.append(url)
 
             if len(urls) > 0:
                 plugins, opts, executor, instances = self._recreate_all()
