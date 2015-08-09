@@ -3,7 +3,7 @@ from cement.core import controller
 from collections import OrderedDict
 from common.functions import template
 from common import template
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from plugins.internal.base_plugin import BasePlugin
 from plugins.internal.base_plugin_internal import BasePluginInternal
@@ -131,10 +131,8 @@ class Scan(BasePlugin):
                 urls.append(url)
                 if i % 20000 == 0 and i != 0:
                     plugins, opts, executor, instances = self._recreate_all()
-
                     self._process_generate_futures(urls, executor, opts,
-                        instances, follow_redirects)
-
+                            instances, follow_redirects)
                     executor.shutdown()
                     gc.collect()
 
@@ -142,41 +140,53 @@ class Scan(BasePlugin):
 
             if len(urls) > 0:
                 plugins, opts, executor, instances = self._recreate_all()
-
-                self._process_generate_futures(urls, executor, opts,
-                    instances, follow_redirects)
+                self._process_generate_futures(urls, executor, opts, instances,
+                        follow_redirects)
                 executor.shutdown()
 
-    def _process_generate_futures(self, urls, executor, opts, instances,
-            follow_redirects):
+    def _process_generate_futures(self, urls, executor, opts, instances, follow_redirects):
         self.out.debug('scan._process_generate_futures')
 
-        i = 0
         futures = []
-        checkpoint = datetime.now()
-        print(len(urls))
         for url in urls:
             url = url.strip()
             future = executor.submit(self._process_cms_identify, url,
                     opts, instances, follow_redirects)
+            future.url = url
 
-            futures.append({
-                'url': url,
-                'future': future
-            })
-
-            if i % 100 == 0 and i != 0:
-                self._process_identify_futures(futures, opts, instances)
-                futures = []
-                print('%s fully complete, %s since last checkpoint' %
-                    (i, str(datetime.now() - checkpoint)))
-                checkpoint = datetime.now()
-
-
-            i += 1
+            futures.append(future)
 
         if futures:
             self._process_identify_futures(futures, opts, instances)
+
+    def _process_identify_futures(self, futures, opts, instances):
+        self.out.debug('scan._process_identify_futures')
+        checkpoint = datetime.now()
+
+        i = 0
+        to_scan = {}
+        for future in as_completed(futures):
+            url = future.url
+            try:
+                cms_name, result_tuple = future.result(timeout=opts['timeout_host'])
+
+                if cms_name != None:
+                    if cms_name not in to_scan:
+                        to_scan[cms_name] = []
+
+                    to_scan[cms_name].append(result_tuple)
+            except:
+                f.exc_handle(url, self.out, self.app.testing)
+
+            i += 1
+            if i % 100 == 0 and i != 0:
+                print('%s fully completed, time %s' % (i, checkpoint -
+                    datetime.now()))
+                checkpoint = datetime.now()
+
+        if to_scan:
+            self._process_scan(opts, instances, to_scan)
+            to_scan = {}
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         self.out.debug('scan._process_cms_identify -> %s' % url)
@@ -203,26 +213,6 @@ class Scan(BasePlugin):
             return None, None
         else:
             return cms_name, (url, host_header)
-
-    def _process_identify_futures(self, futures, opts, instances):
-        self.out.debug('scan._process_identify_futures')
-        to_scan = {}
-        for future_dict in futures:
-            try:
-                future = future_dict['future']
-                cms_name, result_tuple = future.result(timeout=opts['timeout_host'])
-
-                if cms_name != None:
-                    if cms_name not in to_scan:
-                        to_scan[cms_name] = []
-
-                    to_scan[cms_name].append(result_tuple)
-            except:
-                f.exc_handle(future_dict['url'], self.out, self.app.testing)
-
-        if to_scan:
-            self._process_scan(opts, instances, to_scan)
-            to_scan = {}
 
     def _process_scan(self, opts, instances, to_scan):
         self.out.debug('scan._process_scan')
