@@ -132,6 +132,7 @@ class Scan(BasePlugin):
             for url in url_file:
                 if i % num_threads_identify == 0 and i != 0:
 
+                    time_start = datetime.now()
                     plugins, opts, executor, instances = self._recreate_all()
 
                     self._process_generate_futures(urls, executor, opts,
@@ -139,12 +140,11 @@ class Scan(BasePlugin):
 
                     executor.shutdown()
                     gc.collect()
+                    self.out.echo('%s completed, %s since last checkpoint' %
+                        (i, str(datetime.now() - time_start)))
+
                 else:
                     urls.append(url)
-
-                i += 1
-                if i == 10000:
-                    return
 
             if len(urls) > 0:
                 plugins, opts, executor, instances = self._recreate_all()

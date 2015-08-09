@@ -64,3 +64,7 @@ Relevant:
 {"host_header": "00187.it", "host": "http://92.222.25.156/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "line": "http://92.222.25.156/", "cms_name": "wordpress"}
 {"host_header": "001bocai.com", "host": "http://5.44.233.202/", "version": {"is_empty": false, "finds": ["3.8.6", "3.8.7", "3.8.8"]}, "line": "http://5.44.233.202/", "cms_name": "wordpress"}
 {"host_header": null, "host": "http://www.001d.com/", "version": {"is_empty": false, "finds": ["4.2.2"]}, "line": "http://www.001d.com/", "cms_name": "wordpress"}
+
+
+1> Increase max threads.
+2> Increase max open file descriptors.
