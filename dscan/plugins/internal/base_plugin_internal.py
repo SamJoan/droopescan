@@ -117,11 +117,11 @@ class BasePluginInternal(controller.CementBaseController):
 
         if pargs.massscan_override:
             threads = 1
-            threads_identify = 1000
+            threads_identify = 10000
             threads_scan = 50
             threads_enumerate = 4
-            timeout = 10
-            timeout_host = 120
+            timeout = 15
+            timeout_host = 200
 
         del pargs
         return locals()

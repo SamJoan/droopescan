@@ -108,7 +108,6 @@ class Scan(BasePlugin):
             if not url:
                 self.out.fatal("--url parameter is blank.")
 
-            print("Llaldaldald")
             cms_name, scan_out = self._process_cms_identify(url, opts, instances,
                     follow_redirects)
 
@@ -130,7 +129,7 @@ class Scan(BasePlugin):
             i = 0
             urls = []
             for url in url_file:
-                if i % num_threads_identify == 0 and i != 0:
+                if i % 100 == 0 and i != 0:
 
                     time_start = datetime.now()
                     plugins, opts, executor, instances = self._recreate_all()
