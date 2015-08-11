@@ -11,37 +11,6 @@ Version 1.x:
           something it's not. Like, when versions: [] is empty true, but now even
           more misleading.
     - InvalidSchema: No connection adapters were found for 'd:/htdocs/404.html'
-    
-    real problems:
-Traceback (most recent call last):
-  File "./droopescan", line 15, in <module>
-    droopescan.main(prev_cwd)
-  File "/root/droopescan/dscan/droopescan.py", line 51, in main
-    ds.run()
-  File "/usr/local/lib/python3.2/dist-packages/cement/core/foundation.py", line 764, in run
-    self.controller._dispatch()
-  File "/usr/local/lib/python3.2/dist-packages/cement/core/controller.py", line 466, in _dispatch
-    return func()
-  File "/usr/local/lib/python3.2/dist-packages/cement/core/controller.py", line 472, in _dispatch
-    return func()
-  File "/root/droopescan/dscan/plugins/internal/scan.py", line 102, in default
-    opts['threads_identify'], follow_redirects)
-  File "/root/droopescan/dscan/plugins/internal/scan.py", line 133, in _process_scan_url_file
-    url_file_input=True)
-  File "/root/droopescan/dscan/plugins/internal/scan.py", line 246, in _instances_get
-    url_file_input)
-  File "/root/droopescan/dscan/plugins/internal/scan.py", line 262, in _instance_get
-    hp, func, enabled_func = inst._general_init(opts)
-  File "/root/droopescan/dscan/plugins/internal/base_plugin_internal.py", line 244, in _general_init
-    self.out = self._output(opts)
-  File "/root/droopescan/dscan/plugins/internal/base_plugin_internal.py", line 229, in _output
-    output = JsonOutput(error_log=opts['error_log'])
-  File "/root/droopescan/dscan/common/output.py", line 65, in __init__
-    self.error_log = open(error_log, 'w')
-IOError: [Errno 24] Too many open files: '/root/droopescan/../1kk_scan/error-log.txt'
-
-        - did not find base_plugin_internal.url_scan -> ('http://89.31.143.7/', '0049ev.com')
-            i.e. detected by fingerprint but not scanned by url_scan
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
