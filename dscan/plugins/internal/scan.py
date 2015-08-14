@@ -110,6 +110,9 @@ class Scan(BasePlugin):
             cms_name, scan_out = self._process_cms_identify(url, opts, instances,
                     follow_redirects)
 
+            if not cms_name:
+                self.out.fatal("'%s' not identified as any CMS." % url)
+
             url, host_header = scan_out
 
             inst_dict = instances[cms_name]

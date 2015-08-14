@@ -614,3 +614,16 @@ class FingerprintTests(BaseTest):
 
         self.assert_called_contains_all(mock_get, 'headers', self.host_header)
         self.assert_called_contains_all(mock_head, 'headers', self.host_header)
+
+    def test_doesnt_crash_when_no_cms(self):
+        self.clear_argv()
+        self.add_argv(['scan', '-e', 'v', '-u', self.base_url])
+
+        with patch(self.cms_identify_module, autospec=True, return_value=False) as m:
+            try:
+                self.app.run()
+            except RuntimeError:
+                # RuntimeError is OK bc means I handled the exception.
+                pass
+
+
