@@ -112,6 +112,8 @@ class Scan(BasePlugin):
 
             if not cms_name:
                 self.out.fatal("'%s' not identified as any CMS." % url)
+            else:
+                self.out.echo("[+] Site identified as %s." % cms_name)
 
             url, host_header = scan_out
 
