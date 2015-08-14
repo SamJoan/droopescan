@@ -626,4 +626,3 @@ class FingerprintTests(BaseTest):
                 # RuntimeError is OK bc means I handled the exception.
                 pass
 
-
