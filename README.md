@@ -1,5 +1,7 @@
 # droopescan.
 
+[![Build Status](https://img.shields.io/travis/droope/droopescan.svg)](https://travis-ci.org/droope/droopescan) [![PyPI version](https://img.shields.io/pypi/v/droopescan.svg)](https://pypi.python.org/pypi/droopescan)
+
 A plugin-based scanner that aids security researchers in identifying issues with
 several CMS:
 
@@ -11,7 +13,6 @@ Partial functionality for:
 * Wordpress.
 * Joomla.
 
-[![Build Status](https://img.shields.io/travis/droope/droopescan.svg)](https://travis-ci.org/droope/droopescan) [![PyPI version](https://img.shields.io/pypi/v/droopescan.svg)](https://pypi.python.org/pypi/droopescan)
 <pre>
 computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 8
 [+] No themes found.
