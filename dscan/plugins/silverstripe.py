@@ -33,7 +33,8 @@ class SilverStripe(BasePlugin):
     interesting_urls = [
             ('framework/docs/en/changelogs/index.md', 'Changelogs, there are other files in same dir, but \'index.md\' is frequently outdated.'),
             ('Security/login', 'Administrative interface.'),
-            ('composer.json', 'Contains detailed, sensitive dependency information.')
+            ('composer.json', 'Contains detailed, sensitive dependency information.'),
+            ('vendor/composer/installed.json', 'Contains detailed, sensitive dependency information.'),
         ]
 
     interesting_module_urls = [
