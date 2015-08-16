@@ -1,7 +1,6 @@
 Add;
 
 Version 1.x:
-    - better error for empty file when `scan`
     - When mass-scanning with CMS provided, it sometimes says cms_name is
           something it's not. Like, when versions: [] is empty true, but now even
           more misleading.
