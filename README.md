@@ -163,6 +163,12 @@ http://192.168.1.1/	example.org
 http://192.168.1.2/drupal/	example.org
 </pre>
 
+PS: It is quite tempting to test whether the scanner works for a particular CMS
+by scanning the official site (e.g. wordpress.org for wordpress), but the
+official sites rarely run vainilla installations of their respective CMS or do
+unorthodox things. For example, wordpress.org runs the bleeding edge version of
+wordpress, which will not be identified as wordpress by `droopescan`.
+
 ## Authentication.
 
 The application fully supports `.netrc` files and `http_proxy` environment

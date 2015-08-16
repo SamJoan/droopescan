@@ -11,12 +11,12 @@ import xml.etree.ElementTree as ET
 
 def repair_url(url):
     """
-        Fixes URL.
-        @param url: url to repair.
-        @param out: instance of StandardOutput as defined in this lib.
-        @return: Newline characters are stripped from the URL string.
-            If the url string parameter does not start with http, it prepends http://
-            If the url string parameter does not end with a slash, appends a slash.
+    Fixes URL.
+    @param url: url to repair.
+    @param out: instance of StandardOutput as defined in this lib.
+    @return: Newline characters are stripped from the URL string.
+        If the url string parameter does not start with http, it prepends http://
+        If the url string parameter does not end with a slash, appends a slash.
     """
     url = url.strip('\n')
     if not re.match(r"^http", url):
@@ -92,8 +92,9 @@ def strip_letters(string):
 
 def version_gt(version, gt):
     """
-        Code for parsing simple, numeric versions. Letters will be stripped
-        prior to comparison. Simple appendages such as 1-rc1 are supported.
+    Code for parsing simple, numeric versions. Letters will be stripped prior to
+    comparison. Simple appendages such as 1-rc1 are supported. Test cases for
+    function are present on dscan/tests/fingerprint_tests.py
     """
     version_split = strip_letters(version).split('.')
     gt_split = strip_letters(gt).split('.')
