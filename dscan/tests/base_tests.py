@@ -283,10 +283,11 @@ class BaseTests(BaseTest):
 
         m = mock_open()
         with patch('plugins.internal.base_plugin_internal.open', m, create=True) as o:
-            url_scan = self.mock_controller('drupal', 'url_scan')
-            self.app.run()
+            with patch('plugins.internal.base_plugin_internal.BasePluginInternal.check_file_empty', autospec=True):
+                url_scan = self.mock_controller('drupal', 'url_scan')
+                self.app.run()
 
-            assert full_path == o.call_args_list[0][0][0]
+                assert full_path == o.call_args_list[0][0][0]
 
     @test.raises(FileEmptyException)
     def test_url_file_empty(self):
