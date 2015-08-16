@@ -1,7 +1,15 @@
 # droopescan.
 
 A plugin-based scanner that aids security researchers in identifying issues with
-several CMS.
+several CMS:
+
+* Drupal.
+* SilverStripe.
+
+Partial functionality for:
+
+* Wordpress.
+* Joomla.
 
 [![Build Status](https://img.shields.io/travis/droope/droopescan.svg)](https://travis-ci.org/droope/droopescan) [![PyPI version](https://img.shields.io/pypi/v/droopescan.svg)](https://pypi.python.org/pypi/droopescan)
 <pre>
@@ -163,11 +171,12 @@ http://192.168.1.1/	example.org
 http://192.168.1.2/drupal/	example.org
 </pre>
 
-PS: It is quite tempting to test whether the scanner works for a particular CMS
-by scanning the official site (e.g. wordpress.org for wordpress), but the
+It is quite tempting to test whether the scanner works for a particular CMS
+by scanning the official site (e.g. `wordpress.org` for `wordpress`), but the
 official sites rarely run vainilla installations of their respective CMS or do
-unorthodox things. For example, wordpress.org runs the bleeding edge version of
-wordpress, which will not be identified as wordpress by `droopescan`.
+unorthodox things. For example, `wordpress.org` runs the bleeding edge version of
+`wordpress`, which will not be identified as wordpress by `droopescan` at all
+because the checksums do not match any known wordpress version.
 
 ## Authentication.
 
@@ -329,19 +338,22 @@ the following command
 Some sample output might look as follows:
 
 <pre>
-    Functionality available for 'drupal':
-    - Enumerate plugins (X plugins.)
-    - Enumerate themes (X themes.)
-    - Enumerate interesting urls (X urls.)
-    - Enumerate version (up to version X)
-    Functionality available for 'joomla':
-    - Enumerate interesting urls (X urls.)
-    - Enumerate version (up to version X)
-    Functionality available for 'silverstripe':
-    - Enumerate plugins (X plugins.)
-    - Enumerate themes (X themes.)
-    - Enumerate interesting urls (X urls.)
-    - Enumerate version (up to version X)
+Functionality available for ‘drupal’:
+- Enumerate plugins (XXXX plugins.)
+- Enumerate themes (XXXX themes.)
+- Enumerate interesting urls (X urls.)
+- Enumerate version (up to version X.X.X-alphaXX, X.XX, X.XX.)
+Functionality available for ‘joomla’:
+- Enumerate interesting urls (X urls.)
+- Enumerate version (up to version XX.X, X.X.X, X.X.XX.rcX.)
+Functionality available for ‘wordpress’:
+- Enumerate interesting urls (X urls.)
+- Enumerate version (up to version X.X.X, X.X.X, X.X.X.)
+Functionality available for ‘silverstripe’:
+- Enumerate plugins (XXX plugins.)
+- Enumerate themes (XX themes.)
+- Enumerate interesting urls (X urls.)
+- Enumerate version (up to version X.X.XX, X.X.XX, X.X.XX.)
 </pre>
 
 It is important to verify that the latest version available for the CMS
