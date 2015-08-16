@@ -1,7 +1,7 @@
 # droopescan.
 
 A plugin-based scanner that aids security researchers in identifying issues with
-several CMSs, mainly Drupal & Silverstripe.
+several CMS.
 
 [![Build Status](https://img.shields.io/travis/droope/droopescan.svg)](https://travis-ci.org/droope/droopescan) [![PyPI version](https://img.shields.io/pypi/v/droopescan.svg)](https://pypi.python.org/pypi/droopescan)
 <pre>
@@ -108,7 +108,7 @@ files, returns a list of all possible versions.
 * i -- *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
-More notes regarding scanning can be [found here](https://droope.github.i/droopescan-docs/_build/html/intro.html).
+More notes regarding scanning can be [found here](https://droope.github.io/droopescan-docs/_build/html/intro.html).
 
 ## Target specification.
 
@@ -119,7 +119,7 @@ parameter:
     droopescan scan drupal -u example.org
 </pre>
 
-You can also omit the `drupal` argument, like so:
+You can also omit the `drupal` argument. This will trigger “CMS identification”, like so:
 
 <pre>
     droopescan scan -u example.org
@@ -133,16 +133,16 @@ parameter should be set to the path of a file which contains a list of URLs.
 </pre>
 
 The `drupal` parameter may also be ommited in this example. For each site, it
-will make a GET request in order to perform CMS identification, and if the site
-is deemed to be a supported CMS, it is scanned and added to the output list.
-This can be useful, for example, to run `droopescan` across all your
+will make several GET requests in order to perform CMS identification, and if
+the site is deemed to be a supported CMS, it is scanned and added to the output
+list. This can be useful, for example, to run `droopescan` across all your
 organisation's sites.
 
 <pre>
     droopescan scan -U list_of_urls.txt
 </pre>
 
-The code block below contains an example list of URLs:
+The code block below contains an example list of URLs, one per line:
 
 <pre>
 http://localhost/drupal/6.0/
@@ -153,17 +153,15 @@ http://localhost/drupal/6.12/
 </pre>
 
 A file containing URLs and a value to override the default host header with
-separated by tabs is also OK for URL files. This can be handy when conducting a
-scan through a large range of hosts and you want to prevent unnecessary DNS
-queries. To clarify, an example below:
+separated by tabs or spaces is also OK for URL files. This can be handy when
+conducting a scan through a large range of hosts and you want to prevent
+unnecessary DNS queries. To clarify, an example below:
 
 <pre>
 192.168.1.1	example.org
 http://192.168.1.1/	example.org
 http://192.168.1.2/drupal/	example.org
 </pre>
-
-Beware of editors converting your tabs into spaces.
 
 ## Authentication.
 
@@ -311,8 +309,7 @@ computer:~/droopescan# droopescan scan silverstripe -u http://localhost -n 10 -e
 [+] Scan finished (0:00:00.058422 elapsed)
 </pre>
 
-There is another argument, `--debug`, which is added automatically by [cement](http://builtoncement.com/)
-and is not what you want.
+The `--debug` paramter also exists and may be used to debug application internals.
 
 ## Stats.
 
@@ -340,6 +337,10 @@ Some sample output might look as follows:
     - Enumerate interesting urls (X urls.)
     - Enumerate version (up to version X)
 </pre>
+
+It is important to verify that the latest version available for the CMS
+installation is available within `droopescan`, as otherwise it may be reported
+to be older than it really is
 
 # Contribute.
 
@@ -404,7 +405,8 @@ rather than the master. Issues can be raised on the issue tracker here
 on GitHub.
 
 To run tests, some dependencies must be installed. Running the following
-commands will result in them being installed and the tests being ran:
+commands (in addition to the regular installation process) will result in them
+being installed and the tests being ran:
 
 <pre>
     apt-get install python-dev libxslt1-dev libxml2-dev python3 zlib1g-dev python3-pip python3-dev

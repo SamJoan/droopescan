@@ -11,7 +11,6 @@ Version 1.x:
           something it's not. Like, when versions: [] is empty true, but now even
           more misleading.
     - InvalidSchema: No connection adapters were found for 'd:/htdocs/404.html'
-    - Remove "urls" 
     - Remove note re. --deubg.
 
 Version 2.x:
