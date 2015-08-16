@@ -1,0 +1,3 @@
+
+class FileEmptyException(RuntimeError):
+    pass

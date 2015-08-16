@@ -130,6 +130,9 @@ class Scan(BasePlugin):
     def _process_scan_url_file(self, file_location, num_threads_identify, follow_redirects):
         self.out.debug('scan._process_scan_url_file')
         with open(file_location) as url_file:
+
+            self.check_file_empty(file_location)
+
             i = 0
             urls = []
             for url in url_file:

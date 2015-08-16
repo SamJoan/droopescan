@@ -4,6 +4,7 @@ from copy import deepcopy
 from common import ScanningMethod, StandardOutput, JsonOutput, \
         VersionsFile, RequestsLogger
 from common import template, enum_list, dict_combine, base_url, file_len
+from common.exceptions import FileEmptyException
 from common.output import ProgressBar
 from common.http import BlockAll
 from concurrent.futures import ThreadPoolExecutor
@@ -368,7 +369,10 @@ class BasePluginInternal(controller.CementBaseController):
                 f.exc_handle(result['url'], self.out, testing)
 
     def process_url_file(self, opts, functionality, enabled_functionality):
-        with open(opts['url_file']) as url_file:
+        file_location = opts['url_file']
+        with open(file_location) as url_file:
+            self.check_file_empty(file_location)
+
             self.process_url_iterable(url_file, opts, functionality, enabled_functionality)
 
     def url_scan(self, url, opts, functionality, enabled_functionality, hide_progressbar):
@@ -935,4 +939,13 @@ class BasePluginInternal(controller.CementBaseController):
             return {'Host': host_header}
         else:
             return None
+
+    def check_file_empty(self, file_location):
+        """
+        Performs os.stat on file_location and raises FileEmptyException if the
+        file is empty.
+        @param file_location: a string containing the location of the file.
+        """
+        if os.stat(file_location).st_size == 0:
+            raise FileEmptyException("File '%s' is empty." % file_location)
 

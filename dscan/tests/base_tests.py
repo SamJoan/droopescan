@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from cement.utils import test
 from common import file_len, ProgressBar, JsonOutput, StandardOutput
 from common.testutils import decallmethods, MockBuffer
+from common.exceptions import FileEmptyException
 from mock import patch, MagicMock, mock_open
 from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
@@ -286,6 +287,20 @@ class BaseTests(BaseTest):
             self.app.run()
 
             assert full_path == o.call_args_list[0][0][0]
+
+    @test.raises(FileEmptyException)
+    def test_url_file_empty(self):
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['--url-file', self.empty_file])
+
+        self.app.run()
+
+    @test.raises(FileEmptyException)
+    def test_url_file_empty_identify(self):
+        self.add_argv(['scan'])
+        self.add_argv(['--url-file', self.empty_file])
+
+        self.app.run()
 
     def test_progressbar_simple(self):
         u = MockBuffer()

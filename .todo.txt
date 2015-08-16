@@ -2,15 +2,14 @@ Add;
 
 Version 1.x:
     - better error for empty file when `scan`
-    - InvalidSchema: No connection adapters were found for 'd:/htdocs/404.html'
-    - SIGINT capture for new scanning.
-    - vendor/composer/installed.json to SS.
-    - Add "output to file" functionality.
-        - resume when -U and "output to file"
-    - URL after redirect is not provided?
     - When mass-scanning with CMS provided, it sometimes says cms_name is
           something it's not. Like, when versions: [] is empty true, but now even
           more misleading.
+    - InvalidSchema: No connection adapters were found for 'd:/htdocs/404.html'
+    - URL after redirect is not provided?
+    - SIGINT capture for new scanning.
+    - Add "output to file" functionality.
+        - resume when -U and "output to file"
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
