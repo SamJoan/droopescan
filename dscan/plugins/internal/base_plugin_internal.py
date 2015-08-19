@@ -960,7 +960,7 @@ class BasePluginInternal(controller.CementBaseController):
         @return: the number of lines to skip for resume functionality.
         """
         with open(url_file) as url_fh:
-            with open(error_log) as error_fh:
+            with open(error_log, 'rb') as error_fh:
                 last_100 = f.tail(error_fh, 100)
                 for l in reversed(last_100):
                     if l.startswith("["):
@@ -971,7 +971,7 @@ class BasePluginInternal(controller.CementBaseController):
 
                         break
                 else:
-                    raise CannotResumeException('Could not find line to restore in file "%s"' % error_file)
+                    raise CannotResumeException('Could not find line to restore in file "%s"' % error_log)
 
                 for line_nb, line in enumerate(url_fh, start=1):
                     if line.strip() == orig_line:
@@ -980,7 +980,7 @@ class BasePluginInternal(controller.CementBaseController):
                 else:
                     raise CannotResumeException('Could not find line "%s" in file "%s"' % (orig_line, url_file))
 
-                return orig_line_nb + 1
+                return orig_line_nb
 
     def resume_forward(self, fh, resume, file_location, error_log):
         """
@@ -996,6 +996,6 @@ class BasePluginInternal(controller.CementBaseController):
                 raise CannotResumeException("--error-log not provided.")
 
             skip_lines = self.resume(file_location, error_log)
-            for _ in range(skip_lines - 1):
+            for _ in range(skip_lines):
                 next(fh)
 

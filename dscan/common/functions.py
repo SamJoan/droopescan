@@ -246,12 +246,13 @@ def tail(f, window=20):
             # Seek back one whole BUFSIZ
             f.seek(block * BUFSIZ, 2)
             # read BUFFER
-            data.insert(0, f.read(BUFSIZ))
+            data.insert(0, f.read(BUFSIZ).decode('utf-8', errors='ignore'))
         else:
             # file too small, start from begining
             f.seek(0,0)
             # only read what was not read
-            data.insert(0, f.read(bytes))
+            data.insert(0, f.read(bytes).decode('utf-8', errors='ignore'))
+
         linesFound = data[0].count('\n')
         size -= linesFound
         bytes -= BUFSIZ

@@ -325,13 +325,22 @@ class BaseTests(BaseTest):
         self.add_argv(['--resume'])
         mock_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.url_scan'
 
-        with patch(mock_module, autospec=True) as m:
-            self.app.run()
+        m = mock_open()
+        with patch('common.output.open', m, create=True) as o:
+            with patch(mock_module, autospec=True) as m:
+                self.app.run()
 
-            args, kwargs = m.call_args
-            urls = args[1]
-            assert urls[0] == "example3.com\n"
-            assert urls[1] == "example4.com\n"
+                calls = m.call_args_list
+                for i, call in enumerate(calls):
+                    args, kwargs = call
+                    url = args[1]
+                    if i == 0:
+                        assert url == 'example3.com\n'
+                    elif i == 1:
+                        assert url == 'example4.com\n'
+                    else:
+                        assert False, "Only two calls expected."
+
 
     def test_resume_identify(self):
         url_file = 'tests/resources/resume_url_file.txt'
@@ -343,22 +352,24 @@ class BaseTests(BaseTest):
         self.add_argv(['--resume'])
         mock_module = 'plugins.internal.scan.Scan._process_generate_futures'
 
-        with patch(mock_module, autospec=True) as m:
-            self.app.run()
+        m = mock_open()
+        with patch('common.output.open', m, create=True) as o:
+            with patch(mock_module, autospec=True) as m:
+                self.app.run()
 
-            args, kwargs = m.call_args
-            urls = args[1]
-            assert urls[0] == "example3.com\n"
-            assert urls[1] == "example4.com\n"
+                args, kwargs = m.call_args
+                urls = args[1]
+                assert urls[0] == "example3.com\n"
+                assert urls[1] == "example4.com\n"
 
     def test_resume_single(self):
         url_file = 'tests/resources/resume_url_file.txt'
         error_file = 'tests/resources/resume_error_single.txt'
         result = self.scanner.resume(url_file, error_file)
-        assert result == 3
+        assert result == 2
 
     def test_resume_multi(self):
         url_file = 'tests/resources/resume_url_file.txt'
         error_file = 'tests/resources/resume_error_multi.txt'
         result = self.scanner.resume(url_file, error_file)
-        assert result == 3
+        assert result == 2
