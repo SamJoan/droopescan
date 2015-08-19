@@ -2,6 +2,7 @@ from __future__ import print_function
 from cement.core import controller
 from collections import OrderedDict
 from common.functions import template
+from common.exceptions import CannotResumeException
 from common import template
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
@@ -83,6 +84,9 @@ class Scan(BasePlugin):
                     bars.""", default=False)),
                 (['--error-log'], dict(action='store', help='''A file to store the
                     errors on.''', default=None)),
+                (['--resume'], dict(action='store_true', help='''Resume the url_file
+                    scan as of the last known scanned url. Must be used in
+                    conjunction with --error-log.''', default=None)),
             ]
 
     @controller.expose(hide=True)
@@ -95,8 +99,7 @@ class Scan(BasePlugin):
 
         if url_file_input:
             self.out.debug('scan.default -> url_file')
-            self._process_scan_url_file(opts['url_file'],
-                opts['threads_identify'], follow_redirects)
+            self._process_scan_url_file(opts, follow_redirects)
         else:
             plugins = pu.plugins_base_get()
             instances = self._instances_get(opts, plugins, url_file_input,
@@ -127,11 +130,14 @@ class Scan(BasePlugin):
 
         self.out.close()
 
-    def _process_scan_url_file(self, file_location, num_threads_identify, follow_redirects):
+    def _process_scan_url_file(self, opts, follow_redirects):
         self.out.debug('scan._process_scan_url_file')
-        with open(file_location) as url_file:
+        file_location = opts['url_file']
 
+        with open(file_location) as url_file:
             self.check_file_empty(file_location)
+            self.resume_forward(url_file, opts['resume'], file_location,
+                    opts['error_log'])
 
             i = 0
             urls = []

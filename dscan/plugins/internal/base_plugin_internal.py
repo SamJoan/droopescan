@@ -4,7 +4,7 @@ from copy import deepcopy
 from common import ScanningMethod, StandardOutput, JsonOutput, \
         VersionsFile, RequestsLogger
 from common import template, enum_list, dict_combine, base_url, file_len
-from common.exceptions import FileEmptyException
+from common.exceptions import FileEmptyException, CannotResumeException
 from common.output import ProgressBar
 from common.http import BlockAll
 from concurrent.futures import ThreadPoolExecutor
@@ -104,6 +104,7 @@ class BasePluginInternal(controller.CementBaseController):
         plugins_base_url = pargs.plugins_base_url
         themes_base_url = pargs.themes_base_url
         debug = pargs.debug
+        resume = pargs.resume
         number = pargs.number if not pargs.number == 'all' else 100000
         if pargs.error_log:
             error_log = self._path(pargs.error_log, pwd)
@@ -318,6 +319,7 @@ class BasePluginInternal(controller.CementBaseController):
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
         self.out.debug('base_plugin_internal.process_url_iterable')
         timeout_host = opts['timeout_host']
+
         i = 0
         with ThreadPoolExecutor(max_workers=opts['threads_scan']) as executor:
             results = []
@@ -372,6 +374,8 @@ class BasePluginInternal(controller.CementBaseController):
         file_location = opts['url_file']
         with open(file_location) as url_file:
             self.check_file_empty(file_location)
+            self.resume_forward(url_file, opts['resume'], opts['url_file'],
+                opts['error_log'])
 
             self.process_url_iterable(url_file, opts, functionality, enabled_functionality)
 
@@ -948,4 +952,50 @@ class BasePluginInternal(controller.CementBaseController):
         """
         if os.stat(file_location).st_size == 0:
             raise FileEmptyException("File '%s' is empty." % file_location)
+
+    def resume(self, url_file, error_log):
+        """
+        @param url_file: opts[url_file]
+        @param error_log: opts[error_log]
+        @return: the number of lines to skip for resume functionality.
+        """
+        with open(url_file) as url_fh:
+            with open(error_log) as error_fh:
+                last_100 = f.tail(error_fh, 100)
+                for l in reversed(last_100):
+                    if l.startswith("["):
+                        try:
+                            orig_line = l.split("Line ")[1].split(' \'')[0]
+                        except IndexError:
+                            raise CannotResumeException("Could not parse original line from line '%s'" % l)
+
+                        break
+                else:
+                    raise CannotResumeException('Could not find line to restore in file "%s"' % error_file)
+
+                for line_nb, line in enumerate(url_fh, start=1):
+                    if line.strip() == orig_line:
+                        orig_line_nb = line_nb
+                        break
+                else:
+                    raise CannotResumeException('Could not find line "%s" in file "%s"' % (orig_line, url_file))
+
+                return orig_line_nb + 1
+
+    def resume_forward(self, fh, resume, file_location, error_log):
+        """
+        Forwards `fh` n lines, where n lines is the amount of lines we should
+        skip in order to resume our previous scan, if resume is required by the
+        user.
+        @param fh: fh to advance.
+        @param file_location: location of the file handler in disk.
+        @param error_log: location of the error_log in disk.
+        """
+        if resume:
+            if not error_log:
+                raise CannotResumeException("--error-log not provided.")
+
+            skip_lines = self.resume(file_location, error_log)
+            for _ in range(skip_lines - 1):
+                next(fh)
 

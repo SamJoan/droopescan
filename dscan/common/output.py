@@ -62,7 +62,7 @@ class StandardOutput():
             self.error_log = sys.stderr
         else:
             self.errors_display = True
-            self.error_log = open(error_log, 'w')
+            self.error_log = open(error_log, 'a')
 
     def close(self):
         if self.log_to_file:

@@ -315,3 +315,50 @@ class BaseTests(BaseTest):
         assert a == '10%)'
         assert " ===== " in u.get()
 
+    def test_resume_scan(self):
+        url_file = 'tests/resources/resume_url_file.txt'
+        error_file = 'tests/resources/resume_error_single.txt'
+
+        self.add_argv(['scan', 'drupal'])
+        self.add_argv(['--url-file', url_file])
+        self.add_argv(['--error-log', error_file])
+        self.add_argv(['--resume'])
+        mock_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.url_scan'
+
+        with patch(mock_module, autospec=True) as m:
+            self.app.run()
+
+            args, kwargs = m.call_args
+            urls = args[1]
+            assert urls[0] == "example3.com\n"
+            assert urls[1] == "example4.com\n"
+
+    def test_resume_identify(self):
+        url_file = 'tests/resources/resume_url_file.txt'
+        error_file = 'tests/resources/resume_error_single.txt'
+
+        self.add_argv(['scan'])
+        self.add_argv(['--url-file', url_file])
+        self.add_argv(['--error-log', error_file])
+        self.add_argv(['--resume'])
+        mock_module = 'plugins.internal.scan.Scan._process_generate_futures'
+
+        with patch(mock_module, autospec=True) as m:
+            self.app.run()
+
+            args, kwargs = m.call_args
+            urls = args[1]
+            assert urls[0] == "example3.com\n"
+            assert urls[1] == "example4.com\n"
+
+    def test_resume_single(self):
+        url_file = 'tests/resources/resume_url_file.txt'
+        error_file = 'tests/resources/resume_error_single.txt'
+        result = self.scanner.resume(url_file, error_file)
+        assert result == 3
+
+    def test_resume_multi(self):
+        url_file = 'tests/resources/resume_url_file.txt'
+        error_file = 'tests/resources/resume_error_multi.txt'
+        result = self.scanner.resume(url_file, error_file)
+        assert result == 3
