@@ -8,8 +8,6 @@ Version 1.x:
     - URL after redirect is not provided?
     - SIGINT capture for new scanning.
     - Interesting URLs for joomla.
-    - Add "output to file" functionality.
-        - resume when -U and "output to file"
     - Require a 200 on "/" prior to begin scanning?
 
 Version 2.x:
