@@ -1,3 +1,9 @@
+1.31.0
+======
+
+* Added --resume flag. Allows the resuming of long-running scans.
+* New Wordpress and Drupal versions added to scanner. Drupal's is a security release.
+
 1.30.0
 ======
 
