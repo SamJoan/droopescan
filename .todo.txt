@@ -9,6 +9,14 @@ Version 1.x:
     - SIGINT capture for new scanning.
     - Interesting URLs for joomla.
     - Require a 200 on "/" prior to begin scanning?
+    - Fix redirects to query path:
+        [get] http://www.google.co.nz/?gfe_rd=cr&ei=4zLWVZTkLM3u8we70aqoDAwp-admin/wp-admin.css None 200 0b0024f622735c2c3e46c3fed3f95536
+        [get] http://www.google.co.nz/?gfe_rd=cr&ei=4zLWVZTkLM3u8we70aqoDAwp-includes/js/tinymce/tiny_mce_popup.js None 200 d8a7c317acdc8d9daeaa54af4c48480b
+        [get] http://www.google.co.nz/?gfe_rd=cr&ei=4zLWVZTkLM3u8we70aqoDAmedia/system/js/validate.js None 200 15a0f30aedcf05863776b06ea7871529
+        [get] http://www.google.co.nz/?gfe_rd=cr&ei=4zLWVZTkLM3u8we70aqoDAmisc/drupal.js None 200 519a1dfcbf1f6bcce241c14ff0d8e6d7
+        [get] http://www.google.co.nz/?gfe_rd=cr&ei=4zLWVZTkLM3u8we70aqoDAcore/misc/drupal.js None 200 d7960fd2cc33af7474f953ffe601eda0
+        [get] http://www.google.co.nz/?gfe_rd=cr&ei=4zLWVZTkLM3u8we70aqoDAcms/css/layout.css None 200 201af7f48a53d2d13905e514629f7db1
+        [get] http://www.google.co.nz/?gfe_rd=cr&ei=4zLWVZTkLM3u8we70aqoDAframework/css/UploadField.css None 200 a2bbeba19abf486176e1e685a4fe6bc7
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
