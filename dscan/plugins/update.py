@@ -1,8 +1,9 @@
 from __future__ import print_function
 from cement.core import handler, controller
-from plugins import HumanBasePlugin
-import common.plugins_util as pu
+from dscan.plugins import HumanBasePlugin
+import dscan.common.plugins_util as pu
 import sys
+import dscan
 
 class Update(HumanBasePlugin):
     class Meta:
@@ -26,7 +27,7 @@ class Update(HumanBasePlugin):
         must_update = plugin.update_version_check()
         if must_update:
             new_vf = plugin.update_version()
-            with open(plugin.versions_file, 'w') as f:
+            with open(dscan.PWD + plugin.versions_file, 'w') as f:
                 new_xml = new_vf.str_pretty()
                 if self.is_valid(new_xml):
                     f.write(new_xml)
@@ -49,11 +50,11 @@ class Update(HumanBasePlugin):
             self.msg("Updating plugins for %s..." % plugin_name)
             plugins, themes = plugin.update_plugins()
 
-            with open(plugin.plugins_file, 'w') as f:
+            with open(dscan.PWD + plugin.plugins_file, 'w') as f:
                 for p in plugins:
                     f.write(p + "\n")
 
-            with open(plugin.themes_file, 'w') as f:
+            with open(dscan.PWD + plugin.themes_file, 'w') as f:
                 for t in themes:
                     f.write(t + "\n")
 

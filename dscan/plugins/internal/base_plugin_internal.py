@@ -1,19 +1,20 @@
 from __future__ import print_function
 from cement.core import handler, controller
 from copy import deepcopy
-from common import ScanningMethod, StandardOutput, JsonOutput, \
+from dscan.common import ScanningMethod, StandardOutput, JsonOutput, \
         VersionsFile, RequestsLogger
-from common import template, enum_list, dict_combine, base_url, file_len
-from common.exceptions import FileEmptyException, CannotResumeException
-from common.output import ProgressBar
-from common.http import BlockAll
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from dscan.common.exceptions import FileEmptyException, CannotResumeException
+from dscan.common.http import BlockAll
+from dscan.common import template, enum_list, dict_combine, base_url, file_len
+from dscan.common.output import ProgressBar
+from dscan import common
+from functools import partial
 from os.path import dirname
 from requests import Session
-from functools import partial
-import common
-import common.functions as f
+import dscan
+import dscan.common.functions as f
 import hashlib
 import os
 import re
@@ -87,7 +88,7 @@ class BasePluginInternal(controller.CementBaseController):
         return threads, threads_identify, threads_scan, threads_enumerate
 
     def _options(self, pargs):
-        pwd = self.app.config.get('general', 'pwd')
+        pwd = os.getcwd()
         if pargs.url_file != None:
             url_file = self._path(pargs.url_file, pwd)
         else:
@@ -569,7 +570,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def plugins_get(self, amount=100000):
         amount = int(amount)
-        with open(self.plugins_file) as f:
+        with open(dscan.PWD + self.plugins_file) as f:
             i = 0
             for plugin in f:
                 if i >= amount:
@@ -579,7 +580,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def themes_get(self, amount=100000):
         amount = int(amount)
-        with open(self.themes_file) as f:
+        with open(dscan.PWD + self.themes_file) as f:
             i = 0
             for theme in f:
                 if i>= amount:

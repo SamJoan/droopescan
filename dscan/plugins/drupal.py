@@ -1,8 +1,8 @@
 from cement.core import handler, controller
-from plugins import BasePlugin
-from common.update_api import GitRepo
-import common.update_api as ua
-import common.versions
+from dscan.plugins import BasePlugin
+from dscan.common.update_api import GitRepo
+import dscan.common.update_api as ua
+import dscan.common.versions
 
 class Drupal(BasePlugin):
 

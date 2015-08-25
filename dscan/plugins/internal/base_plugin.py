@@ -1,5 +1,5 @@
 from __future__ import print_function
-from plugins.internal.base_plugin_internal import BasePluginInternal
+from dscan.plugins.internal.base_plugin_internal import BasePluginInternal
 
 class BasePlugin(BasePluginInternal):
     '''

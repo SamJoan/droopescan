@@ -1,7 +1,8 @@
 from __future__ import print_function
-from common.enum import colors, ScanningMethod
+from dscan.common.enum import colors, ScanningMethod
 from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout, \
         TooManyRedirects
+import dscan
 import hashlib
 import pystache
 import re
@@ -63,10 +64,11 @@ def scan_http_status(scanning_method):
 
 def template(template_file, variables={}):
     variables.update(colors)
-    f = open('common/template/' + template_file, 'r')
+    f = open(dscan.PWD + 'common/template/' + template_file, 'r')
     template = f.read()
 
-    return pystache.render(template, variables)
+    renderer = pystache.Renderer(search_dirs=dscan.PWD)
+    return renderer.render(template, variables)
 
 def strip_whitespace(s):
     return re.sub(r'\s+', ' ', s)
@@ -81,7 +83,7 @@ def dict_combine(x, y):
 
 def file_len(fname):
     i = 0
-    with open(fname) as f:
+    with open(dscan.PWD + fname) as f:
         for l in f:
             i += 1
 

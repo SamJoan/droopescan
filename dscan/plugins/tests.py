@@ -1,5 +1,5 @@
 from cement.core import handler, controller
-from plugins import HumanBasePlugin
+from dscan.plugins import HumanBasePlugin
 from subprocess import call
 import os, sys
 
@@ -10,7 +10,7 @@ def recursive_grep(directory, needle):
     return_file = None
     for f in os.listdir(directory):
         if f.endswith('.py'):
-            with open(directory + f, 'r') as fh:
+            with open(dscan.PWD + directory + f, 'r') as fh:
                 for line in fh:
                     if needle in line:
                         return_file = f

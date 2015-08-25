@@ -1,9 +1,9 @@
 from cement.core import handler, controller
-from common import template
-from common.plugins_util import Plugin, plugins_get
-from plugins import HumanBasePlugin
+from dscan.common import template
+from dscan.common.plugins_util import Plugin, plugins_get
+from dscan.plugins import HumanBasePlugin
 from subprocess import call, check_output
-import common.release_api as ra
+import dscan.common.release_api as ra
 import re
 import sys, os
 

@@ -4,11 +4,11 @@ try:
 except:
     pass
 
-from common.functions import version_gt
-from common.versions import VersionsFile
+from dscan.common.functions import version_gt
+from dscan.common.versions import VersionsFile
 from datetime import datetime, timedelta
-import common.functions
-import common.versions
+import dscan.common.functions as f
+import dscan.common.versions as v
 import os
 import os.path
 import requests
@@ -94,7 +94,7 @@ def github_repo_new(repo_url, plugin_name, versions_file, update_majors):
     @return: a tuple containing (GitRepo, VersionsFile, GitRepo.tags_newer())
     """
     gr = github_repo(repo_url, plugin_name)
-    vf = common.versions.VersionsFile(versions_file)
+    vf = v.VersionsFile(versions_file)
     new_tags = gr.tags_newer(vf, update_majors)
 
     return gr, vf, new_tags
@@ -110,7 +110,7 @@ def hashes_get(versions_file, base_path):
     result = {}
     for f in files:
         try:
-            result[f] = common.functions.md5_file(base_path + f)
+            result[f] = f.md5_file(base_path + f)
         except IOError:
             # Not all files exist for all versions.
             pass

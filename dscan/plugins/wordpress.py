@@ -1,8 +1,8 @@
 from cement.core import handler, controller
-from common.update_api import GitRepo
-from plugins import BasePlugin
-import common.update_api as ua
-import common.versions
+from dscan.common.update_api import GitRepo
+from dscan.plugins import BasePlugin
+import dscan.common.update_api as ua
+import dscan.common.versions
 
 class Wordpress(BasePlugin):
     can_enumerate_plugins = False

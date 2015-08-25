@@ -1,6 +1,6 @@
 from cement.core import handler
-from common import file_len, VersionsFile
-from plugins.internal.base_plugin import BasePlugin
+from dscan.common import file_len, VersionsFile
+from dscan.plugins.internal.base_plugin import BasePlugin
 import subprocess
 
 def plugins_get():

@@ -1,6 +1,7 @@
 from __future__ import print_function
 from distutils.util import strtobool
-import common.functions as f
+import dscan.common.functions as f
+import dscan
 import os.path
 import subprocess
 import sys
@@ -115,7 +116,7 @@ def check_pypirc():
         f.error('File "%s" does not exist.' % pypirc)
 
 def read_first_line(file):
-    with open(file, 'r') as f:
+    with open(dscan.PWD + file, 'r') as f:
       first_line = f.readline()
 
     return first_line.strip()
