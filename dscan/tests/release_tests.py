@@ -1,5 +1,6 @@
 from cement.utils import test
 from dscan.common.testutils import decallmethods
+from dscan import plugins
 from dscan.tests import BaseTest
 from mock import patch, MagicMock, mock_open, Mock, create_autospec
 import dscan.common.release_api as ra
@@ -58,11 +59,11 @@ class ReleaseTests(BaseTest):
     def _mock_cm(self):
         mocks = []
 
-        mocks.append(self.p("common.release_api.read_first_line"))
-        mocks.append(self.p("common.release_api.get_input"))
-        mocks.append(self.p("common.release_api.changelog"))
-        mocks.append(self.p("common.release_api.confirm", return_value=True))
-        mocks.append(self.p("common.release_api.prepend_to_file"))
+        mocks.append(self.p("dscan.common.release_api.read_first_line"))
+        mocks.append(self.p("dscan.common.release_api.get_input"))
+        mocks.append(self.p("dscan.common.release_api.changelog"))
+        mocks.append(self.p("dscan.common.release_api.confirm", return_value=True))
+        mocks.append(self.p("dscan.common.release_api.prepend_to_file"))
 
         return mocks
 

@@ -43,7 +43,7 @@ except:
     pass
 
 class BasePluginInternal(controller.CementBaseController):
-    DEFAULT_UA = 'Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)'
+    DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko'
     not_found_url = "misc/test/error/404/ispresent.html"
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
@@ -253,7 +253,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         is_cms_plugin = self._meta.label != "scan"
         if is_cms_plugin:
-            self.vf = VersionsFile(self.versions_file)
+            self.vf = VersionsFile(dscan.PWD + self.versions_file)
 
         # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
         try:

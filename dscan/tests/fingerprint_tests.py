@@ -8,6 +8,7 @@ from dscan.plugins.drupal import Drupal
 from dscan.plugins.internal.scan import Scan
 from requests.exceptions import ConnectionError
 from dscan.tests import BaseTest
+import dscan
 import hashlib
 import requests
 import responses
@@ -23,14 +24,14 @@ class FingerprintTests(BaseTest):
         Tests related to version fingerprinting for all plugins.
     '''
 
-    bpi_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.'
+    bpi_module = 'dscan.plugins.internal.base_plugin_internal.BasePluginInternal.'
     xml_file_changelog = 'tests/resources/versions_with_changelog.xml'
     cms_identify_module = bpi_module + 'cms_identify'
     process_url_module = bpi_module + 'process_url'
     pui_module = bpi_module + 'process_url_iterable'
     efh_module = bpi_module + 'enumerate_file_hash'
     redir_module = bpi_module + '_determine_redirect'
-    warn_module = 'common.output.StandardOutput.warn'
+    warn_module = 'dscan.common.output.StandardOutput.warn'
 
     p_list = []
 
@@ -59,7 +60,7 @@ class FingerprintTests(BaseTest):
         self.app.run()
 
     def test_xml_validates_all(self):
-        for xml_path in glob('plugins/*/versions.xml'):
+        for xml_path in glob(dscan.PWD + 'plugins/*/versions.xml'):
             xml_validate(xml_path, self.versions_xsd)
 
     def test_determines_version(self):
@@ -217,7 +218,7 @@ class FingerprintTests(BaseTest):
             them has more than 3, the detection algorithm will fail.
         """
         fails = []
-        for xml_path in glob('plugins/*/versions.xml'):
+        for xml_path in glob(dscan.PWD + 'plugins/*/versions.xml'):
            vf = VersionsFile(xml_path)
 
            if 'silverstripe' in xml_path:
@@ -377,7 +378,7 @@ class FingerprintTests(BaseTest):
         self.clear_argv()
 
         if url_file_host:
-            self.add_argv(['scan', '-U', 'tests/resources/url_file_ip_url.txt'])
+            self.add_argv(['scan', '-U', 'dscan/tests/resources/url_file_ip_url.txt'])
         elif url_file:
             self.add_argv(['scan', '-U', self.valid_file])
         else:
@@ -539,7 +540,7 @@ class FingerprintTests(BaseTest):
 
     def test_url_file_ip_url_list_identify(self):
         self.clear_argv()
-        self.add_argv(['scan', '-U', 'tests/resources/url_file_ip_url.txt'])
+        self.add_argv(['scan', '-U', 'dscan/tests/resources/url_file_ip_url.txt'])
         with patch('requests.Session.head', autospec=True) as h:
             with patch('requests.Session.get', autospec=True) as g:
                 h.return_value.status_code = 200

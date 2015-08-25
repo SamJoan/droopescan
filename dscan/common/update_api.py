@@ -7,8 +7,9 @@ except:
 from dscan.common.functions import version_gt
 from dscan.common.versions import VersionsFile
 from datetime import datetime, timedelta
-import dscan.common.functions as f
+import dscan.common.functions as functions
 import dscan.common.versions as v
+import dscan
 import os
 import os.path
 import requests
@@ -87,14 +88,16 @@ def github_repo_new(repo_url, plugin_name, versions_file, update_majors):
     instance, as well as a VersionsFile and tags which need to be updated.
     @param repo_url: the github repository path, e.g. 'drupal/drupal/'
     @param plugin_name: the current plugin's name (for namespace purposes).
-    @param versions_file: the path in disk to this plugin's versions.xml
+    @param versions_file: the path in disk to this plugin's versions.xml. Note
+        that this path must be relative to the directory where the droopescan module
+        is installed.
     @param update_majors: major versions to update. If you want to update
         the 6.x and 7.x branch, you would supply a list which would look like
         ['6', '7']
     @return: a tuple containing (GitRepo, VersionsFile, GitRepo.tags_newer())
     """
     gr = github_repo(repo_url, plugin_name)
-    vf = v.VersionsFile(versions_file)
+    vf = v.VersionsFile(dscan.PWD + versions_file)
     new_tags = gr.tags_newer(vf, update_majors)
 
     return gr, vf, new_tags
@@ -110,7 +113,7 @@ def hashes_get(versions_file, base_path):
     result = {}
     for f in files:
         try:
-            result[f] = f.md5_file(base_path + f)
+            result[f] = functions.md5_file(base_path + f)
         except IOError:
             # Not all files exist for all versions.
             pass
@@ -125,7 +128,7 @@ def file_mtime(file_path):
     @param file_path: file path relative to the executable.
     @return datetime.datetime object.
     """
-    if not os.path.isfile(file_path):
+    if not os.path.isfile(dscan.PWD + file_path):
         raise IOError('File "%s" does not exist.' % file_path)
 
     ut = subprocess.check_output(['git', 'log', '-1', '--format=%ct',

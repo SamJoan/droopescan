@@ -13,6 +13,7 @@ from dscan.plugins.update import Update
 from dscan.tests import BaseTest
 from mock import patch, MagicMock, mock_open, Mock, create_autospec
 import codecs
+import dscan
 import json
 import responses
 
@@ -24,7 +25,7 @@ class UpdateTests(BaseTest):
     plugin_name = 'drupal/drupal'
     path = UW + "drupal/drupal/"
     gr = None
-    update_versions_xml = 'tests/resources/update_versions.xml'
+    update_versions_xml = 'dscan/tests/resources/update_versions.xml'
 
     def setUp(self):
         super(UpdateTests, self).setUp()
@@ -62,7 +63,7 @@ class UpdateTests(BaseTest):
 
     def gh_mock(self):
         # github_response.html has 7.34 & 6.34 as the latest tags.
-        gh_resp = open('tests/resources/github_response.html').read()
+        gh_resp = open(dscan.PWD + 'tests/resources/github_response.html').read()
         responses.add(responses.GET, 'https://github.com/drupal/drupal/tags', body=gh_resp)
         responses.add(responses.GET, 'https://github.com/silverstripe/silverstripe-framework/releases')
 
@@ -213,7 +214,7 @@ class UpdateTests(BaseTest):
 
     def test_tags_get_func(self):
         tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
-        tags_content = open('tests/resources/git_tag_output.txt').read()
+        tags_content = open(dscan.PWD + 'tests/resources/git_tag_output.txt').read()
         self.mock_check_output.return_value = tags_content
 
         out = self.gr.tags_get()
@@ -427,9 +428,9 @@ class UpdateTests(BaseTest):
         css = '.node-project-module > h2 > a'
         per_page = 25
 
-        do_resp = codecs.open('tests/resources/drupal_org_response.html',
+        do_resp = codecs.open(dscan.PWD + 'tests/resources/drupal_org_response.html',
                 encoding='utf-8').read()
-        do_resp_last = codecs.open('tests/resources/drupal_org_response_partial.html').read()
+        do_resp_last = codecs.open(dscan.PWD + 'tests/resources/drupal_org_response_partial.html').read()
         responses.add(responses.GET, 'https://drupal.org/project/project_module?page=0',
                 body=do_resp, match_querystring=True)
         responses.add(responses.GET, 'https://drupal.org/project/project_module?page=1',
@@ -498,11 +499,11 @@ class UpdateTests(BaseTest):
                 assert p.called
 
     def _mod_ss_modules_mock(self,):
-        do_resp = codecs.open('tests/resources/silverstripe_org_response.html', encoding='utf-8').read()
-        do_resp_last = codecs.open('tests/resources/silverstripe_org_response_partial.html').read()
-        ss_modules_file = open('tests/resources/silverstripe_modules.json').read()
-        packagist_with_installer = open('tests/resources/packagist_org_with_installer.json').read()
-        packagist_without_installer = open('tests/resources/packagist_org_without_installer.json').read()
+        do_resp = codecs.open(dscan.PWD + 'tests/resources/silverstripe_org_response.html', encoding='utf-8').read()
+        do_resp_last = codecs.open(dscan.PWD + 'tests/resources/silverstripe_org_response_partial.html').read()
+        ss_modules_file = open(dscan.PWD + 'tests/resources/silverstripe_modules.json').read()
+        packagist_with_installer = open(dscan.PWD + 'tests/resources/packagist_org_with_installer.json').read()
+        packagist_without_installer = open(dscan.PWD + 'tests/resources/packagist_org_without_installer.json').read()
 
         responses.add(responses.GET, 'http://addons.silverstripe.org/add-ons?search=&type=module&sort=downloads&start=0',
                 body=do_resp, match_querystring=True)

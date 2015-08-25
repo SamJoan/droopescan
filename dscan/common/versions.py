@@ -12,9 +12,9 @@ class VersionsFile():
 
     def __init__(self, xml_file):
         """
-        @param xml_file: path to the XML file relative to dscan.PWD
+        @param xml_file: path to the XML file
         """
-        self.et = ET.parse(dscan.PWD + xml_file)
+        self.et = ET.parse(xml_file)
         self.root = self.et.getroot()
 
     def files_get(self):

@@ -26,9 +26,9 @@ class BaseTest(test.CementTestCase):
 
     base_url = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
     base_url_https = "https://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
-    valid_file = 'tests/resources/url_file_valid.txt'
-    valid_file_ip = 'tests/resources/url_file_ip_url.txt'
-    empty_file = 'tests/resources/empty_file'
+    valid_file = 'dscan/tests/resources/url_file_valid.txt'
+    valid_file_ip = 'dscan/tests/resources/url_file_ip_url.txt'
+    empty_file = 'dscan/tests/resources/empty_file'
 
     param_base = ["--url", base_url, '-n', '10']
     param_plugins = param_base + ["-e", 'p']
@@ -37,8 +37,8 @@ class BaseTest(test.CementTestCase):
     param_version = param_base + ["-e", 'v']
     param_all = param_base + ["-e", 'a']
 
-    versions_xsd = 'common/versions.xsd'
-    xml_file = 'tests/resources/versions.xml'
+    versions_xsd = 'dscan/common/versions.xsd'
+    xml_file = 'dscan/tests/resources/versions.xml'
 
     test_opts = {
         'output': 'standard',
@@ -173,7 +173,7 @@ class BaseTest(test.CementTestCase):
         return all
 
     def mock_all_url_file(self, url_file):
-        with open(url_file) as f:
+        with open(dscan.PWD + url_file) as f:
             for url in f:
                 url_tpl = url.strip('\n') + '%s'
 
@@ -195,7 +195,7 @@ class BaseTest(test.CementTestCase):
         @return: a function which can be used to mock
             BasePlugin.enumerate_file_hash
         '''
-        with open(xml_file) as f:
+        with open(dscan.PWD + xml_file) as f:
             doc = etree.fromstring(f.read())
             files_xml = doc.xpath('//cms/files/file')
 

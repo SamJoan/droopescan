@@ -4,6 +4,7 @@ from dscan.common.testutils import decallmethods
 from dscan.tests import BaseTest, MockHash
 from mock import MagicMock
 from requests.exceptions import ConnectionError
+import dscan
 import json
 import re
 import responses
@@ -93,7 +94,7 @@ class IntegrationTests(BaseTest):
                 Drupal.enumerate_file_hash, for example.
         """
         files = {}
-        with open(source, 'r') as f:
+        with open(dscan.PWD + source, 'r') as f:
             for line in f:
                 verb, url, status_code, hash = self._mock_output_pl(line)
                 if hash != "":
@@ -146,7 +147,7 @@ class IntegrationTests(BaseTest):
 
     def test_ss_multisite(self):
         output_file = "tests/resources/output_ss_multisite.txt"
-        url_file = 'tests/resources/url_file_ss_multisite.txt'
+        url_file = 'dscan/tests/resources/url_file_ss_multisite.txt'
         with open(url_file) as f:
             base_urls = [line.strip() for line in f]
 
