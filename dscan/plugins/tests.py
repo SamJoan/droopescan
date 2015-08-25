@@ -1,7 +1,7 @@
 from cement.core import handler, controller
 from dscan.plugins import HumanBasePlugin
 from subprocess import call
-import os, sys
+import os, sys, dscan
 
 BASE_FOLDER = '/var/www/drupal/'
 UPDATE_MAJOR = ['6', '7']
@@ -10,7 +10,7 @@ def recursive_grep(directory, needle):
     return_file = None
     for f in os.listdir(directory):
         if f.endswith('.py'):
-            with open(dscan.PWD + directory + f, 'r') as fh:
+            with open(directory + f, 'r') as fh:
                 for line in fh:
                     if needle in line:
                         return_file = f
@@ -39,7 +39,7 @@ class Tests(HumanBasePlugin):
 
     @controller.expose(help='', hide=True)
     def default(self):
-        env = {'PYTHONPATH': os.getcwd()}
+        env = {}
         single_test = self.app.pargs.single_test
         with_coverage = self.app.pargs.with_coverage
         just_three = self.app.pargs.just_three
@@ -70,7 +70,7 @@ class Tests(HumanBasePlugin):
                 exit = 1
 
         else:
-            test_file = recursive_grep('tests/', single_test + "(")
+            test_file = recursive_grep(dscan.PWD + 'tests/', single_test + "(")
             if not test_file:
                 self.error('No test found with name "%s"' % single_test)
 
@@ -79,7 +79,7 @@ class Tests(HumanBasePlugin):
             underscore = '_'.join(tna)
             upper = "".join(w.capitalize() for w in tna)
 
-            test = 'tests.%s_tests:%sTests.%s' % (underscore, upper, single_test)
+            test = 'dscan.tests.%s_tests:%sTests.%s' % (underscore, upper, single_test)
 
             if just_two:
                 exit = call(['python2', '/usr/local/bin/nosetests', '--nocapture', test], env=env)

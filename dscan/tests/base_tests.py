@@ -230,7 +230,7 @@ class BaseTests(BaseTest):
         self.add_argv(['--url', self.base_url])
         self.add_argv(['--debug-requests'])
 
-        with patch('common.RequestsLogger._print') as rlp:
+        with patch('dscan.common.RequestsLogger._print') as rlp:
             try:
                 self.app.run()
             except:
@@ -242,7 +242,7 @@ class BaseTests(BaseTest):
         self.add_argv(['scan', 'drupal'])
         self.add_argv(['--url', self.base_url])
 
-        with patch('common.RequestsLogger._print') as rlp:
+        with patch('dscan.common.RequestsLogger._print') as rlp:
             try:
                 self.app.run()
             except:
@@ -252,7 +252,7 @@ class BaseTests(BaseTest):
 
     def test_file_len_empty_file(self):
         m = mock_open()
-        with patch('common.functions.open', m, create=True) as o:
+        with patch('dscan.common.functions.open', m, create=True) as o:
             ln = file_len("test")
             print(o.call_args_list)
             assert ln == 0
@@ -270,7 +270,7 @@ class BaseTests(BaseTest):
         self.add_argv(['--url-file', self.valid_file])
 
         m = mock_open()
-        with patch('plugins.internal.base_plugin_internal.open', m, create=True) as o:
+        with patch('dscan.plugins.internal.base_plugin_internal.open', m, create=True) as o:
             url_scan = self.mock_controller('drupal', 'url_scan')
             self.app.run()
 
@@ -282,8 +282,8 @@ class BaseTests(BaseTest):
         self.add_argv(['--url-file', full_path])
 
         m = mock_open()
-        with patch('plugins.internal.base_plugin_internal.open', m, create=True) as o:
-            with patch('plugins.internal.base_plugin_internal.BasePluginInternal.check_file_empty', autospec=True):
+        with patch('dscan.plugins.internal.base_plugin_internal.open', m, create=True) as o:
+            with patch('dscan.plugins.internal.base_plugin_internal.BasePluginInternal.check_file_empty', autospec=True):
                 url_scan = self.mock_controller('drupal', 'url_scan')
                 self.app.run()
 
@@ -326,7 +326,7 @@ class BaseTests(BaseTest):
         mock_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.url_scan'
 
         m = mock_open()
-        with patch('common.output.open', m, create=True) as o:
+        with patch('dscan.common.output.open', m, create=True) as o:
             with patch(mock_module, autospec=True) as m:
                 self.app.run()
 
@@ -353,7 +353,7 @@ class BaseTests(BaseTest):
         mock_module = 'plugins.internal.scan.Scan._process_generate_futures'
 
         m = mock_open()
-        with patch('common.output.open', m, create=True) as o:
+        with patch('dscan.common.output.open', m, create=True) as o:
             with patch(mock_module, autospec=True) as m:
                 self.app.run()
 

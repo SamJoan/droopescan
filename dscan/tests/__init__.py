@@ -9,6 +9,7 @@ from lxml import etree
 from mock import patch, MagicMock
 import os
 import responses
+import dscan
 
 class MockHash():
     files = None
@@ -66,8 +67,8 @@ class BaseTest(test.CementTestCase):
         defaults = init_defaults('DroopeScan', 'general')
         defaults['general']['pwd'] = os.getcwd()
         self.app = DroopeScan(argv=[],
-            plugin_config_dir="./plugins.d",
-            plugin_dir="./plugins",
+            plugin_config_dir=dscan.PWD + "./plugins.d",
+            plugin_dir=dscan.PWD + "./plugins",
             config_defaults=defaults)
 
         handler.register(Scan)

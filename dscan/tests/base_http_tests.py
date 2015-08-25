@@ -621,7 +621,7 @@ class BaseHttpTests(BaseTest):
         result.assert_called_with(timeout=150)
 
     def test_progressbar_url_file_hidden_in_enumerate_plugins(self):
-        with patch("plugins.internal.base_plugin_internal.ProgressBar") as p:
+        with patch("dscan.plugins.internal.base_plugin_internal.ProgressBar") as p:
             try:
                 self.scanner.enumerate_plugins(self.base_url,
                         self.scanner.plugins_base_url, hide_progressbar=True)
@@ -632,7 +632,7 @@ class BaseHttpTests(BaseTest):
 
     @patch.object(ProgressBar, 'set')
     def test_progressbar_url_file_hidden_in_enumerate_themes(self, p):
-        with patch("plugins.internal.base_plugin_internal.ProgressBar") as p:
+        with patch("dscan.plugins.internal.base_plugin_internal.ProgressBar") as p:
             try:
                 self.scanner.enumerate_themes(self.base_url,
                         self.scanner.plugins_base_url, hide_progressbar=True)
@@ -642,7 +642,7 @@ class BaseHttpTests(BaseTest):
             assert p.called == False
 
     def test_progressbar_url_file_hidden_in_enumerate_interesting(self):
-        with patch("plugins.internal.base_plugin_internal.ProgressBar") as p:
+        with patch("dscan.plugins.internal.base_plugin_internal.ProgressBar") as p:
             try:
                 self.scanner.enumerate_interesting(self.base_url,
                         self.scanner.plugins_base_url, hide_progressbar=True)
@@ -652,7 +652,7 @@ class BaseHttpTests(BaseTest):
             assert p.called == False
 
     def test_progressbar_url_file_hidden_in_enumerate_version(self):
-        with patch("plugins.internal.base_plugin_internal.ProgressBar") as p:
+        with patch("dscan.plugins.internal.base_plugin_internal.ProgressBar") as p:
             try:
                 self.scanner.enumerate_version(self.base_url,
                         self.scanner.versions_file, hide_progressbar=True)
@@ -758,7 +758,7 @@ class BaseHttpTests(BaseTest):
     def test_url_file_ip_url_list(self):
         self.add_argv(['--url-file', self.valid_file_ip])
         with patch('requests.Session.head', autospec=True) as h:
-            with patch('plugins.internal.base_plugin_internal.BasePluginInternal.determine_scanning_method', side_effect=RuntimeError):
+            with patch('dscan.plugins.internal.base_plugin_internal.BasePluginInternal.determine_scanning_method', side_effect=RuntimeError):
                 h.return_value.status_code = 200
                 self.app.run()
 

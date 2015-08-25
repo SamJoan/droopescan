@@ -45,8 +45,8 @@ class FingerprintTests(BaseTest):
     def tearDown(self):
         self._mock_cms_multiple_stop()
 
-    @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
-    @patch('common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
+    @patch('dscan.common.VersionsFile.files_get', return_value=['misc/drupal.js'])
+    @patch('dscan.common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
     def test_calls_version(self, m, n):
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
         responses.add(responses.GET, self.base_url + 'CHANGELOG.txt')
@@ -100,8 +100,8 @@ class FingerprintTests(BaseTest):
 
         self.scanner.enumerate_file_hash(self.base_url, ch_url)
 
-    @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
-    @patch('common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
+    @patch('dscan.common.VersionsFile.files_get', return_value=['misc/drupal.js'])
+    @patch('dscan.common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
     def test_fingerprint_correct_verb(self, patch, other_patch):
         # this needs to be a get, otherwise, how are going to get the request body?
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')

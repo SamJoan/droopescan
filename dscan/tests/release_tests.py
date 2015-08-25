@@ -24,10 +24,10 @@ class ReleaseTests(BaseTest):
         return patcher.start()
 
     def mock_tests(self, raise_external=False, raise_human=False):
-        check_pypirc = self.p('common.release_api.check_pypirc')
-        internal = self.p('common.release_api.test_internal')
-        external = self.p('common.release_api.test_external')
-        human = self.p('common.release_api.test_human')
+        check_pypirc = self.p('dscan.common.release_api.check_pypirc')
+        internal = self.p('dscan.common.release_api.test_internal')
+        external = self.p('dscan.common.release_api.test_external')
+        human = self.p('dscan.common.release_api.test_human')
 
         if raise_external:
             external.side_effect = RuntimeError
@@ -110,7 +110,7 @@ class ReleaseTests(BaseTest):
     def test_read_first_line(self):
         real_version = "1.33.7"
 
-        with patch('common.release_api.open', create=True) as mock_open:
+        with patch('dscan.common.release_api.open', create=True) as mock_open:
              mock_open.return_value = MagicMock()
              mock_open().__enter__().readline.return_value = "%s\n" % real_version
              version = ra.read_first_line('../WHATEVER')
@@ -118,14 +118,14 @@ class ReleaseTests(BaseTest):
              assert version == real_version
 
     def test_human(self):
-        with patch('common.release_api.confirm') as mc:
+        with patch('dscan.common.release_api.confirm') as mc:
             ra.test_human()
 
             assert mc.called
 
     @test.raises(RuntimeError)
     def test_human_raises(self):
-        with patch('common.release_api.confirm', return_value=False) as mc:
+        with patch('dscan.common.release_api.confirm', return_value=False) as mc:
             ra.test_human()
 
     def test_get_input(self):
@@ -179,7 +179,7 @@ class ReleaseTests(BaseTest):
         prev = "adadadad\n"
         new = "bsbbssbbs\n"
 
-        with patch('common.release_api.open', create=True) as mo:
+        with patch('dscan.common.release_api.open', create=True) as mo:
             mo().read.return_value = prev
             ra.prepend_to_file(f, new)
 
