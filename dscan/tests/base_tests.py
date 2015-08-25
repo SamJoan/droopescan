@@ -5,10 +5,10 @@ from dscan.common import file_len, ProgressBar, JsonOutput, StandardOutput
 from dscan.common.testutils import decallmethods, MockBuffer
 from dscan import common
 from dscan.plugins.drupal import Drupal
+from dscan.tests import BaseTest
 from mock import patch, MagicMock, mock_open
 from requests.exceptions import ConnectionError
 from requests import Session
-from tests import BaseTest
 import io
 import os
 import responses
@@ -316,14 +316,14 @@ class BaseTests(BaseTest):
         assert " ===== " in u.get()
 
     def test_resume_scan(self):
-        url_file = 'tests/resources/resume_url_file.txt'
-        error_file = 'tests/resources/resume_error_single.txt'
+        url_file = 'dscan/tests/resources/resume_url_file.txt'
+        error_file = 'dscan/tests/resources/resume_error_single.txt'
 
         self.add_argv(['scan', 'drupal'])
         self.add_argv(['--url-file', url_file])
         self.add_argv(['--error-log', error_file])
         self.add_argv(['--resume'])
-        mock_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.url_scan'
+        mock_module = 'dscan.plugins.internal.base_plugin_internal.BasePluginInternal.url_scan'
 
         m = mock_open()
         with patch('dscan.common.output.open', m, create=True) as o:
@@ -343,14 +343,14 @@ class BaseTests(BaseTest):
 
 
     def test_resume_identify(self):
-        url_file = 'tests/resources/resume_url_file.txt'
-        error_file = 'tests/resources/resume_error_single.txt'
+        url_file = 'dscan/tests/resources/resume_url_file.txt'
+        error_file = 'dscan/tests/resources/resume_error_single.txt'
 
         self.add_argv(['scan'])
         self.add_argv(['--url-file', url_file])
         self.add_argv(['--error-log', error_file])
         self.add_argv(['--resume'])
-        mock_module = 'plugins.internal.scan.Scan._process_generate_futures'
+        mock_module = 'dscan.plugins.internal.scan.Scan._process_generate_futures'
 
         m = mock_open()
         with patch('dscan.common.output.open', m, create=True) as o:
@@ -363,13 +363,13 @@ class BaseTests(BaseTest):
                 assert urls[1] == "example4.com\n"
 
     def test_resume_single(self):
-        url_file = 'tests/resources/resume_url_file.txt'
-        error_file = 'tests/resources/resume_error_single.txt'
+        url_file = 'dscan/tests/resources/resume_url_file.txt'
+        error_file = 'dscan/tests/resources/resume_error_single.txt'
         result = self.scanner.resume(url_file, error_file)
         assert result == 2
 
     def test_resume_multi(self):
-        url_file = 'tests/resources/resume_url_file.txt'
-        error_file = 'tests/resources/resume_error_multi.txt'
+        url_file = 'dscan/tests/resources/resume_url_file.txt'
+        error_file = 'dscan/tests/resources/resume_error_multi.txt'
         result = self.scanner.resume(url_file, error_file)
         assert result == 2

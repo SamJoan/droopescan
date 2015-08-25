@@ -173,7 +173,7 @@ class BaseTest(test.CementTestCase):
         return all
 
     def mock_all_url_file(self, url_file):
-        with open(dscan.PWD + url_file) as f:
+        with open(url_file) as f:
             for url in f:
                 url_tpl = url.strip('\n') + '%s'
 
@@ -195,7 +195,7 @@ class BaseTest(test.CementTestCase):
         @return: a function which can be used to mock
             BasePlugin.enumerate_file_hash
         '''
-        with open(dscan.PWD + xml_file) as f:
+        with open(xml_file) as f:
             doc = etree.fromstring(f.read())
             files_xml = doc.xpath('//cms/files/file')
 

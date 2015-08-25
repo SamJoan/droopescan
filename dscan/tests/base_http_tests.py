@@ -560,7 +560,7 @@ class BaseHttpTests(BaseTest):
         assert ev.call_count == 3
 
     def test_url_file_exceptions_are_caught(self):
-        self.add_argv(['--url-file', 'tests/resources/url_file_invalid.txt'])
+        self.add_argv(['--url-file', 'dscan/tests/resources/url_file_invalid.txt'])
 
         self.app.run()
 

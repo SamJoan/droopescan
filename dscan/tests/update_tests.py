@@ -360,7 +360,7 @@ class UpdateTests(BaseTest):
             self.updater.update_version(self.controller_get('drupal')(), "Drupal")
 
             args, kwargs = o.call_args
-            assert args[0] == self.scanner.versions_file
+            assert args[0] == dscan.PWD + self.scanner.versions_file
             assert args[1] == 'w'
 
             args, kwargs = o().write.call_args

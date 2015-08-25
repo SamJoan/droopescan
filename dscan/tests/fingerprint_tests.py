@@ -25,7 +25,7 @@ class FingerprintTests(BaseTest):
     '''
 
     bpi_module = 'dscan.plugins.internal.base_plugin_internal.BasePluginInternal.'
-    xml_file_changelog = 'tests/resources/versions_with_changelog.xml'
+    xml_file_changelog = 'dscan/tests/resources/versions_with_changelog.xml'
     cms_identify_module = bpi_module + 'cms_identify'
     process_url_module = bpi_module + 'process_url'
     pui_module = bpi_module + 'process_url_iterable'
@@ -299,7 +299,7 @@ class FingerprintTests(BaseTest):
 
     def test_multiple_changelogs_or(self):
         mock_versions = ["8.0", "8.1", "8.2"]
-        xml_multi_changelog = 'tests/resources/versions_multiple_changelog.xml'
+        xml_multi_changelog = 'dscan/tests/resources/versions_multiple_changelog.xml'
 
         self.scanner.vf = VersionsFile(xml_multi_changelog)
         self.scanner.enumerate_file_hash = self.mock_xml(xml_multi_changelog, "8.0")
@@ -310,7 +310,7 @@ class FingerprintTests(BaseTest):
 
     def test_multiple_changelogs_all_fail(self):
         mock_versions = ["8.0", "8.1", "8.2"]
-        xml_multi_changelog = 'tests/resources/versions_multiple_changelog.xml'
+        xml_multi_changelog = 'dscan/tests/resources/versions_multiple_changelog.xml'
 
         v_changelog = VersionsFile(xml_multi_changelog)
         self.scanner.enumerate_file_hash = self.mock_xml(xml_multi_changelog,
@@ -346,7 +346,7 @@ class FingerprintTests(BaseTest):
         self.clear_argv()
         self.add_argv(['scan', '-u', url_simple])
 
-        ru_module = "common.functions.repair_url"
+        ru_module = "dscan.common.functions.repair_url"
         ru_return = self.base_url
 
         with patch(self.cms_identify_module, autospec=True, return_value=True) as ci:
@@ -450,7 +450,7 @@ class FingerprintTests(BaseTest):
     def test_cms_identify(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
         rfu = "test/topst/tust.txt"
-        has_hash = 'common.versions.VersionsFile.has_hash'
+        has_hash = 'dscan.common.versions.VersionsFile.has_hash'
 
         with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
             with patch(has_hash, autospec=True, return_value=True) as hh:
@@ -476,7 +476,7 @@ class FingerprintTests(BaseTest):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
         second_url = "test/tstatat/deststat.js"
         rfu = ["test/topst/tust.txt", second_url]
-        has_hash = 'common.versions.VersionsFile.has_hash'
+        has_hash = 'dscan.common.versions.VersionsFile.has_hash'
 
         with patch(self.efh_module, autospec=True, side_effect=_efh_side_effect) as efh:
             with patch(has_hash, autospec=True, return_value=True) as hh:
@@ -506,7 +506,7 @@ class FingerprintTests(BaseTest):
     def test_cms_identify_false_notexist(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
         rfu = "test/topst/tust.txt"
-        has_hash = 'common.versions.VersionsFile.has_hash'
+        has_hash = 'dscan.common.versions.VersionsFile.has_hash'
 
         with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
             with patch(has_hash, autospec=True, return_value=False) as hh:
