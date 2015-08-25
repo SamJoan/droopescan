@@ -1,18 +1,18 @@
 from cement.utils import test
-from common import VersionsFile
-from common.testutils import decallmethods
-from common.update_api import GH, UW
-from common.update_api import github_tags_newer, github_repo, _github_normalize, \
+from dscan.common import VersionsFile
+from dscan.common.testutils import decallmethods
+from dscan.common.update_api import GH, UW
+from dscan.common.update_api import github_tags_newer, github_repo, _github_normalize, \
     file_mtime, modules_get
-from common.update_api import GitRepo
 from datetime import datetime, timedelta
+from dscan.common.update_api import GitRepo
+from dscan import common
+from dscan.plugins.drupal import Drupal
+from dscan.plugins.silverstripe import SilverStripe
+from dscan.plugins.update import Update
+from dscan.tests import BaseTest
 from mock import patch, MagicMock, mock_open, Mock, create_autospec
-from plugins.drupal import Drupal
-from plugins.silverstripe import SilverStripe
-from plugins.update import Update
-from tests import BaseTest
 import codecs
-import common
 import json
 import responses
 

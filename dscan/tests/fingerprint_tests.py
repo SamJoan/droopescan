@@ -1,13 +1,13 @@
 from cement.utils import test
-from common.testutils import decallmethods, xml_validate
-from common import VersionsFile
+from dscan.common.testutils import decallmethods, xml_validate
+from dscan.common import VersionsFile
 from glob import glob
 from lxml import etree
 from mock import patch, MagicMock
-from plugins.drupal import Drupal
-from plugins.internal.scan import Scan
+from dscan.plugins.drupal import Drupal
+from dscan.plugins.internal.scan import Scan
 from requests.exceptions import ConnectionError
-from tests import BaseTest
+from dscan.tests import BaseTest
 import hashlib
 import requests
 import responses

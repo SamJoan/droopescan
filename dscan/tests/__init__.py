@@ -1,12 +1,12 @@
 from cement.core import controller, foundation, backend, handler
 from cement.utils import test
 from cement.utils.misc import init_defaults
-from common.testutils import decallmethods
-from droopescan import DroopeScan
+from dscan.common.testutils import decallmethods
+from dscan.droopescan import DroopeScan
+from dscan.plugins.drupal import Drupal
+from dscan.plugins import Scan
 from lxml import etree
 from mock import patch, MagicMock
-from plugins.drupal import Drupal
-from plugins import Scan
 import os
 import responses
 

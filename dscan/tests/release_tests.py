@@ -1,9 +1,9 @@
 from cement.utils import test
-from common.testutils import decallmethods
+from dscan.common.testutils import decallmethods
+from dscan.tests import BaseTest
 from mock import patch, MagicMock, mock_open, Mock, create_autospec
-from tests import BaseTest
-import common.release_api as ra
-import plugins.release
+import dscan.common.release_api as ra
+import dscan.plugins.release
 import responses
 import sys
 

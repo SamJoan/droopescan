@@ -1,14 +1,14 @@
 from cement.utils import test
-from common import file_len, base_url, ProgressBar, StandardOutput
-from common import ScanningMethod, Verb, Enumerate
-from common.testutils import decallmethods
 from concurrent.futures import ThreadPoolExecutor, Future
+from dscan.common import file_len, base_url, ProgressBar, StandardOutput
+from dscan.common import ScanningMethod, Verb, Enumerate
+from dscan.common.testutils import decallmethods
+from dscan import common
+from dscan.plugins.drupal import Drupal
+from dscan.plugins.internal.base_plugin_internal import BasePluginInternal
+from dscan.tests import BaseTest
 from mock import patch, MagicMock, ANY, mock_open
-from plugins.drupal import Drupal
-from plugins.internal.base_plugin_internal import BasePluginInternal
 from requests.exceptions import ConnectionError
-from tests import BaseTest
-import common
 import requests
 import responses
 

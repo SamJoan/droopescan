@@ -1,18 +1,18 @@
 from __future__ import unicode_literals
 from cement.utils import test
-from common import file_len, ProgressBar, JsonOutput, StandardOutput
-from common.testutils import decallmethods, MockBuffer
-from common.exceptions import FileEmptyException
+from dscan.common.exceptions import FileEmptyException
+from dscan.common import file_len, ProgressBar, JsonOutput, StandardOutput
+from dscan.common.testutils import decallmethods, MockBuffer
+from dscan import common
+from dscan.plugins.drupal import Drupal
 from mock import patch, MagicMock, mock_open
-from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
 from requests import Session
 from tests import BaseTest
-import common
-import responses
-import sys
 import io
 import os
+import responses
+import sys
 
 @decallmethods(responses.activate)
 class BaseTests(BaseTest):

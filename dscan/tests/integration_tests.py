@@ -1,9 +1,9 @@
 from __future__ import print_function
 from cement.utils import test
-from common.testutils import decallmethods
+from dscan.common.testutils import decallmethods
+from dscan.tests import BaseTest, MockHash
 from mock import MagicMock
 from requests.exceptions import ConnectionError
-from tests import BaseTest, MockHash
 import json
 import re
 import responses
