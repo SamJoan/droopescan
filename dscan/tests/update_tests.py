@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from dscan.common.update_api import GitRepo
 from dscan import common
 from dscan.plugins.drupal import Drupal
-from dscan.plugins.silverstripe import SilverStripe
+from dscan.plugins.silverstripe import Silverstripe
 from dscan.plugins.update import Update
 from dscan.tests import BaseTest
 from mock import patch, MagicMock, mock_open, Mock, create_autospec
@@ -490,12 +490,12 @@ class UpdateTests(BaseTest):
                 assert call[0][0].rstrip() == check_against[i % 3]
 
     def test_ss_calls_modules_get(self):
-        ss = SilverStripe()
+        ss = Silverstripe()
         o = mock_open()
 
         with patch('dscan.plugins.update.open', o, create=True):
             with patch('dscan.common.update_api.modules_get', autospec=True) as p:
-                self.updater.update_plugins(SilverStripe(), "Drupal")
+                self.updater.update_plugins(Silverstripe(), "Drupal")
                 assert p.called
 
     def _mod_ss_modules_mock(self,):
@@ -531,7 +531,7 @@ class UpdateTests(BaseTest):
     def test_ss_calls_modules_get_proper(self):
         self._mod_ss_modules_mock()
 
-        ss = SilverStripe()
+        ss = Silverstripe()
         o = mock_open()
         plugins, themes = ss.update_plugins()
 
@@ -543,7 +543,7 @@ class UpdateTests(BaseTest):
         assert 'gridfieldextensions' in themes
 
     def test_ss_hashes_get_signature(self):
-        ss = SilverStripe()
+        ss = Silverstripe()
 
         vf = MagicMock()
         ret_val = (self.gr, vf, ['3.1.3'])

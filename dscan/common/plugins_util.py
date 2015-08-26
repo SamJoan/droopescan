@@ -1,6 +1,8 @@
 from cement.core import handler
 from dscan.common import file_len, VersionsFile
 from dscan.plugins.internal.base_plugin import BasePlugin
+import dscan
+import pkgutil
 import subprocess
 
 def plugins_get():
@@ -14,9 +16,16 @@ def plugins_get():
     return return_plugins
 
 def plugins_base_get():
-    controllers = handler.list('controller')
-    plugins = []
 
+    controllers = []
+    package = dscan.plugins
+    for importer, modname, ispkg in pkgutil.iter_modules(package.__path__):
+        if not ispkg and not modname == 'example':
+            module = __import__("dscan.plugins." + modname, fromlist="dscan.plugins")
+            c = getattr(module, modname[0].upper() + modname[1:])
+            controllers.append(c)
+
+    plugins = []
     for c in controllers:
         is_base_scan = c.__name__.lower() == 'scan'
         if issubclass(c, BasePlugin) and not is_base_scan:

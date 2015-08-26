@@ -20,7 +20,7 @@ def _retry_msg(exception):
     else:
         return False
 
-class SilverStripe(BasePlugin):
+class Silverstripe(BasePlugin):
 
     plugins_base_url = '%s%s/'
     themes_base_url = '%sthemes/%s/'
@@ -160,5 +160,5 @@ class SilverStripe(BasePlugin):
         return folders
 
 def load(app=None):
-    handler.register(SilverStripe)
+    handler.register(Silverstripe)
 

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from cement.utils import test
 from dscan.common.exceptions import FileEmptyException
 from dscan.common import file_len, ProgressBar, JsonOutput, StandardOutput
+from dscan.common.plugins_util import plugins_base_get
 from dscan.common.testutils import decallmethods, MockBuffer
 from dscan import common
 from dscan.plugins.drupal import Drupal
@@ -373,3 +374,7 @@ class BaseTests(BaseTest):
         error_file = 'dscan/tests/resources/resume_error_multi.txt'
         result = self.scanner.resume(url_file, error_file)
         assert result == 2
+
+    def test_plugins_get(self):
+        plugins = plugins_base_get()
+        assert len(plugins) > 3

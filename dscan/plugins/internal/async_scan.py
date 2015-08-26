@@ -8,7 +8,10 @@ from twisted.python import log
 from twisted.web.error import PageRedirect, Error
 from twisted.web import client
 import dscan.common.functions as f
+import dscan.common.plugins_util as pu
 import sys
+
+plugins = pu.plugins_base_get()
 
 def error_line(line, failure):
     """
@@ -29,8 +32,8 @@ def identify_line(line):
 
     - Make a request to the site's root.
         - If 403, 500 or other error code, or connection error, raise.
-        - If redirect, change base URL to redirected URL (stripping query
-          strings).
+        - If redirect, change base URL to redirected URL (after repairing the
+          URL).
     - For each CMS(ordered by popularity):
         - Make a request for known files
             - If files exist and are an expected value, break.
