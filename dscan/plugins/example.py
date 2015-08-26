@@ -1,5 +1,5 @@
 from cement.core import handler, controller
-from plugins import BasePlugin
+from dscan.plugins import BasePlugin
 import common
 
 class Example(BasePlugin):

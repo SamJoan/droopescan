@@ -1,18 +1,18 @@
 from __future__ import unicode_literals
 from cement.utils import test
-from common import file_len, ProgressBar, JsonOutput, StandardOutput
-from common.testutils import decallmethods, MockBuffer
-from common.exceptions import FileEmptyException
+from dscan.common.exceptions import FileEmptyException
+from dscan.common import file_len, ProgressBar, JsonOutput, StandardOutput
+from dscan.common.testutils import decallmethods, MockBuffer
+from dscan import common
+from dscan.plugins.drupal import Drupal
+from dscan.tests import BaseTest
 from mock import patch, MagicMock, mock_open
-from plugins.drupal import Drupal
 from requests.exceptions import ConnectionError
 from requests import Session
-from tests import BaseTest
-import common
-import responses
-import sys
 import io
 import os
+import responses
+import sys
 
 @decallmethods(responses.activate)
 class BaseTests(BaseTest):
@@ -230,7 +230,7 @@ class BaseTests(BaseTest):
         self.add_argv(['--url', self.base_url])
         self.add_argv(['--debug-requests'])
 
-        with patch('common.RequestsLogger._print') as rlp:
+        with patch('dscan.common.RequestsLogger._print') as rlp:
             try:
                 self.app.run()
             except:
@@ -242,7 +242,7 @@ class BaseTests(BaseTest):
         self.add_argv(['scan', 'drupal'])
         self.add_argv(['--url', self.base_url])
 
-        with patch('common.RequestsLogger._print') as rlp:
+        with patch('dscan.common.RequestsLogger._print') as rlp:
             try:
                 self.app.run()
             except:
@@ -252,7 +252,7 @@ class BaseTests(BaseTest):
 
     def test_file_len_empty_file(self):
         m = mock_open()
-        with patch('common.functions.open', m, create=True) as o:
+        with patch('dscan.common.functions.open', m, create=True) as o:
             ln = file_len("test")
             print(o.call_args_list)
             assert ln == 0
@@ -270,7 +270,7 @@ class BaseTests(BaseTest):
         self.add_argv(['--url-file', self.valid_file])
 
         m = mock_open()
-        with patch('plugins.internal.base_plugin_internal.open', m, create=True) as o:
+        with patch('dscan.plugins.internal.base_plugin_internal.open', m, create=True) as o:
             url_scan = self.mock_controller('drupal', 'url_scan')
             self.app.run()
 
@@ -282,8 +282,8 @@ class BaseTests(BaseTest):
         self.add_argv(['--url-file', full_path])
 
         m = mock_open()
-        with patch('plugins.internal.base_plugin_internal.open', m, create=True) as o:
-            with patch('plugins.internal.base_plugin_internal.BasePluginInternal.check_file_empty', autospec=True):
+        with patch('dscan.plugins.internal.base_plugin_internal.open', m, create=True) as o:
+            with patch('dscan.plugins.internal.base_plugin_internal.BasePluginInternal.check_file_empty', autospec=True):
                 url_scan = self.mock_controller('drupal', 'url_scan')
                 self.app.run()
 
@@ -316,17 +316,17 @@ class BaseTests(BaseTest):
         assert " ===== " in u.get()
 
     def test_resume_scan(self):
-        url_file = 'tests/resources/resume_url_file.txt'
-        error_file = 'tests/resources/resume_error_single.txt'
+        url_file = 'dscan/tests/resources/resume_url_file.txt'
+        error_file = 'dscan/tests/resources/resume_error_single.txt'
 
         self.add_argv(['scan', 'drupal'])
         self.add_argv(['--url-file', url_file])
         self.add_argv(['--error-log', error_file])
         self.add_argv(['--resume'])
-        mock_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.url_scan'
+        mock_module = 'dscan.plugins.internal.base_plugin_internal.BasePluginInternal.url_scan'
 
         m = mock_open()
-        with patch('common.output.open', m, create=True) as o:
+        with patch('dscan.common.output.open', m, create=True) as o:
             with patch(mock_module, autospec=True) as m:
                 self.app.run()
 
@@ -343,17 +343,17 @@ class BaseTests(BaseTest):
 
 
     def test_resume_identify(self):
-        url_file = 'tests/resources/resume_url_file.txt'
-        error_file = 'tests/resources/resume_error_single.txt'
+        url_file = 'dscan/tests/resources/resume_url_file.txt'
+        error_file = 'dscan/tests/resources/resume_error_single.txt'
 
         self.add_argv(['scan'])
         self.add_argv(['--url-file', url_file])
         self.add_argv(['--error-log', error_file])
         self.add_argv(['--resume'])
-        mock_module = 'plugins.internal.scan.Scan._process_generate_futures'
+        mock_module = 'dscan.plugins.internal.scan.Scan._process_generate_futures'
 
         m = mock_open()
-        with patch('common.output.open', m, create=True) as o:
+        with patch('dscan.common.output.open', m, create=True) as o:
             with patch(mock_module, autospec=True) as m:
                 self.app.run()
 
@@ -363,13 +363,13 @@ class BaseTests(BaseTest):
                 assert urls[1] == "example4.com\n"
 
     def test_resume_single(self):
-        url_file = 'tests/resources/resume_url_file.txt'
-        error_file = 'tests/resources/resume_error_single.txt'
+        url_file = 'dscan/tests/resources/resume_url_file.txt'
+        error_file = 'dscan/tests/resources/resume_error_single.txt'
         result = self.scanner.resume(url_file, error_file)
         assert result == 2
 
     def test_resume_multi(self):
-        url_file = 'tests/resources/resume_url_file.txt'
-        error_file = 'tests/resources/resume_error_multi.txt'
+        url_file = 'dscan/tests/resources/resume_url_file.txt'
+        error_file = 'dscan/tests/resources/resume_error_multi.txt'
         result = self.scanner.resume(url_file, error_file)
         assert result == 2

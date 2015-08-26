@@ -1,6 +1,7 @@
-from lxml import etree
-import inspect
 from inspect import getmembers, isfunction, ismethod
+from lxml import etree
+import dscan
+import inspect
 
 def decallmethods(decorator, prefix='test_'):
     """

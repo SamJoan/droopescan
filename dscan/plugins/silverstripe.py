@@ -1,9 +1,9 @@
 from cement.core import handler, controller
-from plugins import BasePlugin
 from concurrent.futures import ThreadPoolExecutor
+from dscan import common
+from dscan.plugins import BasePlugin
 from requests.exceptions import ConnectionError
-import common
-import common.update_api as ua
+import dscan.common.update_api as ua
 import re
 import requests
 import sys

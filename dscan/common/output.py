@@ -1,6 +1,6 @@
 from __future__ import print_function
-from common.functions import template, strip_whitespace
-from common.enum import colors
+from dscan.common.functions import template, strip_whitespace
+from dscan.common.enum import colors
 import argparse
 import hashlib
 import json

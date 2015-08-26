@@ -1,7 +1,8 @@
 from __future__ import print_function
+from dscan.common.functions import version_gt
+import dscan
 import pystache
 import xml.etree.ElementTree as ET
-from common.functions import version_gt
 
 class VersionsFile():
     et = None
@@ -10,6 +11,9 @@ class VersionsFile():
     changelog_xpath = './files/changelog'
 
     def __init__(self, xml_file):
+        """
+        @param xml_file: path to the XML file
+        """
         self.et = ET.parse(xml_file)
         self.root = self.et.getroot()
 

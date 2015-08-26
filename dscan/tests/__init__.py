@@ -1,14 +1,15 @@
 from cement.core import controller, foundation, backend, handler
 from cement.utils import test
 from cement.utils.misc import init_defaults
-from common.testutils import decallmethods
-from droopescan import DroopeScan
+from dscan.common.testutils import decallmethods
+from dscan.droopescan import DroopeScan
+from dscan.plugins.drupal import Drupal
+from dscan.plugins import Scan
 from lxml import etree
 from mock import patch, MagicMock
-from plugins.drupal import Drupal
-from plugins import Scan
 import os
 import responses
+import dscan
 
 class MockHash():
     files = None
@@ -25,9 +26,9 @@ class BaseTest(test.CementTestCase):
 
     base_url = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
     base_url_https = "https://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
-    valid_file = 'tests/resources/url_file_valid.txt'
-    valid_file_ip = 'tests/resources/url_file_ip_url.txt'
-    empty_file = 'tests/resources/empty_file'
+    valid_file = 'dscan/tests/resources/url_file_valid.txt'
+    valid_file_ip = 'dscan/tests/resources/url_file_ip_url.txt'
+    empty_file = 'dscan/tests/resources/empty_file'
 
     param_base = ["--url", base_url, '-n', '10']
     param_plugins = param_base + ["-e", 'p']
@@ -36,8 +37,8 @@ class BaseTest(test.CementTestCase):
     param_version = param_base + ["-e", 'v']
     param_all = param_base + ["-e", 'a']
 
-    versions_xsd = 'common/versions.xsd'
-    xml_file = 'tests/resources/versions.xml'
+    versions_xsd = 'dscan/common/versions.xsd'
+    xml_file = 'dscan/tests/resources/versions.xml'
 
     test_opts = {
         'output': 'standard',
@@ -66,8 +67,8 @@ class BaseTest(test.CementTestCase):
         defaults = init_defaults('DroopeScan', 'general')
         defaults['general']['pwd'] = os.getcwd()
         self.app = DroopeScan(argv=[],
-            plugin_config_dir="./plugins.d",
-            plugin_dir="./plugins",
+            plugin_config_dir=dscan.PWD + "./plugins.d",
+            plugin_dir=dscan.PWD + "./plugins",
             config_defaults=defaults)
 
         handler.register(Scan)

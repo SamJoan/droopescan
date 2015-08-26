@@ -1,19 +1,20 @@
 from __future__ import print_function
 from cement.core import handler, controller
 from copy import deepcopy
-from common import ScanningMethod, StandardOutput, JsonOutput, \
+from dscan.common import ScanningMethod, StandardOutput, JsonOutput, \
         VersionsFile, RequestsLogger
-from common import template, enum_list, dict_combine, base_url, file_len
-from common.exceptions import FileEmptyException, CannotResumeException
-from common.output import ProgressBar
-from common.http import BlockAll
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from dscan.common.exceptions import FileEmptyException, CannotResumeException
+from dscan.common.http import BlockAll
+from dscan.common import template, enum_list, dict_combine, base_url, file_len
+from dscan.common.output import ProgressBar
+from dscan import common
+from functools import partial
 from os.path import dirname
 from requests import Session
-from functools import partial
-import common
-import common.functions as f
+import dscan
+import dscan.common.functions as f
 import hashlib
 import os
 import re
@@ -42,7 +43,7 @@ except:
     pass
 
 class BasePluginInternal(controller.CementBaseController):
-    DEFAULT_UA = 'Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)'
+    DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
     not_found_url = "misc/test/error/404/ispresent.html"
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
@@ -87,7 +88,7 @@ class BasePluginInternal(controller.CementBaseController):
         return threads, threads_identify, threads_scan, threads_enumerate
 
     def _options(self, pargs):
-        pwd = self.app.config.get('general', 'pwd')
+        pwd = os.getcwd()
         if pargs.url_file != None:
             url_file = self._path(pargs.url_file, pwd)
         else:
@@ -252,7 +253,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         is_cms_plugin = self._meta.label != "scan"
         if is_cms_plugin:
-            self.vf = VersionsFile(self.versions_file)
+            self.vf = VersionsFile(dscan.PWD + self.versions_file)
 
         # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
         try:
@@ -569,7 +570,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def plugins_get(self, amount=100000):
         amount = int(amount)
-        with open(self.plugins_file) as f:
+        with open(dscan.PWD + self.plugins_file) as f:
             i = 0
             for plugin in f:
                 if i >= amount:
@@ -579,7 +580,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def themes_get(self, amount=100000):
         amount = int(amount)
-        with open(self.themes_file) as f:
+        with open(dscan.PWD + self.themes_file) as f:
             i = 0
             for theme in f:
                 if i>= amount:

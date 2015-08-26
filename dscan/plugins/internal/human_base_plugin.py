@@ -1,12 +1,12 @@
 from __future__ import print_function
 from cement.core import handler, controller
 from distutils.util import strtobool
-import common.functions
+import dscan.common.functions as f
 import sys
 
 class HumanBasePlugin(controller.CementBaseController):
     def error(self, *args, **kwargs):
-        common.functions.error(*args, **kwargs)
+        f.error(*args, **kwargs)
 
     def msg(self, msg, end='\n'):
         print(msg, end=end)

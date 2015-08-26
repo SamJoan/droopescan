@@ -3,11 +3,12 @@
 from __future__ import print_function
 from cement.core import backend, foundation, controller, handler
 from cement.utils.misc import init_defaults
-from common.functions import template, version_get
-from plugins import Scan
-import common, sys, signal
-import droopescan
+from dscan.common.functions import template, version_get
+from dscan import common
+from dscan.plugins import Scan
+import dscan
 import os
+import sys
 
 class DroopeScanBase(controller.CementBaseController):
     class Meta:
@@ -34,15 +35,11 @@ class DroopeScan(foundation.CementApp):
         label = 'droopescan'
         base_controller = DroopeScanBase
         exit_on_close = False
-        framework_logging = False
+        #framework_logging = False
 
-def main(pwd):
-    defaults = init_defaults('DroopeScan', 'general')
-    defaults['general']['pwd'] = pwd
-
-    ds = DroopeScan("DroopeScan", plugin_config_dir="./plugins.d",
-            plugin_dir="./plugins", catch_signals=None,
-            config_defaults=defaults)
+def main():
+    ds = DroopeScan("DroopeScan", plugin_config_dir=dscan.PWD + "./plugins.d",
+            plugin_dir=dscan.PWD + "./plugins", catch_signals=None)
 
     handler.register(Scan)
 

@@ -1,13 +1,14 @@
 from cement.utils import test
-from common.testutils import decallmethods, xml_validate
-from common import VersionsFile
+from dscan.common.testutils import decallmethods, xml_validate
+from dscan.common import VersionsFile
 from glob import glob
 from lxml import etree
 from mock import patch, MagicMock
-from plugins.drupal import Drupal
-from plugins.internal.scan import Scan
+from dscan.plugins.drupal import Drupal
+from dscan.plugins.internal.scan import Scan
 from requests.exceptions import ConnectionError
-from tests import BaseTest
+from dscan.tests import BaseTest
+import dscan
 import hashlib
 import requests
 import responses
@@ -23,14 +24,14 @@ class FingerprintTests(BaseTest):
         Tests related to version fingerprinting for all plugins.
     '''
 
-    bpi_module = 'plugins.internal.base_plugin_internal.BasePluginInternal.'
-    xml_file_changelog = 'tests/resources/versions_with_changelog.xml'
+    bpi_module = 'dscan.plugins.internal.base_plugin_internal.BasePluginInternal.'
+    xml_file_changelog = 'dscan/tests/resources/versions_with_changelog.xml'
     cms_identify_module = bpi_module + 'cms_identify'
     process_url_module = bpi_module + 'process_url'
     pui_module = bpi_module + 'process_url_iterable'
     efh_module = bpi_module + 'enumerate_file_hash'
     redir_module = bpi_module + '_determine_redirect'
-    warn_module = 'common.output.StandardOutput.warn'
+    warn_module = 'dscan.common.output.StandardOutput.warn'
 
     p_list = []
 
@@ -45,8 +46,8 @@ class FingerprintTests(BaseTest):
     def tearDown(self):
         self._mock_cms_multiple_stop()
 
-    @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
-    @patch('common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
+    @patch('dscan.common.VersionsFile.files_get', return_value=['misc/drupal.js'])
+    @patch('dscan.common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
     def test_calls_version(self, m, n):
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
         responses.add(responses.GET, self.base_url + 'CHANGELOG.txt')
@@ -59,7 +60,7 @@ class FingerprintTests(BaseTest):
         self.app.run()
 
     def test_xml_validates_all(self):
-        for xml_path in glob('plugins/*/versions.xml'):
+        for xml_path in glob(dscan.PWD + 'plugins/*/versions.xml'):
             xml_validate(xml_path, self.versions_xsd)
 
     def test_determines_version(self):
@@ -100,8 +101,8 @@ class FingerprintTests(BaseTest):
 
         self.scanner.enumerate_file_hash(self.base_url, ch_url)
 
-    @patch('common.VersionsFile.files_get', return_value=['misc/drupal.js'])
-    @patch('common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
+    @patch('dscan.common.VersionsFile.files_get', return_value=['misc/drupal.js'])
+    @patch('dscan.common.VersionsFile.changelogs_get', return_value=['CHANGELOG.txt'])
     def test_fingerprint_correct_verb(self, patch, other_patch):
         # this needs to be a get, otherwise, how are going to get the request body?
         responses.add(responses.GET, self.base_url + 'misc/drupal.js')
@@ -217,7 +218,7 @@ class FingerprintTests(BaseTest):
             them has more than 3, the detection algorithm will fail.
         """
         fails = []
-        for xml_path in glob('plugins/*/versions.xml'):
+        for xml_path in glob(dscan.PWD + 'plugins/*/versions.xml'):
            vf = VersionsFile(xml_path)
 
            if 'silverstripe' in xml_path:
@@ -298,7 +299,7 @@ class FingerprintTests(BaseTest):
 
     def test_multiple_changelogs_or(self):
         mock_versions = ["8.0", "8.1", "8.2"]
-        xml_multi_changelog = 'tests/resources/versions_multiple_changelog.xml'
+        xml_multi_changelog = 'dscan/tests/resources/versions_multiple_changelog.xml'
 
         self.scanner.vf = VersionsFile(xml_multi_changelog)
         self.scanner.enumerate_file_hash = self.mock_xml(xml_multi_changelog, "8.0")
@@ -309,7 +310,7 @@ class FingerprintTests(BaseTest):
 
     def test_multiple_changelogs_all_fail(self):
         mock_versions = ["8.0", "8.1", "8.2"]
-        xml_multi_changelog = 'tests/resources/versions_multiple_changelog.xml'
+        xml_multi_changelog = 'dscan/tests/resources/versions_multiple_changelog.xml'
 
         v_changelog = VersionsFile(xml_multi_changelog)
         self.scanner.enumerate_file_hash = self.mock_xml(xml_multi_changelog,
@@ -345,7 +346,7 @@ class FingerprintTests(BaseTest):
         self.clear_argv()
         self.add_argv(['scan', '-u', url_simple])
 
-        ru_module = "common.functions.repair_url"
+        ru_module = "dscan.common.functions.repair_url"
         ru_return = self.base_url
 
         with patch(self.cms_identify_module, autospec=True, return_value=True) as ci:
@@ -377,7 +378,7 @@ class FingerprintTests(BaseTest):
         self.clear_argv()
 
         if url_file_host:
-            self.add_argv(['scan', '-U', 'tests/resources/url_file_ip_url.txt'])
+            self.add_argv(['scan', '-U', 'dscan/tests/resources/url_file_ip_url.txt'])
         elif url_file:
             self.add_argv(['scan', '-U', self.valid_file])
         else:
@@ -449,7 +450,7 @@ class FingerprintTests(BaseTest):
     def test_cms_identify(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
         rfu = "test/topst/tust.txt"
-        has_hash = 'common.versions.VersionsFile.has_hash'
+        has_hash = 'dscan.common.versions.VersionsFile.has_hash'
 
         with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
             with patch(has_hash, autospec=True, return_value=True) as hh:
@@ -475,7 +476,7 @@ class FingerprintTests(BaseTest):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
         second_url = "test/tstatat/deststat.js"
         rfu = ["test/topst/tust.txt", second_url]
-        has_hash = 'common.versions.VersionsFile.has_hash'
+        has_hash = 'dscan.common.versions.VersionsFile.has_hash'
 
         with patch(self.efh_module, autospec=True, side_effect=_efh_side_effect) as efh:
             with patch(has_hash, autospec=True, return_value=True) as hh:
@@ -505,7 +506,7 @@ class FingerprintTests(BaseTest):
     def test_cms_identify_false_notexist(self):
         fake_hash = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
         rfu = "test/topst/tust.txt"
-        has_hash = 'common.versions.VersionsFile.has_hash'
+        has_hash = 'dscan.common.versions.VersionsFile.has_hash'
 
         with patch(self.efh_module, autospec=True, return_value=fake_hash) as efh:
             with patch(has_hash, autospec=True, return_value=False) as hh:
@@ -539,7 +540,7 @@ class FingerprintTests(BaseTest):
 
     def test_url_file_ip_url_list_identify(self):
         self.clear_argv()
-        self.add_argv(['scan', '-U', 'tests/resources/url_file_ip_url.txt'])
+        self.add_argv(['scan', '-U', 'dscan/tests/resources/url_file_ip_url.txt'])
         with patch('requests.Session.head', autospec=True) as h:
             with patch('requests.Session.get', autospec=True) as g:
                 h.return_value.status_code = 200

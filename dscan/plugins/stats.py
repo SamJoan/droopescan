@@ -1,7 +1,7 @@
 from cement.core import handler, controller
-from common.plugins_util import Plugin, plugins_get
-from common.functions import version_get
-from common import template
+from dscan.common.plugins_util import Plugin, plugins_get
+from dscan.common.functions import version_get
+from dscan.common import template
 
 class Stats(controller.CementBaseController):
 

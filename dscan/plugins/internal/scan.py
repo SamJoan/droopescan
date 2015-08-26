@@ -1,19 +1,20 @@
 from __future__ import print_function
 from cement.core import controller
 from collections import OrderedDict
-from common.functions import template
-from common.exceptions import CannotResumeException
-from common import template
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
-from plugins.internal.base_plugin import BasePlugin
-from plugins.internal.base_plugin_internal import BasePluginInternal
-import common
-import common.functions as f
-import common.plugins_util as pu
-import common.versions as v
-import gc
 from datetime import datetime
+from dscan.common.exceptions import CannotResumeException
+from dscan.common.functions import template
+from dscan.common import template
+from dscan import common
+from dscan.plugins.internal.base_plugin import BasePlugin
+from dscan.plugins.internal.base_plugin_internal import BasePluginInternal
+import dscan
+import dscan.common.functions as f
+import dscan.common.plugins_util as pu
+import dscan.common.versions as v
+import gc
 
 class Scan(BasePlugin):
 
