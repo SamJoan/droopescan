@@ -1,14 +1,19 @@
-from twisted.trial.unittest import TestCase
-from twisted.internet import reactor
-from twisted.internet.defer import Deferred, succeed, fail
+from dscan.common.async import request_url, REQUEST_DEFAULTS
 from dscan.plugins.internal.async_scan import _identify_url_file, identify_lines, \
     identify_line
-from mock import patch
 from dscan import tests
+from mock import patch
+from twisted.internet.defer import Deferred, succeed, fail
+from twisted.internet import reactor
+from twisted.internet import ssl
+from twisted.trial.unittest import TestCase
+from twisted.web import client
 import dscan
 import os
 
-ASYNC_MODULE = 'dscan.plugins.internal.async_scan.'
+ASYNC = 'dscan.common.async.'
+ASYNC_SCAN = 'dscan.plugins.internal.async_scan.'
+
 def f():
     """
     Returns a failed deferrer.
@@ -47,12 +52,12 @@ class AsyncTests(TestCase):
 
             return d
 
-        with patch(ASYNC_MODULE + 'identify_lines', side_effect=side_effect) as il:
+        with patch(ASYNC_SCAN + 'identify_lines', side_effect=side_effect) as il:
             _identify_url_file(tests.VALID_FILE)
 
         return d
 
-    @patch(ASYNC_MODULE + 'identify_line')
+    @patch(ASYNC_SCAN + 'identify_line', autospec=True)
     def test_calls_identify_line(self, il):
         dl = identify_lines(self.lines)
         calls = il.call_args_list
@@ -61,10 +66,10 @@ class AsyncTests(TestCase):
             args, kwargs = comb_args
             self.assertEquals(args[0], self.lines[i])
 
-    @patch(ASYNC_MODULE + 'error_line')
+    @patch(ASYNC_SCAN + 'error_line', autospec=True)
     def test_calls_identify_line_errback(self, el):
         ret = [f(), f(), s()]
-        with patch(ASYNC_MODULE + 'identify_line', side_effect=ret) as il:
+        with patch(ASYNC_SCAN + 'identify_line', side_effect=ret) as il:
             dl = identify_lines(self.lines)
             calls = el.call_args_list
             self.assertEquals(len(calls), len(self.lines) - 1)
@@ -72,7 +77,7 @@ class AsyncTests(TestCase):
                 args, kwargs = comb_args
                 self.assertEquals(args[0],self.lines[i])
 
-    @patch(ASYNC_MODULE + 'request_url')
+    @patch(ASYNC_SCAN + 'request_url', autospec=True)
     def test_identify_strips_url(self, ru):
         stripped = self.lines[0].strip()
         identify_line(self.lines[0])
@@ -81,7 +86,7 @@ class AsyncTests(TestCase):
         self.assertEquals(ru.call_count, 1)
         self.assertEquals(args[0], stripped)
 
-    @patch(ASYNC_MODULE + 'request_url')
+    @patch(ASYNC_SCAN + 'request_url', autospec=True)
     def test_identify_strips_url(self, ru):
         stripped = self.lines[0].strip()
         identify_line(self.lines[0])
@@ -90,7 +95,7 @@ class AsyncTests(TestCase):
         self.assertEquals(ru.call_count, 1)
         self.assertEquals(args[0], stripped)
 
-    @patch(ASYNC_MODULE + 'request_url')
+    @patch(ASYNC_SCAN + 'request_url', autospec=True)
     def test_identify_accepts_space_separated_hosts(self, ru):
         file_ip = open(tests.VALID_FILE_IP)
         for i, line in enumerate(file_ip):
@@ -106,4 +111,72 @@ class AsyncTests(TestCase):
             args, kwargs = ru.call_args_list[-1]
             self.assertEquals(args[0], expected_url)
             self.assertEquals(args[1], expected_host)
+
+    @patch(ASYNC + 'reactor', autospec=True)
+    def test_request_url_http(self, r):
+        url = 'http://google.com/'
+        host = None
+
+        request_url(url, host)
+        ct = r.connectTCP
+
+        self.assertEquals(ct.call_count, 1)
+        args, kwargs = ct.call_args
+        self.assertEquals(args[0], 'google.com')
+        self.assertEquals(args[1], 80)
+        self.assertTrue(isinstance(args[2], client.HTTPClientFactory))
+
+    @patch(ASYNC + 'reactor', autospec=True)
+    def test_request_url_ssl(self, r):
+        url = 'https://google.com/'
+        host = None
+
+        request_url(url, host)
+        cs = r.connectSSL
+
+        self.assertEquals(cs.call_count, 1)
+        args, kwargs = cs.call_args
+        self.assertEquals(args[0], 'google.com')
+        self.assertEquals(args[1], 443)
+        self.assertTrue(isinstance(args[2], client.HTTPClientFactory))
+        self.assertTrue(isinstance(args[3], ssl.ClientContextFactory))
+
+
+    @patch(ASYNC + 'client.HTTPClientFactory')
+    @patch(ASYNC + 'reactor', autospec=True)
+    def test_request_host_header(self, r, hcf):
+        url = 'http://203.97.26.37/'
+        host = 'google.com'
+        url_with_host = 'http://google.com/'
+
+        request_url(url, host)
+        request_url(url_with_host, None)
+
+        ct = r.connectTCP.call_args_list
+
+        self.assertEquals(hcf.call_count, 2)
+        args, kwargs = hcf.call_args_list[0]
+        self.assertEquals(args[0], url)
+        self.assertEquals(kwargs['headers']['Host'], host)
+        self.assertEquals(ct[0][0][0], '203.97.26.37')
+
+        args, kwargs = hcf.call_args_list[1]
+        self.assertEquals(args[0], url_with_host)
+        self.assertEquals(kwargs['headers']['Host'], host)
+        self.assertEquals(ct[1][0][0], 'google.com')
+
+    @patch(ASYNC + 'client.HTTPClientFactory')
+    @patch(ASYNC + 'reactor', autospec=True)
+    def test_request_defaults(self, r, hcf):
+        url = 'http://google.com/'
+        host = None
+        defaults = REQUEST_DEFAULTS
+
+        request_url(url, host)
+
+        self.assertEquals(hcf.call_count, 1)
+        args, kwargs = hcf.call_args
+
+        for key in defaults:
+            self.assertEquals(kwargs[key], defaults[key])
 

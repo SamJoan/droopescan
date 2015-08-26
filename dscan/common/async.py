@@ -1,4 +1,5 @@
 from __future__ import print_function
+from dscan.plugins.internal.base_plugin_internal import DEFAULT_UA
 from itertools import islice
 from twisted.internet import reactor
 from twisted.internet import ssl
@@ -9,7 +10,7 @@ from zope.interface.declarations import implementer
 
 REQUEST_DEFAULTS = {
     'timeout': 60,
-    'agent': 'Test',
+    'agent': DEFAULT_UA,
     'followRedirect': False
 }
 
@@ -19,11 +20,22 @@ def request_url(url, host_header):
     without following redirects. Redirects will raise a PageRedirect, errors
     will result in Error exceptions.
     @param url: the URL for the resource.
-    @param host_header: value for the HTTP host header.
+    @param host_header: value for the HTTP host header. If None, it will be
+        obtained from the URL.
     @see twisted.web.error.
     """
     u = client.URI.fromBytes(url)
-    factory = client.HTTPClientFactory(url, **REQUEST_DEFAULTS)
+
+    headers = {}
+    if host_header != None:
+        headers['Host'] = host_header
+    else:
+        headers['Host'] = u.host
+
+    kwargs = dict(REQUEST_DEFAULTS)
+    kwargs['headers'] = headers
+
+    factory = client.HTTPClientFactory(url, **kwargs)
 
     if u.scheme == 'https':
         reactor.connectSSL(u.host, u.port, factory, ssl.ClientContextFactory())

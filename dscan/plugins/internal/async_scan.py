@@ -1,5 +1,4 @@
 from __future__ import print_function
-import dscan.common.functions as f
 from dscan.common.async import request_url
 from dscan.common.async import TargetProducer, TargetConsumer
 from functools import partial
@@ -8,6 +7,7 @@ from twisted.internet import reactor
 from twisted.python import log
 from twisted.web.error import PageRedirect, Error
 from twisted.web import client
+import dscan.common.functions as f
 import sys
 
 @defer.inlineCallbacks
@@ -18,7 +18,8 @@ def identify_line(line):
 
     - Make a request to the site's root.
         - If 403, 500 or other error code, or connection error, raise.
-        - If redirect, change base URL to redirected URL.
+        - If redirect, change base URL to redirected URL (stripping query
+          strings).
     - For each CMS(ordered by popularity):
         - Make a request for known files
             - If files exist and are an expected value, break.
@@ -39,7 +40,7 @@ def identify_line(line):
     except PageRedirect as e:
         base_url = e.location
 
-def error_line(self, line, failure):
+def error_line(line, failure):
     """
     High-level error handler for most errors within the main loop.
     @param line: the full line where the error occured.

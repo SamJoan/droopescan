@@ -42,8 +42,10 @@ try:
 except:
     pass
 
+DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
+
 class BasePluginInternal(controller.CementBaseController):
-    DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
+    DEFAULT_UA = DEFAULT_UA
     not_found_url = "misc/test/error/404/ispresent.html"
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
