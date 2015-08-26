@@ -66,10 +66,3 @@ class TargetConsumer():
         d = self.lines_processor(lines)
         d.addCallback(lambda ignored: self.producer.resumeProducing())
 
-class LineError:
-    line = None
-    def __init__(self, line):
-        self.line = line.rstrip()
-
-    def error_line(self, failure):
-        log.err(failure, "Line '%s' raised" % self.line)
