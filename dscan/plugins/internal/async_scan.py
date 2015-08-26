@@ -1,4 +1,5 @@
 from __future__ import print_function
+import dscan.common.functions as f
 from dscan.common.async import request_url
 from dscan.common.async import TargetProducer, TargetConsumer
 from functools import partial
@@ -30,9 +31,11 @@ def identify_line(line):
     @param line: the line to identify.
     @return: deferred
     """
-    base_url = line.strip()
+    base_url, host_header = f.process_host_line(line)
+    base_url = f.repair_url(base_url)
+
     try:
-        yield request_url(base_url)
+        yield request_url(base_url, host_header)
     except PageRedirect as e:
         base_url = e.location
 

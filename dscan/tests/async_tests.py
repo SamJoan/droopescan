@@ -52,23 +52,58 @@ class AsyncTests(TestCase):
 
         return d
 
-    @patch(ASYNC_MODULE + "identify_line")
+    @patch(ASYNC_MODULE + 'identify_line')
     def test_calls_identify_line(self, il):
         dl = identify_lines(self.lines)
         calls = il.call_args_list
-        assert len(calls) == len(self.lines)
+        self.assertEquals(len(calls), len(self.lines))
         for i, comb_args in enumerate(calls):
             args, kwargs = comb_args
-            assert args[0] == self.lines[i]
+            self.assertEquals(args[0], self.lines[i])
 
-    @patch(ASYNC_MODULE + "error_line")
+    @patch(ASYNC_MODULE + 'error_line')
     def test_calls_identify_line_errback(self, el):
         ret = [f(), f(), s()]
-        with patch(ASYNC_MODULE + "identify_line", side_effect=ret) as il:
+        with patch(ASYNC_MODULE + 'identify_line', side_effect=ret) as il:
             dl = identify_lines(self.lines)
             calls = el.call_args_list
-            assert len(calls) == len(self.lines) - 1
+            self.assertEquals(len(calls), len(self.lines) - 1)
             for i, comb_args in enumerate(calls):
                 args, kwargs = comb_args
-                assert args[0] == self.lines[i]
+                self.assertEquals(args[0],self.lines[i])
+
+    @patch(ASYNC_MODULE + 'request_url')
+    def test_identify_strips_url(self, ru):
+        stripped = self.lines[0].strip()
+        identify_line(self.lines[0])
+
+        args, kwargs = ru.call_args
+        self.assertEquals(ru.call_count, 1)
+        self.assertEquals(args[0], stripped)
+
+    @patch(ASYNC_MODULE + 'request_url')
+    def test_identify_strips_url(self, ru):
+        stripped = self.lines[0].strip()
+        identify_line(self.lines[0])
+
+        args, kwargs = ru.call_args
+        self.assertEquals(ru.call_count, 1)
+        self.assertEquals(args[0], stripped)
+
+    @patch(ASYNC_MODULE + 'request_url')
+    def test_identify_accepts_space_separated_hosts(self, ru):
+        file_ip = open(tests.VALID_FILE_IP)
+        for i, line in enumerate(file_ip):
+            if i < 2:
+                expected_url, expected_host = ('http://192.168.1.1/',
+                        'example.com')
+            elif i == 2:
+                expected_url, expected_host = ('http://192.168.1.2/drupal/',
+                        'example.com')
+
+            identify_line(line)
+
+            args, kwargs = ru.call_args_list[-1]
+            self.assertEquals(args[0], expected_url)
+            self.assertEquals(args[1], expected_host)
 

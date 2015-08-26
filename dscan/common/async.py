@@ -13,7 +13,15 @@ REQUEST_DEFAULTS = {
     'followRedirect': False
 }
 
-def request_url(url):
+def request_url(url, host_header):
+    """
+    Makes a request to a specified resource with an arbitrary host header,
+    without following redirects. Redirects will raise a PageRedirect, errors
+    will result in Error exceptions.
+    @param url: the URL for the resource.
+    @param host_header: value for the HTTP host header.
+    @see twisted.web.error.
+    """
     u = client.URI.fromBytes(url)
     factory = client.HTTPClientFactory(url, **REQUEST_DEFAULTS)
 

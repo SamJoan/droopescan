@@ -10,6 +10,8 @@ import sys
 import traceback
 import xml.etree.ElementTree as ET
 
+SPLIT_PATTERN = re.compile('[ \t]+')
+
 def repair_url(url):
     """
     Fixes URL.
@@ -260,3 +262,29 @@ def tail(f, window=20):
         bytes -= BUFSIZ
         block -= 1
     return ''.join(data).splitlines()[-window:]
+
+def _line_contains_host(url):
+    return re.search(SPLIT_PATTERN, url)
+
+def process_host_line(line):
+    """
+    Processes a line and determines whether it is a tab-delimited CSV of
+    url and host.
+
+    Strips all strings.
+
+    @param line: the line to analyse.
+    @param opts: the options dictionary to modify.
+    @return: a tuple containing url, and host header if any change is
+        required. Otherwise, line, null is returned.
+    """
+    if not line:
+        return None, None
+
+    host = None
+    if _line_contains_host(line):
+        url, host = re.split(SPLIT_PATTERN, line.strip())
+    else:
+        url = line.strip()
+
+    return url, host

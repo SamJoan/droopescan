@@ -48,7 +48,6 @@ class BasePluginInternal(controller.CementBaseController):
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
     NUMBER_PLUGINS_DEFAULT = 1000
-    SPLIT_PATTERN = re.compile('[ \t]+')
 
     out = None
     session = None
@@ -918,26 +917,8 @@ class BasePluginInternal(controller.CementBaseController):
 
         return is_cms
 
-    def _line_contains_host(self, url):
-        return re.search(self.SPLIT_PATTERN, url)
-
-    def _process_host_line(self, url):
-        """
-        Processes URLs and determines whether they are a tab-delimited CSV of
-        url and host.
-        @param url: the url to analyse.
-        @param opts: the options dictionary to modify.
-        @return: a tuple containing url, and host header if any change is
-            required. Otherwise, url, null is returned.
-        """
-        if not url:
-            return None, None
-
-        host = None
-        if self._line_contains_host(url):
-            url, host = re.split(self.SPLIT_PATTERN, url.strip())
-
-        return url, host
+    def _process_host_line(self, line):
+        return f.process_host_line(line)
 
     def _generate_headers(self, host_header):
         if host_header:
