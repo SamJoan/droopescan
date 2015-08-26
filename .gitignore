@@ -7,4 +7,4 @@ build/
 dscan/.coverage
 dscan/.noseids
 dscan/cover
-_trial_temp/
+_trial_temp*

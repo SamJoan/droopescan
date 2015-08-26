@@ -11,6 +11,12 @@ import os
 import responses
 import dscan
 
+BASE_URL = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
+BASE_URL_HTTPS = "https://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
+VALID_FILE = 'dscan/tests/resources/url_file_valid.txt'
+VALID_FILE_IP = 'dscan/tests/resources/url_file_ip_url.txt'
+EMPTY_FILE = 'dscan/tests/resources/empty_file'
+
 class MockHash():
     files = None
     def mock_func(self, *args, **kwargs):
@@ -24,11 +30,11 @@ class BaseTest(test.CementTestCase):
     app_class = DroopeScan
     scanner = None
 
-    base_url = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
-    base_url_https = "https://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
-    valid_file = 'dscan/tests/resources/url_file_valid.txt'
-    valid_file_ip = 'dscan/tests/resources/url_file_ip_url.txt'
-    empty_file = 'dscan/tests/resources/empty_file'
+    base_url = BASE_URL
+    base_url_https = BASE_URL_HTTPS
+    valid_file = VALID_FILE
+    valid_file_ip = VALID_FILE_IP
+    empty_file = EMPTY_FILE
 
     param_base = ["--url", base_url, '-n', '10']
     param_plugins = param_base + ["-e", 'p']

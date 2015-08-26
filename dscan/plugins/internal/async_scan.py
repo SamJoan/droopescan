@@ -4,8 +4,8 @@ from twisted.internet import reactor
 from twisted.python import log
 from twisted.web.error import PageRedirect, Error
 from twisted.web import client
-from util import request_url
-from util import TargetProducer, TargetConsumer, LineError
+from dscan.common.async import request_url
+from dscan.common.async import TargetProducer, TargetConsumer, LineError
 import sys
 
 @defer.inlineCallbacks
@@ -38,11 +38,20 @@ def identify_lines(lines):
     dl = defer.DeferredList(ds)
     return dl
 
-def main(argv):
-    log.startLogging(sys.stdout)
+def _identify_url_file(url_file):
+    """
+    Performs a scan over each individual line of file, utilising twisted. This
+    provides better performance for mass-scanning, so it is provided as an
+    option.
 
-    filename = sys.argv[1]
-    fh = open(filename)
+    Behaviour should be mostly similar to the regular mass-identify, although
+    with defaults set for mass-scanning.
+
+    @param url_file: the url_file to scan.
+    """
+    import os
+    print(os.getcwd())
+    fh = open(url_file)
 
     target_producer = TargetProducer(fh, readSize=1000)
     target_consumer = TargetConsumer(lines_processor=identify_lines)
@@ -50,7 +59,15 @@ def main(argv):
     target_consumer.registerProducer(target_producer)
     target_producer.startProducing(target_consumer)
 
+    pass
+
+def identify_url_file(*args, **kwargs):
+    """
+    @see: _identify_url_file()
+    """
+    log.startLogging(sys.stdout)
+    _identify_url_file(*args, **kwargs)
     reactor.run()
 
 if __name__ == '__main__':
-    main(sys.argv)
+    identify_url_file(sys.argv)
