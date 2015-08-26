@@ -10,6 +10,17 @@ from twisted.web import client
 import dscan.common.functions as f
 import sys
 
+def error_line(line, failure):
+    """
+    High-level error handler for most errors within the main loop.
+    @param line: the full line where the error occured.
+    @param failure: the failure passed to the errback.
+    """
+    log.err(failure, "Line '%s' raised" % line.rstrip())
+
+def identify_url(url):
+    pass
+
 @defer.inlineCallbacks
 def identify_line(line):
     """
@@ -38,15 +49,9 @@ def identify_line(line):
     try:
         yield request_url(base_url, host_header)
     except PageRedirect as e:
-        base_url = e.location
+        base_url = f.repair_url(e.location)
 
-def error_line(line, failure):
-    """
-    High-level error handler for most errors within the main loop.
-    @param line: the full line where the error occured.
-    @param failure: the failure passed to the errback.
-    """
-    log.err(failure, "Line '%s' raised" % line.rstrip())
+    cms_name = yield identify_url(base_url)
 
 def identify_lines(lines):
     """

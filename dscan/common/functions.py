@@ -1,4 +1,5 @@
 from __future__ import print_function
+from collections import OrderedDict
 from dscan.common.enum import colors, ScanningMethod
 from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout, \
         TooManyRedirects
@@ -20,10 +21,14 @@ def repair_url(url):
     @return: Newline characters are stripped from the URL string.
         If the url string parameter does not start with http, it prepends http://
         If the url string parameter does not end with a slash, appends a slash.
+        If the url contains a query string, it gets removed.
     """
     url = url.strip('\n')
     if not re.match(r"^http", url):
         url = "http://" + url
+
+    if "?" in url:
+        url, _ = url.split('?')
 
     if not url.endswith("/"):
         return url + "/"
@@ -288,3 +293,56 @@ def process_host_line(line):
         url = line.strip()
 
     return url, host
+
+def instances_get(opts, plugins, url_file_input, out):
+    """
+    Creates and returns an ordered dictionary containing instances for all available
+    scanning plugins, sort of ordered by popularity.
+    @param opts: options as returned by self._options.
+    @param plugins: plugins as returned by plugins_util.plugins_base_get.
+    @param url_file_input: boolean value which indicates whether we are
+        scanning an individual URL or a file. This is used to determine
+        kwargs required.
+    @param out: self.out
+    """
+    instances = OrderedDict()
+    preferred_order = ['wordpress', 'joomla', 'drupal']
+
+    for cms_name in preferred_order:
+        for plugin in plugins:
+            plugin_name = plugin.__name__.lower()
+
+            if cms_name == plugin_name:
+                instances[plugin_name] = instance_get(plugin, opts,
+                        url_file_input, out)
+
+    for plugin in plugins:
+        plugin_name = plugin.__name__.lower()
+        if plugin_name not in preferred_order:
+            instances[plugin_name] = instance_get(plugin, opts,
+                    url_file_input, out)
+
+    return instances
+
+def instance_get(plugin, opts, url_file_input, out):
+    """
+    Return an instance dictionary for an individual plugin.
+    @see Scan._instances_get.
+    """
+    inst = plugin()
+    hp, func, enabled_func = inst._general_init(opts, out)
+    name = inst._meta.label
+
+    kwargs = {
+        'hide_progressbar': hp,
+        'functionality': func,
+        'enabled_functionality': enabled_func
+    }
+
+    if url_file_input:
+        del kwargs['hide_progressbar']
+
+    return {
+        'inst': inst,
+        'kwargs': kwargs
+    }

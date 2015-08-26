@@ -1,6 +1,5 @@
 from __future__ import print_function
 from cement.core import controller
-from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from datetime import datetime
@@ -235,58 +234,8 @@ class Scan(BasePlugin):
             if len(cms_urls) > 0:
                 inst_dict['inst'].process_url_iterable(cms_urls, opts, **inst_dict['kwargs'])
 
-    def _instances_get(self, opts, plugins, url_file_input, out):
-        """
-        Creates and returns an ordered dictionary containing instances for all available
-        scanning plugins, sort of ordered by popularity.
-        @param opts: options as returned by self._options.
-        @param plugins: plugins as returned by plugins_util.plugins_base_get.
-        @param url_file_input: boolean value which indicates whether we are
-            scanning an individual URL or a file. This is used to determine
-            kwargs required.
-        @param out: self.out
-        """
-        instances = OrderedDict()
-        preferred_order = ['wordpress', 'joomla', 'drupal']
-
-        for cms_name in preferred_order:
-            for plugin in plugins:
-                plugin_name = plugin.__name__.lower()
-
-                if cms_name == plugin_name:
-                    instances[plugin_name] = self._instance_get(plugin, opts,
-                            url_file_input, out)
-
-        for plugin in plugins:
-            plugin_name = plugin.__name__.lower()
-            if plugin_name not in preferred_order:
-                instances[plugin_name] = self._instance_get(plugin, opts,
-                        url_file_input, out)
-
-        return instances
-
-    def _instance_get(self, plugin, opts, url_file_input, out):
-        """
-        Return an instance dictionary for an individual plugin.
-        @see Scan._instances_get.
-        """
-        inst = plugin()
-        hp, func, enabled_func = inst._general_init(opts, out)
-        name = inst._meta.label
-
-        kwargs = {
-            'hide_progressbar': hp,
-            'functionality': func,
-            'enabled_functionality': enabled_func
-        }
-
-        if url_file_input:
-            del kwargs['hide_progressbar']
-
-        return {
-            'inst': inst,
-            'kwargs': kwargs
-        }
+    def _instances_get(self, *args, **kwargs):
+        return f.instances_get(*args, **kwargs)
 
     def _recreate_all(self):
         plugins = pu.plugins_base_get()

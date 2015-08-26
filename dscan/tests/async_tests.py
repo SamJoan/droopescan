@@ -7,6 +7,7 @@ from twisted.internet.defer import Deferred, succeed, fail
 from twisted.internet import reactor
 from twisted.internet import ssl
 from twisted.trial.unittest import TestCase
+from twisted.web.error import PageRedirect, Error
 from twisted.web import client
 import dscan
 import os
@@ -180,3 +181,30 @@ class AsyncTests(TestCase):
         for key in defaults:
             self.assertEquals(kwargs[key], defaults[key])
 
+    def test_request_redirect_follow(self):
+        redirect_url = 'http://urlb.com/'
+        r = PageRedirect('redirect')
+        r.location = redirect_url
+
+        with patch(ASYNC_SCAN + 'request_url', autospec=True, side_effect=r) as ru:
+            with patch(ASYNC_SCAN + 'identify_url', autospec=True) as iu:
+                identify_line(self.lines[0])
+
+                self.assertEquals(iu.call_count, 1)
+                args, kwargs = iu.call_args
+
+                self.assertEquals(args[0], redirect_url)
+
+    def test_request_redirect_follow_query_string(self):
+        redirect_url = 'http://urlb.com/?aa=a'
+        r = PageRedirect('redirect')
+        r.location = redirect_url
+
+        with patch(ASYNC_SCAN + 'request_url', autospec=True, side_effect=r) as ru:
+            with patch(ASYNC_SCAN + 'identify_url', autospec=True) as iu:
+                identify_line(self.lines[0])
+
+                self.assertEquals(iu.call_count, 1)
+                args, kwargs = iu.call_args
+
+                self.assertEquals(args[0], 'http://urlb.com/')
