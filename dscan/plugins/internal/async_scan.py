@@ -49,17 +49,12 @@ def _identify_url_file(url_file):
 
     @param url_file: the url_file to scan.
     """
-    import os
-    print(os.getcwd())
-    fh = open(url_file)
-
+    fh = open(url_file) # fh closed by producer
     target_producer = TargetProducer(fh, readSize=1000)
     target_consumer = TargetConsumer(lines_processor=identify_lines)
 
     target_consumer.registerProducer(target_producer)
     target_producer.startProducing(target_consumer)
-
-    pass
 
 def identify_url_file(*args, **kwargs):
     """
