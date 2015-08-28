@@ -66,6 +66,9 @@ class Scan(BasePlugin):
                 (['--massscan-override'], dict(action='store_true',
                     help="""Overrides defaults with defaults convenient for
                     mass-scanning of hosts.""", default=False)),
+                (['--async'], dict(action='store_true', help="""Beta
+                    asynchronous scanning mode for mass-scanning""",
+                    default=False)),
 
                 (['--threads', '-t'], dict(action='store', help='''Number of
                     threads. Default 4.''', default=4, type=int)),

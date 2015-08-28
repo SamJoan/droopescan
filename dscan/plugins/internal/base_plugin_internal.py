@@ -106,6 +106,7 @@ class BasePluginInternal(controller.CementBaseController):
         plugins_base_url = pargs.plugins_base_url
         themes_base_url = pargs.themes_base_url
         debug = pargs.debug
+        async = pargs.async
         resume = pargs.resume
         number = pargs.number if not pargs.number == 'all' else 100000
         if pargs.error_log:

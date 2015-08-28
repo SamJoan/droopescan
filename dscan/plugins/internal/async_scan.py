@@ -77,7 +77,7 @@ def identify_lines(lines):
     dl = defer.DeferredList(ds)
     return dl
 
-def _identify_url_file(url_file):
+def identify_url_file(url_file, fh):
     """
     Performs a scan over each individual line of file, utilising twisted. This
     provides better performance for mass-scanning, so it is provided as an
@@ -87,8 +87,8 @@ def _identify_url_file(url_file):
     with defaults set for mass-scanning.
 
     @param url_file: the url_file to scan.
+    @param fh: a file handle.
     """
-    fh = open(url_file) # fh closed by producer
     target_producer = TargetProducer(fh, readSize=1000)
     target_consumer = TargetConsumer(lines_processor=identify_lines)
 
