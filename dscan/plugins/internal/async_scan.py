@@ -61,7 +61,7 @@ def identify_line(line):
     except PageRedirect as e:
         base_url, host_header = f.repair_url(e.location), None
 
-    cms_name = yield identify_url(base_url)
+    cms_name = yield identify_url(base_url, host_header)
 
 def identify_lines(lines):
     """
@@ -77,7 +77,7 @@ def identify_lines(lines):
     dl = defer.DeferredList(ds)
     return dl
 
-def identify_url_file(url_file, fh):
+def _identify_url_file(fh):
     """
     Performs a scan over each individual line of file, utilising twisted. This
     provides better performance for mass-scanning, so it is provided as an
@@ -86,8 +86,8 @@ def identify_url_file(url_file, fh):
     Behaviour should be mostly similar to the regular mass-identify, although
     with defaults set for mass-scanning.
 
-    @param url_file: the url_file to scan.
-    @param fh: a file handle.
+    @param fh: a file handle. Upon finishing, this will be closed by this
+    function.
     """
     target_producer = TargetProducer(fh, readSize=1000)
     target_consumer = TargetConsumer(lines_processor=identify_lines)

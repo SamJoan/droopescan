@@ -58,7 +58,7 @@ class AsyncTests(TestCase):
             return d
 
         with patch(ASYNC_SCAN + 'identify_lines', side_effect=side_effect) as il:
-            _identify_url_file(tests.VALID_FILE)
+            _identify_url_file(open(tests.VALID_FILE))
 
         return d
 
@@ -91,8 +91,9 @@ class AsyncTests(TestCase):
         self.assertEquals(ru.call_count, 1)
         self.assertEquals(args[0], stripped)
 
+    @patch(ASYNC_SCAN + 'identify_url', autospec=True)
     @patch(ASYNC_SCAN + 'request_url', autospec=True)
-    def test_identify_strips_url(self, ru):
+    def test_identify_strips_url(self, ru, iu):
         stripped = self.lines[0].strip()
         identify_line(self.lines[0])
 
@@ -100,8 +101,9 @@ class AsyncTests(TestCase):
         self.assertEquals(ru.call_count, 1)
         self.assertEquals(args[0], stripped)
 
+    @patch(ASYNC_SCAN + 'identify_url', autospec=True)
     @patch(ASYNC_SCAN + 'request_url', autospec=True)
-    def test_identify_accepts_space_separated_hosts(self, ru):
+    def test_identify_accepts_space_separated_hosts(self, ru, iu):
         file_ip = open(tests.VALID_FILE_IP)
         for i, line in enumerate(file_ip):
             if i < 2:
