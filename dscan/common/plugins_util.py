@@ -2,6 +2,7 @@ from cement.core import handler
 from dscan.common import file_len, VersionsFile
 from dscan.plugins.internal.base_plugin import BasePlugin
 import dscan
+import dscan.plugins
 import pkgutil
 import subprocess
 

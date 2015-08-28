@@ -226,3 +226,20 @@ class AsyncTests(TestCase):
                 self.assertEquals(args[0], self.base_url + rfu[i])
                 self.assertTrue(args[2].endswith(base64.b64encode(rfu[i])))
 
+    def test_identify_calls_identify_rfu(self):
+        tempdir = '/tmp/dscan18293u1/'
+        with patch(ASYNC_SCAN + 'download_rfu', return_value=tempdir) as dr:
+            with patch(ASYNC_SCAN + 'identify_rfu') as ir:
+                identify_url(self.base_url, None)
+
+                args, kwargs = ir.call_args
+
+                self.assertEqual(ir.call_count, 1)
+                self.assertEqual(args[0], tempdir)
+
+    def test_identify_doesnt_call_when_none_found(self):
+        with patch(ASYNC_SCAN + 'download_url', side_effect=Error, autospec=True) as du:
+            with patch(ASYNC_SCAN + 'identify_rfu') as ir:
+                identify_url(self.base_url, None)
+
+                self.assertEquals(ir.call_count, 0)

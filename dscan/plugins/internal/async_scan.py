@@ -1,9 +1,12 @@
 from __future__ import print_function
-from dscan.common.async import request_url, download_url
+from dscan.common.async import request_url, download_url, filename_encode, \
+    filename_decode
 from dscan.common.async import TargetProducer, TargetConsumer
+from dscan.common.exceptions import UnknownCMSException
 from functools import partial
 from twisted.internet import defer
 from twisted.internet import reactor
+from twisted.python.failure import Failure
 from twisted.python import log
 from twisted.web.error import PageRedirect, Error
 from twisted.web import client
@@ -11,7 +14,6 @@ from tempfile import mkdtemp
 import dscan.common.functions as f
 import dscan.common.plugins_util as pu
 import sys
-import base64
 
 def error_line(line, failure):
     """
@@ -29,30 +31,47 @@ def download_rfu(base_url, host_header):
     @param host_header:
     @return DeferredList
     """
-    def ignore_non_success(f):
-        f.trap(Error)
+    def ret_result(indiv_results, tempdir):
+        all_failed = True
+        for succ, _ in indiv_results:
+            if succ:
+                all_failed = False
+                break
 
-    def ret_result(ign, tempdir):
+        if all_failed:
+            return Failure(UnknownCMSException())
+
         return tempdir
 
-    tempdir = mkdtemp(prefix='dscan')
-    files_required = pu.get_rfu()
+    tempdir = mkdtemp(prefix='dscan') + "/"
+    required_files = pu.get_rfu()
 
     ds = []
-    for f in files_required:
+    for f in required_files:
         url = base_url + f
-        download_location = tempdir + "/" + base64.b64encode(f)
+        download_location = tempdir + filename_encode(f)
         d = download_url(url, host_header, download_location)
-        d.addErrback(ignore_non_success)
         ds.append(d)
 
-    dl = defer.DeferredList(ds)
+    dl = defer.DeferredList(ds, consumeErrors=True)
     dl.addCallback(ret_result, tempdir)
+
     return dl
+
+def identify_rfu(tempdir):
+    """
+    Given several rfu, outputs which CMS is installed.
+    @param tempfile: as returned by download_rfu.
+    @return: DeferredList
+    """
+    pass
+    #for plugin in PLUGINS:
+        #pass
 
 @defer.inlineCallbacks
 def identify_url(base_url, host_header):
-    tempfile = yield download_rfu(base_url, host_header)
+    tempdir = yield download_rfu(base_url, host_header)
+    cms_name = yield identify_rfu(tempdir)
 
 @defer.inlineCallbacks
 def identify_line(line):

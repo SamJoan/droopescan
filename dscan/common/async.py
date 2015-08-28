@@ -1,4 +1,5 @@
 from __future__ import print_function
+from base64 import b64encode, b64decode
 from dscan.plugins.internal.base_plugin_internal import DEFAULT_UA
 from itertools import islice
 from twisted.internet import reactor
@@ -74,6 +75,21 @@ def download_url(url, host_header, filename):
     make_request(u, factory)
 
     return factory.deferred
+
+def filename_encode(filename):
+    """
+    Encodes filename in a way that is safe to store in disk. Safe in this
+    context means it does not have any special path characters, like "/".
+    @param filename: the filename to encode.
+    """
+    return b64encode(filename)
+
+def filename_decode(filename):
+    """
+    Reverses filename_encode.
+    @param filename: the filename to decode.
+    """
+    return b64decode(filename)
 
 @implementer(IBodyProducer)
 class TargetProducer(client.FileBodyProducer):

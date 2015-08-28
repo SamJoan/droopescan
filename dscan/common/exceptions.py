@@ -4,3 +4,7 @@ class FileEmptyException(RuntimeError):
 
 class CannotResumeException(RuntimeError):
     pass
+
+class UnknownCMSException(RuntimeError):
+    pass
+
