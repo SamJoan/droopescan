@@ -346,3 +346,4 @@ def instance_get(plugin, opts, url_file_input, out):
         'inst': inst,
         'kwargs': kwargs
     }
+

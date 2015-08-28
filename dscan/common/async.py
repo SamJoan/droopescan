@@ -14,6 +14,29 @@ REQUEST_DEFAULTS = {
     'followRedirect': False
 }
 
+def target_get(url, host_header):
+    u = client.URI.fromBytes(url)
+
+    headers = {}
+    if host_header != None:
+        headers['Host'] = host_header
+    else:
+        headers['Host'] = u.host
+
+    return u, headers
+
+def make_request(u, factory):
+    """
+    Passes the factory to the reactor. If scheme is HTTPs, request is done over
+    HTTPs.
+    @param u: client.URI
+    @param factory: HttpClientFactory
+    """
+    if u.scheme == 'https':
+        reactor.connectSSL(u.host, u.port, factory, ssl.ClientContextFactory())
+    else:
+        reactor.connectTCP(u.host, u.port, factory)
+
 def request_url(url, host_header):
     """
     Makes a request to a specified resource with an arbitrary host header,
@@ -24,23 +47,28 @@ def request_url(url, host_header):
         obtained from the URL.
     @see twisted.web.error.
     """
-    u = client.URI.fromBytes(url)
-
-    headers = {}
-    if host_header != None:
-        headers['Host'] = host_header
-    else:
-        headers['Host'] = u.host
-
+    u, headers = target_get(url, host_header)
     kwargs = dict(REQUEST_DEFAULTS)
     kwargs['headers'] = headers
 
     factory = client.HTTPClientFactory(url, **kwargs)
+    make_request(u, factory)
 
-    if u.scheme == 'https':
-        reactor.connectSSL(u.host, u.port, factory, ssl.ClientContextFactory())
-    else:
-        reactor.connectTCP(u.host, u.port, factory)
+    return factory.deferred
+
+def download_url(url, host_header, filename):
+    """
+    Downloads a specified URL over HTTP.
+    @param url: the URL of the file to download.
+    @param host_header: the value for the host header.
+    @param filename: location of the file to save.b
+    """
+    u, headers = target_get(url, host_header)
+    kwargs = dict(REQUEST_DEFAULTS)
+    kwargs['headers'] = headers
+
+    factory = client.DownloadFile(url, filename, **kwargs)
+    make_request(u, factory)
 
     return factory.deferred
 

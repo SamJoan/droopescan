@@ -1,5 +1,5 @@
 from __future__ import print_function
-from dscan.common.async import request_url
+from dscan.common.async import request_url, download_url
 from dscan.common.async import TargetProducer, TargetConsumer
 from functools import partial
 from twisted.internet import defer
@@ -7,11 +7,10 @@ from twisted.internet import reactor
 from twisted.python import log
 from twisted.web.error import PageRedirect, Error
 from twisted.web import client
+from tempfile import mkdtemp
 import dscan.common.functions as f
 import dscan.common.plugins_util as pu
 import sys
-
-plugins = pu.plugins_base_get()
 
 def error_line(line, failure):
     """
@@ -21,8 +20,16 @@ def error_line(line, failure):
     """
     log.err(failure, "Line '%s' raised" % line.rstrip())
 
-def identify_url(url):
-    pass
+def identify_url(base_url, host_header):
+    tempdir = mkdtemp()
+    files_required = pu.get_rfu()
+
+    ds = []
+    for f in files_required:
+        d = download_url(base_url + f, host_header, tempdir + f)
+        ds.append(d)
+
+    return defer.DeferredList(ds)
 
 @defer.inlineCallbacks
 def identify_line(line):
@@ -52,7 +59,7 @@ def identify_line(line):
     try:
         yield request_url(base_url, host_header)
     except PageRedirect as e:
-        base_url = f.repair_url(e.location)
+        base_url, host_header = f.repair_url(e.location), None
 
     cms_name = yield identify_url(base_url)
 

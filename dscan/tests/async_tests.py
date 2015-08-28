@@ -1,6 +1,6 @@
 from dscan.common.async import request_url, REQUEST_DEFAULTS
 from dscan.plugins.internal.async_scan import _identify_url_file, identify_lines, \
-    identify_line
+    identify_line, identify_url
 from dscan import tests
 from mock import patch
 from twisted.internet.defer import Deferred, succeed, fail
@@ -10,7 +10,9 @@ from twisted.trial.unittest import TestCase
 from twisted.web.error import PageRedirect, Error
 from twisted.web import client
 import dscan
+import dscan.common.plugins_util as pu
 import os
+
 
 ASYNC = 'dscan.common.async.'
 ASYNC_SCAN = 'dscan.plugins.internal.async_scan.'
@@ -30,6 +32,8 @@ def s():
 class AsyncTests(TestCase):
     timeout = 3
     prev_cwd = None
+
+    base_url = 'http://wiojqiowdjqoiwdjoqiwjdoqiwjfoqiwjfqowijf.com/'
 
     lines = ['http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/\n',
             'http://adhwuiaihduhaknbacnckajcwnncwkakncx.com/\n',
@@ -204,7 +208,18 @@ class AsyncTests(TestCase):
             with patch(ASYNC_SCAN + 'identify_url', autospec=True) as iu:
                 identify_line(self.lines[0])
 
-                self.assertEquals(iu.call_count, 1)
                 args, kwargs = iu.call_args
 
                 self.assertEquals(args[0], 'http://urlb.com/')
+
+    def test_identify_calls_all_rfu(self):
+        rfu = pu.get_rfu()
+        with patch(ASYNC_SCAN + 'download_url', autospec=True) as du:
+            identify_url(self.base_url, None)
+
+            self.assertEquals(du.call_count, len(rfu))
+            for i, call in enumerate(du.call_args_list):
+                args, kwargs = call
+                self.assertEquals(args[0], self.base_url + rfu[i])
+                self.assertTrue(args[2].endswith(rfu[i]))
+

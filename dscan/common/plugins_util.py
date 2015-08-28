@@ -33,6 +33,20 @@ def plugins_base_get():
 
     return plugins
 
+def get_rfu():
+    """
+    Returns a list of al "regular file urls" for all plugins.
+    """
+    plugins = plugins_base_get()
+    rfu = []
+    for plugin in plugins:
+        if isinstance(plugin.regular_file_url, str):
+            rfu.append(plugin.regular_file_url)
+        else:
+            rfu += plugin.regular_file_url
+
+    return rfu
+
 class Plugin(object):
     plugin = None
     name = None
