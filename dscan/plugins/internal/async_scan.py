@@ -11,25 +11,48 @@ from tempfile import mkdtemp
 import dscan.common.functions as f
 import dscan.common.plugins_util as pu
 import sys
+import base64
 
 def error_line(line, failure):
     """
     High-level error handler for most errors within the main loop.
     @param line: the full line where the error occured.
     @param failure: the failure passed to the errback.
+    @return:
     """
     log.err(failure, "Line '%s' raised" % line.rstrip())
 
-def identify_url(base_url, host_header):
-    tempdir = mkdtemp()
+def download_rfu(base_url, host_header):
+    """
+    Download all "regular file urls" for all CMS.
+    @param base_url:
+    @param host_header:
+    @return DeferredList
+    """
+    def ignore_non_success(f):
+        f.trap(Error)
+
+    def ret_result(ign, tempdir):
+        return tempdir
+
+    tempdir = mkdtemp(prefix='dscan')
     files_required = pu.get_rfu()
 
     ds = []
     for f in files_required:
-        d = download_url(base_url + f, host_header, tempdir + f)
+        url = base_url + f
+        download_location = tempdir + "/" + base64.b64encode(f)
+        d = download_url(url, host_header, download_location)
+        d.addErrback(ignore_non_success)
         ds.append(d)
 
-    return defer.DeferredList(ds)
+    dl = defer.DeferredList(ds)
+    dl.addCallback(ret_result, tempdir)
+    return dl
+
+@defer.inlineCallbacks
+def identify_url(base_url, host_header):
+    tempfile = yield download_rfu(base_url, host_header)
 
 @defer.inlineCallbacks
 def identify_line(line):

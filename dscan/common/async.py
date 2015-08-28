@@ -8,6 +8,9 @@ from twisted.web import client
 from twisted.web.iweb import IBodyProducer
 from zope.interface.declarations import implementer
 
+# https://stackoverflow.com/questions/18670252/how-to-suppress-noisy-factory-started-stopped-log-messages-from-twisted
+client.HTTPClientFactory.noisy = False
+
 REQUEST_DEFAULTS = {
     'timeout': 60,
     'agent': DEFAULT_UA,
@@ -67,7 +70,7 @@ def download_url(url, host_header, filename):
     kwargs = dict(REQUEST_DEFAULTS)
     kwargs['headers'] = headers
 
-    factory = client.DownloadFile(url, filename, **kwargs)
+    factory = client.HTTPDownloader(url, filename, **kwargs)
     make_request(u, factory)
 
     return factory.deferred

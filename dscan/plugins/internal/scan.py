@@ -7,6 +7,7 @@ from dscan.common.exceptions import CannotResumeException
 from dscan.common.functions import template
 from dscan.common import template
 from dscan import common
+from dscan.plugins.internal.async_scan import identify_url_file
 from dscan.plugins.internal.base_plugin import BasePlugin
 from dscan.plugins.internal.base_plugin_internal import BasePluginInternal
 import dscan
@@ -142,25 +143,28 @@ class Scan(BasePlugin):
             self.resume_forward(url_file, opts['resume'], file_location,
                     opts['error_log'])
 
-            i = 0
-            urls = []
-            for url in url_file:
-                urls.append(url)
-                if i % 20000 == 0 and i != 0:
+            if not opts['async']:
+                i = 0
+                urls = []
+                for url in url_file:
+                    urls.append(url)
+                    if i % 2500 == 0 and i != 0:
+                        plugins, opts, executor, instances = self._recreate_all()
+                        self._process_generate_futures(urls, executor, opts,
+                                instances, follow_redirects)
+                        executor.shutdown()
+                        gc.collect()
+                        urls = []
+
+                    i += 1
+
+                if len(urls) > 0:
                     plugins, opts, executor, instances = self._recreate_all()
-                    self._process_generate_futures(urls, executor, opts,
-                            instances, follow_redirects)
+                    self._process_generate_futures(urls, executor, opts, instances,
+                            follow_redirects)
                     executor.shutdown()
-                    gc.collect()
-                    urls = []
-
-                i += 1
-
-            if len(urls) > 0:
-                plugins, opts, executor, instances = self._recreate_all()
-                self._process_generate_futures(urls, executor, opts, instances,
-                        follow_redirects)
-                executor.shutdown()
+            else:
+                identify_url_file(url_file)
 
     def _process_generate_futures(self, urls, executor, opts, instances, follow_redirects):
         self.out.debug('scan._process_generate_futures')

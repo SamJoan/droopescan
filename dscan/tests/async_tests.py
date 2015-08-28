@@ -9,6 +9,7 @@ from twisted.internet import ssl
 from twisted.trial.unittest import TestCase
 from twisted.web.error import PageRedirect, Error
 from twisted.web import client
+import base64
 import dscan
 import dscan.common.plugins_util as pu
 import os
@@ -223,5 +224,5 @@ class AsyncTests(TestCase):
             for i, call in enumerate(du.call_args_list):
                 args, kwargs = call
                 self.assertEquals(args[0], self.base_url + rfu[i])
-                self.assertTrue(args[2].endswith(rfu[i]))
+                self.assertTrue(args[2].endswith(base64.b64encode(rfu[i])))
 

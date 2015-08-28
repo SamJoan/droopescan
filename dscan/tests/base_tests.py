@@ -378,3 +378,14 @@ class BaseTests(BaseTest):
     def test_plugins_get(self):
         plugins = plugins_base_get()
         assert len(plugins) > 3
+
+    def test_calls_async(self):
+        self.add_argv(['scan'])
+        self.add_argv(['--url-file', self.valid_file])
+        self.add_argv(['--async'])
+
+        with patch('dscan.plugins.internal.scan.identify_url_file',
+                autospec=True) as iuf:
+            self.app.run()
+
+            assert iuf.called
