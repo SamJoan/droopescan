@@ -2,12 +2,17 @@ from __future__ import print_function
 from base64 import b16encode, b16encode
 from dscan.plugins.internal.base_plugin_internal import DEFAULT_UA
 from itertools import islice
-from twisted.internet import reactor
-from twisted.internet import ssl
-from twisted.python import log
-from twisted.web import client
-from twisted.web.iweb import IBodyProducer
-from zope.interface.declarations import implementer
+try:
+    from twisted.internet import reactor
+    from twisted.internet import ssl
+    from twisted.python import log
+    from twisted.web import client
+    from twisted.web.iweb import IBodyProducer
+    from zope.interface.declarations import implementer
+except:
+    pass
+import dscan.common.plugins_util as pu
+import os
 
 # https://stackoverflow.com/questions/18670252/how-to-suppress-noisy-factory-started-stopped-log-messages-from-twisted
 client.HTTPClientFactory.noisy = False
@@ -90,6 +95,22 @@ def filename_decode(filename):
     @param filename: the filename to decode.
     """
     return b16decode(filename)
+
+def rfu_path(tempdir, plugins):
+    """
+    Returns all  "regular file urls" that are found in a temporary directory.
+    @param tempdir: a full path to the temporary directory, ending with a slash.
+    @param plugins: the plugins as returned by plugins_util.plugins_base_get
+    @return: (plugin, filename)
+    """
+    files_found = []
+    for plugin in plugins:
+        rfu = pu.plugin_get_rfu(plugin)
+        for f in rfu:
+            if os.path.isfile(tempdir + filename_encode(f)):
+                files_found.append((plugin, f))
+
+    return files_found
 
 @implementer(IBodyProducer)
 class TargetProducer(client.FileBodyProducer):

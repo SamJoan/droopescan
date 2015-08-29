@@ -62,7 +62,7 @@ def get_rfu():
 
     return rfu
 
-def get_rfu_plugin(plugin):
+def plugin_get_rfu(plugin):
     if isinstance(plugin.regular_file_url, str):
         rfu = [plugin.regular_file_url]
     else:

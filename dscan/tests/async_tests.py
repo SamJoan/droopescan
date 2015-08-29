@@ -238,7 +238,12 @@ class AsyncTests(TestCase):
                 self.assertEqual(ir.call_count, 1)
                 self.assertEqual(args[0], tempdir)
 
-    def test_identify_raises_when_none_found(self):
+    @patch('dscan.plugins.internal.async_scan.mkdtemp')
+    @patch('shutil.rmtree')
+    def test_identify_raises_when_none_found(self, rt, mt):
+        ret = '/tmp/lelelellee'
+        mt.return_value = ret
+
         def fail(*args, **kwargs):
             return f()
 
@@ -248,6 +253,12 @@ class AsyncTests(TestCase):
                 self.assertFailure(identify_url(self.base_url, None),
                         UnknownCMSException)
                 self.assertEquals(ir.call_count, 0)
+
+                args, kwargs = rt.call_args
+                self.assertEquals(rt.call_count, 1)
+                self.assertEquals(mt.call_count, 1)
+                self.assertEquals(args[0], ret + "/")
+
 
     def test_identify_rfu_single_file(self):
         rfu = pu.get_rfu()
@@ -260,7 +271,30 @@ class AsyncTests(TestCase):
                 return False
 
         with patch("os.path.isfile", side_effect=isfile, autospec=True) as if_mock:
-            cms_name = identify_rfu(fake_dir)
+            d = identify_rfu(fake_dir)
+            cms_name = self.successResultOf(d)
+
             self.assertEquals(cms_name, "joomla")
             self.assertEquals(if_mock.call_count, len(rfu))
+
+    def test_identify_rfu_all_found(self):
+        fake_dir = '/tmp/dsadasdadaa/'
+        def isfile(path):
+            return True
+
+        with patch("os.path.isfile", side_effect=isfile, autospec=True) as if_mock:
+            d = identify_rfu(fake_dir)
+            self.assertFailure(d, UnknownCMSException)
+
+    @patch('shutil.rmtree')
+    def test_identify_url_cleans_on_failure(self, rt):
+        tempdir = '/tmp/dscan18293u1/'
+        with patch(ASYNC_SCAN + 'download_rfu', return_value=tempdir, autospec=True) as dr:
+            with patch(ASYNC_SCAN + 'identify_rfu', side_effect=RuntimeError()) as ir:
+                self.assertFailure(identify_url('http://google.com/', None),
+                        RuntimeError)
+
+                args, kwargs = rt.call_args
+                self.assertEquals(rt.call_count, 1)
+                self.assertEquals(args[0], tempdir)
 
