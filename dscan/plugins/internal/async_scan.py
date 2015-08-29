@@ -1,14 +1,10 @@
 from __future__ import print_function
-from dscan.common.async import request_url, download_url, filename_encode, \
-    filename_decode, rfu_path
 from dscan.common.async import TargetProducer, TargetConsumer
 from dscan.common.exceptions import UnknownCMSException
 from functools import partial
 from tempfile import mkdtemp
 try:
     from twisted.internet import defer
-    from twisted.internet.defer import Deferred, DeferredList, succeed, fail, \
-        inlineCallbacks
     from twisted.internet import reactor
     from twisted.python.failure import Failure
     from twisted.python import log
@@ -16,9 +12,11 @@ try:
     from twisted.web import client
 except:
     pass
+import dscan.common.async as async
 import dscan.common.functions as f
 import dscan.common.plugins_util as pu
 import sys
+import os
 import shutil
 
 def error_line(line, failure):
@@ -55,11 +53,11 @@ def download_rfu(base_url, host_header):
     ds = []
     for f in required_files:
         url = base_url + f
-        download_location = tempdir + filename_encode(f)
-        d = download_url(url, host_header, download_location)
+        download_location = tempdir + async.filename_encode(f)
+        d = async.download_url(url, host_header, download_location)
         ds.append(d)
 
-    dl = DeferredList(ds, consumeErrors=True)
+    dl = defer.DeferredList(ds, consumeErrors=True)
     dl.addCallback(ret_result, tempdir, (base_url, host_header))
     dl.addErrback(clean, tempdir)
 
@@ -99,7 +97,7 @@ def identify_rfu(tempdir):
     """
     rfu = pu.get_rfu()
     plugins = pu.plugins_base_get()
-    files_found = rfu_path(tempdir, plugins)
+    files_found = async.rfu_path(tempdir, plugins)
 
     if len(rfu) == len(files_found):
         msg = "Url responded 200 OK to everything"
@@ -107,20 +105,53 @@ def identify_rfu(tempdir):
 
     cms_name = identify_rfu_easy(tempdir, files_found)
     if cms_name:
-        return succeed(cms_name)
+        return defer.succeed(cms_name)
 
-    return fail(UnknownCMSException("This shouldn't happen too often."))
+    return defer.fail(UnknownCMSException("This shouldn't happen too often."))
 
-@inlineCallbacks
+@defer.inlineCallbacks
 def identify_url(base_url, host_header):
     tempdir = yield download_rfu(base_url, host_header)
     try:
         cms_name = yield identify_rfu(tempdir)
+        defer.returnValue((cms_name, tempdir))
     except:
         shutil.rmtree(tempdir)
         raise
 
-@inlineCallbacks
+def version_download(base_url, host_header, plugin, tempdir):
+    """
+    Download files required for hashing.
+    """
+    vf = pu.plugin_get_vf(plugin)
+    required_files = vf.files_get_all()
+    ds = []
+    for f in required_files:
+        filename = tempdir + async.filename_encode(f)
+        if not os.path.isfile(filename):
+            d = async.download_url(base_url + f, host_header, filename)
+            ds.append(d)
+
+    dl = defer.DeferredList(ds, consumeErrors=True)
+    return dl
+
+@defer.inlineCallbacks
+def identify_version_url(base_url, host_header, cms_name, tempdir):
+    """
+    Finally determines the version of a URL.
+    @param base_url: base url.
+    @param host_header: value for the "host" header.
+    @param cms_name: the name of the CMS this URL has been identified as.
+    @param tempdir: a temp dir to write files to.
+    """
+    try:
+        plugin = pu.plugin_get(cms_name)
+        yield version_download(base_url, host_header, plugin, tempdir)
+        possible_versions = yield version_identify(plugin, tempdir)
+    finally:
+        shutil.rmtree(tempdir)
+
+@defer.inlineCallbacks
 def identify_line(line):
     """
     Asynchronously performs CMS identification on a particular URL. The process
@@ -135,9 +166,11 @@ def identify_line(line):
         - If files for a single CMS are found, determine that to be the CMS.
         - If server responds with 200 OK to everything, break.
         - If no files for any CMS break.
+        - Else, break. (this shouldn't happen too often)
     - Perform version identification:
         - Request all required files and return a deferredlist with a callback.
-        - Hash all these files and return version information.
+        - Hash all these files.
+        - Use the hashes to calculate the version.
 
     @param line: the line to identify.
     @return: deferred
@@ -146,11 +179,13 @@ def identify_line(line):
     base_url = f.repair_url(base_url)
 
     try:
-        yield request_url(base_url, host_header)
+        yield async.request_url(base_url, host_header)
     except PageRedirect as e:
         base_url, host_header = f.repair_url(e.location), None
 
-    cms_name = yield identify_url(base_url, host_header)
+    cms_name, tempdir = yield identify_url(base_url, host_header)
+    versions = yield identify_version_url(base_url, host_header, cms_name,
+            tempdir)
 
 def identify_lines(lines):
     """
@@ -163,7 +198,7 @@ def identify_lines(lines):
         d.addErrback(partial(error_line, line))
         ds.append(d)
 
-    dl = DeferredList(ds)
+    dl = defer.DeferredList(ds)
     return dl
 
 def _identify_url_file(fh):

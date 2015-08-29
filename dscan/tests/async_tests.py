@@ -1,8 +1,10 @@
 from dscan.common.async import request_url, REQUEST_DEFAULTS
 from dscan.plugins.internal.async_scan import _identify_url_file, identify_lines, \
-    identify_line, identify_url, filename_encode, identify_rfu
+    identify_line, identify_url, identify_rfu, identify_version_url, \
+    version_download
 from dscan.common.exceptions import UnknownCMSException
 from dscan import tests
+from dscan.plugins.drupal import Drupal
 from mock import patch
 from twisted.internet.defer import Deferred, succeed, fail
 from twisted.internet import reactor
@@ -13,6 +15,7 @@ from twisted.web import client
 import base64
 import dscan
 import dscan.common.plugins_util as pu
+import dscan.common.async as async
 import os
 
 
@@ -84,17 +87,8 @@ class AsyncTests(TestCase):
                 args, kwargs = comb_args
                 self.assertEquals(args[0],self.lines[i])
 
-    @patch(ASYNC_SCAN + 'request_url', autospec=True)
-    def test_identify_strips_url(self, ru):
-        stripped = self.lines[0].strip()
-        identify_line(self.lines[0])
-
-        args, kwargs = ru.call_args
-        self.assertEquals(ru.call_count, 1)
-        self.assertEquals(args[0], stripped)
-
-    @patch(ASYNC_SCAN + 'identify_url', autospec=True)
-    @patch(ASYNC_SCAN + 'request_url', autospec=True)
+    @patch(ASYNC_SCAN + 'identify_url', return_value=('', ''), autospec=True)
+    @patch(ASYNC + 'request_url', autospec=True)
     def test_identify_strips_url(self, ru, iu):
         stripped = self.lines[0].strip()
         identify_line(self.lines[0])
@@ -225,7 +219,7 @@ class AsyncTests(TestCase):
             for i, call in enumerate(du.call_args_list):
                 args, kwargs = call
                 self.assertEquals(args[0], self.base_url + rfu[i])
-                self.assertTrue(args[2].endswith(filename_encode(rfu[i])))
+                self.assertTrue(args[2].endswith(async.filename_encode(rfu[i])))
 
     def test_identify_calls_identify_rfu(self):
         tempdir = '/tmp/dscan18293u1/'
@@ -263,7 +257,7 @@ class AsyncTests(TestCase):
     def test_identify_rfu_single_file(self):
         rfu = pu.get_rfu()
         fake_dir = '/tmp/dsadasdadaa/'
-        joomla_file = fake_dir + filename_encode("media/system/js/validate.js")
+        joomla_file = fake_dir + async.filename_encode("media/system/js/validate.js")
         def isfile(path):
             if path == joomla_file:
                 return True
@@ -297,4 +291,31 @@ class AsyncTests(TestCase):
                 args, kwargs = rt.call_args
                 self.assertEquals(rt.call_count, 1)
                 self.assertEquals(args[0], tempdir)
+
+    @patch(ASYNC_SCAN + 'version_download', autospec=True)
+    def test_version_calls_download(self, dl):
+        identify_version_url('http://google.com', None, 'silverstripe',
+                '/tmp/aadada/')
+
+        self.assertTrue(dl.called)
+
+    @patch('os.path.isfile', autospec=True)
+    @patch('dscan.common.plugins_util.VersionsFile', autospec=True)
+    def test_version_download(self, vf, isfile):
+        fga = vf.return_value.files_get_all
+        already_gotten = 'fefefefefe.txt'
+        files = [already_gotten, 'aaaa', 'bbb', 'cacacascscsc']
+        tempdir = "/tmp/dwjdiwjdwwww/"
+        def isfile_cb(path):
+            if path == tempdir + async.filename_encode(already_gotten):
+                return True
+
+            return False
+
+        fga.return_value = files
+        isfile.side_effect = isfile_cb
+        with patch(ASYNC + 'download_url', autospec=True) as du:
+            version_download('http://google.com/', None, Drupal, tempdir)
+
+            self.assertEquals(du.call_count, len(files) - 1)
 

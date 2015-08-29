@@ -8,6 +8,7 @@ import subprocess
 
 _base_plugins = None
 _rfu = None
+_vf = None
 
 def plugins_get():
     plugins = plugins_base_get()
@@ -63,12 +64,50 @@ def get_rfu():
     return rfu
 
 def plugin_get_rfu(plugin):
+    """
+    Returns "regular file urls" for a particular plugin.
+    @param plugin: plugin class.
+    """
     if isinstance(plugin.regular_file_url, str):
         rfu = [plugin.regular_file_url]
     else:
         rfu = plugin.regular_file_url
 
     return rfu
+
+def get_vf():
+    global _vf
+    if _vf:
+        return _vf
+
+    plugins = plugins_base_get()
+    vf = {}
+    for plugin in plugins:
+        v = VersionsFile(plugin.versions_file)
+        vf[plugin.Meta.label] = v
+
+    _vf = vf
+    return vf
+
+def plugin_get_vf(plugin):
+    """
+    Returns VersionFile for a particular plugin.
+    @param plugin: the plugin class.
+    """
+    vf = get_vf()
+    return vf[plugin.Meta.label]
+
+def plugin_get(name):
+    """
+    Return plugin class.
+    @param name: the cms label.
+    """
+    plugins = plugins_base_get()
+    for plugin in plugins:
+        if plugin.Meta.label == name:
+            return name
+
+    raise RuntimeError('CMS "%s" not known.' % name)
 
 class Plugin(object):
     plugin = None
