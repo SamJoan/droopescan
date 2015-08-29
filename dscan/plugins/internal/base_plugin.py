@@ -1,5 +1,6 @@
 from __future__ import print_function
 from dscan.plugins.internal.base_plugin_internal import BasePluginInternal
+import dscan
 
 class BasePlugin(BasePluginInternal):
     '''
@@ -28,6 +29,6 @@ class BasePlugin(BasePluginInternal):
         super(BasePlugin, self).__init__()
 
         label = self._meta.label
-        self.plugins_file = "plugins/%s/plugins.txt" % label
-        self.themes_file = "plugins/%s/themes.txt" % label
-        self.versions_file = "plugins/%s/versions.xml" % label
+        self.plugins_file = dscan.PWD + "plugins/%s/plugins.txt" % label
+        self.themes_file = dscan.PWD + "plugins/%s/themes.txt" % label
+        self.versions_file = dscan.PWD + "plugins/%s/versions.xml" % label

@@ -97,7 +97,7 @@ def github_repo_new(repo_url, plugin_name, versions_file, update_majors):
     @return: a tuple containing (GitRepo, VersionsFile, GitRepo.tags_newer())
     """
     gr = github_repo(repo_url, plugin_name)
-    vf = v.VersionsFile(dscan.PWD + versions_file)
+    vf = v.VersionsFile(versions_file)
     new_tags = gr.tags_newer(vf, update_majors)
 
     return gr, vf, new_tags
@@ -128,7 +128,7 @@ def file_mtime(file_path):
     @param file_path: file path relative to the executable.
     @return datetime.datetime object.
     """
-    if not os.path.isfile(dscan.PWD + file_path):
+    if not os.path.isfile(file_path):
         raise IOError('File "%s" does not exist.' % file_path)
 
     ut = subprocess.check_output(['git', 'log', '-1', '--format=%ct',
@@ -319,5 +319,4 @@ class GitRepo():
         if return_code != 0:
             command = ' '.join(args[0])
             raise RuntimeError('Command "%s" failed with exit status "%s"' % (command, return_code))
-
 
