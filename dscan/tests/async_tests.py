@@ -1,6 +1,7 @@
 from dscan.common.async import request_url, REQUEST_DEFAULTS
 from dscan.plugins.internal.async_scan import _identify_url_file, identify_lines, \
-    identify_line, identify_url
+    identify_line, identify_url, filename_encode, identify_rfu
+from dscan.common.exceptions import UnknownCMSException
 from dscan import tests
 from mock import patch
 from twisted.internet.defer import Deferred, succeed, fail
@@ -224,11 +225,11 @@ class AsyncTests(TestCase):
             for i, call in enumerate(du.call_args_list):
                 args, kwargs = call
                 self.assertEquals(args[0], self.base_url + rfu[i])
-                self.assertTrue(args[2].endswith(base64.b64encode(rfu[i])))
+                self.assertTrue(args[2].endswith(filename_encode(rfu[i])))
 
     def test_identify_calls_identify_rfu(self):
         tempdir = '/tmp/dscan18293u1/'
-        with patch(ASYNC_SCAN + 'download_rfu', return_value=tempdir) as dr:
+        with patch(ASYNC_SCAN + 'download_rfu', return_value=tempdir, autospec=True) as dr:
             with patch(ASYNC_SCAN + 'identify_rfu') as ir:
                 identify_url(self.base_url, None)
 
@@ -237,9 +238,29 @@ class AsyncTests(TestCase):
                 self.assertEqual(ir.call_count, 1)
                 self.assertEqual(args[0], tempdir)
 
-    def test_identify_doesnt_call_when_none_found(self):
-        with patch(ASYNC_SCAN + 'download_url', side_effect=Error, autospec=True) as du:
-            with patch(ASYNC_SCAN + 'identify_rfu') as ir:
-                identify_url(self.base_url, None)
+    def test_identify_raises_when_none_found(self):
+        def fail(*args, **kwargs):
+            return f()
 
+        rfu = pu.get_rfu()
+        with patch(ASYNC_SCAN + 'download_url', side_effect=fail, autospec=True) as du:
+            with patch(ASYNC_SCAN + 'identify_rfu') as ir:
+                self.assertFailure(identify_url(self.base_url, None),
+                        UnknownCMSException)
                 self.assertEquals(ir.call_count, 0)
+
+    def test_identify_rfu_single_file(self):
+        rfu = pu.get_rfu()
+        fake_dir = '/tmp/dsadasdadaa/'
+        joomla_file = fake_dir + filename_encode("media/system/js/validate.js")
+        def isfile(path):
+            if path == joomla_file:
+                return True
+            else:
+                return False
+
+        with patch("os.path.isfile", side_effect=isfile, autospec=True) as if_mock:
+            cms_name = identify_rfu(fake_dir)
+            self.assertEquals(cms_name, "joomla")
+            self.assertEquals(if_mock.call_count, len(rfu))
+

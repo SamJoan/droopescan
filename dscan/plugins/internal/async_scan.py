@@ -4,15 +4,16 @@ from dscan.common.async import request_url, download_url, filename_encode, \
 from dscan.common.async import TargetProducer, TargetConsumer
 from dscan.common.exceptions import UnknownCMSException
 from functools import partial
+from tempfile import mkdtemp
 from twisted.internet import defer
 from twisted.internet import reactor
 from twisted.python.failure import Failure
 from twisted.python import log
 from twisted.web.error import PageRedirect, Error
 from twisted.web import client
-from tempfile import mkdtemp
 import dscan.common.functions as f
 import dscan.common.plugins_util as pu
+import os
 import sys
 
 def error_line(line, failure):
@@ -31,17 +32,13 @@ def download_rfu(base_url, host_header):
     @param host_header:
     @return DeferredList
     """
-    def ret_result(indiv_results, tempdir):
-        all_failed = True
-        for succ, _ in indiv_results:
-            if succ:
-                all_failed = False
-                break
-
-        if all_failed:
-            return Failure(UnknownCMSException())
-
-        return tempdir
+    def ret_result(results, tempdir, location):
+        succ = filter(lambda r: r[0], results)
+        if len(succ) == 0:
+            msg = "'%s' not identified as any CMS."
+            return Failure(UnknownCMSException(msg % str(location)))
+        else:
+            return tempdir
 
     tempdir = mkdtemp(prefix='dscan') + "/"
     required_files = pu.get_rfu()
@@ -54,17 +51,31 @@ def download_rfu(base_url, host_header):
         ds.append(d)
 
     dl = defer.DeferredList(ds, consumeErrors=True)
-    dl.addCallback(ret_result, tempdir)
+    dl.addCallback(ret_result, tempdir, (base_url, host_header))
 
     return dl
 
 def identify_rfu(tempdir):
     """
-    Given several rfu, outputs which CMS is installed.
+    Given a temporary directory, attempts to distinguish CMS' from non-CMS
+    websites and from each other.
+
+    If a single CMS file is identified, then no hashing is performed and the
+    file is assumed to be of that particular CMS. False positives will be weeded
+    during the version detection phase.
+
     @param tempfile: as returned by download_rfu.
     @return: DeferredList
     """
-    pass
+    plugins = pu.plugins_base_get()
+    for plugin in plugins:
+        name = plugin.Meta.label
+        rfu = pu.get_rfu_plugin(plugin)
+        for f in rfu:
+            if os.path.isfile(tempdir + filename_encode(f)):
+                pass
+
+
     #for plugin in PLUGINS:
         #pass
 

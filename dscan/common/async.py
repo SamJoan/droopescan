@@ -1,5 +1,5 @@
 from __future__ import print_function
-from base64 import b64encode, b64decode
+from base64 import b16encode, b16encode
 from dscan.plugins.internal.base_plugin_internal import DEFAULT_UA
 from itertools import islice
 from twisted.internet import reactor
@@ -82,14 +82,14 @@ def filename_encode(filename):
     context means it does not have any special path characters, like "/".
     @param filename: the filename to encode.
     """
-    return b64encode(filename)
+    return b16encode(filename)
 
 def filename_decode(filename):
     """
     Reverses filename_encode.
     @param filename: the filename to decode.
     """
-    return b64decode(filename)
+    return b16decode(filename)
 
 @implementer(IBodyProducer)
 class TargetProducer(client.FileBodyProducer):

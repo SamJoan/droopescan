@@ -1,12 +1,12 @@
 from __future__ import print_function
 from cement.core import handler, controller
-from copy import deepcopy
-from dscan.common import ScanningMethod, StandardOutput, JsonOutput, \
-        VersionsFile, RequestsLogger
 from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
 from datetime import datetime
 from dscan.common.exceptions import FileEmptyException, CannotResumeException
 from dscan.common.http import BlockAll
+from dscan.common import ScanningMethod, StandardOutput, JsonOutput, \
+    VersionsFile, RequestsLogger
 from dscan.common import template, enum_list, dict_combine, base_url, file_len
 from dscan.common.output import ProgressBar
 from dscan import common

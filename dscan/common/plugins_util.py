@@ -6,6 +6,9 @@ import dscan.plugins
 import pkgutil
 import subprocess
 
+_base_plugins = None
+_rfu = None
+
 def plugins_get():
     plugins = plugins_base_get()
 
@@ -17,6 +20,9 @@ def plugins_get():
     return return_plugins
 
 def plugins_base_get():
+    global _base_plugins
+    if _base_plugins:
+        return _base_plugins
 
     controllers = []
     package = dscan.plugins
@@ -32,12 +38,18 @@ def plugins_base_get():
         if issubclass(c, BasePlugin) and not is_base_scan:
             plugins.append(c)
 
+    _base_plugins = plugins
+
     return plugins
 
 def get_rfu():
     """
     Returns a list of al "regular file urls" for all plugins.
     """
+    global _rfu
+    if _rfu:
+        return _rfu
+
     plugins = plugins_base_get()
     rfu = []
     for plugin in plugins:
@@ -45,6 +57,16 @@ def get_rfu():
             rfu.append(plugin.regular_file_url)
         else:
             rfu += plugin.regular_file_url
+
+    _rfu = rfu
+
+    return rfu
+
+def get_rfu_plugin(plugin):
+    if isinstance(plugin.regular_file_url, str):
+        rfu = [plugin.regular_file_url]
+    else:
+        rfu = plugin.regular_file_url
 
     return rfu
 
