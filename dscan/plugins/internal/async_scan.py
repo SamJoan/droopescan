@@ -1,6 +1,7 @@
 from __future__ import print_function
 from dscan.common.async import TargetProducer, TargetConsumer
 from dscan.common.exceptions import UnknownCMSException, VersionFingerprintFailed
+from dscan.common.output import Output
 from functools import partial
 from tempfile import mkdtemp
 try:
@@ -15,9 +16,10 @@ except:
 import dscan.common.async as async
 import dscan.common.functions as f
 import dscan.common.plugins_util as pu
-import sys
+import json
 import os
 import shutil
+import sys
 
 def delete_tempdir(tempdir):
     if os.path.isdir(tempdir):
@@ -188,6 +190,7 @@ def identify_version_url(base_url, host_header, cms_name, tempdir):
         yield version_download(base_url, host_header, plugin, tempdir)
         hashes = yield version_hash(plugin, tempdir)
         versions = version_get(plugin, hashes)
+        defer.returnValue(versions)
     finally:
         delete_tempdir(tempdir)
 
@@ -225,6 +228,12 @@ def identify_line(line):
 
     cms_name, tempdir = yield identify_url(base_url, host_header)
     versions = yield identify_version_url(base_url, host_header, cms_name, tempdir)
+
+    out = Output()
+    out.host = (base_url, host_header)
+    out.version = versions
+
+    print(json.dumps(out.__dict__))
 
 def identify_lines(lines):
     """

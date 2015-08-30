@@ -195,3 +195,10 @@ class RequestsLogger():
 
     def post(self, *args, **kwargs):
         return self._print('post', *args, **kwargs)
+
+class Output():
+    themes = None
+    interesting_urls = None
+    version = None
+    plugins = None
+    host = None
