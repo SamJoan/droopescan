@@ -1,10 +1,11 @@
 from dscan.common.async import request_url, REQUEST_DEFAULTS
 from dscan.plugins.internal.async_scan import _identify_url_file, identify_lines, \
     identify_line, identify_url, identify_rfu, identify_version_url, \
-    version_download, version_hash
+    version_download, version_hash, version_get
 from dscan.common.exceptions import UnknownCMSException
 from dscan import tests
 from dscan.plugins.drupal import Drupal
+from dscan.plugins.silverstripe import Silverstripe
 from mock import patch
 from twisted.internet.defer import Deferred, succeed, fail
 from twisted.internet import reactor
@@ -363,4 +364,14 @@ class AsyncTests(TestCase):
             args, kwargs = call
             for i, file_to_hash in enumerate(args[1]):
                 self.assertEquals(file_to_hash, tempdir + async.filename_encode(files[i]))
+
+    def test_version_get_from_stdout(self):
+        stdout = """33e888d268d7b416e8aa67ea6f0a23cf /tmp/dscan5Z0k3K/636D732F6A6176617363726970742F434D534D61696E2E547265652E6A73
+964a5d044ba95792b49456f8b266bbab /tmp/dscan5Z0k3K/6672616D65776F726B2F6A6176617363726970742F48746D6C456469746F724669656C642E6A73
+7f5bf250469639de306f3bca2ed03666 /tmp/dscan5Z0k3K/6672616D65776F726B2F6373732F417373657455706C6F61644669656C642E637373
+5735ae836a12809611fb4a0f010920ea /tmp/dscan5Z0k3K/6672616D65776F726B2F6373732F55706C6F61644669656C642E637373
+"""
+
+        out = version_get(Silverstripe, stdout)
+        self.assertEquals(out, ['3.1.7', '3.1.7-rc1', '3.1.8', '3.1.9', '3.1.9-rc1'])
 

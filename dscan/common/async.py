@@ -1,12 +1,13 @@
 from __future__ import print_function
-from base64 import b16encode, b16encode
+from base64 import b16encode, b16decode
 from dscan.plugins.internal.base_plugin_internal import DEFAULT_UA
 from itertools import islice
 try:
+    from twisted.internet import defer
     from twisted.internet import protocol
     from twisted.internet import reactor
     from twisted.internet import ssl
-    from twisted.python import log
+    from twisted.python import log, failure
     from twisted.web import client
     from twisted.web.iweb import IBodyProducer
     from zope.interface.declarations import implementer
@@ -83,11 +84,6 @@ def download_url(url, host_header, filename):
 
     return factory.deferred
 
-def subprocess(executable, arguments):
-    processProtocol = ProcessProtocol()
-    reactor.spawnProcess(processProtocol, executable, arguments)
-    return processProtocol.deferred
-
 def filename_encode(filename):
     """
     Encodes filename in a way that is safe to store in disk. Safe in this
@@ -118,6 +114,34 @@ def rfu_path(tempdir, plugins):
                 files_found.append((plugin, f))
 
     return files_found
+
+def subprocess(executable, arguments):
+    processProtocol = DeferredProcessProtocol()
+    reactor.spawnProcess(processProtocol, executable, arguments)
+    return processProtocol.deferred
+
+class ProcessFailed(RuntimeError):
+    pass
+
+class DeferredProcessProtocol(protocol.ProcessProtocol):
+    deferred = None
+    stdout = ""
+    stderr = ""
+    def __init__(self):
+        self.deferred = defer.Deferred()
+
+    def outReceived(self, data):
+        self.stdout += data
+
+    def errReceived(self, data):
+        self.stderr += data
+
+    def processEnded(self, status):
+        rc = status.value.exitCode
+        if rc == 0:
+            self.deferred.callback(self.stdout)
+        else:
+            self.deferred.errback(failure.Failure(ProcessFailed('Process returned %s: %s' % (rc, self.stderr))))
 
 @implementer(IBodyProducer)
 class TargetProducer(client.FileBodyProducer):

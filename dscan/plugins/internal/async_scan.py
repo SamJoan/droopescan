@@ -1,6 +1,6 @@
 from __future__ import print_function
 from dscan.common.async import TargetProducer, TargetConsumer
-from dscan.common.exceptions import UnknownCMSException
+from dscan.common.exceptions import UnknownCMSException, VersionFingerprintFailed
 from functools import partial
 from tempfile import mkdtemp
 try:
@@ -113,10 +113,28 @@ def identify_rfu(tempdir):
 
     return defer.fail(UnknownCMSException("This shouldn't happen too often."))
 
+@defer.inlineCallbacks
+def identify_url(base_url, host_header):
+    tempdir = yield download_rfu(base_url, host_header)
+    try:
+        cms_name = yield identify_rfu(tempdir)
+        defer.returnValue((cms_name, tempdir))
+    except Exception:
+        delete_tempdir(tempdir)
+        raise
+
 def version_download(base_url, host_header, plugin, tempdir):
     """
     Download files required for hashing.
     """
+    def cb(results):
+        succ = filter(lambda r: r[0], results)
+        if len(succ) == 0:
+            msg = "No files downloaded"
+            return Failure(VersionFingerprintFailed(msg))
+        else:
+            return tempdir
+
     vf = pu.plugin_get_vf(plugin)
     required_files = vf.files_get_all()
     ds = []
@@ -126,7 +144,8 @@ def version_download(base_url, host_header, plugin, tempdir):
             d = async.download_url(base_url + f, host_header, filename)
             ds.append(d)
 
-    dl = defer.DeferredList(ds)
+    dl = defer.DeferredList(ds, consumeErrors=True)
+    dl.addCallback(cb)
     return dl
 
 def version_hash(plugin, tempdir):
@@ -134,22 +153,26 @@ def version_hash(plugin, tempdir):
     required_files = vf.files_get_all()
 
     md5sum_files = []
-    for filename in required_files:
-        md5sum_files.append(tempdir + async.filename_encode(filename))
+    for f in required_files:
+        filename = tempdir + async.filename_encode(f)
+        if os.path.isfile(filename):
+            md5sum_files.append(filename)
 
     d = async.subprocess('/usr/bin/md5sum', md5sum_files)
-
     return d
 
-@defer.inlineCallbacks
-def identify_url(base_url, host_header):
-    tempdir = yield download_rfu(base_url, host_header)
-    try:
-        cms_name = yield identify_rfu(tempdir)
-        defer.returnValue((cms_name, tempdir))
-    except:
-        delete_tempdir(tempdir)
-        raise
+def version_get(plugin, stdout):
+    vf = pu.plugin_get_vf(plugin)
+    hashes = {}
+    for line in stdout.split('\n'):
+        if line == "":
+            continue
+
+        h, f = line.split()
+        filename = async.filename_decode(os.path.basename(f))
+        hashes[filename] = h
+
+    return vf.version_get(hashes)
 
 @defer.inlineCallbacks
 def identify_version_url(base_url, host_header, cms_name, tempdir):
@@ -164,6 +187,7 @@ def identify_version_url(base_url, host_header, cms_name, tempdir):
         plugin = pu.plugin_get(cms_name)
         yield version_download(base_url, host_header, plugin, tempdir)
         hashes = yield version_hash(plugin, tempdir)
+        versions = version_get(plugin, hashes)
     finally:
         delete_tempdir(tempdir)
 
@@ -200,8 +224,7 @@ def identify_line(line):
         base_url, host_header = f.repair_url(e.location), None
 
     cms_name, tempdir = yield identify_url(base_url, host_header)
-    versions = yield identify_version_url(base_url, host_header, cms_name,
-            tempdir)
+    versions = yield identify_version_url(base_url, host_header, cms_name, tempdir)
 
 def identify_lines(lines):
     """

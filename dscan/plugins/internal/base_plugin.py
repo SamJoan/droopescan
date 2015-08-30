@@ -32,3 +32,4 @@ class BasePlugin(BasePluginInternal):
         self.plugins_file = dscan.PWD + "plugins/%s/plugins.txt" % label
         self.themes_file = dscan.PWD + "plugins/%s/themes.txt" % label
         self.versions_file = dscan.PWD + "plugins/%s/versions.xml" % label
+

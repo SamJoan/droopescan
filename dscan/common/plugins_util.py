@@ -83,7 +83,7 @@ def get_vf():
     plugins = plugins_base_get()
     vf = {}
     for plugin in plugins:
-        v = VersionsFile(plugin.versions_file)
+        v = VersionsFile(dscan.PWD + "plugins/%s/versions.xml" % plugin.Meta.label)
         vf[plugin.Meta.label] = v
 
     _vf = vf
@@ -105,7 +105,7 @@ def plugin_get(name):
     plugins = plugins_base_get()
     for plugin in plugins:
         if plugin.Meta.label == name:
-            return name
+            return plugin
 
     raise RuntimeError('CMS "%s" not known.' % name)
 

@@ -8,3 +8,6 @@ class CannotResumeException(RuntimeError):
 class UnknownCMSException(RuntimeError):
     pass
 
+class VersionFingerprintFailed(RuntimeError):
+    pass
+
