@@ -7,7 +7,6 @@ from dscan.common.exceptions import CannotResumeException
 from dscan.common.functions import template
 from dscan.common import template
 from dscan import common
-from dscan.plugins.internal.async_scan import identify_url_file
 from dscan.plugins.internal.base_plugin import BasePlugin
 from dscan.plugins.internal.base_plugin_internal import BasePluginInternal
 import dscan
@@ -164,6 +163,7 @@ class Scan(BasePlugin):
                             follow_redirects)
                     executor.shutdown()
             else:
+                from dscan.plugins.internal.async_scan import identify_url_file
                 identify_url_file(url_file)
 
     def _process_generate_futures(self, urls, executor, opts, instances, follow_redirects):

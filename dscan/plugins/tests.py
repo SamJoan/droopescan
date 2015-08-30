@@ -50,7 +50,7 @@ class Tests(HumanBasePlugin):
 
         exit = 0
         if not single_test:
-            call_base = ['/usr/local/bin/nosetests']
+            call_base = ['/usr/local/bin/nosetests', '--exclude=async']
 
             if with_coverage:
                 call_base += ['--with-coverage', '--cover-package', 'dscan',

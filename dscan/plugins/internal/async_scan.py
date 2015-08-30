@@ -19,6 +19,10 @@ import sys
 import os
 import shutil
 
+def delete_tempdir(tempdir):
+    if os.path.isdir(tempdir):
+        shutil.rmtree(tempdir)
+
 def error_line(line, failure):
     """
     High-level error handler for most errors within the main loop.
@@ -44,7 +48,7 @@ def download_rfu(base_url, host_header):
             return tempdir
 
     def clean(fail, tempdir):
-        shutil.rmtree(tempdir)
+        delete_tempdir(tempdir)
         return fail
 
     tempdir = mkdtemp(prefix='dscan') + "/"
@@ -101,23 +105,13 @@ def identify_rfu(tempdir):
 
     if len(rfu) == len(files_found):
         msg = "Url responded 200 OK to everything"
-        return fail(UnknownCMSException(msg))
+        return defer.fail(UnknownCMSException(msg))
 
     cms_name = identify_rfu_easy(tempdir, files_found)
     if cms_name:
         return defer.succeed(cms_name)
 
     return defer.fail(UnknownCMSException("This shouldn't happen too often."))
-
-@defer.inlineCallbacks
-def identify_url(base_url, host_header):
-    tempdir = yield download_rfu(base_url, host_header)
-    try:
-        cms_name = yield identify_rfu(tempdir)
-        defer.returnValue((cms_name, tempdir))
-    except:
-        shutil.rmtree(tempdir)
-        raise
 
 def version_download(base_url, host_header, plugin, tempdir):
     """
@@ -132,8 +126,30 @@ def version_download(base_url, host_header, plugin, tempdir):
             d = async.download_url(base_url + f, host_header, filename)
             ds.append(d)
 
-    dl = defer.DeferredList(ds, consumeErrors=True)
+    dl = defer.DeferredList(ds)
     return dl
+
+def version_hash(plugin, tempdir):
+    vf = pu.plugin_get_vf(plugin)
+    required_files = vf.files_get_all()
+
+    md5sum_files = []
+    for filename in required_files:
+        md5sum_files.append(tempdir + async.filename_encode(filename))
+
+    d = async.subprocess('/usr/bin/md5sum', md5sum_files)
+
+    return d
+
+@defer.inlineCallbacks
+def identify_url(base_url, host_header):
+    tempdir = yield download_rfu(base_url, host_header)
+    try:
+        cms_name = yield identify_rfu(tempdir)
+        defer.returnValue((cms_name, tempdir))
+    except:
+        delete_tempdir(tempdir)
+        raise
 
 @defer.inlineCallbacks
 def identify_version_url(base_url, host_header, cms_name, tempdir):
@@ -147,9 +163,9 @@ def identify_version_url(base_url, host_header, cms_name, tempdir):
     try:
         plugin = pu.plugin_get(cms_name)
         yield version_download(base_url, host_header, plugin, tempdir)
-        possible_versions = yield version_identify(plugin, tempdir)
+        hashes = yield version_hash(plugin, tempdir)
     finally:
-        shutil.rmtree(tempdir)
+        delete_tempdir(tempdir)
 
 @defer.inlineCallbacks
 def identify_line(line):

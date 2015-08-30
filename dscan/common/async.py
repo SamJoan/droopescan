@@ -3,19 +3,21 @@ from base64 import b16encode, b16encode
 from dscan.plugins.internal.base_plugin_internal import DEFAULT_UA
 from itertools import islice
 try:
+    from twisted.internet import protocol
     from twisted.internet import reactor
     from twisted.internet import ssl
     from twisted.python import log
     from twisted.web import client
     from twisted.web.iweb import IBodyProducer
     from zope.interface.declarations import implementer
+
+    # https://stackoverflow.com/questions/18670252/how-to-suppress-noisy-factory-started-stopped-log-messages-from-twisted
+    client.HTTPClientFactory.noisy = False
+
 except:
     pass
 import dscan.common.plugins_util as pu
 import os
-
-# https://stackoverflow.com/questions/18670252/how-to-suppress-noisy-factory-started-stopped-log-messages-from-twisted
-client.HTTPClientFactory.noisy = False
 
 REQUEST_DEFAULTS = {
     'timeout': 60,
@@ -80,6 +82,11 @@ def download_url(url, host_header, filename):
     make_request(u, factory)
 
     return factory.deferred
+
+def subprocess(executable, arguments):
+    processProtocol = ProcessProtocol()
+    reactor.spawnProcess(processProtocol, executable, arguments)
+    return processProtocol.deferred
 
 def filename_encode(filename):
     """

@@ -1,7 +1,7 @@
 from dscan.common.async import request_url, REQUEST_DEFAULTS
 from dscan.plugins.internal.async_scan import _identify_url_file, identify_lines, \
     identify_line, identify_url, identify_rfu, identify_version_url, \
-    version_download
+    version_download, version_hash
 from dscan.common.exceptions import UnknownCMSException
 from dscan import tests
 from dscan.plugins.drupal import Drupal
@@ -52,6 +52,32 @@ class AsyncTests(TestCase):
     def tearDown(self):
         os.chdir(self.prev_cwd)
 
+    def mock_all_identify(self, ru_side=None):
+
+        if ru_side:
+            ru_kwargs = {'side_effect': ru_side}
+        else:
+            ru_kwargs = {}
+
+        to_patch = [
+            (ASYNC_SCAN + 'identify_url', {'return_value': ('', '')}),
+            (ASYNC_SCAN + 'identify_version_url', {}),
+            (ASYNC + 'request_url', ru_kwargs),
+        ]
+
+        for mock_method, kwargs in to_patch:
+            patcher = patch(mock_method, autospec=True, **kwargs)
+            if 'request_url' in mock_method:
+                ru = patcher.start()
+            elif 'identify_url' in mock_method:
+                iu = patcher.start()
+            else:
+                patcher.start()
+
+            self.addCleanup(patcher.stop)
+
+        return ru, iu
+
     def test_lines_get_read(self):
         d = Deferred()
         def side_effect(lines):
@@ -87,9 +113,8 @@ class AsyncTests(TestCase):
                 args, kwargs = comb_args
                 self.assertEquals(args[0],self.lines[i])
 
-    @patch(ASYNC_SCAN + 'identify_url', return_value=('', ''), autospec=True)
-    @patch(ASYNC + 'request_url', autospec=True)
-    def test_identify_strips_url(self, ru, iu):
+    def test_identify_strips_url(self):
+        ru, iu = self.mock_all_identify()
         stripped = self.lines[0].strip()
         identify_line(self.lines[0])
 
@@ -97,9 +122,8 @@ class AsyncTests(TestCase):
         self.assertEquals(ru.call_count, 1)
         self.assertEquals(args[0], stripped)
 
-    @patch(ASYNC_SCAN + 'identify_url', autospec=True)
-    @patch(ASYNC_SCAN + 'request_url', autospec=True)
-    def test_identify_accepts_space_separated_hosts(self, ru, iu):
+    def test_identify_accepts_space_separated_hosts(self):
+        ru, iu = self.mock_all_identify()
         file_ip = open(tests.VALID_FILE_IP)
         for i, line in enumerate(file_ip):
             if i < 2:
@@ -187,32 +211,29 @@ class AsyncTests(TestCase):
         redirect_url = 'http://urlb.com/'
         r = PageRedirect('redirect')
         r.location = redirect_url
+        ru, iu = self.mock_all_identify(ru_side=r)
 
-        with patch(ASYNC_SCAN + 'request_url', autospec=True, side_effect=r) as ru:
-            with patch(ASYNC_SCAN + 'identify_url', autospec=True) as iu:
-                identify_line(self.lines[0])
+        identify_line(self.lines[0])
 
-                self.assertEquals(iu.call_count, 1)
-                args, kwargs = iu.call_args
+        self.assertEquals(iu.call_count, 1)
+        args, kwargs = iu.call_args
 
-                self.assertEquals(args[0], redirect_url)
+        self.assertEquals(args[0], redirect_url)
 
     def test_request_redirect_follow_query_string(self):
         redirect_url = 'http://urlb.com/?aa=a'
         r = PageRedirect('redirect')
         r.location = redirect_url
 
-        with patch(ASYNC_SCAN + 'request_url', autospec=True, side_effect=r) as ru:
-            with patch(ASYNC_SCAN + 'identify_url', autospec=True) as iu:
-                identify_line(self.lines[0])
+        ru, iu = self.mock_all_identify(ru_side=r)
 
-                args, kwargs = iu.call_args
-
-                self.assertEquals(args[0], 'http://urlb.com/')
+        identify_line(self.lines[0])
+        args, kwargs = iu.call_args
+        self.assertEquals(args[0], 'http://urlb.com/')
 
     def test_identify_calls_all_rfu(self):
         rfu = pu.get_rfu()
-        with patch(ASYNC_SCAN + 'download_url', autospec=True) as du:
+        with patch(ASYNC + 'download_url', autospec=True) as du:
             identify_url(self.base_url, None)
 
             self.assertEquals(du.call_count, len(rfu))
@@ -232,9 +253,10 @@ class AsyncTests(TestCase):
                 self.assertEqual(ir.call_count, 1)
                 self.assertEqual(args[0], tempdir)
 
+    @patch('os.path.isdir', return_value=True)
     @patch('dscan.plugins.internal.async_scan.mkdtemp')
     @patch('shutil.rmtree')
-    def test_identify_raises_when_none_found(self, rt, mt):
+    def test_identify_raises_when_none_found(self, rt, mt, isdir):
         ret = '/tmp/lelelellee'
         mt.return_value = ret
 
@@ -242,7 +264,7 @@ class AsyncTests(TestCase):
             return f()
 
         rfu = pu.get_rfu()
-        with patch(ASYNC_SCAN + 'download_url', side_effect=fail, autospec=True) as du:
+        with patch(ASYNC + 'download_url', side_effect=fail, autospec=True) as du:
             with patch(ASYNC_SCAN + 'identify_rfu') as ir:
                 self.assertFailure(identify_url(self.base_url, None),
                         UnknownCMSException)
@@ -283,29 +305,33 @@ class AsyncTests(TestCase):
     @patch('shutil.rmtree')
     def test_identify_url_cleans_on_failure(self, rt):
         tempdir = '/tmp/dscan18293u1/'
-        with patch(ASYNC_SCAN + 'download_rfu', return_value=tempdir, autospec=True) as dr:
-            with patch(ASYNC_SCAN + 'identify_rfu', side_effect=RuntimeError()) as ir:
-                self.assertFailure(identify_url('http://google.com/', None),
-                        RuntimeError)
+        with patch('os.path.isdir', return_value=True, autospec=True) as isdir:
+            with patch(ASYNC_SCAN + 'download_rfu', return_value=tempdir, autospec=True) as dr:
+                with patch(ASYNC_SCAN + 'identify_rfu', side_effect=RuntimeError()) as ir:
+                    self.assertFailure(identify_url('http://google.com/', None),
+                            RuntimeError)
 
-                args, kwargs = rt.call_args
-                self.assertEquals(rt.call_count, 1)
-                self.assertEquals(args[0], tempdir)
+                    args, kwargs = rt.call_args
+                    self.assertEquals(rt.call_count, 1)
+                    self.assertEquals(isdir.call_count, 1)
+                    self.assertEquals(args[0], tempdir)
 
+    @patch(ASYNC_SCAN + 'version_hash', autospec=True)
     @patch(ASYNC_SCAN + 'version_download', autospec=True)
-    def test_version_calls_download(self, dl):
+    def test_version_calls_download(self, dl, vh):
         identify_version_url('http://google.com', None, 'silverstripe',
                 '/tmp/aadada/')
 
         self.assertTrue(dl.called)
 
+    @patch('dscan.common.plugins_util.VersionsFile.__init__', return_value=None, autospec=True)
     @patch('os.path.isfile', autospec=True)
-    @patch('dscan.common.plugins_util.VersionsFile', autospec=True)
-    def test_version_download(self, vf, isfile):
-        fga = vf.return_value.files_get_all
+    @patch('dscan.common.plugins_util.VersionsFile.files_get_all', autospec=True)
+    def test_version_download(self, fga, isfile, vf_init):
         already_gotten = 'fefefefefe.txt'
         files = [already_gotten, 'aaaa', 'bbb', 'cacacascscsc']
         tempdir = "/tmp/dwjdiwjdwwww/"
+        base_url = 'http://google.com/'
         def isfile_cb(path):
             if path == tempdir + async.filename_encode(already_gotten):
                 return True
@@ -315,7 +341,26 @@ class AsyncTests(TestCase):
         fga.return_value = files
         isfile.side_effect = isfile_cb
         with patch(ASYNC + 'download_url', autospec=True) as du:
-            version_download('http://google.com/', None, Drupal, tempdir)
+            version_download(base_url, None, Drupal, tempdir)
 
             self.assertEquals(du.call_count, len(files) - 1)
+            for i, call in enumerate(du.call_args_list):
+                args, kwargs = call
+                self.assertEquals(args[0], base_url + files[i + 1])
+                self.assertEquals(args[2], tempdir + async.filename_encode(files[i + 1]))
+
+    @patch('dscan.common.plugins_util.VersionsFile.files_get_all', autospec=True)
+    @patch('dscan.common.async.subprocess', autospec=True)
+    def test_version_identify(self, s, fga):
+        tempdir = '/tmp/adhadada/'
+        files = ['aaa', 'aaaa', 'bbb', 'cacacascscsc']
+        fga.return_value = files
+
+        version_hash(Drupal, tempdir)
+
+        self.assertEquals(s.call_count, 1)
+        for i, call in enumerate(s.call_args_list):
+            args, kwargs = call
+            for i, file_to_hash in enumerate(args[1]):
+                self.assertEquals(file_to_hash, tempdir + async.filename_encode(files[i]))
 

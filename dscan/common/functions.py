@@ -90,7 +90,7 @@ def dict_combine(x, y):
 
 def file_len(fname):
     i = 0
-    with open(dscan.PWD + fname) as f:
+    with open(fname) as f:
         for l in f:
             i += 1
 

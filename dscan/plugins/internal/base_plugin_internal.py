@@ -255,7 +255,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         is_cms_plugin = self._meta.label != "scan"
         if is_cms_plugin:
-            self.vf = VersionsFile(dscan.PWD + self.versions_file)
+            self.vf = VersionsFile(self.versions_file)
 
         # http://stackoverflow.com/questions/23632794/in-requests-library-how-can-i-avoid-httpconnectionpool-is-full-discarding-con
         try:
@@ -572,7 +572,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def plugins_get(self, amount=100000):
         amount = int(amount)
-        with open(dscan.PWD + self.plugins_file) as f:
+        with open(self.plugins_file) as f:
             i = 0
             for plugin in f:
                 if i >= amount:
@@ -582,7 +582,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def themes_get(self, amount=100000):
         amount = int(amount)
-        with open(dscan.PWD + self.themes_file) as f:
+        with open(self.themes_file) as f:
             i = 0
             for theme in f:
                 if i>= amount:
