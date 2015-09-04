@@ -49,8 +49,8 @@ class Release(HumanBasePlugin):
 
             is_release = '^[0-9.]*$'
             pypi_repo = 'pypi' if re.match(is_release, version_nb) else 'test'
-            c(['python', 'setup.py', 'sdist', 'upload', '-r', pypi_repo], cwd='..')
-            c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r', pypi_repo], cwd='..')
+            c(['python', 'setup.py', 'sdist', 'upload', '-r', pypi_repo])
+            c(['python', 'setup.py', 'bdist_wheel', 'upload', '-r', pypi_repo])
 
             call('git remote | xargs -l git push --all', shell=True)
             call('git remote | xargs -l git push --tags', shell=True)
