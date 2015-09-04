@@ -1,8 +1,13 @@
 from __future__ import print_function
 from collections import OrderedDict
 from dscan.common.enum import colors, ScanningMethod
-from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout, \
-        TooManyRedirects
+try:
+    from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout, \
+            TooManyRedirects
+except:
+    old_req = """Running a very old version of requests! Please `pip
+        install -U requests`."""
+    print(old_req)
 import dscan
 import hashlib
 import pystache
