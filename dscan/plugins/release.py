@@ -34,7 +34,7 @@ class Release(HumanBasePlugin):
         version_nb = ra.changelog_modify()
 
         try:
-            c(['git', 'add', '..'])
+            c(['git', 'add', '.'])
             c(['git', 'commit', '-m', 'Tagging version \'%s\'' %
                 version_nb])
 

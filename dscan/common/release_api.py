@@ -7,8 +7,8 @@ import subprocess
 import sys
 import tempfile
 
-CHANGELOG = '../CHANGELOG'
-TEST_RUNS_BASE = ['../droopescan']
+CHANGELOG = './CHANGELOG'
+TEST_RUNS_BASE = ['./droopescan']
 TEST_RUNS_APPEND = ['-n', '100', '-t', '2']
 TEST_RUNS = [
         ['scan', 'drupal', '--url', 'https://www.drupal.org'],
@@ -33,7 +33,7 @@ def test_internal():
     """
     Runs unit tests.
     """
-    tests_passed = subprocess.call(['../droopescan', 'test']) == 0
+    tests_passed = subprocess.call(['./droopescan', 'test']) == 0
     if not tests_passed:
         f.error("Unit tests failed... abort.")
 
@@ -116,7 +116,7 @@ def check_pypirc():
         f.error('File "%s" does not exist.' % pypirc)
 
 def read_first_line(file):
-    with open(dscan.PWD + file, 'r') as f:
+    with open(file, 'r') as f:
       first_line = f.readline()
 
     return first_line.strip()
