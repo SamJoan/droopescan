@@ -34,7 +34,7 @@ def github_tags_newer(github_repo, versions_file, update_majors):
 
     tags_url = '%s%stags' % (GH, github_repo)
     resp = requests.get(tags_url)
-    bs = BeautifulSoup(resp.text)
+    bs = BeautifulSoup(resp.text, 'lxml')
 
     gh_versions = []
     for tag in bs.find_all('span', {'class':'tag-name'}):
@@ -179,7 +179,7 @@ def modules_get(url_tpl, per_page, css, max_modules=2000, pagination_type=PT.nor
         url = url_tpl % page
 
         r = requests.get(url)
-        bs = BeautifulSoup(r.text)
+        bs = BeautifulSoup(r.text, 'lxml')
         elements = bs.select(css)
 
         for element in elements:
