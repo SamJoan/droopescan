@@ -11,7 +11,6 @@ def read_first_line(f):
 
     return first_line.strip()
 
-
 setup(
     name='droopescan',
     version=read_first_line('CHANGELOG'),
