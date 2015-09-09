@@ -11,6 +11,6 @@ install:
   - "pip install -r requirements.txt"
   - "pip install -r requirements_test.txt"
   - "pip freeze"
-script: "nosetests -v"
+script: "nosetests -v --exclude=async"
 notifications:
   email: false
