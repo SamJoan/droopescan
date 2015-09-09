@@ -1,3 +1,10 @@
+1.32.0
+======
+
+* New CMS versions (Joomla and Silverstripe)
+* Resolve issue in Kali.
+* Implement async scanning functionality. This coexists with synchronous scanning code and will likely be removed unless performance increases are substantial.
+
 1.32.0-rc8
 ==========
 
