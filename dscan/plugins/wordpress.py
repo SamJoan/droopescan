@@ -7,6 +7,9 @@ import dscan.common.versions
 import requests
 
 class Wordpress(BasePlugin):
+    plugins_base_url = "%swp-content/plugins/%s/"
+    themes_base_url = "%swp-content/themes/%s/"
+
     forbidden_url = "wp-includes/"
     regular_file_url = ["wp-admin/wp-admin.css", "wp-includes/js/tinymce/tiny_mce_popup.js"]
     module_common_file = ""
@@ -30,6 +33,10 @@ class Wordpress(BasePlugin):
     @controller.expose(help='wordpress related scanning tools')
     def wordpress(self):
         self.plugin_init()
+
+    @controller.expose(help='alias for "wordpress"', hide=True)
+    def wp(self):
+        self.wordpress()
 
     def update_version_check(self):
         """

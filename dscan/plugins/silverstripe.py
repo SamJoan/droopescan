@@ -53,7 +53,7 @@ class Silverstripe(BasePlugin):
     def silverstripe(self):
         self.plugin_init()
 
-    @controller.expose(help='alias for "silverstripe"')
+    @controller.expose(help='alias for "silverstripe"', hide=True)
     def ss(self):
         self.silverstripe()
 
