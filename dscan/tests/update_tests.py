@@ -9,6 +9,7 @@ from dscan.common.update_api import GitRepo
 from dscan import common
 from dscan.plugins.drupal import Drupal
 from dscan.plugins.silverstripe import Silverstripe
+from dscan.plugins.wordpress import Wordpress
 from dscan.plugins.update import Update
 from dscan.tests import BaseTest
 from mock import patch, MagicMock, mock_open, Mock, create_autospec
@@ -553,8 +554,15 @@ class UpdateTests(BaseTest):
                 ss.update_version()
 
     def test_wordpress_plugins_get(self):
+        plugin_contents = open(dscan.PWD + 'tests/resources/wordpress_plugins.json').read()
+        theme_contents = open(dscan.PWD + 'tests/resources/wordpress_themes.json').read()
+        responses.add(responses.POST, Wordpress.plugins_url, body=plugin_contents)
+        responses.add(responses.POST, Wordpress.themes_url, body=theme_contents)
+
         wp = Wordpress()
+        plugins, themes = wp.update_plugins()
 
-        assert False
-
+        print(len(plugins), len(themes))
+        assert len(plugins) == 1000
+        assert len(themes) == 1997
 

@@ -7,9 +7,10 @@ except:
 from dscan.common.functions import version_gt
 from dscan.common.versions import VersionsFile
 from datetime import datetime, timedelta
+import dscan
 import dscan.common.functions as functions
 import dscan.common.versions as v
-import dscan
+import json
 import os
 import os.path
 import requests
@@ -213,6 +214,18 @@ def update_modules_check(plugin):
     delta = today - mtime
 
     return delta > timedelta(days=365)
+
+def json_post(api_url, data):
+    """
+    Send a post request and parse the JSON response (potentially containing
+    non-ascii characters).
+    @param api_url: the url endpoint to post to.
+    @param data: a dictionary that will be passed to requests.post
+    """
+    response_text = requests.post(api_url, data=data)\
+        .text.encode('ascii', errors='replace')
+
+    return json.loads(response_text.decode())
 
 class GitRepo():
     """

@@ -1,13 +1,12 @@
 from cement.core import handler, controller
+from copy import deepcopy
 from dscan.common.update_api import GitRepo
 from dscan.plugins import BasePlugin
 import dscan.common.update_api as ua
 import dscan.common.versions
+import requests
 
 class Wordpress(BasePlugin):
-    can_enumerate_plugins = False
-    can_enumerate_themes = False
-
     forbidden_url = "wp-includes/"
     regular_file_url = ["wp-admin/wp-admin.css", "wp-includes/js/tinymce/tiny_mce_popup.js"]
     module_common_file = ""
@@ -18,6 +17,9 @@ class Wordpress(BasePlugin):
 
     interesting_module_urls = [
     ]
+
+    plugins_url = 'http://api.wordpress.org/plugins/info/1.1/'
+    themes_url = 'http://api.wordpress.org/themes/info/1.1/'
 
     class Meta:
         # The label is important, choose the CMS name in lowercase.
@@ -54,7 +56,36 @@ class Wordpress(BasePlugin):
         return ua.update_modules_check(self)
 
     def update_plugins(self):
-        print('lelel')
+        base_data = {
+            "request": {
+                'browse': 'popular',
+                'per_page': 1000, # Max provided.
+                'field': {
+                    'downloaded': False, 'rating': False, 'description': False,
+                    'short_description': False, 'donate_link': False, 'tags':
+                    False, 'sections': False, 'homepage': False, 'added': False,
+                    'last_updated': False, 'compatibility': False, 'tested':
+                    False, 'requires': False, 'downloadlink': False,
+                }
+            }
+        }
+
+        plugins_data = deepcopy(base_data)
+        themes_data = deepcopy(base_data)
+        plugins_data['action'] = 'query_plugins'
+        themes_data['action'] = 'query_themes'
+
+        plugins = []
+        plugins_raw = ua.json_post(self.plugins_url, data=plugins_data)['plugins']
+        for plugin in plugins_raw:
+            plugins.append(plugin['slug'])
+
+        themes = []
+        themes_raw = ua.json_post(self.themes_url, data=themes_data)['themes']
+        for theme in themes_raw:
+            themes.append(theme['slug'])
+
+        return plugins, themes
 
 def load(app=None):
     handler.register(Wordpress)
