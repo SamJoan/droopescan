@@ -219,14 +219,15 @@ def update_modules_check(plugin):
 
     return delta > timedelta(days=365)
 
-def json_post(api_url, data):
+def multipart_parse_json(api_url, data):
     """
     Send a post request and parse the JSON response (potentially containing
     non-ascii characters).
     @param api_url: the url endpoint to post to.
     @param data: a dictionary that will be passed to requests.post
     """
-    response_text = requests.post(api_url, data=data)\
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    response_text = requests.post(api_url, data=data, headers=headers)\
         .text.encode('ascii', errors='replace')
 
     return json.loads(response_text.decode())

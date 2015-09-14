@@ -19,6 +19,7 @@ class Wordpress(BasePlugin):
     ]
 
     plugins_url = 'http://api.wordpress.org/plugins/info/1.1/'
+    # plugins_url = 'http://requestb.in/11fb60y1'
     themes_url = 'http://api.wordpress.org/themes/info/1.1/'
 
     class Meta:
@@ -56,33 +57,19 @@ class Wordpress(BasePlugin):
         return ua.update_modules_check(self)
 
     def update_plugins(self):
-        base_data = {
-            "request": {
-                'browse': 'popular',
-                'per_page': 1000, # Max provided.
-                'field': {
-                    'downloaded': False, 'rating': False, 'description': False,
-                    'short_description': False, 'donate_link': False, 'tags':
-                    False, 'sections': False, 'homepage': False, 'added': False,
-                    'last_updated': False, 'compatibility': False, 'tested':
-                    False, 'requires': False, 'downloadlink': False,
-                }
-            }
-        }
-
-        plugins_data = deepcopy(base_data)
-        themes_data = deepcopy(base_data)
-        plugins_data['action'] = 'query_plugins'
-        themes_data['action'] = 'query_themes'
+        base_data = open(dscan.PWD + 'plugins/wordpress/base_api_request.txt')\
+                .read()
+        plugins_data = 'action=query_plugins&' + base_data
+        themes_data = 'action=query_themes&' + base_data
 
         plugins = []
-        plugins_raw = ua.json_post(self.plugins_url, data=plugins_data)['plugins']
-        for plugin in plugins_raw:
+        response = ua.multipart_parse_json(self.plugins_url, data=plugins_data)
+        for plugin in response['plugins']:
             plugins.append(plugin['slug'])
 
         themes = []
-        themes_raw = ua.json_post(self.themes_url, data=themes_data)['themes']
-        for theme in themes_raw:
+        response = ua.multipart_parse_json(self.themes_url, data=themes_data)
+        for theme in response['themes']:
             themes.append(theme['slug'])
 
         return plugins, themes

@@ -73,20 +73,16 @@ class Update(HumanBasePlugin):
         update_only = self.app.pargs.update
 
         for Plugin in plugins:
-            try:
-                plugin = Plugin()
-                plugin_name = plugin.Meta.label
+            plugin = Plugin()
+            plugin_name = plugin.Meta.label
 
-                if update_only != None and update_only != plugin_name:
-                    continue
+            if update_only != None and update_only != plugin_name:
+                continue
 
-                if not skip_version:
-                    self.update_version(plugin, plugin_name)
-                if not skip_modules:
-                    self.update_plugins(plugin, plugin_name)
-
-            except AttributeError:
-                self.msg('Skipping %s because update_version_check() or update_version() is not defined.' % plugin_name)
+            if not skip_version:
+                self.update_version(plugin, plugin_name)
+            if not skip_modules:
+                self.update_plugins(plugin, plugin_name)
 
 def load(app=None):
     handler.register(Update)
