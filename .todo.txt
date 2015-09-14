@@ -10,6 +10,8 @@ Version 1.x:
     - Interesting URLs for joomla.
     - https://codex.wordpress.org/WordPress.org_API
         http://wp-cli.org/commands/plugin/search/
+        http://code.tutsplus.com/tutorials/communicating-with-the-wordpress-org-plugin-api--wp-33069
+        https://dd32.id.au/projects/wordpressorg-plugin-information-api-docs/
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.

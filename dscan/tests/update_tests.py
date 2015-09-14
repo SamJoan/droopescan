@@ -551,3 +551,10 @@ class UpdateTests(BaseTest):
         with patch('dscan.common.update_api.github_repo_new', return_value=ret_val, autospec=True) as m:
             with patch('dscan.common.update_api.hashes_get', autospec=True):
                 ss.update_version()
+
+    def test_wordpress_plugins_get(self):
+        wp = Wordpress()
+
+        assert False
+
+

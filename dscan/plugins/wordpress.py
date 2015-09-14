@@ -51,10 +51,10 @@ class Wordpress(BasePlugin):
         return versions_file
 
     def update_plugins_check(self):
-        return False
+        return ua.update_modules_check(self)
 
     def update_plugins(self):
-        pass
+        print('lelel')
 
 def load(app=None):
     handler.register(Wordpress)
