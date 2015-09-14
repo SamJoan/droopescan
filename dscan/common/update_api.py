@@ -206,11 +206,15 @@ def modules_get(url_tpl, per_page, css, max_modules=2000, pagination_type=PT.nor
 
 def update_modules_check(plugin):
     """
-    @param plugin: plugin to check.
-    @return: True if modules need to be updated.
+    @param plugin: plugin instance to check.
+    @return: True if it has been more than a year since last update or we have
+        never updated.
     """
     today = datetime.today()
-    mtime = file_mtime(plugin.plugins_file)
+    try:
+        mtime = file_mtime(plugin.plugins_file)
+    except IOError:
+        return True
     delta = today - mtime
 
     return delta > timedelta(days=365)
