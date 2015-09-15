@@ -46,6 +46,23 @@ class BaseHttpTests(BaseTest):
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
+    def test_plugins_forbidden_but_not_ok(self, m):
+        self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
+            404: ["nonexistant1"], 200: ["nonexistant2"]})
+
+        self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, ScanningMethod.forbidden)
+
+        module_name = 'supermodule'
+        expected_module_url = self.scanner.plugins_base_url % (self.base_url,
+                module_name)
+        expected_result = [{'url': expected_module_url, 'name': module_name}]
+        assert result == expected_result, "Should have detected the \
+                'supermodule' module only."
+
+    @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
+        "nonexistant2", "supermodule"])
     def test_plugins_ok(self, m):
         self.respond_several(self.base_url + "sites/all/modules/%s/", {200: ["supermodule"],
             404: ["nonexistant1", "nonexistant2"]})

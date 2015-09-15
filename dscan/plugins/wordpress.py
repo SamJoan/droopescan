@@ -12,13 +12,17 @@ class Wordpress(BasePlugin):
 
     forbidden_url = "wp-includes/"
     regular_file_url = ["wp-admin/wp-admin.css", "wp-includes/js/tinymce/tiny_mce_popup.js"]
-    module_common_file = ""
-
+    module_common_file = "readme.txt"
     update_majors = ['2','3','4']
 
     interesting_urls = [("readme.html", "This CMS' default changelog.")]
 
     interesting_module_urls = [
+        ('readme.txt', 'Default readme file.'),
+        ('license.txt', 'License file.'),
+        ('documentation.txt', 'Documentation file.'),
+        ('screenshot.png', 'Screenshot for theme.'),
+        ('screenshot-1.png', 'Screenshot for plugin. Sometimes increasing the number yields additional images.'),
     ]
 
     plugins_url = 'http://api.wordpress.org/plugins/info/1.1/'

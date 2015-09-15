@@ -649,6 +649,11 @@ class BasePluginInternal(controller.CementBaseController):
                 items_total = int(max_possible) * len(base_urls)
                 p = ProgressBar(sys.stderr, items_total, "modules")
 
+            if scanning_method == ScanningMethod.forbidden:
+                expected_status = [403]
+            else:
+                expected_status = [200, 403]
+
             no_results = True
             found = []
             for future_array in futures:
@@ -660,7 +665,7 @@ class BasePluginInternal(controller.CementBaseController):
                     p.increment_progress()
 
                 r = future_array['future'].result()
-                if r.status_code in [200, 403]:
+                if r.status_code in expected_status:
                     plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']
 
