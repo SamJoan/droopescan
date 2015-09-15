@@ -7,10 +7,10 @@ several CMS:
 
 * Drupal.
 * SilverStripe.
+* Wordpress.
 
 Partial functionality for:
 
-* Wordpress.
 * Joomla.
 
 <pre>
