@@ -442,4 +442,4 @@ droopescan test -s test_integration_drupal
 
 # License.
 
-The project is licensed under the GPL license.
+The project is licensed under the AGPL license.
