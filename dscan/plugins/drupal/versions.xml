@@ -127,6 +127,7 @@
       <version md5="1904f6fd4a4fe747d6b53ca9fd81f848" nb="6.36" />
       <version md5="bb9f18fb7a42b95fcad87b98dbb19c87" nb="7.39" />
       <version md5="1904f6fd4a4fe747d6b53ca9fd81f848" nb="6.37" />
+      <version md5="bb9f18fb7a42b95fcad87b98dbb19c87" nb="7.40" />
     </file>
     <file url="misc/tabledrag.js">
       <version md5="c6f7a28ffd7288909b207c0eb651298e" nb="6.0-rc1" />
@@ -227,6 +228,7 @@
       <version md5="50ebbc8dc949d7cb8d4cc5e6e0a6c1ca" nb="6.36" />
       <version md5="c1bdc05ec3eab25853bec452e3addcd2" nb="7.39" />
       <version md5="50ebbc8dc949d7cb8d4cc5e6e0a6c1ca" nb="6.37" />
+      <version md5="c1bdc05ec3eab25853bec452e3addcd2" nb="7.40" />
     </file>
     <file url="misc/tableheader.js">
       <version md5="da96f76a7fef73f09e12ca207602a909" nb="6.0-rc1" />
@@ -327,6 +329,7 @@
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.36" />
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.39" />
       <version md5="570b3f821441cd8f75395224fc43a0ea" nb="6.37" />
+      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.40" />
     </file>
     <file url="misc/ajax.js">
       <version md5="e9705a45006501b9e3ff1bc4fa2c7a37" nb="7.0-alpha1" />
@@ -383,6 +386,7 @@
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.37" />
       <version md5="18af00f2aab04bfd2af10363716b0ca3" nb="7.38" />
       <version md5="eb32af955400cee44f869bbf7ed00e20" nb="7.39" />
+      <version md5="eb32af955400cee44f869bbf7ed00e20" nb="7.40" />
     </file>
     <file url="core/misc/drupal.js">
       <version md5="330a6a8916376627bdb21b0ce45804ca" nb="8.0-alpha6" />
@@ -406,6 +410,7 @@
       <version md5="2851114089674206bb40da9ae4f78b4b" nb="8.0.0-beta1" />
       <version md5="330a6a8916376627bdb21b0ce45804ca" nb="8.0-alpha7" />
       <version md5="fbc00802cae5680f3019afc567875989" nb="8.0.0-beta6" />
+      <version md5="1822fcbae055fb7f43dd8e01c9d285f5" nb="8.0.0-beta16" />
     </file>
     <file url="core/misc/tabledrag.js">
       <version md5="6d8457644f537cfa30d7c37d30a0166f" nb="8.0-alpha6" />
@@ -429,6 +434,7 @@
       <version md5="5e2da9ebac782f758c21f6e5e0a066ee" nb="8.0.0-beta1" />
       <version md5="895689ee10162609bcf84c3a410863d3" nb="8.0-alpha7" />
       <version md5="3d74f17f14fedc027e024e070b290bb9" nb="8.0.0-beta6" />
+      <version md5="9eff1438a24773d42d30a78fe178016e" nb="8.0.0-beta16" />
     </file>
     <file url="core/misc/tableheader.js">
       <version md5="0eaa98381c98862665e4dec2354527a4" nb="8.0-alpha6" />
@@ -452,6 +458,7 @@
       <version md5="0a719532a31d3502354298344651e19f" nb="8.0.0-beta1" />
       <version md5="5d5e9c50122b8afd5c20cf688f31372a" nb="8.0-alpha7" />
       <version md5="0a719532a31d3502354298344651e19f" nb="8.0.0-beta6" />
+      <version md5="f91132e7895f8f212c2afa18906472ac" nb="8.0.0-beta16" />
     </file>
     <file url="core/misc/ajax.js">
       <version md5="e5c7066909a4c09fae08e1e34ba29e29" nb="8.0-alpha6" />
@@ -475,6 +482,7 @@
       <version md5="9e6d5505b66e9cb18b6f85c9f6c0be97" nb="8.0.0-beta1" />
       <version md5="2f96f0a494a2301f65f5e25617c2d57d" nb="8.0-alpha7" />
       <version md5="bd114b42d91d266b449a866047db4afa" nb="8.0.0-beta6" />
+      <version md5="e5a72be09ec2f393e2bc091472824fdb" nb="8.0.0-beta16" />
     </file>
     <changelog url="CHANGELOG.txt">
       <version md5="fa02637f87ad76f18b3b97aed66753d2" nb="7.14" />
@@ -569,6 +577,7 @@
       <version md5="65f882607ff6509eb191d4e6202f043d" nb="6.36" />
       <version md5="d16d97ab20cf77a9f742f86607477b79" nb="7.39" />
       <version md5="328b61bdf725ac2b1addd101dbea1676" nb="6.37" />
+      <version md5="42f49a0b102f4d573116c64521088f01" nb="7.40" />
     </changelog>
     <changelog url="core/CHANGELOG.txt">
       <version md5="f50de9476bc30d736ec992dad35cf782" nb="8.0-alpha6" />
@@ -592,6 +601,7 @@
       <version md5="83e04a5e45c3a2e593d60a78f1cc67db" nb="8.0.0-beta1" />
       <version md5="7fc0b90694e0aa25b7e9e139f8145013" nb="8.0-alpha7" />
       <version md5="f5b1f76089bb728a2a3ceeec21f4dc9a" nb="8.0.0-beta6" />
+      <version md5="a7f0b68ee734dfbff4c60859e97abcc8" nb="8.0.0-beta16" />
     </changelog>
   </files>
 </cms>
