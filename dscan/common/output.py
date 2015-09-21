@@ -1,5 +1,6 @@
 from __future__ import print_function
-from dscan.common.functions import template, strip_whitespace
+from dscan.common.functions import template, strip_whitespace, \
+    result_anything_found
 from dscan.common.enum import colors
 import argparse
 import hashlib
@@ -72,11 +73,11 @@ class StandardOutput():
         """
         For miscelaneous messages. E.g. "Initializing scanning".
         """
-        print(msg)
+        self.print(msg)
 
     def debug(self, msg):
         if self.debug_output:
-            print(msg)
+            self.print(msg)
 
     def result(self, result, functionality):
         """
@@ -122,7 +123,7 @@ class StandardOutput():
             else:
                 msg = "[" + time.strftime("%c") + "] " + msg
 
-            print(msg, file=self.error_log)
+            self.print(msg, file=self.error_log)
 
     def fatal(self, msg):
         """
@@ -136,6 +137,9 @@ class StandardOutput():
 
         raise RuntimeError(msg)
 
+    def print(self, msg, *args, **kwargs):
+        print(msg, *args, **kwargs)
+
 class JsonOutput(StandardOutput):
     errors_display = False
 
@@ -143,7 +147,8 @@ class JsonOutput(StandardOutput):
         pass
 
     def result(self, result, functionality=None):
-        print(json.dumps(result))
+        if result_anything_found(result):
+            self.print(json.dumps(result))
 
 class RequestsLogger():
 

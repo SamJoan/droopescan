@@ -352,3 +352,22 @@ def instance_get(plugin, opts, url_file_input, out):
         'kwargs': kwargs
     }
 
+def result_anything_found(result):
+    """
+    Interim solution for the fact that sometimes determine_scanning_method can
+    legitimately return a valid scanning method, but it results that the site
+    does not belong to a particular CMS.
+    @param result: the result as passed to Output.result()
+    @return: whether anything was found.
+    """
+    keys = ['version', 'themes', 'plugins', 'interesting urls']
+    anything_found = False
+    for k in keys:
+        if k not in result:
+            continue
+        else:
+            if not result[k]['is_empty']:
+                anything_found = True
+
+    return anything_found
+

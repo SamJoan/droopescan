@@ -752,6 +752,7 @@ class BasePluginInternal(controller.CementBaseController):
         @param timeout: time, in seconds, before timing out a request.
         @param hide_progressbar: should the function hide the progressbar?
         @param headers: a dict of headers to pass to requests.get.
+        @return (possible_versions, is_empty)
         """
 
         files = self.vf.files_get()

@@ -206,6 +206,7 @@ class BaseTests(BaseTest):
 
         # Expected output is one line of json followed by a newline.
         lines = val.split("\n")
+        print(lines)
         assert len(lines) == 2
         assert lines[0].startswith('{')
         assert lines[1] == ''

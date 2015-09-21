@@ -848,3 +848,17 @@ class BaseHttpTests(BaseTest):
         for mock in all_mocks:
             self.assert_called_contains(mock, 'headers', self.host_header)
 
+    def test_determine_scanning_method_edge_case(self):
+        self.add_argv(['-U', self.valid_file, '-e', 'v',
+            '--no-follow-redirects'])
+
+        ev = self.mock_controller('drupal', 'enumerate_version')
+        ev.side_effect = [(None, True), (None, True), (['7.0'], False)]
+
+        dsm = self.mock_controller('drupal', 'determine_scanning_method')
+        dsm.return_value = ScanningMethod.forbidden
+
+        with patch('dscan.common.output.StandardOutput.print') as p:
+            self.app.run()
+
+            assert p.call_count == 1
