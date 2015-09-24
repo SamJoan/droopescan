@@ -26,7 +26,8 @@ class Silverstripe(BasePlugin):
     themes_base_url = '%sthemes/%s/'
 
     forbidden_url = 'framework/'
-    regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css']
+    regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css',
+            "framework/CONTRIBUTING.md"]
     module_common_file = 'README.md'
     update_majors = ['3.1', '3.0', '2.4']
 

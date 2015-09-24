@@ -1,5 +1,8 @@
 Add;
 
+Version 1.x:
+    - SS demosite isn't automatically identified.
+
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
     - Break API to replace 'interesting urls' key with 'interesting_urls'.

@@ -114,7 +114,9 @@ class Scan(BasePlugin):
                     follow_redirects)
 
             if not cms_name:
-                self.out.fatal("'%s' not identified as any CMS." % url)
+                no_cms = "'%s' not identified as a supported CMS. If you \
+                    disagree, please specify a CMS manually." % url
+                self.out.fatal(no_cms)
             else:
                 self.out.echo("[+] Site identified as %s." % cms_name)
 
