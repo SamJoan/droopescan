@@ -28,12 +28,9 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
-global shutdown
-shutdown = False
 def handle_interrupt(signal, stack):
     print("\nShutting down...")
-    global shutdown
-    shutdown = True
+    common.shutdown = True
 
 signal.signal(signal.SIGINT, handle_interrupt)
 
@@ -297,7 +294,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         self.out.close()
 
-        if not shutdown:
+        if not common.shutdown:
             self.out.echo('\033[95m[+] Scan finished (%s elapsed)\033[0m' %
                     str(datetime.now() - time_start))
         else:
@@ -315,7 +312,7 @@ class BasePluginInternal(controller.CementBaseController):
         output = self.url_scan(url, opts, functionality, enabled_functionality,
                 hide_progressbar=hide_progressbar)
 
-        if not shutdown:
+        if not common.shutdown:
             self.out.result(output, functionality)
 
     def process_url_iterable(self, iterable, opts, functionality, enabled_functionality):
@@ -352,7 +349,7 @@ class BasePluginInternal(controller.CementBaseController):
     def _process_results_multisite(self, results, functionality, timeout_host):
         for result in results:
             try:
-                if shutdown:
+                if common.shutdown:
                     result['future'].cancel()
                     continue
 
@@ -361,7 +358,7 @@ class BasePluginInternal(controller.CementBaseController):
                 output['host'] = result['url']
                 output['cms_name'] = self._meta.label
 
-                if not shutdown:
+                if not common.shutdown:
                     self.out.result(output, functionality)
 
             except:
@@ -421,7 +418,7 @@ class BasePluginInternal(controller.CementBaseController):
         for enumerate in enabled_functionality:
             enum = functionality[enumerate]
 
-            if shutdown:
+            if common.shutdown:
                 continue
 
             # Get the arguments for the function.
@@ -658,7 +655,7 @@ class BasePluginInternal(controller.CementBaseController):
             no_results = True
             found = []
             for future_array in futures:
-                if shutdown:
+                if common.shutdown:
                     future_array['future'].cancel()
                     continue
 
@@ -681,7 +678,7 @@ class BasePluginInternal(controller.CementBaseController):
             if not hide_progressbar:
                 p.hide()
 
-        if not shutdown and (imu != None and not no_results):
+        if not common.shutdown and (imu != None and not no_results):
             found = self._enumerate_plugin_if(found, verb, threads, imu,
                     hide_progressbar, timeout=timeout, headers=headers)
 
@@ -720,7 +717,7 @@ class BasePluginInternal(controller.CementBaseController):
         found = []
         for path, description in interesting_urls:
 
-            if shutdown:
+            if common.shutdown:
                 continue
 
             interesting_url = url + path
@@ -771,7 +768,7 @@ class BasePluginInternal(controller.CementBaseController):
                         url, file_url=file_url, timeout=timeout, headers=headers)
 
             for file_url in futures:
-                if shutdown:
+                if common.shutdown:
                     futures[file_url].cancel()
                     continue
 
@@ -875,7 +872,7 @@ class BasePluginInternal(controller.CementBaseController):
                     })
 
             for f in futures:
-                if shutdown:
+                if common.shutdown:
                     futures[file_url].cancel()
                     continue
 

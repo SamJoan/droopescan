@@ -180,7 +180,16 @@ class Scan(BasePlugin):
 
         i = 0
         to_scan = {}
+        cancelled = False
         for future in as_completed(futures):
+
+            if common.shutdown:
+                if not cancelled:
+                    map(lambda x: x.cancel(), futures)
+                    cancelled = True
+
+                continue
+
             url = future.url
             try:
                 cms_name, result_tuple = future.result(timeout=opts['timeout_host'])

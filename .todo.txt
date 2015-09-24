@@ -6,7 +6,6 @@ Version 1.x:
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
     - Break API to replace 'interesting urls' key with 'interesting_urls'.
-
     - Break API to add url (the URL which was requested to be scanned) and final_url which is the URL after redirects.
     - Break API to detect plugin version.
     - Wordpress?

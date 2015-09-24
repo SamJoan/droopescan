@@ -8,6 +8,7 @@ except:
     old_req = """Running a very old version of requests! Please `pip
         install -U requests`."""
     print(old_req)
+
 import dscan
 import hashlib
 import pystache
