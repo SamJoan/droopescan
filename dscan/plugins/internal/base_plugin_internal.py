@@ -491,6 +491,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         redirected = redir_url != url
         if redirected:
+            self.out.echo('[+] Accepted redirect to %s' % redir_url)
             contains_host = orig_host_header != None
             if contains_host:
                 parsed = urlparse(redir_url)

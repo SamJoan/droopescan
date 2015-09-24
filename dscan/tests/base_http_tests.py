@@ -862,3 +862,42 @@ class BaseHttpTests(BaseTest):
             self.app.run()
 
             assert p.call_count == 1
+
+    def test_redirect_is_output(self):
+        all_mocks = self.mock_all_enumerate('drupal')
+
+        self.add_argv(['-u', self.base_url, '--method', 'forbidden'])
+
+        dr = self.mock_controller('drupal', '_determine_redirect')
+        dr.return_value = self.base_url_https
+        with patch('dscan.common.output.StandardOutput.echo') as e:
+            self.app.run()
+
+            args, kwargs = e.call_args_list[0]
+            outputs_redirect_url = self.base_url_https in args[0]
+            assert outputs_redirect_url
+
+        assert dr.called
+
+    def test_redirect_is_output_identify(self):
+        all_mocks = self.mock_all_enumerate('drupal')
+
+        self.clear_argv()
+        self.add_argv(["scan"])
+        self.add_argv(['-u', self.base_url, '--method', 'forbidden'])
+
+        dr = self.mock_controller('scan', '_determine_redirect')
+        dr.return_value = self.base_url_https
+
+        with patch('dscan.common.output.StandardOutput.echo') as e:
+            try:
+                self.app.run()
+            except ConnectionError:
+                pass
+
+            args, kwargs = e.call_args_list[0]
+            outputs_redirect_url = self.base_url_https in args[0]
+            assert outputs_redirect_url
+
+        assert dr.called
+
