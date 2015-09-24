@@ -627,3 +627,21 @@ class FingerprintTests(BaseTest):
                 # RuntimeError is OK bc means I handled the exception.
                 pass
 
+    def test_redirect_is_output_identify(self):
+        self.clear_argv()
+        self.add_argv(["scan"])
+        self.add_argv(['-u', self.base_url, '--method', 'forbidden'])
+
+        with patch(self.redir_module, return_value=self.base_url_https) as dr:
+            with patch('dscan.common.output.StandardOutput.echo') as e:
+                try:
+                    self.app.run()
+                except ConnectionError:
+                    pass
+
+                args, kwargs = e.call_args_list[0]
+                outputs_redirect_url = self.base_url_https in args[0]
+                assert outputs_redirect_url
+
+            assert dr.called
+
