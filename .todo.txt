@@ -1,9 +1,6 @@
 Add;
 
 Version 1.x:
-    - When mass-scanning with CMS provided, it sometimes says cms_name is
-          something it's not. Like, when versions: [] is empty true, but now even
-          more misleading.
     - URL after redirect is not provided?
     - SIGINT capture for new scanning.
     - Interesting URLs for joomla.
@@ -17,5 +14,5 @@ Version 2.x:
     - Wordpress?
 
 Relevant:
-- https://wappalyzer.com/ -
+- https://wappalyzer.com/
   http://www.opensourcecms.com/general/cms-marketshare.php

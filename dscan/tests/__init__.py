@@ -171,10 +171,13 @@ class BaseTest(test.CementTestCase):
         all.append(self.mock_controller(plugin_name, 'enumerate_plugins'))
         all.append(self.mock_controller(plugin_name, 'enumerate_themes'))
         all.append(self.mock_controller(plugin_name, 'enumerate_interesting'))
-        all.append(self.mock_controller(plugin_name, 'enumerate_version'))
 
         for a in all:
             all[a].return_value = ([], True)
+
+        mock_version = self.mock_controller(plugin_name, 'enumerate_version')
+        mock_version.return_value = (['7.32'], False)
+        all.append(mock_version)
 
         return all
 
