@@ -19,7 +19,6 @@ import hashlib
 import os
 import re
 import requests
-import signal
 import sys
 import traceback
 
@@ -27,12 +26,6 @@ try:
     from urlparse import urlparse
 except ImportError:
     from urllib.parse import urlparse
-
-def handle_interrupt(signal, stack):
-    print("\nShutting down...")
-    common.shutdown = True
-
-signal.signal(signal.SIGINT, handle_interrupt)
 
 try:
     requests.packages.urllib3.disable_warnings()

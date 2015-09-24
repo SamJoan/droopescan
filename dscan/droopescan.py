@@ -8,7 +8,14 @@ from dscan import common
 from dscan.plugins import Scan
 import dscan
 import os
+import signal
 import sys
+
+def handle_interrupt(signal, stack):
+    print("\nShutting down...")
+    common.shutdown = True
+
+signal.signal(signal.SIGINT, handle_interrupt)
 
 class DroopeScanBase(controller.CementBaseController):
     class Meta:
