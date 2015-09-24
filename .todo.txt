@@ -1,8 +1,5 @@
 Add;
 
-Version 1.x:
-    - SIGINT capture for new scanning.
-
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
     - Break API to replace 'interesting urls' key with 'interesting_urls'.
