@@ -2,14 +2,15 @@ Add;
 
 Version 1.x:
     - SS demosite isn't automatically identified.
-    - plugins/system/cache/cache.xml?
+    - plugins/system/cache/cache.xml? can tell major version aparently.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
     - Break API to replace 'interesting urls' key with 'interesting_urls'.
     - Break API to add url (the URL which was requested to be scanned) and final_url which is the URL after redirects.
     - Break API to detect plugin version.
-    - Wordpress?
+    - Add detection of downloadable configuration file backup (e.g. configuration.php~)
+    - Add detection of exposed .git.
 
 Relevant:
 - https://wappalyzer.com/
