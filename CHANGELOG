@@ -1,3 +1,8 @@
+1.33.1
+======
+
+* New versions for Joomla (unauthenticated SQL injection) and Drupal (open redirect).
+
 1.33.0
 ======
 
