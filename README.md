@@ -11,7 +11,7 @@ several CMS:
 
 Partial functionality for:
 
-* Joomla.
+* Joomla (version enumeration and interesting URLs only).
 
 <pre>
 computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 8
