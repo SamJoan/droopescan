@@ -3,6 +3,7 @@ Add;
 Version 1.x:
     - SS demosite isn't automatically identified.
     - plugins/system/cache/cache.xml? can tell major version aparently.
+    - Move to using API instead of crawling the website for github calls https://api.github.com/repos/joomla/joomla-cms/git/refs/tags.
 
 Version 2.x:
     - Break API to remove finds, isempty. Instead, simply return finds.
