@@ -267,7 +267,6 @@ class UpdateTests(BaseTest):
                     assert len(hg.call_args_list) == 2
                     for args, kwargs in hgcl:
                         assert args[1] == vf
-                        assert args[2] == self.scanner.update_majors
 
         version = '7.34'
         expected = tuple([['git', 'checkout', version]])
@@ -284,7 +283,7 @@ class UpdateTests(BaseTest):
 
         with patch('dscan.common.update_api.VersionsFile') as vf:
             vf.files_get_all.return_value = files
-            self.gr.hashes_get(vf, self.scanner.update_majors)
+            self.gr.hashes_get(vf)
 
             assert vf.files_get_all.called
             assert len(self.mock_md5_file.call_args_list) == len(files)

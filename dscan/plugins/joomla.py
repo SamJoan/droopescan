@@ -19,7 +19,7 @@ class Joomla(BasePlugin):
         ("administrator/", "Login page."),
         ("libraries/simplepie/README.txt", "SimplePie README."),
         ("LICENSE.txt", "License file."),
-        ("plugins/system/cache/cache.xml", "version attr. contains major version")
+        ("plugins/system/cache/cache.xml", "Version attribute contains approx version")
     ]
 
     interesting_module_urls = [
