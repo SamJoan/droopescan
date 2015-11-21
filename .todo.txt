@@ -1,15 +1,10 @@
 Add;
 
 Version 1.x:
-    - SS demosite isn't automatically identified.
-    - plugins/system/cache/cache.xml? can tell major version aparently.
-    UA:
-        - Move to using API instead of crawling the website for github calls https://api.github.com/repos/joomla/joomla-cms/git/refs/tags.
-        - Update newer tags based on a github repository
-        - gr.hashes_get doesn't use the second parameter, could be removed.
-        - remove whitespace line 193, commenet o nline 119 can go to next line?
 
 Version 2.x:
+    UA:
+        - Move to using API instead of crawling the website for github calls https://api.github.com/repos/joomla/joomla-cms/git/refs/tags.
     - Break API to remove finds, isempty. Instead, simply return finds.
     - Break API to replace 'interesting urls' key with 'interesting_urls'.
     - Break API to add url (the URL which was requested to be scanned) and final_url which is the URL after redirects.

@@ -21,7 +21,7 @@ UW = './.update-workspace/'
 
 def github_tags_newer(github_repo, versions_file, update_majors):
     """
-    Update newer tags based on a github repository.
+    Get new tags from a github repository.
     @param github_repo: the github repository, e.g. 'drupal/drupal/'.
     @param versions_file: the file path where the versions database can be found.
     @param update_majors: major versions to update. If you want to update
@@ -191,7 +191,6 @@ def modules_get(url_tpl, per_page, css, max_modules=2000, pagination_type=PT.nor
                 stop = True
                 break
 
-
         if stop:
             break
 
@@ -320,7 +319,7 @@ class GitRepo():
         """
         self._cmd(['git', 'checkout', tag])
 
-    def hashes_get(self, versions_file, major):
+    def hashes_get(self, versions_file):
         """
         Gets hashes for currently checked out version.
         @param versions_file: a common.VersionsFile instance to

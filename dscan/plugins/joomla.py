@@ -18,7 +18,8 @@ class Joomla(BasePlugin):
         ("joomla.xml", "This CMS' default changelog."),
         ("administrator/", "Login page."),
         ("libraries/simplepie/README.txt", "SimplePie README."),
-        ("LICENSE.txt", "License file.")
+        ("LICENSE.txt", "License file."),
+        ("plugins/system/cache/cache.xml", "version attr. contains major version")
     ]
 
     interesting_module_urls = [
