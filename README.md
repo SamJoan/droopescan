@@ -91,7 +91,7 @@ Manual installation is as follows:
 git clone https://github.com/droope/droopescan.git
 cd droopescan
 pip install -r requirements.txt
-droopescan scan --help
+./droopescan scan --help
 </pre>
 
 The master branch corresponds to the latest release (what is in pypi).
