@@ -428,16 +428,16 @@ commands (in addition to the regular installation process) will result in them
 being installed and the tests being ran:
 
 <pre>
-    apt-get install python-dev libxslt1-dev libxml2-dev python3 zlib1g-dev python3-pip python3-dev
-    pip install -r requirements_test.txt
+    apt-get install libxslt1-dev libxml2-dev zlib1g-dev python python-pip python-dev python3 python3-pip python3-dev
+    pip install -r requirements.txt -r requirements_test.txt
     pip3 install -r requirements.txt -r requirements_test.txt
-    droopescan test
+    ./droopescan test
 </pre>
 
 You can run individual tests with the `-s` flag.
 
 <pre>
-droopescan test -s test_integration_drupal
+./droopescan test -s test_integration_drupal
 </pre>
 
 # License.
