@@ -11,3 +11,5 @@ class UnknownCMSException(RuntimeError):
 class VersionFingerprintFailed(RuntimeError):
     pass
 
+class MissingMajorException(RuntimeError):
+    pass

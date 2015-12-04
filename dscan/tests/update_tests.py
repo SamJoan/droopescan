@@ -1,5 +1,6 @@
 from cement.utils import test
 from dscan.common import VersionsFile
+from dscan.common.exceptions import MissingMajorException
 from dscan.common.testutils import decallmethods
 from dscan.common.update_api import GH, UW
 from dscan.common.update_api import github_tags_newer, github_repo, _github_normalize, \
@@ -182,12 +183,24 @@ class UpdateTests(BaseTest):
     @test.raises(RuntimeError)
     def test_tags_newer_exc(self):
         tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
+        update_majors = ['6', '7', '8']
+        with patch('dscan.common.update_api.VersionsFile') as vf:
+            with patch('dscan.common.update_api.GitRepo.tags_get', autospec=True) as tg:
+                vf.highest_version_major.return_value = {'6': '6.34', '7':
+                        '7.34', '8': '8.1'}
+                tg.return_value = tags_get_ret
+
+                # No new tags should result in exception.
+                self.gr.tags_newer(vf, update_majors)
+
+    @test.raises(MissingMajorException)
+    def test_tags_newer_missing_major(self):
+        tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
         update_majors = ['6', '7']
         with patch('dscan.common.update_api.VersionsFile') as vf:
             with patch('dscan.common.update_api.GitRepo.tags_get', autospec=True) as tg:
                 vf.highest_version_major.return_value = {'6': '6.34', '7': '7.34'}
                 tg.return_value = tags_get_ret
-                exceptioned = False
 
                 # No new tags should result in exception.
                 self.gr.tags_newer(vf, update_majors)

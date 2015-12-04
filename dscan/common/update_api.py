@@ -4,6 +4,7 @@ try:
 except:
     pass
 
+from dscan.common.exceptions import MissingMajorException
 from dscan.common.functions import version_gt
 from dscan.common.versions import VersionsFile
 from datetime import datetime, timedelta
@@ -28,6 +29,8 @@ def github_tags_newer(github_repo, versions_file, update_majors):
         the 6.x and 7.x branch, you would supply a list which would look like
         ['6', '7']
     @return: a boolean value indicating whether an update is needed
+    @raise MissingMajorException: A new version from a newer major branch is
+        exists, but will not be downloaded due to it not being in majors.
     """
     github_repo = _github_normalize(github_repo)
     vf = VersionsFile(versions_file)
@@ -48,11 +51,13 @@ def github_tags_newer(github_repo, versions_file, update_majors):
 def _newer_tags_get(current_highest, versions):
     """
     Returns versions from versions which are greater than than the highest
-    version in each major. Note that a major must be in current_highest
-    in order for versions of that major branch to appear in the return.
+    version in each major. If a newer major is present in versions which is
+    not present on current_highest, it will also be returned.
     @param current_highest: as returned by VersionsFile.highest_version_major()
     @param versions: a list of versions.
     @return: a list of versions.
+    @raise MissingMajorException: A new version from a newer major branch is
+        exists, but will not be downloaded due to it not being in majors.
     """
     newer = []
     for major in current_highest:
@@ -288,6 +293,8 @@ class GitRepo():
             check against.
         @param majors: a list of major branches to check. E.g. ['6', '7']
         @raise RuntimeError: no newer tags were found.
+        @raise MissingMajorException: A new version from a newer major branch is
+            exists, but hasn't been downloaded due to it not being in majors.
         """
         highest = versions_file.highest_version_major(majors)
         all = self.tags_get()
