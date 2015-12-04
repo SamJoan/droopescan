@@ -18,7 +18,7 @@ class Wordpress(BasePlugin):
     interesting_urls = [("readme.html", "This CMS' default changelog.")]
 
     interesting_module_urls = [
-        ('readme.txt', 'Default readme file.'),
+        ('readme.html', 'Default readme file.'),
         ('license.txt', 'License file.'),
         ('documentation.txt', 'Documentation file.'),
         ('screenshot.png', 'Screenshot for theme.'),
