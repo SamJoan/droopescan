@@ -173,16 +173,25 @@ http://192.168.1.2/drupal/	example.org
 </pre>
 
 It is quite tempting to test whether the scanner works for a particular CMS
-by scanning the official site (e.g. `wordpress.org` for `wordpress`), but the
+by scanning the official site (e.g. `wordpress.org` for wordpress), but the
 official sites rarely run vainilla installations of their respective CMS or do
 unorthodox things. For example, `wordpress.org` runs the bleeding edge version of
-`wordpress`, which will not be identified as wordpress by `droopescan` at all
+wordpress, which will not be identified as wordpress by `droopescan` at all
 because the checksums do not match any known wordpress version.
 
 ## Authentication.
 
 The application fully supports `.netrc` files and `http_proxy` environment
 variables.
+
+Use a .netrc file for basic authentication. An example [netrc](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html) (a file named
+`.netrc` placed in your root home directory) file could look as follows:
+
+<pre>
+machine secret.google.com
+    login admin@google.com
+    password Winter01
+</pre>
 
 You can set the `http_proxy` and `https_proxy` variables. These allow you to
 set a parent HTTP proxy, in which you can handle more complex types of
@@ -192,15 +201,6 @@ authentication (e.g. Fiddler, ZAP, Burp)
 export http_proxy='user:password@localhost:8080'
 export https_proxy='user:password@localhost:8080'
 droopescan scan drupal --url http://localhost/drupal
-</pre>
-
-Another option is to use a .netrc file for basic authentication. An example
-`~/.netrc` file could look as follows:
-
-<pre>
-machine secret.google.com
-    login admin@google.com
-    password Winter01
 </pre>
 
 *WARNING:* By design, to allow intercepting proxies and the testing of
@@ -358,8 +358,8 @@ Functionality available for ‘silverstripe’:
 </pre>
 
 It is important to verify that the latest version available for the CMS
-installation is available within `droopescan`, as otherwise it may be reported
-to be older than it really is
+installation is available within `droopescan`, as otherwise results may be
+inaccurate.
 
 # Contribute.
 
@@ -413,19 +413,23 @@ wordlist, a
 file, and optionally a list of interesting URLs, as well as replace all variables
 that are in joomla.py with values that are correct for your implementation.
 
+The plugin needs to update automatically in order for a pull request to be
+accepted. Further documentation may be later made available, but for now, keep
+in mind that the update_version_check, update_version, update_plugins_check and
+update_plugins need to be implemented. For reference, please review the
+`drupal.py` file. This is required in order to ensure plugins are kept to date.
+
 ## Issues & Pull Requests.
 
 Pull requests that create new plugins are welcome provided that maintenance for
-those plugins is done automatically (i.e. the plugins implement
-update_version_check and update_version.)
+those plugins is done automatically.
 
 Please remember to make your pull requests against the develoment branch
 rather than the master. Issues can be raised on the issue tracker here
 on GitHub.
 
 To run tests, some dependencies must be installed. Running the following
-commands (in addition to the regular installation process) will result in them
-being installed and the tests being ran:
+commands will result in them being installed and the tests being ran:
 
 <pre>
     apt-get install libxslt1-dev libxml2-dev zlib1g-dev python python-pip python-dev python3 python3-pip python3-dev
