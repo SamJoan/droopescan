@@ -12,7 +12,8 @@ class Joomla(BasePlugin):
     regular_file_url = "media/system/js/validate.js"
     module_common_file = ""
 
-    update_majors = ['1','2','3']
+    update_majors = ['1.5','1.6','1.7', '2.5', '3.0', '3.1', '3.2', '3.3',
+            '3.4', '3.5']
 
     interesting_urls = [
         ("joomla.xml", "This CMS' default changelog."),
