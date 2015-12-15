@@ -179,11 +179,14 @@ class VersionsFile():
 
         majors = {}
         for key in majors_include:
-            try:
+            in_xml_file = key in highest
+            if in_xml_file:
                 majors[key] = highest[key]
-            except KeyError:
-                minus_one = int(key) - 1
-                majors[key] = str(minus_one) + ".9999"
+            else:
+                splat = str(key).split('.')
+                last_digit = len(splat) - 1
+                splat[last_digit] = str(int(splat[last_digit]) - 1)
+                majors[key] = ".".join(splat) + ".9999"
 
         return majors
 

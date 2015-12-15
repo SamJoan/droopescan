@@ -645,3 +645,27 @@ class FingerprintTests(BaseTest):
 
             assert dr.called
 
+    def test_version_highest_not_present_multiple_digit(self):
+        add_versions = {
+            '3.1.31': {
+                'misc/ajax.js': '30d9e08baa11f3836eca00425b550f82',
+                'misc/drupal.js': '0bb055ea361b208072be45e8e004117b',
+                'misc/tabledrag.js': 'caaf444bbba2811b4fa0d5aecfa837e5',
+                'misc/tableheader.js': 'bd98fa07941364726469e7666b91d14d'
+            },
+            '3.2.12': {
+                'misc/drupal.js': '1904f6fd4a4fe747d6b53ca9fd81f848',
+                'misc/tabledrag.js': '50ebbc8dc949d7cb8d4cc5e6e0a6c1ca',
+                'misc/tableheader.js': '570b3f821441cd8f75395224fc43a0ea'
+            }
+        }
+
+        self.v.update(add_versions)
+
+        highest = self.v.highest_version_major(['3.1', '3.2', '3.3'])
+
+        assert highest['3.1'] == '3.1.31'
+        assert highest['3.2'] == '3.2.12'
+        assert highest['3.3'] == '3.2.9999'
+
+
