@@ -34,6 +34,14 @@
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.1.15" />
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.1.16-rc1" />
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.1.16" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.0-rc1" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.0-rc2" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.0-beta2" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.0-beta1" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.0" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.1" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.1-rc1" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.1-rc2" />
     </file>
     <file url="cms/css/layout.css">
       <version md5="5db089786a6d5487e16297ce36ab2421" nb="2.4.10" />
@@ -143,6 +151,14 @@
       <version md5="ce1538c17b4f3116993664219efa923e" nb="3.1.15" />
       <version md5="ce1538c17b4f3116993664219efa923e" nb="3.1.16-rc1" />
       <version md5="ce1538c17b4f3116993664219efa923e" nb="3.1.16" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.0-rc1" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.0-rc2" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.0-beta2" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.0-beta1" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.0" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.1" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.1-rc1" />
+      <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.1-rc2" />
     </file>
     <file url="framework/javascript/HtmlEditorField.js">
       <version md5="255ea83eb97ed9634eae66326fb5ec20" nb="3.0.0" />
@@ -245,6 +261,14 @@
       <version md5="85ab612530dd4f6506c3138e26fbc180" nb="3.1.15" />
       <version md5="85ab612530dd4f6506c3138e26fbc180" nb="3.1.16-rc1" />
       <version md5="85ab612530dd4f6506c3138e26fbc180" nb="3.1.16" />
+      <version md5="46951cccb59b346c420f55599dc0af8f" nb="3.2.0-rc1" />
+      <version md5="ff7fa0d908ef3951494cec5de0f37e7b" nb="3.2.0-rc2" />
+      <version md5="46951cccb59b346c420f55599dc0af8f" nb="3.2.0-beta2" />
+      <version md5="46951cccb59b346c420f55599dc0af8f" nb="3.2.0-beta1" />
+      <version md5="ff7fa0d908ef3951494cec5de0f37e7b" nb="3.2.0" />
+      <version md5="ff7fa0d908ef3951494cec5de0f37e7b" nb="3.2.1" />
+      <version md5="ff7fa0d908ef3951494cec5de0f37e7b" nb="3.2.1-rc1" />
+      <version md5="ff7fa0d908ef3951494cec5de0f37e7b" nb="3.2.1-rc2" />
     </file>
     <file url="framework/css/AssetUploadField.css">
       <version md5="78fa54480405595296ea61da2b33c42b" nb="3.0.0" />
@@ -315,6 +339,14 @@
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.15" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.16-rc1" />
       <version md5="7f5bf250469639de306f3bca2ed03666" nb="3.1.16" />
+      <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.0-rc1" />
+      <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.0-rc2" />
+      <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.0-beta2" />
+      <version md5="846a50fa1e7b0481230ea3a8846d433c" nb="3.2.0-beta1" />
+      <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.0" />
+      <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.1" />
+      <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.1-rc1" />
+      <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.1-rc2" />
     </file>
     <file url="framework/css/UploadField.css">
       <version md5="2de8e72eb87b371b61b5204c61a2c3d0" nb="3.0.0" />
@@ -385,6 +417,14 @@
       <version md5="8a233eb53d1230bb831a91a864b4393c" nb="3.1.15" />
       <version md5="8a233eb53d1230bb831a91a864b4393c" nb="3.1.16-rc1" />
       <version md5="8a233eb53d1230bb831a91a864b4393c" nb="3.1.16" />
+      <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.0-rc1" />
+      <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.0-rc2" />
+      <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.0-beta2" />
+      <version md5="2365196539c063ebf63e20af30a09b51" nb="3.2.0-beta1" />
+      <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.0" />
+      <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.1" />
+      <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.1-rc1" />
+      <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.1-rc2" />
     </file>
   </files>
 </cms>

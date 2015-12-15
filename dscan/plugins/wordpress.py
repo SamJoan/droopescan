@@ -59,7 +59,7 @@ class Wordpress(BasePlugin):
         hashes = {}
         for version in new_tags:
             gr.tag_checkout(version)
-            hashes[version] = gr.hashes_get(versions_file, self.update_majors)
+            hashes[version] = gr.hashes_get(versions_file)
 
         versions_file.update(hashes)
         return versions_file
