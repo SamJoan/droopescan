@@ -17,6 +17,7 @@ class Joomla(BasePlugin):
 
     interesting_urls = [
         ("joomla.xml", "This CMS' default changelog."),
+        ("administrator/manifests/files/joomla.xml", "Detailed version information."),
         ("administrator/", "Login page."),
         ("libraries/simplepie/README.txt", "SimplePie README."),
         ("LICENSE.txt", "License file."),
