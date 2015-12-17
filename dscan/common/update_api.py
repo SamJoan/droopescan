@@ -48,11 +48,38 @@ def github_tags_newer(github_repo, versions_file, update_majors):
 
     return len(newer) > 0
 
+"""
+    Utility function for checking whether a new version exists and is not going
+    to be updated. This is undesirable because it could result in new versions
+    existing and not being updated. Raising is prefering to adding the new
+    version manually because that allows maintainers to check whether the new
+    version works.
+    @param current_highest: as returned by VersionsFile.highest_version_major()
+    @param versions: a list of versions.
+    @return: void
+    @raise MissingMajorException: A new version from a newer major branch is
+        exists, but will not be downloaded due to it not being in majors.
+"""
+def _check_newer_major(current_highest, versions):
+    for version in versions:
+        major = version[0:len(list(current_highest.keys())[0])]
+
+        if major not in current_highest:
+            higher_version_present = False
+            for major_highest in current_highest:
+                if version_gt(major_highest, major):
+                    higher_version_present = True
+                    break
+
+            if not higher_version_present:
+                msg = 'Failed updating: Major %s has a new version and is not going to be updated.' % major
+                raise MissingMajorException(msg)
+
 def _newer_tags_get(current_highest, versions):
     """
     Returns versions from versions which are greater than than the highest
     version in each major. If a newer major is present in versions which is
-    not present on current_highest, it will also be returned.
+    not present on current_highest, an exception will be raised.
     @param current_highest: as returned by VersionsFile.highest_version_major()
     @param versions: a list of versions.
     @return: a list of versions.
@@ -66,6 +93,8 @@ def _newer_tags_get(current_highest, versions):
             if version.startswith(major) and version_gt(version,
                     highest_version):
                 newer.append(version)
+
+    _check_newer_major(current_highest, versions)
 
     return newer
 

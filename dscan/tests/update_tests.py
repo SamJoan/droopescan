@@ -195,18 +195,29 @@ class UpdateTests(BaseTest):
 
     @test.raises(MissingMajorException)
     def test_tags_newer_missing_major(self):
-        tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
-        update_majors = ['6', '7']
+        tags_get_ret = ['2.1.4', '2.1.3', '2.2.5', '3.1.0']
+        update_majors = ['2.1', '2.2', '3.1']
         with patch('dscan.common.update_api.VersionsFile') as vf:
             with patch('dscan.common.update_api.GitRepo.tags_get', autospec=True) as tg:
-                vf.highest_version_major.return_value = {'6': '6.34', '7': '7.34'}
+                vf.highest_version_major.return_value = {'2.1': '2.1.5', '2.2': '2.2.4'}
                 tg.return_value = tags_get_ret
 
-                # No new tags should result in exception.
+                # Missing major should abort.
                 self.gr.tags_newer(vf, update_majors)
 
+    def test_tags_newer_missing_major_older(self):
+        tags_get_ret = ['2.1.4', '2.1.3', '2.2.5', '1.9']
+        update_majors = ['2.1', '2.2', '3.1']
+        with patch('dscan.common.update_api.VersionsFile') as vf:
+            with patch('dscan.common.update_api.GitRepo.tags_get', autospec=True) as tg:
+                vf.highest_version_major.return_value = {'2.1': '2.1.5', '2.2': '2.2.4'}
+                tg.return_value = tags_get_ret
+
+                result = self.gr.tags_newer(vf, update_majors)
+                assert result == ['2.2.5']
+
     def test_tags_newer_func(self):
-        tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
+        tags_get_ret = ['7.34', '6.34', '7.33', '6.33']
         update_majors = ['6', '7']
         with patch('dscan.common.update_api.VersionsFile') as vf:
             with patch('dscan.common.update_api.GitRepo.tags_get', autospec=True) as tg:
