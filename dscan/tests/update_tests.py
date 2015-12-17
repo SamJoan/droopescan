@@ -4,7 +4,7 @@ from dscan.common.exceptions import MissingMajorException
 from dscan.common.testutils import decallmethods
 from dscan.common.update_api import GH, UW
 from dscan.common.update_api import github_tags_newer, github_repo, _github_normalize, \
-    file_mtime, modules_get
+    file_mtime, modules_get, _tag_is_rubbish
 from datetime import datetime, timedelta
 from dscan.common.update_api import GitRepo
 from dscan import common
@@ -207,6 +207,22 @@ class UpdateTests(BaseTest):
 
     def test_tags_newer_missing_major_older(self):
         tags_get_ret = ['2.1.4', '2.1.3', '2.2.5', '1.9']
+        update_majors = ['2.1', '2.2', '3.1']
+        with patch('dscan.common.update_api.VersionsFile') as vf:
+            with patch('dscan.common.update_api.GitRepo.tags_get', autospec=True) as tg:
+                vf.highest_version_major.return_value = {'2.1': '2.1.5', '2.2': '2.2.4'}
+                tg.return_value = tags_get_ret
+
+                result = self.gr.tags_newer(vf, update_majors)
+                assert result == ['2.2.5']
+
+    def test_tag_not_rubbish(self):
+        assert _tag_is_rubbish("11.4", "3.2.4")
+        assert _tag_is_rubbish("elephant", "3.2.4")
+        assert not _tag_is_rubbish("4.3.2", "3.2.4")
+
+    def test_tags_newer_missing_rubbish(self):
+        tags_get_ret = ['2.1.4', '2.1.3', '2.2.5', '13.0']
         update_majors = ['2.1', '2.2', '3.1']
         with patch('dscan.common.update_api.VersionsFile') as vf:
             with patch('dscan.common.update_api.GitRepo.tags_get', autospec=True) as tg:
@@ -588,4 +604,3 @@ class UpdateTests(BaseTest):
         print(len(plugins), len(themes))
         assert len(plugins) == 1000
         assert len(themes) == 1997
-

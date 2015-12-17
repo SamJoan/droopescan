@@ -48,7 +48,18 @@ def github_tags_newer(github_repo, versions_file, update_majors):
 
     return len(newer) > 0
 
-"""
+def _tag_is_rubbish(tag, valid_version):
+    """
+    Returns whether a tag is "similar" to a valid version or whether it is
+    rubbish.
+    @param tag: the tag.
+    @param valid_version: a valid version string for this CMS.
+    @return: boolean.
+    """
+    return tag.count(".") != valid_version.count(".")
+
+def _check_newer_major(current_highest, versions):
+    """
     Utility function for checking whether a new version exists and is not going
     to be updated. This is undesirable because it could result in new versions
     existing and not being updated. Raising is prefering to adding the new
@@ -59,11 +70,14 @@ def github_tags_newer(github_repo, versions_file, update_majors):
     @return: void
     @raise MissingMajorException: A new version from a newer major branch is
         exists, but will not be downloaded due to it not being in majors.
-"""
-def _check_newer_major(current_highest, versions):
-    for version in versions:
-        major = version[0:len(list(current_highest.keys())[0])]
+    """
+    for tag in versions:
+        update_majors = list(current_highest.keys())
+        example_version_str = current_highest[update_majors[0]]
+        if _tag_is_rubbish(tag, example_version_str):
+            continue
 
+        major = tag[0:len(update_majors[0])]
         if major not in current_highest:
             higher_version_present = False
             for major_highest in current_highest:
