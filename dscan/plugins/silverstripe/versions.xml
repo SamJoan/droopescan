@@ -42,6 +42,7 @@
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.1" />
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.1-rc1" />
       <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.2.1-rc2" />
+      <version md5="89ca1f23e6a7ab0c77e72495ee88897b" nb="3.3.0-beta1" />
     </file>
     <file url="cms/css/layout.css">
       <version md5="5db089786a6d5487e16297ce36ab2421" nb="2.4.10" />
@@ -159,6 +160,7 @@
       <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.1" />
       <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.1-rc1" />
       <version md5="ce1538c17b4f3116993664219efa923e" nb="3.2.1-rc2" />
+      <version md5="e9c5647d0787cf9d99f676a36000b07a" nb="3.3.0-beta1" />
     </file>
     <file url="framework/javascript/HtmlEditorField.js">
       <version md5="255ea83eb97ed9634eae66326fb5ec20" nb="3.0.0" />
@@ -269,6 +271,7 @@
       <version md5="ff7fa0d908ef3951494cec5de0f37e7b" nb="3.2.1" />
       <version md5="ff7fa0d908ef3951494cec5de0f37e7b" nb="3.2.1-rc1" />
       <version md5="ff7fa0d908ef3951494cec5de0f37e7b" nb="3.2.1-rc2" />
+      <version md5="8513fd26fa78f137c4d12a2cc4274cea" nb="3.3.0-beta1" />
     </file>
     <file url="framework/css/AssetUploadField.css">
       <version md5="78fa54480405595296ea61da2b33c42b" nb="3.0.0" />
@@ -347,6 +350,7 @@
       <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.1" />
       <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.1-rc1" />
       <version md5="363593a1de199157a29e5dfd4b054eee" nb="3.2.1-rc2" />
+      <version md5="39df6ff2e5d799bc7bd84ca61071cc8d" nb="3.3.0-beta1" />
     </file>
     <file url="framework/css/UploadField.css">
       <version md5="2de8e72eb87b371b61b5204c61a2c3d0" nb="3.0.0" />
@@ -425,6 +429,7 @@
       <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.1" />
       <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.1-rc1" />
       <version md5="4d81ee3f1050f4ec14e8ce64ae5efb85" nb="3.2.1-rc2" />
+      <version md5="2517e9580159efb216a0d356de033553" nb="3.3.0-beta1" />
     </file>
   </files>
 </cms>
