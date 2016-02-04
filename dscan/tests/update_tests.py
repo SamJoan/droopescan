@@ -470,7 +470,7 @@ class UpdateTests(BaseTest):
 
         do_resp = codecs.open(dscan.PWD + 'tests/resources/drupal_org_response.html',
                 encoding='utf-8').read()
-        do_resp_last = codecs.open(dscan.PWD + 'tests/resources/drupal_org_response_partial.html').read()
+        do_resp_last = codecs.open(dscan.PWD + 'tests/resources/drupal_org_response_partial.html', 'r', 'utf-8').read()
         responses.add(responses.GET, 'https://drupal.org/project/project_module?page=0',
                 body=do_resp, match_querystring=True)
         responses.add(responses.GET, 'https://drupal.org/project/project_module?page=1',
