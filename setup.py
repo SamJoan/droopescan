@@ -17,7 +17,7 @@ def _post_install():
 
 class PostInstall(install):  
     def run(self):
-        _install.run(self)
+        install.run(self)
 	self.execute(_post_install, [],  msg="Running post install task")
 
 setup(
