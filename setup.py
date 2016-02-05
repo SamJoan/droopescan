@@ -14,11 +14,11 @@ def read_first_line(f):
 
 class PostInstall(install):
     def run(self):
-        _install.run(self)
         try: 
             os.system("chmod +x /usr/local/bin/droopescan");
         except:
             pass
+        install.run(self)
 
 setup(
     name='droopescan',
