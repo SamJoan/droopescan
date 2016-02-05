@@ -16,9 +16,10 @@ def _post_install():
     os.system("chmod +x /usr/local/bin/droopescan");
 
 class PostInstall(install):  
+
     def run(self):
         install.run(self)
-	self.execute(_post_install, [],  msg="Running post install task")
+        self.execute(_post_install, [],  msg="Running post install task")
 
 setup(
     name='droopescan',
