@@ -29,6 +29,8 @@ except ImportError:
 
 try:
     requests.packages.urllib3.disable_warnings()
+    import urllib3
+    urllib3.disable_warnings()
 except:
     pass
 

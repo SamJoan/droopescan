@@ -1,3 +1,8 @@
+1.34.0
+======
+
+* New WP, Joomla and Drupal versions out. WP fixes serval security issues, including SSRF, XSS and an arbitrary redirect.
+
 1.33.7
 ======
 
