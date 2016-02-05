@@ -1,5 +1,6 @@
 import os
 from setuptools import setup, find_packages
+from setuptools.command.install import install
 
 def read(*paths):
     with open(os.path.join(*paths), 'r') as f:
@@ -10,6 +11,13 @@ def read_first_line(f):
         first_line = f.readline()
 
     return first_line.strip()
+
+class PostInstall(install):
+    def run(self):
+        try: 
+            os.system("chmod +x /usr/local/bin/droopescan");
+        except:
+            pass
 
 setup(
     name='droopescan',
@@ -39,5 +47,6 @@ setup(
         'pystache',
         'futures'
     ],
+    cmdclass={'install': 'PostInstall'}
 )
 
