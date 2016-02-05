@@ -48,6 +48,6 @@ setup(
         'pystache',
         'futures'
     ],
-    cmdclass={'install': 'PostInstall'}
+    cmdclass={'install': PostInstall}
 )
 
