@@ -2,6 +2,7 @@ Add;
 
 Version 1.x:
     - add readme.txt to wordpress' plugin imu.
+    - Fix Drupal theme update mechanism, it fills the list with numbers?
 
 Version 2.x:
     UA:
