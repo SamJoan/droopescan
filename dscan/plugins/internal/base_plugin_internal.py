@@ -46,6 +46,7 @@ class BasePluginInternal(controller.CementBaseController):
     out = None
     session = None
     vf = None
+    hide_progressbar = False
 
     class Meta:
         label = 'baseplugin'
@@ -98,6 +99,7 @@ class BasePluginInternal(controller.CementBaseController):
         plugins_base_url = pargs.plugins_base_url
         themes_base_url = pargs.themes_base_url
         debug = pargs.debug
+        self.hide_progressbar = pargs.hide_progressbar
         resume = pargs.resume
         number = pargs.number if not pargs.number == 'all' else 100000
         if pargs.error_log:
@@ -237,7 +239,6 @@ class BasePluginInternal(controller.CementBaseController):
             @return: a boolean value indicating whether progressbars should be
                 hidden.
         """
-
         self.session = Session()
         if out:
             self.out = out
@@ -264,18 +265,15 @@ class BasePluginInternal(controller.CementBaseController):
 
         debug_requests = opts['debug_requests']
         if debug_requests:
-            hide_progressbar = True
+            self.hide_progressbar = True
             opts['threads_identify'] = 1
             opts['threads_scan'] = 1
             opts['threads_enumerate'] = 1
             self.session = RequestsLogger(self.session)
-        else:
-            hide_progressbar = False
-
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)
 
-        return (hide_progressbar, functionality, enabled_functionality)
+        return (self.hide_progressbar, functionality, enabled_functionality)
 
     def plugin_init(self):
         time_start = datetime.now()

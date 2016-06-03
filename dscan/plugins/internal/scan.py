@@ -27,7 +27,6 @@ class Scan(BasePlugin):
 
         argument_formatter = common.SmartFormatter
         epilog = template("help_epilog.mustache")
-
         arguments = [
                 (['-u', '--url'], dict(action='store', help='')),
                 (['-U', '--url-file'], dict(action='store', help='''A file which
@@ -36,6 +35,9 @@ class Scan(BasePlugin):
                 (['--enumerate', '-e'], dict(action='store', help='R|' +
                     common.template('help_enumerate.mustache'),
                     choices=common.enum_list(common.Enumerate), default='a')),
+                (['--hide-progressbar'], dict(action='store_true',
+                                              help='Hide progressbar',
+                                              default=False)),
                 (['--method'], dict(action='store', help='R|' +
                     common.template('help_method.mustache'), choices=common.enum_list(common.ScanningMethod))),
                 (['--verb'], dict(action='store', help="""The HTTP verb to use;
