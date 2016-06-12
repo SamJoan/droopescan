@@ -29,7 +29,7 @@ class Silverstripe(BasePlugin):
     regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css',
             "framework/CONTRIBUTING.md"]
     module_common_file = 'README.md'
-    update_majors = ['3.1', '3.0', '3.2', '3.3', '2.4']
+    update_majors = ['3.1', '3.0', '3.2', '3.3', '3.4', '2.4', '4.0']
 
     interesting_urls = [
             ('framework/docs/en/changelogs/index.md', 'Changelogs, there are other files in same dir, but \'index.md\' is frequently outdated.'),
