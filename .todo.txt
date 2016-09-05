@@ -3,6 +3,10 @@ Add;
 Version 1.x:
     - add readme.txt to wordpress' plugin imu.
     - Fix Drupal theme update mechanism, it fills the list with numbers?
+        - Caused by glitch in later pages of drupal site, fix by limiting number
+          of themes downloaded to a max of 1000.
+        - Improve logging for Failed XSD test on 
+            /home/travis/build/droope/droopescan/dscan/tests/fingerprint_tests.py", line 64
 
 Version 2.x:
     UA:
