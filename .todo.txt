@@ -7,6 +7,10 @@ Version 1.x:
           of themes downloaded to a max of 1000.
         - Improve logging for Failed XSD test on 
             /home/travis/build/droope/droopescan/dscan/tests/fingerprint_tests.py", line 64
+            
+            Curr msg:
+                XMLSyntaxError: Element 'version': Duplicate key-sequence [''] in unique identity-constraint 'uniqueHashId'.
+                https://travis-ci.org/droope/droopescan/jobs/157595509
 
 Version 2.x:
     UA:
