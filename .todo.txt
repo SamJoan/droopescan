@@ -11,6 +11,7 @@ Version 1.x:
             Curr msg:
                 XMLSyntaxError: Element 'version': Duplicate key-sequence [''] in unique identity-constraint 'uniqueHashId'.
                 https://travis-ci.org/droope/droopescan/jobs/157595509
+        - Add CWP modules/CWP detection?
 
 Version 2.x:
     UA:
