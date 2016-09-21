@@ -61,7 +61,13 @@ class FingerprintTests(BaseTest):
 
     def test_xml_validates_all(self):
         for xml_path in glob(dscan.PWD + 'plugins/*/versions.xml'):
-            xml_validate(xml_path, self.versions_xsd)
+            try: 
+                xml_validate(xml_path, self.versions_xsd)
+            except XMLSyntaxError as err:
+                if not err.args:
+                    err.args =('',)
+                err.args = err.args + (xml_path,)
+                raise
 
     def test_determines_version(self):
         real_version = '7.26'
