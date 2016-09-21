@@ -63,7 +63,7 @@ class FingerprintTests(BaseTest):
         for xml_path in glob(dscan.PWD + 'plugins/*/versions.xml'):
             try: 
                 xml_validate(xml_path, self.versions_xsd)
-            except XMLSyntaxError as err:
+            except etree.XMLSyntaxError as err:
                 if not err.args:
                     err.args =('',)
                 err.args = err.args + (xml_path,)
