@@ -61,6 +61,7 @@ class FingerprintTests(BaseTest):
 
     def test_xml_validates_all(self):
         for xml_path in glob(dscan.PWD + 'plugins/*/versions.xml'):
+            print(xml_path)
             try: 
                 xml_validate(xml_path, self.versions_xsd)
             except etree.XMLSyntaxError as err:
