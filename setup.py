@@ -46,7 +46,6 @@ setup(
     install_requires=[
         'cement>=2.6,<2.6.99',
         'requests',
-        'utils',
         'pystache',
         'futures'
     ],
