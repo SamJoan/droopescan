@@ -12,6 +12,7 @@ several CMS:
 Partial functionality for:
 
 * Joomla (version enumeration and interesting URLs only).
+* Moodle (identification doesn't work yet. You need to force 'scan moodle')
 
 <pre>
 computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 8

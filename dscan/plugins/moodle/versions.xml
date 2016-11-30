@@ -1,0 +1,13 @@
+<cms>
+  <files>
+    <file url="composer.json">
+      <version md5="718062e279632fdee27a7d1af74bf0db" nb="3.1" />
+    </file>
+    <file url="package.json">
+      <version md5="518971a401bf4eb5483a17bbd57943b1" nb="3.1" />
+    </file>
+  </files>
+    <file url="Gruntfile.js">
+      <version md5="5ada9b83d178be8a847ed7390bf46ef8" nb="3.1" />
+    </file>
+</cms>

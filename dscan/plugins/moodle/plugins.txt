@@ -1,0 +1,13 @@
+assign
+assignment
+book
+chat
+choice
+data
+feedback
+forum
+glossary
+lesson
+quiz
+survey
+workshop
