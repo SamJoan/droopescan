@@ -12,8 +12,8 @@ TEST_RUNS_BASE = ['./droopescan']
 TEST_RUNS_APPEND = ['-n', '100']
 TEST_RUNS = [
         ['scan', 'drupal', '--url', 'https://www.drupal.org', '-t', '30'],
-        ['scan', 'silverstripe', '--url', 'http://demo.silverstripe.org', '-t', '2'],
-        ['scan', 'wordpress', '--url', 'https://wordpress.org/', '-t', '30'],
+        ['scan', 'silverstripe', '--url', 'http://mike.andrewartha.co.nz/', '-t', '2'],
+        ['scan', 'wordpress', '--url', 'http://wordpress.org/', '-t', '30'],
         ['scan', 'joomla', '--url', 'http://www.joomla.org/', '-t', '30']
     ]
 
