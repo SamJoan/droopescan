@@ -25,7 +25,7 @@ Version 1.x:
     - Fix Drupal theme update mechanism, it fills the list with numbers?
         - Caused by glitch in later pages of drupal site, fix by limiting number
           of themes downloaded to a max of 1000.
-        - Add CWP modules/CWP detection to ss?
+    - Add CWP modules/CWP detection to ss?
     - Themes in wordpress sites return 500 errors. These get classified as
           random errors but may be indicative of those files being present.
                 [root@debian-dev droopescan (development)]# ./droopescan scan -u http://example.org/ -n 100 --debug-requests
@@ -45,6 +45,12 @@ Version 1.x:
             [head] http://example.org// None 404
             [get] http://example.org//wp-admin/wp-admin.css None 404
             [get] http://example.org//wp-includes/js/tinymce/tiny_mce_popup.js None 404
+    - Double redirects, e.g. for http://example.org/ -> http://www.example.org -> https://www.example.org/ result in the following output:
+        root@host:~# droopescan scan -u example.org
+        [+] Accepted redirect to https://example.org/
+        [+] Site identified as drupal.
+        [+] Expected folder returned status '301', expected file returned not found status.
+        [+] It is possible that https://example.org/ is not running drupal. If you disagree, please specify a --method
 
 Version 2.x:
     UA:
