@@ -23,7 +23,6 @@
       <version md5="518971a401bf4eb5483a17bbd57943b1" nb="3.1.3" />
       <version md5="d139edf501ad8c6a3f28e0a2d06d7674" nb="3.2rc4" />
     </file>
-  </files>
   <file url="Gruntfile.js">
       <version md5="3a2f1cb00a3266a9340ee5fe0e93640a" nb="2.9" />
       <version md5="3a2f1cb00a3266a9340ee5fe0e93640a" nb="2.9.1" />
@@ -35,4 +34,5 @@
       <version md5="5ada9b83d178be8a847ed7390bf46ef8" nb="3.1.3" />
       <version md5="9a0e2cad7e9e287ee1c2ab8dd322f003" nb="3.2rc4" />
     </file>
+  </files>
 </cms>
