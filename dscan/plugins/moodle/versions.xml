@@ -1,7 +1,6 @@
 <cms>
   <files>
     <file url="composer.json">
-      <version md5="cb96d2b2fbae1ecffcc929ae017b0823" nb="2.7.17" />
       <version md5="8851ae0a65874465e2e9fef68335e110" nb="2.9" />
       <version md5="e57a3c4f1934098d77de54215b059ba1" nb="2.9.1" />
       <version md5="e57a3c4f1934098d77de54215b059ba1" nb="2.9.2" />
