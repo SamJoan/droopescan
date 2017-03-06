@@ -73,7 +73,7 @@ class Moodle(BasePlugin):
         """
 
     def update_plugins_check(self):
-        return ua.update_modules_check(self)
+        pass
 
     def update_plugins(self):
         """

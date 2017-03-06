@@ -13,7 +13,7 @@ class Joomla(BasePlugin):
     module_common_file = ""
 
     update_majors = ['1.5','1.6','1.7', '2.5', '3.0', '3.1', '3.2', '3.3',
-            '3.4', '3.5', '3.6']
+            '3.4', '3.5', '3.6', '3.7']
 
     interesting_urls = [
         ("joomla.xml", "This CMS' default changelog."),

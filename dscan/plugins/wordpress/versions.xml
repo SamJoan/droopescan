@@ -190,6 +190,13 @@
       <version md5="a2b365a131a3aaa578bcce14ae9a0512" nb="4.6" />
       <version md5="a2b365a131a3aaa578bcce14ae9a0512" nb="4.6.1" />
       <version md5="3938fcd57688b4d7681a50d6a1f53e71" nb="3.9.14" />
+      <version md5="a2b365a131a3aaa578bcce14ae9a0512" nb="4.7" />
+      <version md5="2c55b47570a0802d3ec40781d2d6adc9" nb="3.9.16" />
+      <version md5="2c55b47570a0802d3ec40781d2d6adc9" nb="3.9.15" />
+      <version md5="0d0434c8b176c525a6fce9cefdf8e106" nb="4.7.2" />
+      <version md5="0d0434c8b176c525a6fce9cefdf8e106" nb="4.7.1" />
+      <version md5="0d0434c8b176c525a6fce9cefdf8e106" nb="4.6.3" />
+      <version md5="0d0434c8b176c525a6fce9cefdf8e106" nb="4.6.2" />
     </file>
     <file url="wp-includes/js/tinymce/tiny_mce_popup.js">
       <version md5="554bc76c70351187f4ce05ddc012aaed" nb="3.6.1" />
@@ -320,6 +327,13 @@
       <version md5="dbe62082422b75d89ecb983409ec966d" nb="4.6" />
       <version md5="dbe62082422b75d89ecb983409ec966d" nb="4.6.1" />
       <version md5="38dbcc925529368812f5c2fbcb389616" nb="3.9.14" />
+      <version md5="dbe62082422b75d89ecb983409ec966d" nb="4.7" />
+      <version md5="38dbcc925529368812f5c2fbcb389616" nb="3.9.16" />
+      <version md5="38dbcc925529368812f5c2fbcb389616" nb="3.9.15" />
+      <version md5="dbe62082422b75d89ecb983409ec966d" nb="4.7.2" />
+      <version md5="dbe62082422b75d89ecb983409ec966d" nb="4.7.1" />
+      <version md5="dbe62082422b75d89ecb983409ec966d" nb="4.6.3" />
+      <version md5="dbe62082422b75d89ecb983409ec966d" nb="4.6.2" />
     </file>
     <file url="wp-includes/js/quicktags.js">
       <version md5="2a040163533eceee9b05c95216bf6764" nb="3.6.1" />
@@ -450,6 +464,13 @@
       <version md5="481e904dd706f51af4bf2faa4070165b" nb="4.6" />
       <version md5="481e904dd706f51af4bf2faa4070165b" nb="4.6.1" />
       <version md5="75a2b7d66218b95cc439cd82daea731d" nb="3.9.14" />
+      <version md5="481e904dd706f51af4bf2faa4070165b" nb="4.7" />
+      <version md5="75a2b7d66218b95cc439cd82daea731d" nb="3.9.16" />
+      <version md5="75a2b7d66218b95cc439cd82daea731d" nb="3.9.15" />
+      <version md5="481e904dd706f51af4bf2faa4070165b" nb="4.7.2" />
+      <version md5="481e904dd706f51af4bf2faa4070165b" nb="4.7.1" />
+      <version md5="481e904dd706f51af4bf2faa4070165b" nb="4.6.3" />
+      <version md5="481e904dd706f51af4bf2faa4070165b" nb="4.6.2" />
     </file>
     <file url="wp-includes/js/tinymce/utils/validate.js">
       <version md5="2d73c0757ea622f65738ea71433ca8e4" nb="3.6.1" />
@@ -580,6 +601,13 @@
       <version md5="c42b5160bdbefd1293d76b30520757f4" nb="4.6" />
       <version md5="c42b5160bdbefd1293d76b30520757f4" nb="4.6.1" />
       <version md5="681466e5980a5b99d9baeded56c67d34" nb="3.9.14" />
+      <version md5="c42b5160bdbefd1293d76b30520757f4" nb="4.7" />
+      <version md5="681466e5980a5b99d9baeded56c67d34" nb="3.9.16" />
+      <version md5="681466e5980a5b99d9baeded56c67d34" nb="3.9.15" />
+      <version md5="c42b5160bdbefd1293d76b30520757f4" nb="4.7.2" />
+      <version md5="c42b5160bdbefd1293d76b30520757f4" nb="4.7.1" />
+      <version md5="c42b5160bdbefd1293d76b30520757f4" nb="4.6.3" />
+      <version md5="c42b5160bdbefd1293d76b30520757f4" nb="4.6.2" />
     </file>
     <changelog url="readme.html">
       <version md5="80c4ecc8630395baeb7363a7cf4dad33" nb="2.9.1" />
@@ -718,6 +746,13 @@
       <version md5="67ba56403014102858d999ee1667524f" nb="4.6" />
       <version md5="df0f4d66b59b3338a5d012d52bc435fa" nb="4.6.1" />
       <version md5="38cbc7bd229691e2f7570f39e2ed79f0" nb="3.9.14" />
+      <version md5="fe8cf5b25298130f1b2ed912a5809e33" nb="4.7" />
+      <version md5="8f4d451aeead063e6367c9d5dcd02ee7" nb="3.9.16" />
+      <version md5="e61db9d4bdf4493d01f93b7f2d31b7aa" nb="3.9.15" />
+      <version md5="fe8cf5b25298130f1b2ed912a5809e33" nb="4.7.2" />
+      <version md5="fe8cf5b25298130f1b2ed912a5809e33" nb="4.7.1" />
+      <version md5="997cfaa41d14c329574ab63128a6d8ef" nb="4.6.3" />
+      <version md5="43c6fcf7a5e24ed469e6ff13b03fe7a3" nb="4.6.2" />
     </changelog>
   </files>
 </cms>
