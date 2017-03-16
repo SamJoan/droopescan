@@ -44,6 +44,9 @@ def github_tags_newer(github_repo, versions_file, update_majors):
     for tag in bs.find_all('span', {'class':'tag-name'}):
         gh_versions.append(tag.text)
 
+    print(gh_versions)
+    assert(False)
+
     newer = _newer_tags_get(current_highest, gh_versions)
 
     return len(newer) > 0
@@ -104,6 +107,7 @@ def _newer_tags_get(current_highest, versions):
     for major in current_highest:
         highest_version = current_highest[major]
         for version in versions:
+            print(version, highest_version)
             if version.startswith(major) and version_gt(version,
                     highest_version):
                 newer.append(version)

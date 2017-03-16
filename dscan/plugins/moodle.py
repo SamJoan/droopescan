@@ -1,6 +1,7 @@
 from cement.core import handler, controller
-from dscan.plugins import BasePlugin
 from dscan import common
+from dscan.plugins import BasePlugin
+import dscan.common.update_api as ua
 
 class Moodle(BasePlugin):
     """
@@ -29,7 +30,7 @@ class Moodle(BasePlugin):
     module_common_file = "version.php"
     # Major branches which are supported by the vendor. This is used for
     # updating.
-    update_majors = ['3']
+    update_majors = ['2.7', '2.9', '3.0', '3.1', '3.2', '3.3']
 
     # a list of tuples that contain on the index 0 a url, and on 1 a description
     # to be shown to the user if the URL replies with 200 found
@@ -63,6 +64,8 @@ class Moodle(BasePlugin):
         """
         @return: True if new versions of this software have been found.
         """
+        return ua.github_tags_newer('moodle/moodle/', self.versions_file,
+                update_majors=self.update_majors)
 
     def update_version(self):
         """
@@ -71,6 +74,7 @@ class Moodle(BasePlugin):
         used.
         @return: updated VersionsFile
         """
+        assert(False)
 
     def update_plugins_check(self):
         pass
