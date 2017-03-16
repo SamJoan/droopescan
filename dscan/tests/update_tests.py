@@ -68,13 +68,13 @@ class UpdateTests(BaseTest):
         gh_resp = open(dscan.PWD + 'tests/resources/github_response.html').read()
         responses.add(responses.GET, 'https://github.com/drupal/drupal/tags', body=gh_resp)
         responses.add(responses.GET, 'https://github.com/silverstripe/silverstripe-framework/releases')
+        pass
 
     def mock_update_all(self):
         self.updater.update_version = Mock(spec=self.updater.update_version)
         self.updater.update_plugins = Mock(spec=self.updater.update_plugins)
 
     def test_update_checks_and_updates(self):
-        self.gh_mock()
         self.mock_controller('drupal', 'update_version_check', return_value=True)
         m = self.mock_controller('drupal', 'update_version')
 
@@ -85,7 +85,6 @@ class UpdateTests(BaseTest):
         assert m.called
 
     def test_update_checks_without_update(self):
-        self.gh_mock()
         self.mock_controller('drupal', 'update_version_check', return_value=False)
         m = self.mock_controller('drupal', 'update_version')
 
