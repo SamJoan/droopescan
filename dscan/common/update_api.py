@@ -19,6 +19,7 @@ import subprocess
 
 GH = 'https://github.com/'
 UW = './.update-workspace/'
+TAG_PAGES = 5
 
 def github_tags_newer(github_repo, versions_file, update_majors):
     """
@@ -36,16 +37,19 @@ def github_tags_newer(github_repo, versions_file, update_majors):
     vf = VersionsFile(versions_file)
     current_highest = vf.highest_version_major(update_majors)
 
-    tags_url = '%s%stags' % (GH, github_repo)
-    resp = requests.get(tags_url)
-    bs = BeautifulSoup(resp.text, 'lxml')
+    pages_done = 0
+    after = ""
+    while(pages_done < TAG_PAGES):
+        tags_url = '%s%stags?after=%s' % (GH, github_repo, after)
+        resp = requests.get(tags_url)
+        bs = BeautifulSoup(resp.text, 'lxml')
 
-    gh_versions = []
-    for tag in bs.find_all('span', {'class':'tag-name'}):
-        gh_versions.append(tag.text)
+        gh_versions = []
+        for tag in bs.find_all('span', {'class':'tag-name'}):
+            gh_versions.append(tag.text)
+            after = tag.text
 
-    print(gh_versions)
-    assert(False)
+        pages_done += 1
 
     newer = _newer_tags_get(current_highest, gh_versions)
 
@@ -107,7 +111,6 @@ def _newer_tags_get(current_highest, versions):
     for major in current_highest:
         highest_version = current_highest[major]
         for version in versions:
-            print(version, highest_version)
             if version.startswith(major) and version_gt(version,
                     highest_version):
                 newer.append(version)
