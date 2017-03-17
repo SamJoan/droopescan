@@ -51,7 +51,7 @@ def github_tags_newer(github_repo, versions_file, update_majors):
             after = tag.text
 
         newer = _newer_tags_get(current_highest, gh_versions)
-        if(len(newer) > 0):
+        if len(newer) > 0:
             return True
 
         pages_done += 1
@@ -114,6 +114,7 @@ def _newer_tags_get(current_highest, versions):
     for major in current_highest:
         highest_version = current_highest[major]
         for version in versions:
+            version = version.lstrip('v')
             if version.startswith(major) and version_gt(version,
                     highest_version):
                 newer.append(version)

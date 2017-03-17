@@ -4,7 +4,7 @@ from dscan.common.exceptions import MissingMajorException
 from dscan.common.testutils import decallmethods
 from dscan.common.update_api import GH, UW
 from dscan.common.update_api import github_tags_newer, github_repo, _github_normalize, \
-    file_mtime, modules_get, _tag_is_rubbish
+    file_mtime, modules_get, _tag_is_rubbish, _newer_tags_get
 from datetime import datetime, timedelta
 from dscan.common.update_api import GitRepo
 from dscan import common
@@ -120,7 +120,6 @@ class UpdateTests(BaseTest):
                     '7.99', '5': '5.8'}
             # should be true because of 5.9 in response mocks.
             assert github_tags_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7', '5'])
-
 
     def test_github_repo(self):
         with patch('dscan.common.update_api.GitRepo.__init__', return_value=None, autospec=True) as gri:
@@ -619,3 +618,17 @@ class UpdateTests(BaseTest):
         print(len(plugins), len(themes))
         assert len(plugins) == 1000
         assert len(themes) == 1997
+
+    def test_moodle_strip_prefix(self):
+        versions = [u'v3.2.2', u'v3.1.5', u'v3.0.9', u'v3.2.1', u'v3.1.4',
+                u'v3.0.8', u'v3.2.0', u'v3.2.0-rc5']
+
+        current_highest = {
+            '3.2': '3.2rc4',
+            '3.3': '3.2.9999',
+            '3.0': '3.0.7',
+            '3.1': '3.1.3'
+        }
+        
+        assert _newer_tags_get(current_highest, versions)
+
