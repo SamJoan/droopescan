@@ -65,17 +65,8 @@ class UpdateTests(BaseTest):
 
     def gh_mock(self):
         # github_response.html has 7.34 & 6.34 as the latest tags.
-        gh_resp_1 = open(dscan.PWD + 'tests/resources/github_response.html').read()
-        gh_resp_2 = open(dscan.PWD + 'tests/resources/github_response.2.html').read()
-        gh_resp_3 = open(dscan.PWD + 'tests/resources/github_response.3.html').read()
-        gh_resp_4 = open(dscan.PWD + 'tests/resources/github_response.4.html').read()
-        gh_resp_5 = open(dscan.PWD + 'tests/resources/github_response.5.html').read()
-
-        responses.add(responses.GET, 'https://github.com/drupal/drupal/tags?after=', body=gh_resp_1, match_querystring=True)
-        responses.add(responses.GET, 'https://github.com/drupal/drupal/tags?after=6.31', body=gh_resp_2, match_querystring=True)
-        responses.add(responses.GET, 'https://github.com/drupal/drupal/tags?after=6.21', body=gh_resp_3, match_querystring=True)
-        responses.add(responses.GET, 'https://github.com/drupal/drupal/tags?after=6.11', body=gh_resp_4, match_querystring=True)
-        responses.add(responses.GET, 'https://github.com/drupal/drupal/tags?after=6.1', body=gh_resp_5, match_querystring=True)
+        gh_resp = open(dscan.PWD + 'tests/resources/github_response.html').read()
+        responses.add(responses.GET, 'https://github.com/drupal/drupal/tags', body=gh_resp)
 
     def mock_update_all(self):
         self.updater.update_version = Mock(spec=self.updater.update_version)
@@ -112,14 +103,6 @@ class UpdateTests(BaseTest):
 
             vf().highest_version_major.return_value = {'6': '6.33', '7': '7.34'}
             assert github_tags_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7'])
-
-    def test_github_tag_newer_multi_page(self):
-        self.gh_mock()
-        with patch('dscan.common.update_api.VersionsFile') as vf:
-            vf().highest_version_major.return_value = {'6': '6.99', '7':
-                    '7.99', '5': '5.8'}
-            # should be true because of 5.9 in response mocks.
-            assert github_tags_newer('drupal/drupal/', 'not_a_real_file.xml', ['6', '7', '5'])
 
     def test_github_repo(self):
         with patch('dscan.common.update_api.GitRepo.__init__', return_value=None, autospec=True) as gri:

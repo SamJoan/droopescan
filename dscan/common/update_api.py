@@ -19,7 +19,6 @@ import subprocess
 
 GH = 'https://github.com/'
 UW = './.update-workspace/'
-TAG_PAGES = 5
 
 def github_tags_newer(github_repo, versions_file, update_majors):
     """
@@ -38,25 +37,17 @@ def github_tags_newer(github_repo, versions_file, update_majors):
     vf = VersionsFile(versions_file)
     current_highest = vf.highest_version_major(update_majors)
 
-    pages_done = 0
-    after = ""
-    while(pages_done < TAG_PAGES):
-        tags_url = '%s%stags?after=%s' % (GH, github_repo, after)
-        resp = requests.get(tags_url)
-        bs = BeautifulSoup(resp.text, 'lxml')
+    tags_url = '%s%stags' % (GH, github_repo)
+    resp = requests.get(tags_url)
+    bs = BeautifulSoup(resp.text, 'lxml')
 
-        gh_versions = []
-        for tag in bs.find_all('span', {'class':'tag-name'}):
-            gh_versions.append(tag.text)
-            after = tag.text
+    gh_versions = []
+    for tag in bs.find_all('span', {'class':'tag-name'}):
+        gh_versions.append(tag.text)
 
-        newer = _newer_tags_get(current_highest, gh_versions)
-        if len(newer) > 0:
-            return True
+    newer = _newer_tags_get(current_highest, gh_versions)
 
-        pages_done += 1
-
-    return False
+    return len(newer) > 0
 
 def _tag_is_rubbish(tag, valid_version):
     """
