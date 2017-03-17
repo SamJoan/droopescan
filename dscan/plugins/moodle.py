@@ -10,12 +10,16 @@ class Moodle(BasePlugin):
     plugins_base_url = ["%smod/%s/"]
     themes_base_url = ["%stheme/%s/"]
 
-    forbidden_url = "error/"
-    regular_file_url = "README.txt"
+    forbidden_url = "cache/"
+    regular_file_url = ['lib/javascript-static.js']
     module_common_file = "version.php"
     update_majors = ['2.7', '2.9', '3.0', '3.1', '3.2', '3.3']
 
-    interesting_urls = [("tags.txt", "A doc about creating tags.")]
+    interesting_urls = [
+        ("tags.txt", "A doc about creating tags."),
+        ("README.txt", "Static readme file."),
+        ("login/", "Admin panel")
+    ]
 
     interesting_module_urls = [
         ('README.txt', 'Readme text file'),
@@ -48,7 +52,7 @@ class Moodle(BasePlugin):
 
         hashes = {}
         for version in new_tags:
-            # tags look like v1.0 in Moodle. 
+            # tags look like "v1.0" in Moodle. 
             gr.tag_checkout("v" + version)
             hashes[version] = gr.hashes_get(versions_file)
 

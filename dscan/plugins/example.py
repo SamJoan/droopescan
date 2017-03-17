@@ -24,7 +24,8 @@ class Example(BasePlugin):
     # A URL which is known to usually be a folder.
     forbidden_url = "misc/"
     # a URL which you know results in a 200 OK. If item is a list, then all
-    # items are tested to see if any responds with OK.
+    # items are tested to see if any responds with OK. Needs to be in
+    # versions file as well.
     regular_file_url = "misc/drupal.js"
     # a file which commonly exists in the modules.
     module_common_file = "README.txt"
