@@ -228,10 +228,9 @@ class FingerprintTests(BaseTest):
         for xml_path in glob(dscan.PWD + 'plugins/*/versions.xml'):
            vf = VersionsFile(xml_path)
 
-           if 'silverstripe' in xml_path:
-               major_numbers = 2
-           else:
-               major_numbers = 1
+           controller_name = xml_path.split('/')[-2]
+           controller = self.controller_get(controller_name)
+           major_numbers = len(controller.update_majors[0].split('.'))
 
            fpvm = vf.files_per_version_major(major_numbers)
 
@@ -241,11 +240,12 @@ class FingerprintTests(BaseTest):
                   nb = len(fpvm[major][version])
                   if number == 0:
                       number = nb
+                      example_number = version
 
                   if nb != number:
                       msg = """All majors should have the same number of
                           files, and version %s has %s, versus %s on other
-                          files.""" % (version, nb, number)
+                          files (e.g. %s).""" % (version, nb, number, example_number)
 
                       fails.append(" ".join(msg.split()))
 
