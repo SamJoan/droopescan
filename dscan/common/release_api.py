@@ -14,7 +14,8 @@ TEST_RUNS = [
         ['scan', 'drupal', '--url', 'https://www.drupal.org', '-t', '30'],
         ['scan', 'silverstripe', '--url', 'http://mike.andrewartha.co.nz/', '-t', '2'],
         ['scan', 'wordpress', '--url', 'http://wordpress.org/', '-t', '30'],
-        ['scan', 'joomla', '--url', 'http://www.joomla.org/', '-t', '30']
+        ['scan', 'joomla', '--url', 'http://www.joomla.org/', '-t', '30'],
+        ['scan', 'moodle', '--url', 'http://2016mini.imoot.org/', '-t', '10']
     ]
 
 def test_all(skip_external):
