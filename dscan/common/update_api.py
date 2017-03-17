@@ -23,7 +23,8 @@ TAG_PAGES = 5
 
 def github_tags_newer(github_repo, versions_file, update_majors):
     """
-    Get new tags from a github repository.
+    Get new tags from a github repository. Cannot use github API because it
+    doesn't support chronological ordering of tags.
     @param github_repo: the github repository, e.g. 'drupal/drupal/'.
     @param versions_file: the file path where the versions database can be found.
     @param update_majors: major versions to update. If you want to update
@@ -49,11 +50,13 @@ def github_tags_newer(github_repo, versions_file, update_majors):
             gh_versions.append(tag.text)
             after = tag.text
 
+        newer = _newer_tags_get(current_highest, gh_versions)
+        if(len(newer) > 0):
+            return True
+
         pages_done += 1
 
-    newer = _newer_tags_get(current_highest, gh_versions)
-
-    return len(newer) > 0
+    return False
 
 def _tag_is_rubbish(tag, valid_version):
     """
