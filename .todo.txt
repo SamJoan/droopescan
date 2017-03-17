@@ -1,7 +1,6 @@
 Add;
 
 Version 1.x:
-    - add readme.txt to wordpress' plugin imu.
     - Fix issue with fake 200. These get handled OK for module detection but it tricks IMU into thinking all files exist.
         [head] https://example.org/wp-content/plugins/all-in-one-seo-pack/ None 200
         [head] https://example.org/wp-content/plugins/wordpress-importer/ None 403
@@ -22,10 +21,9 @@ Version 1.x:
         [head] http://example.org/sortablegridfield/README.md None 403
         [head] http://example.org/sqlite3/README.md None 403
         [head] http://example.org/gridfieldextensions/README.md None 403
-    - Fix Drupal theme update mechanism, it fills the list with numbers?
-        - Caused by glitch in later pages of drupal site, fix by limiting number
-          of themes downloaded to a max of 1000.
-    - Add CWP modules/CWP detection to ss?
+    - Add Common Web Platform (CWP) modules/CWP detection to SS.
+        CWP are made available by the NZ Government here
+            https://gitlab.cwp.govt.nz/explore/projects 
     - Themes in wordpress sites return 500 errors. These get classified as
           random errors but may be indicative of those files being present.
                 [root@debian-dev droopescan (development)]# ./droopescan scan -u http://example.org/ -n 100 --debug-requests

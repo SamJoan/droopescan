@@ -19,6 +19,7 @@ class Wordpress(BasePlugin):
 
     interesting_module_urls = [
         ('readme.html', 'Default readme file.'),
+        ('readme.txt', 'Default readme file.'),
         ('license.txt', 'License file.'),
         ('documentation.txt', 'Documentation file.'),
         ('screenshot.png', 'Screenshot for theme.'),
