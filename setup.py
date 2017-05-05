@@ -24,7 +24,7 @@ class PostInstall(install):
 setup(
     name='droopescan',
     version=read_first_line('CHANGELOG'),
-    description='A plugin-based scanner that aids security researchers in identifying issues with several CMSs, mainly Drupal & SilverStripe. https://github.com/droope/droopescan',
+    description='A plugin-based scanner that aids security researchers in identifying issues with several CMSs: Drupal, Wordpress, Moodle and SilverStripe. https://github.com/droope/droopescan',
     author_email='pedro@worcel.com',
     author='Pedro Worcel',
     include_package_data=True,
