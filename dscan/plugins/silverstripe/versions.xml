@@ -96,6 +96,8 @@
       <version md5="474a5b875426c24347a68164fa6445f9" nb="4.0.0-alpha4" />
       <version md5="86436bf0fbb6df17a4e74b8cf015d18c" nb="3.4.4-rc1" />
       <version md5="86436bf0fbb6df17a4e74b8cf015d18c" nb="3.4.5-rc1" />
+      <version md5="474a5b875426c24347a68164fa6445f9" nb="4.0.0-alpha7" />
+      <version md5="474a5b875426c24347a68164fa6445f9" nb="4.0.0-alpha6" />
     </file>
     <file url="cms/css/layout.css">
       <version md5="5db089786a6d5487e16297ce36ab2421" nb="2.4.10" />

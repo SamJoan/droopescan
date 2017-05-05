@@ -70,6 +70,7 @@
       <version md5="25ccf68f73e8fd1f4b38dab1deb66673" nb="3.2.2" />
       <version md5="e5e3679ea07bfb253e86d1bdee962dcb" nb="2.7.6" />
       <version md5="e5e3679ea07bfb253e86d1bdee962dcb" nb="2.7.7" />
+      <version md5="40813af2d91760c92d1043ccd3b66057" nb="3.3.0-beta" />
     </file>
     <file url="lib/javascript-static.js">
       <version md5="1273635094db6c233d318c5f995494fb" nb="3.0.6" />
@@ -141,6 +142,7 @@
       <version md5="c1f71da345c0901c812444c9d7ca11a5" nb="3.2.2" />
       <version md5="4be82f18b9df857d1dfc03ee275493e9" nb="2.7.6" />
       <version md5="4be82f18b9df857d1dfc03ee275493e9" nb="2.7.7" />
+      <version md5="268315f0f544694a7db54d734f09b368" nb="3.3.0-beta" />
     </file>
     <file url="composer.json">
       <version md5="14326394ae10e01040808e94f1dd15b1" nb="3.0.6" />
@@ -212,6 +214,7 @@
       <version md5="3ff86bc203073fc25bae2e446358f830" nb="3.2.2" />
       <version md5="623736bd6b204e12156448e3a9e72e68" nb="2.7.6" />
       <version md5="623736bd6b204e12156448e3a9e72e68" nb="2.7.7" />
+      <version md5="acc4dd2d1b51d03b388517d2f879c56c" nb="3.3.0-beta" />
     </file>
     <file url="package.json">
       <version md5="cc2da0174e26788fedc174277f3d9cad" nb="3.0.6" />
@@ -260,6 +263,7 @@
       <version md5="d139edf501ad8c6a3f28e0a2d06d7674" nb="3.2.0" />
       <version md5="d139edf501ad8c6a3f28e0a2d06d7674" nb="3.2.1" />
       <version md5="d139edf501ad8c6a3f28e0a2d06d7674" nb="3.2.2" />
+      <version md5="734f3c9d5aff6d9cfd178d431bb8daa8" nb="3.3.0-beta" />
     </file>
     <file url="Gruntfile.js">
       <version md5="5ada9b83d178be8a847ed7390bf46ef8" nb="3.0.6" />
@@ -308,6 +312,7 @@
       <version md5="9a0e2cad7e9e287ee1c2ab8dd322f003" nb="3.2.0" />
       <version md5="9a0e2cad7e9e287ee1c2ab8dd322f003" nb="3.2.1" />
       <version md5="9a0e2cad7e9e287ee1c2ab8dd322f003" nb="3.2.2" />
+      <version md5="426d4ad1a3ffe9cbf65d7f79625c2b88" nb="3.3.0-beta" />
     </file>
   </files>
 </cms>
