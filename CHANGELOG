@@ -1,3 +1,9 @@
+1.37.1
+======
+
+* Add handler for timeouts. Instead of throwing an exception it now shows a warning.
+* Added --hide-progressbar option for people that want standard out but don't want the progressbar.
+
 1.37.0
 ======
 
