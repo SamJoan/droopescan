@@ -61,7 +61,8 @@ class BaseTest(test.CementTestCase):
         'number': 10,
         'debug': False,
         'enumerate': 'a',
-        'headers': {}
+        'headers': {},
+        'hide_progressbar': False
     }
 
     host_header = {'Host': 'example.com'}

@@ -882,3 +882,12 @@ class BaseHttpTests(BaseTest):
             assert outputs_redirect_url
 
         assert dr.called
+
+    def test_hide_progressbar(self):
+        self.add_argv(self.param_themes)
+        self.add_argv(['--hide-progressbar', '--method', 'forbidden'])
+
+        m = self.mock_controller('drupal', 'enumerate_themes')
+        self.app.run()
+
+        assert m.call_args[1]['hide_progressbar'] == True

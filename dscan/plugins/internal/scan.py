@@ -78,6 +78,7 @@ class Scan(BasePlugin):
 
                 (['--output', '-o'], dict(action='store', help='Output format',
                     choices=common.enum_list(common.ValidOutputs), default='standard')),
+                (['--hide-progressbar'], dict(action='store_true', help='Hide progressbar', default=False)),
                 (['--debug-requests'], dict(action='store_true', help="""Prints every
                     HTTP request made and the response returned from the server
                     for debugging purposes. Disables threading and loading

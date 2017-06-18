@@ -93,6 +93,7 @@ class BasePluginInternal(controller.CementBaseController):
         output = pargs.output
         timeout = pargs.timeout
         timeout_host = pargs.timeout_host
+        hide_progressbar = pargs.hide_progressbar
         debug_requests = pargs.debug_requests
         follow_redirects = pargs.follow_redirects
         plugins_base_url = pargs.plugins_base_url
@@ -234,8 +235,10 @@ class BasePluginInternal(controller.CementBaseController):
     def _general_init(self, opts, out=None):
         """
             Initializes a variety of variables depending on user input.
-            @return: a boolean value indicating whether progressbars should be
-                hidden.
+
+            @return: a tuple containing a boolean value indicating whether
+            progressbars should be hidden, functionality and enabled
+            functionality.
         """
 
         self.session = Session()
@@ -270,7 +273,10 @@ class BasePluginInternal(controller.CementBaseController):
             opts['threads_enumerate'] = 1
             self.session = RequestsLogger(self.session)
         else:
-            hide_progressbar = False
+            if opts['hide_progressbar']:
+                hide_progressbar = True
+            else:
+                hide_progressbar = False
 
         functionality = self._functionality(opts)
         enabled_functionality = self._enabled_functionality(functionality, opts)
