@@ -6,10 +6,14 @@ import dscan.common.versions
 
 class Drupal(BasePlugin):
 
-    plugins_base_url = ["%ssites/all/modules/%s/",
-            "%ssites/default/modules/%s/"]
-    themes_base_url = ["%ssites/all/themes/%s/",
-            "%ssites/default/themes/%s/"]
+    plugins_base_url = [
+            "%ssites/all/modules/%s/",
+            "%ssites/default/modules/%s/",
+            "%smodules/%s/"]
+    themes_base_url = [
+            "%ssites/all/themes/%s/",
+            "%ssites/default/themes/%s/",
+            "%sthemes/%s/"]
 
     forbidden_url = "sites/"
     regular_file_url = ["misc/drupal.js", 'core/misc/drupal.js']

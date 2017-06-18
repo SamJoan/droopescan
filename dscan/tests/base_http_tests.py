@@ -116,23 +116,27 @@ class BaseHttpTests(BaseTest):
                 'supermodule' module."
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
-        "supermodule", "supermodule2"])
+        "supermodule", "supermodule2", "amazing_mod"])
     def test_plugins_multiple_base_url(self, m):
         # mock all the urls.
         base_1 = self.base_url + "sites/all/modules/%s/"
         base_2 = self.base_url + "sites/default/modules/%s/"
+        base_3 = self.base_url + "modules/%s/"
         self.respond_several(base_1, {200: ["supermodule"],
-            404: ["nonexistant1", "supermodule2"]})
+            404: ["nonexistant1", "supermodule2", "amazing_mod"]})
         self.respond_several(base_2, {200:
-            ["supermodule2"], 404: ["nonexistant1", "supermodule"]})
+            ["supermodule2"], 404: ["nonexistant1", "supermodule", "amazing_mod"]})
+        self.respond_several(base_3, {200:
+            ["amazing_mod"], 404: ["nonexistant1", "supermodule", "supermodule2"]})
 
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.ok)
 
         expected_1 = {'url': base_1 % 'supermodule', 'name': 'supermodule'}
         expected_2 = {'url': base_2 % 'supermodule2', 'name': 'supermodule2'}
+        expected_3 = {'url': base_3 % 'amazing_mod', 'name': 'amazing_mod'}
 
-        expected_result = [expected_1, expected_2]
+        expected_result = [expected_1, expected_2, expected_3]
 
         assert result == expected_result, "Should have detected the \
                 'supermodule' module."
