@@ -891,3 +891,15 @@ class BaseHttpTests(BaseTest):
         self.app.run()
 
         assert m.call_args[1]['hide_progressbar'] == True
+
+    @patch('concurrent.futures.Future.result', side_effect = requests.exceptions.ReadTimeout)
+    @patch.object(common.StandardOutput, 'warn')
+    def test_read_timeout_warn(self, warn, _):
+
+        self.scanner.plugins_base_url = '%ssites/all/modules/%s/'
+
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, ScanningMethod.forbidden)
+        
+        assert warn.called
+

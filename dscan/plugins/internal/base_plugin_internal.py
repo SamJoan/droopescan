@@ -663,7 +663,12 @@ class BasePluginInternal(controller.CementBaseController):
                 if not hide_progressbar:
                     p.increment_progress()
 
-                r = future_array['future'].result()
+                try:
+                    r = future_array['future'].result()
+                except requests.exceptions.ReadTimeout:
+                    self.out.warn('\rGot a read timeout. Is the server overloaded? This may affect the results of your scan')
+                    continue
+                    
                 if r.status_code in expected_status:
                     plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']
