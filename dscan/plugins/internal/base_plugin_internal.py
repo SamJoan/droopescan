@@ -656,9 +656,12 @@ class BasePluginInternal(controller.CementBaseController):
 
                 if not hide_progressbar:
                     p.increment_progress()
-
-                r = future_array['future'].result()
-                if r.status_code in expected_status:
+                try:
+                    r = future_array['future'].result()
+                except requests.exceptions.ReadTimeout:
+                    r = None
+                    self.out.warn('\rGot a read timeout.')
+                if r and r.status_code in expected_status:
                     plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']
 
@@ -667,7 +670,7 @@ class BasePluginInternal(controller.CementBaseController):
                         'name': plugin_name,
                         'url': plugin_url
                     })
-                elif r.status_code >= 500:
+                elif r and r.status_code >= 500:
                     self.out.warn('\rGot a 500 error. Is the server overloaded?')
 
             if not hide_progressbar:
