@@ -1,3 +1,9 @@
+1.38.0
+======
+
+* Resolve issue that occurred when scanning a single site and requiring json output.
+* Add beta version of joomla.
+
 1.37.5
 ======
 
