@@ -51,6 +51,9 @@ Version 1.x:
         [+] Site identified as drupal.
         [+] Expected folder returned status '301', expected file returned not found status.
         [+] It is possible that https://example.org/ is not running drupal. If you disagree, please specify a --method
+    - Interesting URLs does not follow redirects currently. A request for
+        wp-admin will not be detected if it results in a redirect to the HTTPs
+        site for example.
 
 Version 2.x:
     UA:
