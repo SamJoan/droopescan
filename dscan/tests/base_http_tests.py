@@ -903,3 +903,17 @@ class BaseHttpTests(BaseTest):
         
         assert warn.called
 
+    def test_single_site_json_out_cms_fingerprint(self):
+        all_mocks = self.mock_all_enumerate('drupal')
+
+        self.add_argv(['-u', self.base_url, '--method', 'forbidden', '--out',
+            'json'])
+
+        with patch('dscan.common.output.JsonOutput.result') as r:
+            self.app.run()
+
+            args, kwargs = r.call_args_list[0]
+            results = args[0]
+
+            assert 'cms_name' in results
+            assert 'host' in results

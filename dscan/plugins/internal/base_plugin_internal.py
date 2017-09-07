@@ -312,6 +312,9 @@ class BasePluginInternal(controller.CementBaseController):
 
         output = self.url_scan(url, opts, functionality, enabled_functionality,
                 hide_progressbar=hide_progressbar)
+        
+        if opts['output'] == "json":
+            self._output_json_add_info(output, url)
 
         if not common.shutdown:
             self.out.result(output, functionality)
@@ -347,6 +350,10 @@ class BasePluginInternal(controller.CementBaseController):
                         timeout_host)
                 results = []
 
+    def _output_json_add_info(self, output, url):
+        output['host'] = url
+        output['cms_name'] = self._meta.label
+
     def _process_results_multisite(self, results, functionality, timeout_host):
         for result in results:
             try:
@@ -356,8 +363,7 @@ class BasePluginInternal(controller.CementBaseController):
 
                 output = result['future'].result(timeout=timeout_host)
 
-                output['host'] = result['url']
-                output['cms_name'] = self._meta.label
+                self._output_json_add_info(output, result['url'])
 
                 if not common.shutdown:
                     self.out.result(output, functionality)
