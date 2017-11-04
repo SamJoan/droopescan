@@ -142,7 +142,7 @@ class IntegrationTests(BaseTest):
             raise
 
         assert len(j['interesting urls']['finds']) == 2
-        assert len(j['plugins']['finds']) == 18
+        assert len(j['plugins']['finds']) == 17
         assert len(j['themes']['finds']) == 0
 
     def test_ss_multisite(self):
