@@ -166,6 +166,10 @@
       <version md5="ac24edb81b9ac1174951491d2a17dcbd" nb="3.8.1-rc" />
       <version md5="ac24edb81b9ac1174951491d2a17dcbd" nb="3.8.0" />
       <version md5="ac24edb81b9ac1174951491d2a17dcbd" nb="3.8.1" />
+      <version md5="ac24edb81b9ac1174951491d2a17dcbd" nb="3.8.2-rc" />
+      <version md5="ac24edb81b9ac1174951491d2a17dcbd" nb="3.8.2" />
+      <version md5="ac24edb81b9ac1174951491d2a17dcbd" nb="3.8.3-rc" />
+      <version md5="ac24edb81b9ac1174951491d2a17dcbd" nb="3.8.3" />
     </file>
     <file url="templates/system/css/offline.css">
       <version md5="4469566750b42c8fcaeb9f7096cbc34f" nb="2.5.23" />
@@ -327,6 +331,12 @@
       <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="3.8.1-rc" />
       <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="3.8.0" />
       <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="3.8.1" />
+      <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="3.8.2-rc" />
+      <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="4.0.0-alpha1" />
+      <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="3.8.2" />
+      <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="4.0.0-alpha2" />
+      <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="3.8.3-rc" />
+      <version md5="1ec2db1e4683e4528de451aeb0bfb5f8" nb="3.8.3" />
     </file>
     <file url="media/system/css/calendar-jos.css">
       <version md5="7a3a4a26af4f603445c62c7ca80d1476" nb="2.5.23" />
@@ -494,6 +504,12 @@
       <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="3.8.1-rc" />
       <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="3.8.0" />
       <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="3.8.1" />
+      <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="3.8.2-rc" />
+      <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="4.0.0-alpha1" />
+      <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="3.8.2" />
+      <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="4.0.0-alpha2" />
+      <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="3.8.3-rc" />
+      <version md5="30b13c7d3757af92568b9a9ff71d6fdc" nb="3.8.3" />
     </file>
     <file url="templates/system/css/general.css">
       <version md5="6ce52781de5ab36383064948b55333d6" nb="2.5.23" />
@@ -655,6 +671,12 @@
       <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="3.8.1-rc" />
       <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="3.8.0" />
       <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="3.8.1" />
+      <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="3.8.2-rc" />
+      <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="4.0.0-alpha1" />
+      <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="3.8.2" />
+      <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="4.0.0-alpha2" />
+      <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="3.8.3-rc" />
+      <version md5="447751e75b8bfef74d6eeadba2d1d763" nb="3.8.3" />
     </file>
     <file url="templates/system/css/system.css">
       <version md5="5eb2fce934fc4203857ce20333a2566c" nb="2.5.23" />
@@ -816,6 +838,10 @@
       <version md5="1c9236d7b7b1a7c97c39414ac5b9ef1b" nb="3.8.1-rc" />
       <version md5="1c9236d7b7b1a7c97c39414ac5b9ef1b" nb="3.8.0" />
       <version md5="1c9236d7b7b1a7c97c39414ac5b9ef1b" nb="3.8.1" />
+      <version md5="1c9236d7b7b1a7c97c39414ac5b9ef1b" nb="3.8.2-rc" />
+      <version md5="1c9236d7b7b1a7c97c39414ac5b9ef1b" nb="3.8.2" />
+      <version md5="1c9236d7b7b1a7c97c39414ac5b9ef1b" nb="3.8.3-rc" />
+      <version md5="1c9236d7b7b1a7c97c39414ac5b9ef1b" nb="3.8.3" />
     </file>
     <file url="templates/system/css/error.css">
       <version md5="4899cff7d385a59ac6c03183c85e5862" nb="2.5.23" />
@@ -977,6 +1003,12 @@
       <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="3.8.1-rc" />
       <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="3.8.0" />
       <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="3.8.1" />
+      <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="3.8.2-rc" />
+      <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="4.0.0-alpha1" />
+      <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="3.8.2" />
+      <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="4.0.0-alpha2" />
+      <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="3.8.3-rc" />
+      <version md5="ff25c1acaa575b45a16d6fa23ed880fd" nb="3.8.3" />
     </file>
     <file url="media/system/js/tabs.js">
       <version md5="b4b159ee1159d24e1f0577013a116a98" nb="2.5.23" />
@@ -1144,6 +1176,10 @@
       <version md5="0706715e857007d0ea2a7f8daec600f3" nb="3.8.1-rc" />
       <version md5="0706715e857007d0ea2a7f8daec600f3" nb="3.8.0" />
       <version md5="0706715e857007d0ea2a7f8daec600f3" nb="3.8.1" />
+      <version md5="0706715e857007d0ea2a7f8daec600f3" nb="3.8.2-rc" />
+      <version md5="0706715e857007d0ea2a7f8daec600f3" nb="3.8.2" />
+      <version md5="0706715e857007d0ea2a7f8daec600f3" nb="3.8.3-rc" />
+      <version md5="0706715e857007d0ea2a7f8daec600f3" nb="3.8.3" />
     </file>
   </files>
 </cms>
