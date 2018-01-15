@@ -45,10 +45,10 @@ class BaseHttpTests(BaseTest):
                 'supermodule' module."
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
-        "nonexistant2", "supermodule"])
+        "existstoo", "supermodule"])
     def test_plugins_forbidden_but_not_ok(self, m):
         self.respond_several(self.base_url + "sites/all/modules/%s/", {403: ["supermodule"],
-            404: ["nonexistant1"], 200: ["nonexistant2"]})
+            404: ["nonexistant1"], 200: ["existstoo"]})
 
         self.scanner.plugins_base_url = "%ssites/all/modules/%s/"
         result, empty = self.scanner.enumerate_plugins(self.base_url,
@@ -57,9 +57,13 @@ class BaseHttpTests(BaseTest):
         module_name = 'supermodule'
         expected_module_url = self.scanner.plugins_base_url % (self.base_url,
                 module_name)
-        expected_result = [{'url': expected_module_url, 'name': module_name}]
-        assert result == expected_result, "Should have detected the \
-                'supermodule' module only."
+
+        found_res = False
+        for res in result:
+            if res['url'] == expected_module_url and res['name'] == module_name:
+                found_res = True
+
+        assert found_res == True
 
     @patch.object(Drupal, 'plugins_get', return_value=["nonexistant1",
         "nonexistant2", "supermodule"])
@@ -919,7 +923,7 @@ class BaseHttpTests(BaseTest):
             assert 'host' in results
 
     @patch.object(Drupal, 'plugins_get', return_value=['supermodule',
-        'yep', 'thisisthere', 'thisisalsothere', 'iamtherebuti500'])
+        'yep', 'thisisthere', 'thisisalsothere', 'iamtherebuti500', 'iamtherebuti200'])
     @patch.object(common.StandardOutput, 'warn')
     def test_500_items_are_found(self, warn, mock):
         """
@@ -931,8 +935,9 @@ class BaseHttpTests(BaseTest):
         r_404 = ['supermodule/']
         r_403 = ['yep/', 'thisisthere/', 'thisisalsothere/']
         r_500 = ['iamtherebuti500/']
+        r_200 = ['iamtherebuti200/']
         self.respond_several(self.base_url + 'sites/all/modules/%s', {404:
-            r_404, 403: r_403, 500: r_500})
+            r_404, 403: r_403, 500: r_500, 200: r_200})
 
         self.scanner.plugins_base_url = '%ssites/all/modules/%s/'
         self.mock_controller('drupal', 'enumerate_interesting')
@@ -940,12 +945,16 @@ class BaseHttpTests(BaseTest):
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.forbidden)
 
-        assert len(result) == 4
+        assert len(result) == 5
         found_500 = False
+        found_200 = False
         for res in result:
             if res['name'] == 'iamtherebuti500':
                 found_500 = True
-                break
+
+            if res['name'] == 'iamtherebuti200':
+                found_200 = True
 
         assert found_500
+        assert found_200
         assert warn.called

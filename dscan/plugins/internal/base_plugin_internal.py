@@ -654,10 +654,7 @@ class BasePluginInternal(controller.CementBaseController):
                 items_total = int(max_possible) * len(base_urls)
                 p = ProgressBar(sys.stderr, items_total, "modules")
 
-            if scanning_method == ScanningMethod.forbidden:
-                expected_status = [403, 500]
-            else:
-                expected_status = [200, 403, 500]
+            expected_status = [200, 403, 500]
 
             no_results = True
             found = []
