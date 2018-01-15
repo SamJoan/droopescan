@@ -917,3 +917,35 @@ class BaseHttpTests(BaseTest):
 
             assert 'cms_name' in results
             assert 'host' in results
+
+    @patch.object(Drupal, 'plugins_get', return_value=['supermodule',
+        'yep', 'thisisthere', 'thisisalsothere', 'iamtherebuti500'])
+    @patch.object(common.StandardOutput, 'warn')
+    def test_500_items_are_found(self, warn, mock):
+        """
+        Sometimes, wordpress plugins I suspect plugins for other CMS return 500
+        instead of forbidden because index.php errors out. This is a fix to
+        ensure that we get a potential false positive instead of a potential
+        false negative.
+        """
+        r_404 = ['supermodule/']
+        r_403 = ['yep/', 'thisisthere/', 'thisisalsothere/']
+        r_500 = ['iamtherebuti500/']
+        self.respond_several(self.base_url + 'sites/all/modules/%s', {404:
+            r_404, 403: r_403, 500: r_500})
+
+        self.scanner.plugins_base_url = '%ssites/all/modules/%s/'
+        self.mock_controller('drupal', 'enumerate_interesting')
+
+        result, empty = self.scanner.enumerate_plugins(self.base_url,
+                self.scanner.plugins_base_url, ScanningMethod.forbidden)
+
+        assert len(result) == 4
+        found_500 = False
+        for res in result:
+            if res['name'] == 'iamtherebuti500':
+                found_500 = True
+                break
+
+        assert found_500
+        assert warn.called

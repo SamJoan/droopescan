@@ -655,9 +655,9 @@ class BasePluginInternal(controller.CementBaseController):
                 p = ProgressBar(sys.stderr, items_total, "modules")
 
             if scanning_method == ScanningMethod.forbidden:
-                expected_status = [403]
+                expected_status = [403, 500]
             else:
-                expected_status = [200, 403]
+                expected_status = [200, 403, 500]
 
             no_results = True
             found = []
@@ -684,8 +684,9 @@ class BasePluginInternal(controller.CementBaseController):
                         'name': plugin_name,
                         'url': plugin_url
                     })
-                elif r.status_code >= 500:
-                    self.out.warn('\rGot a 500 error. Is the server overloaded?')
+
+                if r.status_code >= 500:
+                    self.out.warn('\rGot an HTTP 500 response.')
 
             if not hide_progressbar:
                 p.hide()

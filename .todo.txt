@@ -26,20 +26,6 @@ Version 1.x:
     - Add Common Web Platform (CWP) modules/CWP detection to SS.
         CWP are made available by the NZ Government here
             https://gitlab.cwp.govt.nz/explore/projects 
-    - Themes in wordpress sites return 500 errors. These get classified as
-          random errors but may be indicative of those files being present.
-                [root@debian-dev droopescan (development)]# ./droopescan scan -u http://example.org/ -n 100 --debug-requests
-                [head] http://example.org/ None 200
-                [get] http://example.org/wp-admin/wp-admin.css None 404
-                [get] http://example.org/wp-includes/js/tinymce/tiny_mce_popup.js None 200 dbe62082422b75d89ecb983409ec966d
-                [+] Site identified as wordpress.
-                [head] http://example.org/wp-includes/ None 403
-                [head] http://example.org/wp-admin/wp-admin.css None 404
-                [head] http://example.org/wp-includes/js/tinymce/tiny_mce_popup.js None 200
-                [head] http://example.org/misc/test/error/404/ispresent.html None 404
-                [head] http://example.org/wp-content/themes/twentysixteen/ None 404
-                [head] http://example.org/wp-content/themes/twentyfifteen/ None 500
-                [+]  Got a 500 error. Is the server overloaded?
     - Space after URL results in double slashes:
         ./droopescan scan -u http://example.org/  -n 100 --debug-requests
             [head] http://example.org// None 404
