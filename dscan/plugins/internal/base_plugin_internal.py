@@ -38,10 +38,12 @@ DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
 
 class BasePluginInternal(controller.CementBaseController):
     DEFAULT_UA = DEFAULT_UA
-    not_found_url = "misc/test/error/404/ispresent.html"
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
     NUMBER_PLUGINS_DEFAULT = 1000
+
+    not_found_url = "misc/test/error/404/ispresent.html"
+    not_found_module = "a12abb4d5bead1220174a6b39a2546db"
 
     out = None
     session = None
@@ -535,6 +537,12 @@ class BasePluginInternal(controller.CementBaseController):
         response = requests_verb(url + self.not_found_url)
 
         return response.status_code == 200, len(response.content)
+    
+    def _determine_fake_200_module(self, requests_verb, url_template, url):
+        fake_200_url = url_template % (url, self.not_found_module)
+        response = requests_verb(fake_200_url)
+
+        return response.status_code == 200
 
     def determine_scanning_method(self, url, verb, timeout=15, headers={}):
         requests_verb = partial(getattr(self.session, verb), timeout=timeout,
@@ -597,25 +605,25 @@ class BasePluginInternal(controller.CementBaseController):
     def enumerate(self, url, base_url_supplied, scanning_method,
             iterator_returning_method, iterator_len, max_iterator=500, threads=10,
             verb='head', timeout=15, hide_progressbar=False, imu=None, headers={}):
-        '''
-            @param url: base URL for the website.
-            @param base_url_supplied: Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
-            @param scanning_method: see ScanningMethod
-            @param iterator_returning_method: a function which returns an
-                element that, when iterated, will return a full list of plugins
-            @param iterator_len: the number of items the above iterator can
-                return, regardless of user preference.
-            @param max_iterator: integer that will be passed unto iterator_returning_method
-            @param threads: number of threads
-            @param verb: what HTTP verb. Valid options are 'get' and 'head'.
-            @param timeout: the time, in seconds, that requests should wait
-                before throwing an exception.
-            @param hide_progressbar: if true, the progressbar will not be
-                displayed.
-            @param imu: Interesting module urls. A list containing tuples in the
-                following format [('readme.txt', 'default readme')].
-            @param headers: List of custom headers as expected by requests.
-        '''
+        """
+        @param url: base URL for the website.
+        @param base_url_supplied: Base url for themes, plugins. E.g. '%ssites/all/modules/%s/'
+        @param scanning_method: see ScanningMethod
+        @param iterator_returning_method: a function which returns an
+            element that, when iterated, will return a full list of plugins
+        @param iterator_len: the number of items the above iterator can
+            return, regardless of user preference.
+        @param max_iterator: integer that will be passed unto iterator_returning_method
+        @param threads: number of threads
+        @param verb: what HTTP verb. Valid options are 'get' and 'head'.
+        @param timeout: the time, in seconds, that requests should wait
+            before throwing an exception.
+        @param hide_progressbar: if true, the progressbar will not be
+            displayed.
+        @param imu: Interesting module urls. A list containing tuples in the
+            following format [('readme.txt', 'default readme')].
+        @param headers: List of custom headers as expected by requests.
+        """
         if common.is_string(base_url_supplied):
             base_urls = [base_url_supplied]
         else:
@@ -623,6 +631,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         requests_verb = getattr(self.session, verb)
         futures = []
+        fake_200 = False
         with ThreadPoolExecutor(max_workers=threads) as executor:
             for base_url in base_urls:
                 plugins = iterator_returning_method(max_iterator)
@@ -631,6 +640,9 @@ class BasePluginInternal(controller.CementBaseController):
                     url_template = base_url + self.module_common_file
                 else:
                     url_template = base_url
+                    fake_200_inst = self._determine_fake_200_module(requests_verb, url_template, url)
+                    if fake_200_inst:
+                        fake_200 = fake_200_inst
 
                 for plugin_name in plugins:
                     plugin_url = url_template % (url, plugin_name)
@@ -654,7 +666,10 @@ class BasePluginInternal(controller.CementBaseController):
                 items_total = int(max_possible) * len(base_urls)
                 p = ProgressBar(sys.stderr, items_total, "modules")
 
-            expected_status = [200, 403, 500]
+            if not fake_200:
+                expected_status = [200, 403, 500]
+            else:
+                expected_status = [403, 500]
 
             no_results = True
             found = []

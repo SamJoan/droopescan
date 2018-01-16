@@ -180,7 +180,6 @@ class BaseHttpTests(BaseTest):
         try:
             self.app.run()
         except:
-            # this will never happen. j/k this will always happen.
             pass
 
         ffs.assert_called_with(max_workers=30)
@@ -925,27 +924,31 @@ class BaseHttpTests(BaseTest):
     @patch.object(Drupal, 'plugins_get', return_value=['supermodule',
         'yep', 'thisisthere', 'thisisalsothere', 'iamtherebuti500', 'iamtherebuti200'])
     @patch.object(common.StandardOutput, 'warn')
-    def test_500_items_are_found(self, warn, mock):
+    def test_module_fake_200(self, warn, mock):
         """
-        Sometimes, wordpress plugins I suspect plugins for other CMS return 500
-        instead of forbidden because index.php errors out. This is a fix to
-        ensure that we get a potential false positive instead of a potential
-        false negative.
+        The workaround implemented to find some modules that return 200 when
+        they are present causes other sites to report many false positives. This
+        is due to the fact that all modules respond with 200 for unknown
+        reasons. In these cases 200 should be ignored as they are fake.
         """
+
+        scanner = Drupal()
+        scanner._general_init(self.test_opts)
+
         r_404 = ['supermodule/']
         r_403 = ['yep/', 'thisisthere/', 'thisisalsothere/']
         r_500 = ['iamtherebuti500/']
-        r_200 = ['iamtherebuti200/']
+        r_200 = ['iamtherebuti200/', scanner.not_found_module + "/"]
         self.respond_several(self.base_url + 'sites/all/modules/%s', {404:
             r_404, 403: r_403, 500: r_500, 200: r_200})
 
-        self.scanner.plugins_base_url = '%ssites/all/modules/%s/'
+        scanner.plugins_base_url = '%ssites/all/modules/%s/'
         self.mock_controller('drupal', 'enumerate_interesting')
 
-        result, empty = self.scanner.enumerate_plugins(self.base_url,
-                self.scanner.plugins_base_url, ScanningMethod.forbidden)
+        result, empty = scanner.enumerate_plugins(self.base_url,
+                scanner.plugins_base_url, ScanningMethod.forbidden)
 
-        assert len(result) == 5
+        assert len(result) == 4
         found_500 = False
         found_200 = False
         for res in result:
@@ -956,5 +959,5 @@ class BaseHttpTests(BaseTest):
                 found_200 = True
 
         assert found_500
-        assert found_200
+        assert not found_200 # 200 should not count as false positive
         assert warn.called

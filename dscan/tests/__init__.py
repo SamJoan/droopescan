@@ -86,6 +86,12 @@ class BaseTest(test.CementTestCase):
     def _init_scanner(self):
         self.scanner = Drupal()
         self.scanner._general_init(self.test_opts)
+        self.scanner._determine_fake_200_module = self._fake_200_check
+        m = self.mock_controller('drupal', '_determine_fake_200_module',
+                return_value=False)
+
+    def _fake_200_check(self, param1, param2, param3):
+        return False
 
     def tearDown(self):
         self.app.close()
@@ -190,7 +196,11 @@ class BaseTest(test.CementTestCase):
                 self.respond_several(url_tpl, {
                     403: [Drupal.forbidden_url],
                     200: ['', 'misc/drupal.js'],
-                    404: [self.scanner.not_found_url]
+                    404: [
+                        self.scanner.not_found_url,
+                        '/sites/all/modules/a12abb4d5bead1220174a6b39a2546db/',
+
+                    ]
                 })
 
     def mock_xml(self, xml_file, version_to_mock):
@@ -243,8 +253,8 @@ class BaseTest(test.CementTestCase):
 
     def get_dispatched_controller(self, app):
         """
-            This might be considered a hack. I should eventually get in touch
-            with the cement devs and ask for a better alternative :P.
+        This might be considered a hack. I should eventually get in touch
+        with the cement devs and ask for a better alternative :P.
         """
         return app.controller._dispatch_command['controller']\
                 ._dispatch_command['controller']
