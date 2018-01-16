@@ -1,3 +1,9 @@
+1.40.0
+======
+
+* Resolved issue that resulted in false negatives for plugins and themes on wordpress sites.
+* Updated versions for drupal and moodle.
+
 1.39.1
 ======
 
