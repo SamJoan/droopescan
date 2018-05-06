@@ -11,11 +11,11 @@ CHANGELOG = './CHANGELOG'
 TEST_RUNS_BASE = ['./droopescan']
 TEST_RUNS_APPEND = ['-n', '100']
 TEST_RUNS = [
-        ['scan', 'drupal', '--url', 'https://www.drupal.org', '-t', '30'],
-        ['scan', 'silverstripe', '--url', 'http://mike.andrewartha.co.nz/', '-t', '2'],
+        ['scan', 'drupal', '--url', 'https://www.ins' + 'tyle.de', '-t', '30'],
+        ['scan', 'silverstripe', '--url', 'http://mike.and' + 'rewartha.co.nz/', '-t', '2'],
         ['scan', 'wordpress', '--url', 'http://wordpress.org/', '-t', '30'],
         ['scan', 'joomla', '--url', 'http://www.joomla.org/', '-t', '30'],
-        ['scan', 'moodle', '--url', 'http://2016mini.imoot.org/', '-t', '10']
+        ['scan', 'moodle', '--url', 'http://2016mini.im' + 'oot.org/', '-t', '10']
     ]
 
 def test_all(skip_external):
