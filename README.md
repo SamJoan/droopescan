@@ -3,7 +3,12 @@
 [![Build Status](https://api.travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan) [![PyPI version](https://img.shields.io/pypi/v/droopescan.svg)](https://pypi.python.org/pypi/droopescan)
 
 A plugin-based scanner that aids security researchers in identifying issues with
-several CMS:
+several CMS. Usage of droopescan for attacking targets without prior mutual consent
+is illegal. It is the end user's responsibility to obey all applicable local, state and
+federal laws. Developers assume no liability and are not responsible for any misuse or
+damage caused by this program.
+
+CMS supported are:
 
 * Drupal.
 * SilverStripe.
