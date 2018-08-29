@@ -219,6 +219,10 @@
       <version md5="9348da52c104f75fe1befc73609020cf" nb="4.9.3" />
       <version md5="9348da52c104f75fe1befc73609020cf" nb="4.9.5" />
       <version md5="f5847c886a3ea0cce59e06a502686989" nb="3.9.24" />
+      <version md5="9348da52c104f75fe1befc73609020cf" nb="4.9.6" />
+      <version md5="9348da52c104f75fe1befc73609020cf" nb="4.9.7" />
+      <version md5="9348da52c104f75fe1befc73609020cf" nb="4.9.8" />
+      <version md5="f5847c886a3ea0cce59e06a502686989" nb="3.9.25" />
     </file>
     <file url="wp-includes/js/tinymce/tiny_mce_popup.js">
       <version md5="554bc76c70351187f4ce05ddc012aaed" nb="3.6.1" />
@@ -378,6 +382,10 @@
       <version md5="4237af4931ba3003048f8eb5b98364c7" nb="4.9.3" />
       <version md5="4237af4931ba3003048f8eb5b98364c7" nb="4.9.5" />
       <version md5="38dbcc925529368812f5c2fbcb389616" nb="3.9.24" />
+      <version md5="4237af4931ba3003048f8eb5b98364c7" nb="4.9.6" />
+      <version md5="4237af4931ba3003048f8eb5b98364c7" nb="4.9.7" />
+      <version md5="4237af4931ba3003048f8eb5b98364c7" nb="4.9.8" />
+      <version md5="38dbcc925529368812f5c2fbcb389616" nb="3.9.25" />
     </file>
     <file url="wp-includes/js/quicktags.js">
       <version md5="2a040163533eceee9b05c95216bf6764" nb="3.6.1" />
@@ -537,6 +545,10 @@
       <version md5="bb36c516f8fd9ecc5d05b750f92cc1ae" nb="4.9.3" />
       <version md5="bb36c516f8fd9ecc5d05b750f92cc1ae" nb="4.9.5" />
       <version md5="75a2b7d66218b95cc439cd82daea731d" nb="3.9.24" />
+      <version md5="bb36c516f8fd9ecc5d05b750f92cc1ae" nb="4.9.6" />
+      <version md5="bb36c516f8fd9ecc5d05b750f92cc1ae" nb="4.9.7" />
+      <version md5="bb36c516f8fd9ecc5d05b750f92cc1ae" nb="4.9.8" />
+      <version md5="75a2b7d66218b95cc439cd82daea731d" nb="3.9.25" />
     </file>
     <file url="wp-includes/js/tinymce/utils/validate.js">
       <version md5="2d73c0757ea622f65738ea71433ca8e4" nb="3.6.1" />
@@ -696,6 +708,10 @@
       <version md5="23a879a6f9b566ddb32810a3bcbd00e5" nb="4.9.3" />
       <version md5="23a879a6f9b566ddb32810a3bcbd00e5" nb="4.9.5" />
       <version md5="681466e5980a5b99d9baeded56c67d34" nb="3.9.24" />
+      <version md5="434cc20c313f6f2b033b84f8fb7b5986" nb="4.9.6" />
+      <version md5="434cc20c313f6f2b033b84f8fb7b5986" nb="4.9.7" />
+      <version md5="434cc20c313f6f2b033b84f8fb7b5986" nb="4.9.8" />
+      <version md5="681466e5980a5b99d9baeded56c67d34" nb="3.9.25" />
     </file>
     <changelog url="readme.html">
       <version md5="80c4ecc8630395baeb7363a7cf4dad33" nb="2.9.1" />
@@ -863,6 +879,10 @@
       <version md5="092b5391da31c6e8bb02bf4bc03b6b34" nb="4.9.3" />
       <version md5="55d27f1f9f7f79fa2593a5b32907ee44" nb="4.9.5" />
       <version md5="f494518b64cf3bd7eb05d338f7b517c0" nb="3.9.24" />
+      <version md5="55d27f1f9f7f79fa2593a5b32907ee44" nb="4.9.6" />
+      <version md5="55d27f1f9f7f79fa2593a5b32907ee44" nb="4.9.7" />
+      <version md5="55d27f1f9f7f79fa2593a5b32907ee44" nb="4.9.8" />
+      <version md5="f494518b64cf3bd7eb05d338f7b517c0" nb="3.9.25" />
     </changelog>
   </files>
 </cms>

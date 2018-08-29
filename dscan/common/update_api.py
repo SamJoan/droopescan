@@ -42,8 +42,9 @@ def github_tags_newer(github_repo, versions_file, update_majors):
     bs = BeautifulSoup(resp.text, 'lxml')
 
     gh_versions = []
-    for tag in bs.find_all('span', {'class':'tag-name'}):
-        gh_versions.append(tag.text)
+    for header in bs.find_all('h4'):
+        tag = header.findChild('a')
+        gh_versions.append(tag.text.strip())
 
     newer = _newer_tags_get(current_highest, gh_versions)
 
