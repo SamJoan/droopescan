@@ -105,6 +105,12 @@ pip install -r requirements.txt
 ./droopescan scan --help
 </pre>
 
+BlackArch [package](https://github.com/BlackArch/blackarch/blob/master/packages/droopescan/PKGBUILD) installation:
+
+```
+sudo pacman -S droopescan
+```
+
 The master branch corresponds to the latest release (what is in pypi).
 Development branch is unstable and all pull requests must be made against it.
 More notes regarding installation can be [found here](https://droope.github.io/droopescan-docs/_build/html/installation.html).
