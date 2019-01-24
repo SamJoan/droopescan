@@ -104,7 +104,7 @@ pip install -r requirements.txt
 ./droopescan scan --help
 ```
 
-BlackArch [package](https://github.com/BlackArch/blackarch/blob/master/packages/droopescan/PKGBUILD) installation:
+BlackArch [package](https://github.com/BlackArch/blackarch/blob/master/packages/droopescan/PKGBUILD) installation (maintained by a third party):
 
 ```
 sudo pacman -S droopescan
