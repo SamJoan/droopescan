@@ -24,7 +24,7 @@ Partial functionality for:
 * Joomla (version enumeration and interesting URLs only).
 * Moodle (plugin & theme very limited, watch out)
 
-<pre>
+```
 computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 8
 [+] No themes found.
 
@@ -68,7 +68,7 @@ computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 8
     [... snip for README ...]
 
 [+] Scan finished (0:04:59.502427 elapsed)
-</pre>
+```
 
 You can get a full list of options by running:
 
@@ -90,20 +90,19 @@ Because droopescan:
 # Installation
 
 Installation is easy using pip:
-
-<pre>
+```
 apt-get install python-pip
 pip install droopescan
-</pre>
+```
 
 Manual installation is as follows:
 
-<pre>
+```
 git clone https://github.com/droope/droopescan.git
 cd droopescan
 pip install -r requirements.txt
 ./droopescan scan --help
-</pre>
+```
 
 The master branch corresponds to the latest release (what is in pypi).
 Development branch is unstable and all pull requests must be made against it.
@@ -135,22 +134,21 @@ More notes regarding scanning can be [found here](https://droope.github.io/droop
 You can specify a particular host to scan by passing the `-u` or `--url`
 parameter:
 
-<pre>
+```
     droopescan scan drupal -u example.org
-</pre>
-
+```
 You can also omit the `drupal` argument. This will trigger “CMS identification”, like so:
 
-<pre>
+```
     droopescan scan -u example.org
-</pre>
+```
 
 Multiple URLs may be scanned utilising the `-U` or `--url-file` parameter. This
 parameter should be set to the path of a file which contains a list of URLs. 
 
-<pre>
+```
     droopescan scan drupal -U list_of_urls.txt
-</pre>
+```
 
 The `drupal` parameter may also be ommited in this example. For each site, it
 will make several GET requests in order to perform CMS identification, and if
@@ -158,30 +156,30 @@ the site is deemed to be a supported CMS, it is scanned and added to the output
 list. This can be useful, for example, to run `droopescan` across all your
 organisation's sites.
 
-<pre>
+```
     droopescan scan -U list_of_urls.txt
-</pre>
+```
 
 The code block below contains an example list of URLs, one per line:
 
-<pre>
+```
 http://localhost/drupal/6.0/
 http://localhost/drupal/6.1/
 http://localhost/drupal/6.10/
 http://localhost/drupal/6.11/
 http://localhost/drupal/6.12/
-</pre>
+```
 
 A file containing URLs and a value to override the default host header with
 separated by tabs or spaces is also OK for URL files. This can be handy when
 conducting a scan through a large range of hosts and you want to prevent
 unnecessary DNS queries. To clarify, an example below:
 
-<pre>
+```
 192.168.1.1	example.org
 http://192.168.1.1/	example.org
 http://192.168.1.2/drupal/	example.org
-</pre>
+```
 
 It is quite tempting to test whether the scanner works for a particular CMS
 by scanning the official site (e.g. `wordpress.org` for wordpress), but the
@@ -198,21 +196,21 @@ variables.
 Use a .netrc file for basic authentication. An example [netrc](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html) (a file named
 `.netrc` placed in your root home directory) file could look as follows:
 
-<pre>
+```
 machine secret.google.com
     login admin@google.com
     password Winter01
-</pre>
+```
 
 You can set the `http_proxy` and `https_proxy` variables. These allow you to
 set a parent HTTP proxy, in which you can handle more complex types of
 authentication (e.g. Fiddler, ZAP, Burp)
 
-<pre>
+```
 export http_proxy='user:password@localhost:8080'
 export https_proxy='user:password@localhost:8080'
 droopescan scan drupal --url http://localhost/drupal
-</pre>
+```
 
 *WARNING:* By design, to allow intercepting proxies and the testing of
 applications with bad SSL, droopescan allows self-signed or otherwise invalid
@@ -227,7 +225,7 @@ between major versions.
 This can be controlled with the `--output` flag. Some sample JSON output would
 look as follows (minus the excessive whitespace):
 
-<pre>
+```
 {
   "themes": {
     "is_empty": true,
@@ -267,7 +265,7 @@ look as follows (minus the excessive whitespace):
     ]
   }
 }
-</pre>
+```
 
 Some attributes might be missing from the JSON object if parts of the scan are
 not ran.
@@ -275,7 +273,7 @@ not ran.
 This is how multi-site output looks like; each line contains a valid JSON object
 as shown above.
 
-<pre>
+```
     $ droopescan scan drupal -U six_and_above.txt -e v
     {"host": "http://localhost/drupal-7.6/", "version": {"is_empty": false, "finds": ["7.6"]}}
     {"host": "http://localhost/drupal-7.7/", "version": {"is_empty": false, "finds": ["7.7"]}}
@@ -306,7 +304,7 @@ as shown above.
     {"host": "http://localhost/drupal-7.32/", "version": {"is_empty": false, "finds": ["7.32"]}}
     {"host": "http://localhost/drupal-7.33/", "version": {"is_empty": false, "finds": ["7.33"]}}
     {"host": "http://localhost/drupal-7.34/", "version": {"is_empty": false, "finds": ["7.34"]}}
-</pre>
+```
 
 ## Debug.
 
@@ -315,7 +313,7 @@ When things are not going exactly your way, you can check why by using the
 
 Some output might look like this:
 
-<pre>
+```
 computer:~/droopescan# droopescan scan silverstripe -u http://localhost -n 10 -e p --debug-requests
 [head] http://localhost/framework/... 403
 [head] http://localhost/cms/css/layout.css... 404
@@ -334,7 +332,7 @@ computer:~/droopescan# droopescan scan silverstripe -u http://localhost -n 10 -e
 [+] No plugins found.
 
 [+] Scan finished (0:00:00.058422 elapsed)
-</pre>
+```
 
 The `--debug` paramter also exists and may be used to debug application internals.
 
@@ -343,13 +341,13 @@ The `--debug` paramter also exists and may be used to debug application internal
 You can get an up to date report on the capabilities of the scanner by running
 the following command
 
-<pre>
+```
     droopescan stats
-</pre>
+```
 
 Some sample output might look as follows:
 
-<pre>
+```
 Functionality available for ‘drupal’:
 - Enumerate plugins (XXXX plugins.)
 - Enumerate themes (XXXX themes.)
@@ -366,7 +364,7 @@ Functionality available for ‘silverstripe’:
 - Enumerate themes (XX themes.)
 - Enumerate interesting urls (X urls.)
 - Enumerate version (up to version X.X.XX, X.X.XX, X.X.XX.)
-</pre>
+```
 
 It is important to verify that the latest version available for the CMS
 installation is available within `droopescan`, as otherwise results may be
@@ -384,10 +382,10 @@ This file should serve well as a base for your implementation.
 
 You can create your own plugin for `Joomla` and enable it as follows:
 
-<pre>
+```
 $ cp plugins/example.py plugins/joomla.py
 $ cp plugins.d/example.conf plugins.d/joomla.conf
-</pre>
+```
 
 You then need to go to `plugins/joomla.py` and change a few things:
 
@@ -397,26 +395,26 @@ You then need to go to `plugins/joomla.py` and change a few things:
   correct class name.
 - The exposed function, 'example', needs to be renamed to joomla.
 
-<pre>
+```
     @controller.expose(help='example scanner')
     def joomla(self):
         self.plugin_init()
-</pre>
+```
 
 We also need to change the `plugins.d/joomla.conf` file, and change it to the
 following:
 
-<pre>
+```
 [joomla]
 enable_plugin = true
-</pre>
+```
 
 We should now be in a state which looks as follows:
 
-<pre>
+```
 $ droopescan scan joomla
 [+] --url parameter is required.
-</pre>
+```
 
 Your next step would be to generate a valid plugin wordlist, a valid theme
 wordlist, a
@@ -442,18 +440,18 @@ on GitHub.
 To run tests, some dependencies must be installed. Running the following
 commands will result in them being installed and the tests being ran:
 
-<pre>
+```
     apt-get install libxslt1-dev libxml2-dev zlib1g-dev python python-pip python-dev python3 python3-pip python3-dev
     pip install -r requirements.txt -r requirements_test.txt
     pip3 install -r requirements.txt -r requirements_test.txt
     ./droopescan test
-</pre>
+```
 
 You can run individual tests with the `-s` flag.
 
-<pre>
+```
 ./droopescan test -s test_integration_drupal
-</pre>
+```
 
 # License.
 
