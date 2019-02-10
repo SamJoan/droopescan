@@ -13,7 +13,7 @@ class Wordpress(BasePlugin):
     forbidden_url = "wp-includes/"
     regular_file_url = ["wp-admin/wp-admin.css", "wp-includes/js/tinymce/tiny_mce_popup.js"]
     module_common_file = "readme.txt"
-    update_majors = ['2','3','4']
+    update_majors = ['2','3','4', '5']
 
     interesting_urls = [("readme.html", "This CMS' default changelog.")]
 
