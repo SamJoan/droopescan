@@ -44,6 +44,8 @@ def github_tags_newer(github_repo, versions_file, update_majors):
     gh_versions = []
     for header in bs.find_all('h4'):
         tag = header.findChild('a')
+        if not tag:
+            continue # Ignore learn more header.
         gh_versions.append(tag.text.strip())
 
     newer = _newer_tags_get(current_highest, gh_versions)
