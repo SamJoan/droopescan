@@ -1,3 +1,9 @@
+1.41.2
+======
+
+* New versions for all CMS.
+* Downgrade Drupal due to bad plugin detection on 8.x. PRs encouraged.
+
 1.41.1
 ======
 
