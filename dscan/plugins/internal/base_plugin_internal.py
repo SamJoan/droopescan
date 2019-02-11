@@ -898,7 +898,7 @@ class BasePluginInternal(controller.CementBaseController):
 
             for f in futures:
                 if common.shutdown:
-                    futures[file_url].cancel()
+                    f['future'].cancel()
                     continue
 
                 r = f['future'].result()
