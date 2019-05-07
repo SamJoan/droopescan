@@ -13,6 +13,7 @@ from dscan import common
 from functools import partial
 from os.path import dirname
 from requests import Session
+from dscan.plugins.Detect_CVE import Scan as sc
 import dscan
 import dscan.common.functions as f
 import hashlib
@@ -250,6 +251,9 @@ class BasePluginInternal(controller.CementBaseController):
             self.out = self._output(opts)
 
         is_cms_plugin = self._meta.label != "scan"
+        if self._meta.label == "drupal":
+                print("drupal")
+                #sc.isVulnerable("http://68.183.237.96/", "8.2.3")
         if is_cms_plugin:
             self.vf = VersionsFile(self.versions_file)
 
@@ -811,7 +815,9 @@ class BasePluginInternal(controller.CementBaseController):
         # Narrow down using changelog, if accurate.
         if self.vf.has_changelog():
             version = self.enumerate_version_changelog(url, version, timeout, headers=headers)
-
+            #print("chose" + self._meta.label)
+            sc.isVulnerable(url, version[0])
+            print(version)
         if not hide_progressbar:
             p.increment_progress()
             p.hide()
