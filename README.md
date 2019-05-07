@@ -22,11 +22,13 @@ Partial functionality for:
 
 * Joomla (version enumeration and interesting URLs only).
 * Moodle (plugin & theme very limited, watch out)
-* Drupal (plugin discovery partial on new installations of Drupal, patches encouraged).
+* Drupal (plugin discovery partial on new installations of Drupal, patches encouraged, Detect CVE-2018-7600 + CVE-2019-6340).
 
 ```
 computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 32
 [+] No themes found.
+
+[+] CVE-2018-7600 | NOT VULNERABLE
 
 [+] Possible interesting urls found:
     Default changelog file - https://www.example.org/CHANGELOG.txt
