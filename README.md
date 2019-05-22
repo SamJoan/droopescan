@@ -151,8 +151,6 @@ files, returns a list of all possible versions.
 * i -- *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
-More notes regarding scanning can be [found here](https://droope.github.io/droopescan-docs/_build/html/intro.html).
-
 ## Target specification
 
 You can specify a particular host to scan by passing the `-u` or `--url`
