@@ -1,7 +1,6 @@
 Add;
 
 Version 1.x:
-    - https://github.com/droope/droopescan/issues/18
     - lib/upgrade.txt for moodle. /lib/db/install.xml also discloses version in form of date that you can correlate
     - Fix issue with fake 200. These get handled OK for module detection but it tricks IMU into thinking all files exist.
         [head] https://example.org/wp-content/plugins/all-in-one-seo-pack/ None 200

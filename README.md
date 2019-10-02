@@ -1,9 +1,11 @@
-# droopescan.
+# droopescan
 
-[![Build Status](https://api.travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan) [![PyPI version](https://img.shields.io/pypi/v/droopescan.svg)](https://pypi.python.org/pypi/droopescan)
+[![Build Status](https://api.travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan)
+[![PyPI version](https://img.shields.io/pypi/v/droopescan.svg)](https://pypi.python.org/pypi/droopescan)
+[![AGPL license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://github.com/droope/droopescan/blob/master/LICENSE)
 
 A plugin-based scanner that aids security researchers in identifying issues with
-several CMS. 
+several CMS.
 
 Usage of droopescan for attacking targets without prior mutual consent is
 illegal. It is the end user's responsibility to obey all applicable local, state
@@ -13,16 +15,17 @@ outputs the most CMS likely version installed on the remote host, any
 correlation between version numbers and vulnerabilities must be done manually by
 the user.
 
-CMS supported are:
+Supported CMS are:
 
-* SilverStripe.
-* Wordpress.
+* SilverStripe
+* Wordpress
 
 Partial functionality for:
 
-* Joomla (version enumeration and interesting URLs only).
+* Joomla (version enumeration and interesting URLs only)
 * Moodle (plugin & theme very limited, watch out)
 * Drupal (plugin discovery partial on new installations of Drupal, patches encouraged, Detect CVE-2018-7600 + CVE-2019-6340).
+
 
 ```
 computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 32
@@ -74,10 +77,10 @@ computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 32
 
 You can get a full list of options by running:
 
-<pre>
+```bash
 droopescan --help
 droopescan scan --help
-</pre>
+```
 
 # Why not X?
 
@@ -91,33 +94,49 @@ Because droopescan:
 
 # Installation
 
+## With pip (recommended)
 Installation is easy using pip:
-```
+
+```bash
 apt-get install python-pip
 pip install droopescan
 ```
 
+## From sources
 Manual installation is as follows:
 
-```
+```bash
 git clone https://github.com/droope/droopescan.git
 cd droopescan
 pip install -r requirements.txt
 ./droopescan scan --help
 ```
 
+The master branch corresponds to the latest release (what is in pypi).
+Development branch is unstable and all pull requests must be made against it.
+
+## BlackArch
 BlackArch [package](https://github.com/BlackArch/blackarch/blob/master/packages/droopescan/PKGBUILD) installation (maintained by a third party):
 
-```
+```bash
 sudo pacman -S droopescan
 ```
 
-The master branch corresponds to the latest release (what is in pypi).
-Development branch is unstable and all pull requests must be made against it.
-More notes regarding installation can be [found here](https://droope.github.io/droopescan-docs/_build/html/installation.html).
+## Docker
+You can build a docker image and run droopescan from Docker:
+
+```bash
+git clone https://github.com/droope/droopescan.git
+cd droopescan
+docker build -t droope/droopescan .
+# display help
+docker run --rm droope/droopescan
+# example scanning a drupal site
+docker run --rm droope/droopescan scan drupal -u https://drupal.example.com
+```
 
 # Features
-## Scan types.
+## Scan types
 
 Droopescan aims to be the most accurate by default, while not overloading the
 target server due to excessive concurrent requests. Due to this, by default, a
@@ -135,9 +154,7 @@ files, returns a list of all possible versions.
 * i -- *Interesting url checks*: Checks for interesting urls (admin panels, readme
 files, etc.)
 
-More notes regarding scanning can be [found here](https://droope.github.io/droopescan-docs/_build/html/intro.html).
-
-## Target specification.
+## Target specification
 
 You can specify a particular host to scan by passing the `-u` or `--url`
 parameter:
@@ -152,7 +169,7 @@ You can also omit the `drupal` argument. This will trigger “CMS identification
 ```
 
 Multiple URLs may be scanned utilising the `-U` or `--url-file` parameter. This
-parameter should be set to the path of a file which contains a list of URLs. 
+parameter should be set to the path of a file which contains a list of URLs.
 
 ```
     droopescan scan drupal -U list_of_urls.txt
@@ -196,7 +213,7 @@ unorthodox things. For example, `wordpress.org` runs the bleeding edge version o
 wordpress, which will not be identified as wordpress by `droopescan` at all
 because the checksums do not match any known wordpress version.
 
-## Authentication.
+## Authentication
 
 The application fully supports `.netrc` files and `http_proxy` environment
 variables.
@@ -224,7 +241,7 @@ droopescan scan drupal --url http://localhost/drupal
 applications with bad SSL, droopescan allows self-signed or otherwise invalid
 certificates. ˙ ͜ʟ˙
 
-## Output.
+## Output
 
 This application supports both "standard output", meant for human consumption,
 or JSON, which is more suitable for machine consumption. This output is stable
@@ -314,7 +331,7 @@ as shown above.
     {"host": "http://localhost/drupal-7.34/", "version": {"is_empty": false, "finds": ["7.34"]}}
 ```
 
-## Debug.
+## Debug
 
 When things are not going exactly your way, you can check why by using the
 `--debug-requests` command.
@@ -344,7 +361,7 @@ computer:~/droopescan# droopescan scan silverstripe -u http://localhost -n 10 -e
 
 The `--debug` paramter also exists and may be used to debug application internals.
 
-## Stats.
+## Stats
 
 You can get an up to date report on the capabilities of the scanner by running
 the following command
@@ -378,9 +395,9 @@ It is important to verify that the latest version available for the CMS
 installation is available within `droopescan`, as otherwise results may be
 inaccurate.
 
-# Contribute.
+# Contribute
 
-## Create your own plugin.
+## Create your own plugin
 
 You can add suport for your favourite CMS. The process is actually quite
 simple, and a lot of information can be glimpsed by viewing the example.py file
@@ -436,7 +453,7 @@ in mind that the update_version_check, update_version, update_plugins_check and
 update_plugins need to be implemented. For reference, please review the
 `drupal.py` file. This is required in order to ensure plugins are kept to date.
 
-## Issues & Pull Requests.
+## Issues & Pull Requests
 
 Pull requests that create new plugins are welcome provided that maintenance for
 those plugins is done automatically.
@@ -461,6 +478,6 @@ You can run individual tests with the `-s` flag.
 ./droopescan test -s test_integration_drupal
 ```
 
-# License.
+# License
 
-The project is licensed under the AGPL license.
+The project is licensed under the AGPL license. See LICENSE file.
