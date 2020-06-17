@@ -7,6 +7,10 @@ import dscan.common.update_api as ua
 import re
 import requests
 import sys
+try:
+    import exceptions
+except ImportError:
+    pass
 
 try:
     from retrying import Retrying
@@ -29,7 +33,7 @@ class Silverstripe(BasePlugin):
     regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css',
             "framework/CONTRIBUTING.md"]
     module_common_file = 'README.md'
-    update_majors = ['3.1', '3.0', '3.2', '3.3', '3.4', '2.4', '4.0', '4.1', '4.2', '4.3', '4.4']
+    update_majors = ['3.1', '3.0', '3.2', '3.3', '3.4', '2.4', '4.0', '4.1', '4.2', '4.3', '4.4', '4.6']
 
     interesting_urls = [
             ('framework/docs/en/changelogs/index.md', 'Changelogs, there are other files in same dir, but \'index.md\' is frequently outdated.'),
@@ -77,7 +81,11 @@ class Silverstripe(BasePlugin):
         hashes = {}
         for version in new_tags:
             fw_gr.tag_checkout(version)
-            cms_gr.tag_checkout(version)
+            try:
+                cms_gr.tag_checkout(version)
+            except exceptions.RuntimeError:
+                print("Version %s does not exist on `cms` branch. Skipping.")
+                continue
 
             hashes[version] = ua.hashes_get(versions_file, './.update-workspace/silverstripe/')
 
