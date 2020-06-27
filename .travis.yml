@@ -4,13 +4,6 @@ python:
   - "3.4"
   - "3.5"
 
-# Also run these python versions with a specific distribution:
-matrix:
-  fast_finish: true
-  include:
-    - python: 3.3
-      dist: trusty
-
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y -qq python-dev libxslt1-dev libxml2-dev

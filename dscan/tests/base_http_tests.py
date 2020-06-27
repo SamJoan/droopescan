@@ -962,28 +962,6 @@ class BaseHttpTests(BaseTest):
         assert not found_200 # 200 should not count as false positive
         assert warn.called
 
-    def test_default_user_agent(self):
-        self.add_argv(self.param_all)
-        self.add_argv(['--timeout', '5'])
-        self.add_argv(['--method', 'forbidden'])
-        all_mocks = self.mock_all_enumerate('drupal')
-        self.app.run()
-        for mock in all_mocks:
-            self.assert_called_contains(mock, 'user_agent',
-            'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0')
-
-    def test_custom_user_agent_gets_passed(self):
-        self.add_argv(self.param_all)
-        self.add_argv(['--timeout', '5'])
-        self.add_argv(['--method', 'forbidden'])
-        self.add_argv(['--user-agent',
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36'])
-        all_mocks = self.mock_all_enumerate('drupal')
-        self.app.run()
-        for mock in all_mocks:
-            self.assert_called_contains(mock, 'user_agent',
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36')
-
     def test_user_agent_in_session(self):
         assert 'User-Agent' in self.scanner.session.headers
         assert self.scanner.session.headers['User-Agent'] == 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
