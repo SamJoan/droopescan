@@ -95,6 +95,7 @@ class BasePluginInternal(controller.CementBaseController):
         output = pargs.output
         timeout = pargs.timeout
         timeout_host = pargs.timeout_host
+        user_agent = pargs.user_agent
         hide_progressbar = pargs.hide_progressbar
         debug_requests = pargs.debug_requests
         follow_redirects = pargs.follow_redirects
@@ -130,6 +131,7 @@ class BasePluginInternal(controller.CementBaseController):
             'threads': opts['threads_enumerate'],
             'verb': opts['verb'],
             'timeout': opts['timeout'],
+            'user_agent': opts['user_agent'],
             'imu': getattr(self, 'interesting_module_urls', None)
         }
 
@@ -176,7 +178,8 @@ class BasePluginInternal(controller.CementBaseController):
                     'verb': opts['verb'],
                     'threads': opts['threads_enumerate'],
                     'timeout': opts['timeout'],
-                    'headers': opts['headers']
+                    'headers': opts['headers'],
+                    'user_agent': opts['user_agent']
                 }
             },
             'interesting urls': {
@@ -187,7 +190,8 @@ class BasePluginInternal(controller.CementBaseController):
                     'interesting_urls': self.interesting_urls,
                     'threads': opts['threads_enumerate'],
                     'timeout': opts['timeout'],
-                    'headers': opts['headers']
+                    'headers': opts['headers'],
+                    'user_agent': opts['user_agent']
                 }
             },
         }
@@ -265,7 +269,7 @@ class BasePluginInternal(controller.CementBaseController):
             self.out.warn(old_req)
 
         self.session.verify = False
-        self.session.headers['User-Agent'] = self.DEFAULT_UA
+        self.session.headers['User-Agent'] = opts["user_agent"]
 
         debug_requests = opts['debug_requests']
         if debug_requests:
@@ -314,7 +318,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         output = self.url_scan(url, opts, functionality, enabled_functionality,
                 hide_progressbar=hide_progressbar)
-        
+
         if opts['output'] == "json":
             self._output_json_add_info(output, url)
 
@@ -537,7 +541,7 @@ class BasePluginInternal(controller.CementBaseController):
         response = requests_verb(url + self.not_found_url)
 
         return response.status_code == 200, len(response.content)
-    
+
     def _determine_fake_200_module(self, requests_verb, url_template, url):
         fake_200_url = url_template % (url, self.not_found_module)
         response = requests_verb(fake_200_url)
@@ -686,7 +690,7 @@ class BasePluginInternal(controller.CementBaseController):
                 except requests.exceptions.ReadTimeout:
                     self.out.warn('\rGot a read timeout. Is the server overloaded? This may affect the results of your scan')
                     continue
-                    
+
                 if r.status_code in expected_status:
                     plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']
@@ -711,7 +715,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def enumerate_plugins(self, url, base_url, scanning_method='forbidden',
             max_plugins=500, threads=10, verb='head', timeout=15,
-            hide_progressbar=False, imu=None, headers={}):
+            hide_progressbar=False, imu=None, headers={}, user_agent=''):
 
         iterator = self.plugins_get
         iterator_len = file_len(self.plugins_file)
@@ -722,7 +726,7 @@ class BasePluginInternal(controller.CementBaseController):
 
     def enumerate_themes(self, url, base_url, scanning_method='forbidden',
             max_plugins=500, threads=10, verb='head', timeout=15,
-            hide_progressbar=False, imu=None, headers={}):
+            hide_progressbar=False, imu=None, headers={}, user_agent=''):
 
         iterator = self.themes_get
         iterator_len = file_len(self.themes_file)
@@ -732,7 +736,7 @@ class BasePluginInternal(controller.CementBaseController):
                 hide_progressbar, imu, headers)
 
     def enumerate_interesting(self, url, interesting_urls, threads=10,
-            verb='head', timeout=15, hide_progressbar=False, headers={}):
+            verb='head', timeout=15, hide_progressbar=False, headers={}, user_agent=''):
         requests_verb = getattr(self.session, verb)
 
         if not hide_progressbar:
@@ -764,7 +768,7 @@ class BasePluginInternal(controller.CementBaseController):
         return found, len(found) == 0
 
     def enumerate_version(self, url, threads=10, verb='head',
-            timeout=15, hide_progressbar=False, headers={}):
+            timeout=15, hide_progressbar=False, headers={}, user_agent=''):
         """
         Determines which version of CMS is installed at url. This is done by
         comparing file hashes against the database of hashes in
@@ -846,7 +850,7 @@ class BasePluginInternal(controller.CementBaseController):
         else:
             return versions_estimated
 
-    def enumerate_file_hash(self, url, file_url, timeout=15, headers={}):
+    def enumerate_file_hash(self, url, file_url, timeout=15, headers={}, user_agent=''):
         """
         Gets the MD5 of requests.get(url + file_url).
         @param url: the installation's base URL.
@@ -862,7 +866,7 @@ class BasePluginInternal(controller.CementBaseController):
             raise RuntimeError("File '%s' returned status code '%s'." % (file_url, r.status_code))
 
     def _enumerate_plugin_if(self, found_list, verb, threads, imu_list,
-            hide_progressbar, timeout=15, headers={}):
+            hide_progressbar, timeout=15, headers={}, user_agent=''):
         """
         Finds interesting urls within a plugin folder which respond with 200 OK.
         @param found_list: as returned in self.enumerate. E.g. [{'name':
