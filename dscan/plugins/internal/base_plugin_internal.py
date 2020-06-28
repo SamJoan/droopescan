@@ -95,6 +95,7 @@ class BasePluginInternal(controller.CementBaseController):
         output = pargs.output
         timeout = pargs.timeout
         timeout_host = pargs.timeout_host
+        user_agent = pargs.user_agent
         hide_progressbar = pargs.hide_progressbar
         debug_requests = pargs.debug_requests
         follow_redirects = pargs.follow_redirects
@@ -265,7 +266,7 @@ class BasePluginInternal(controller.CementBaseController):
             self.out.warn(old_req)
 
         self.session.verify = False
-        self.session.headers['User-Agent'] = self.DEFAULT_UA
+        self.session.headers['User-Agent'] = opts["user_agent"]
 
         debug_requests = opts['debug_requests']
         if debug_requests:
@@ -314,7 +315,7 @@ class BasePluginInternal(controller.CementBaseController):
 
         output = self.url_scan(url, opts, functionality, enabled_functionality,
                 hide_progressbar=hide_progressbar)
-        
+
         if opts['output'] == "json":
             self._output_json_add_info(output, url)
 
@@ -537,7 +538,7 @@ class BasePluginInternal(controller.CementBaseController):
         response = requests_verb(url + self.not_found_url)
 
         return response.status_code == 200, len(response.content)
-    
+
     def _determine_fake_200_module(self, requests_verb, url_template, url):
         fake_200_url = url_template % (url, self.not_found_module)
         response = requests_verb(fake_200_url)
@@ -686,7 +687,7 @@ class BasePluginInternal(controller.CementBaseController):
                 except requests.exceptions.ReadTimeout:
                     self.out.warn('\rGot a read timeout. Is the server overloaded? This may affect the results of your scan')
                     continue
-                    
+
                 if r.status_code in expected_status:
                     plugin_url = future_array['plugin_url']
                     plugin_name = future_array['plugin_name']

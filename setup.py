@@ -15,7 +15,7 @@ def read_first_line(f):
 def _post_install():
     os.system("chmod +x /usr/local/bin/droopescan");
 
-class PostInstall(install):  
+class PostInstall(install):
 
     def run(self):
         install.run(self)
@@ -47,8 +47,10 @@ setup(
         'cement>=2.6,<2.6.99',
         'requests',
         'pystache',
-        'futures'
     ],
+    extras_require={
+        ':python_version == "2.7"': ['futures']
+    },
     cmdclass={'install': PostInstall}
 )
 

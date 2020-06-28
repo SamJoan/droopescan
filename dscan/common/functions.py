@@ -97,7 +97,7 @@ def dict_combine(x, y):
 def file_len(fname):
     i = 0
     with open(fname) as f:
-        for l in f:
+        for _ in f:
             i += 1
 
     return i

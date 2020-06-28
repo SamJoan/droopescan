@@ -63,6 +63,8 @@ class Scan(BasePlugin):
                     the following of redirects.""", dest="follow_redirects", default=True)),
                 (['--host'], dict(action='store', help="""Override host header
                     with this value.""", default=None)),
+                (['--user-agent'], dict(action='store', help='''Override User Agent
+                header performing the scan requests.''', default=BasePluginInternal.DEFAULT_UA, type=str)),
                 (['--massscan-override'], dict(action='store_true',
                     help="""Overrides defaults with defaults convenient for
                     mass-scanning of hosts.""", default=False)),
@@ -128,7 +130,6 @@ class Scan(BasePlugin):
 
             opts['url'] = url
             opts['headers'] = self._generate_headers(host_header)
-
             inst.process_url(opts, **inst_dict['kwargs'])
 
         self.out.close()

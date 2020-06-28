@@ -903,7 +903,7 @@ class BaseHttpTests(BaseTest):
 
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.forbidden)
-        
+
         assert warn.called
 
     def test_single_site_json_out_cms_fingerprint(self):
@@ -961,3 +961,7 @@ class BaseHttpTests(BaseTest):
         assert found_500
         assert not found_200 # 200 should not count as false positive
         assert warn.called
+
+    def test_user_agent_in_session(self):
+        assert 'User-Agent' in self.scanner.session.headers
+        assert self.scanner.session.headers['User-Agent'] == 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
