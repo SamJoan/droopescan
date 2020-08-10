@@ -9,6 +9,7 @@ class Drupal(BasePlugin):
     plugins_base_url = [
             "%ssites/all/modules/%s/",
             "%ssites/default/modules/%s/",
+            "%smodules/contrib/%s/",
             "%smodules/%s/"]
     themes_base_url = [
             "%ssites/all/themes/%s/",
