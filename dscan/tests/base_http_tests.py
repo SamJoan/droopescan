@@ -126,12 +126,14 @@ class BaseHttpTests(BaseTest):
         base_1 = self.base_url + "sites/all/modules/%s/"
         base_2 = self.base_url + "sites/default/modules/%s/"
         base_3 = self.base_url + "modules/%s/"
+        base_4 = self.base_url + "modules/contrib/%s/"
         self.respond_several(base_1, {200: ["supermodule"],
             404: ["nonexistant1", "supermodule2", "amazing_mod"]})
         self.respond_several(base_2, {200:
             ["supermodule2"], 404: ["nonexistant1", "supermodule", "amazing_mod"]})
         self.respond_several(base_3, {200:
             ["amazing_mod"], 404: ["nonexistant1", "supermodule", "supermodule2"]})
+        self.respond_several(base_4, {200: [], 404: ["amazing_mod", "nonexistant1", "supermodule", "supermodule2"]})
 
         result, empty = self.scanner.enumerate_plugins(self.base_url,
                 self.scanner.plugins_base_url, ScanningMethod.ok)
