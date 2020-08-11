@@ -19,12 +19,12 @@ Supported CMS are:
 
 * SilverStripe
 * Wordpress
+* Drupal 
 
 Partial functionality for:
 
 * Joomla (version enumeration and interesting URLs only)
 * Moodle (plugin & theme very limited, watch out)
-* Drupal (plugin discovery partial on new installations of Drupal, patches encouraged)
 
 ```
 computer:~/droopescan$ droopescan scan drupal -u http://example.org/ -t 32
