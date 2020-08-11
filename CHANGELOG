@@ -1,3 +1,11 @@
+1.43.0
+======
+
+* Contribution by @kieran-github: add --user-agent parameter. 
+* Contribution by @ageekymonk: Add new drupal 8 path.
+* Contribution by @NicolasCARPi: Add Dockerfile.
+* New Drupal and SS Modules.
+
 1.42.0
 ======
 
