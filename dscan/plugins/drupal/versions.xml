@@ -156,6 +156,7 @@
       <version md5="a4065c93addf975e695586c24a20bda8" nb="7.70" />
       <version md5="a4065c93addf975e695586c24a20bda8" nb="7.71" />
       <version md5="a4065c93addf975e695586c24a20bda8" nb="7.72" />
+      <version md5="f11a165a540fd604ca434a64a6ce4f5a" nb="7.73" />
     </file>
     <file url="misc/tabledrag.js">
       <version md5="c6f7a28ffd7288909b207c0eb651298e" nb="6.0-rc1" />
@@ -285,6 +286,7 @@
       <version md5="1c8a047f85d796b3a5149e05aa2b138b" nb="7.70" />
       <version md5="1c8a047f85d796b3a5149e05aa2b138b" nb="7.71" />
       <version md5="1c8a047f85d796b3a5149e05aa2b138b" nb="7.72" />
+      <version md5="1c8a047f85d796b3a5149e05aa2b138b" nb="7.73" />
     </file>
     <file url="misc/tableheader.js">
       <version md5="da96f76a7fef73f09e12ca207602a909" nb="6.0-rc1" />
@@ -414,6 +416,7 @@
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.70" />
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.71" />
       <version md5="bd98fa07941364726469e7666b91d14d" nb="7.72" />
+      <version md5="bd98fa07941364726469e7666b91d14d" nb="7.72" />
     </file>
     <file url="misc/ajax.js">
       <version md5="e9705a45006501b9e3ff1bc4fa2c7a37" nb="7.0-alpha1" />
@@ -498,6 +501,7 @@
       <version md5="c33c7e19fd8f473af82f4ac433446f2e" nb="7.70" />
       <version md5="d2627e7c7234e6e172e98d987d28b3cf" nb="7.71" />
       <version md5="d2627e7c7234e6e172e98d987d28b3cf" nb="7.72" />
+      <version md5="577a75e924f6d70fad30feb13941604a" nb="7.73" />
     </file>
     <file url="core/misc/drupal.js">
       <version md5="330a6a8916376627bdb21b0ce45804ca" nb="8.0-alpha6" />
@@ -1233,6 +1237,7 @@
       <version md5="e49ebd0da8eb5316c6e7b8a23592d9ec" nb="7.70" />
       <version md5="248f75207f68d9d48359b02076bbe774" nb="7.71" />
       <version md5="769646518e9eec12a365a0a40207f45a" nb="7.72" />
+      <version md5="ba8a18f7b8567764a832886cad17af33" nb="7.73" />
     </changelog>
     <changelog url="core/CHANGELOG.txt">
       <version md5="f50de9476bc30d736ec992dad35cf782" nb="8.0-alpha6" />
