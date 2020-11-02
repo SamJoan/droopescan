@@ -28,9 +28,11 @@ class Drupal(BasePlugin):
 
     interesting_module_urls = [
         ('CHANGELOG.txt', 'Changelog file'),
+        ('CHANGELOG.md', 'Changelog file'),
         ('changelog.txt', 'Changelog file'),
         ('CHANGELOG.TXT', 'Changelog file'),
         ('README.txt', 'README file'),
+        ('README.md', 'README file'),
         ('readme.txt', 'README file'),
         ('README.TXT', 'README file'),
         ('LICENSE.txt', 'License file'),
