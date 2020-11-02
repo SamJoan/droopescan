@@ -148,7 +148,10 @@ def github_repo_new(repo_url, plugin_name, versions_file, update_majors):
     @param update_majors: major versions to update. If you want to update
         the 6.x and 7.x branch, you would supply a list which would look like
         ['6', '7']
-    @return: a tuple containing (GitRepo, VersionsFile, GitRepo.tags_newer())
+    @return: a tuple containing (GitRepo, VersionsFile, GitRepo.tags_newer()).
+    The newer tags element may be empty if no new tags are found. While this
+    theoretically should not happen, it happens in the particular case of
+    Silverstripe's secondary framework repo.
     """
     gr = github_repo(repo_url, plugin_name)
     vf = v.VersionsFile(versions_file)
@@ -340,7 +343,6 @@ class GitRepo():
         @param versions_file: a common.VersionsFile instance to
             check against.
         @param majors: a list of major branches to check. E.g. ['6', '7']
-        @raise RuntimeError: no newer tags were found.
         @raise MissingMajorException: A new version from a newer major branch is
             exists, but hasn't been downloaded due to it not being in majors.
         """
@@ -348,9 +350,6 @@ class GitRepo():
         all = self.tags_get()
 
         newer = _newer_tags_get(highest, all)
-
-        if len(newer) == 0:
-            raise RuntimeError("No new tags found.")
 
         return newer
 

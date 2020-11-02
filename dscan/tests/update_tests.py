@@ -177,8 +177,7 @@ class UpdateTests(BaseTest):
         assert args == expected
         assert kwargs['cwd'] == self.path
 
-    @test.raises(RuntimeError)
-    def test_tags_newer_exc(self):
+    def test_tags_newer_empty(self):
         tags_get_ret = ['7.34', '6.34', '7.33', '6.33', '8.1']
         update_majors = ['6', '7', '8']
         with patch('dscan.common.update_api.VersionsFile') as vf:
@@ -187,8 +186,9 @@ class UpdateTests(BaseTest):
                         '7.34', '8': '8.1'}
                 tg.return_value = tags_get_ret
 
-                # No new tags should result in exception.
-                self.gr.tags_newer(vf, update_majors)
+                ret = self.gr.tags_newer(vf, update_majors)
+
+                assert ret == []
 
     @test.raises(MissingMajorException)
     def test_tags_newer_missing_major(self):

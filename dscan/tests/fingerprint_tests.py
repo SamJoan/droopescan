@@ -243,9 +243,9 @@ class FingerprintTests(BaseTest):
                       example_number = version
 
                   if nb != number:
-                      msg = """All majors should have the same number of
+                      msg = """All majors in file %s should have the same number of
                           files, and version %s has %s, versus %s on other
-                          files (e.g. %s).""" % (version, nb, number, example_number)
+                          files (e.g. %s).""" % (xml_path, version, nb, number, example_number)
 
                       fails.append(" ".join(msg.split()))
 
