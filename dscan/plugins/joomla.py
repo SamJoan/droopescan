@@ -52,6 +52,10 @@ class Joomla(BasePlugin):
 
         hashes = {}
         for version in new_tags:
+            if 'alpha' in version or 'beta' in version:
+                print("Skipping alpha or beta version %s" % version)
+                continue 
+
             gr.tag_checkout(version)
             hashes[version] = gr.hashes_get(versions_file)
 
