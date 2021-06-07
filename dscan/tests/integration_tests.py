@@ -79,7 +79,6 @@ class IntegrationTests(BaseTest):
 
     def _unhandled_cb(self, request):
         error = "Unhandled request to '%s' (%s)." % (request.url, request.method)
-        print(error, file=sys.stderr)
         return (404, {}, '')
 
     def mock_output(self, source, base_urls = None):
@@ -114,7 +113,7 @@ class IntegrationTests(BaseTest):
 
                 responses.add(verb, url, status=status_code)
 
-        default_response = re.compile('.')
+        default_response = re.compile('.*')
         responses.add_callback(responses.GET, default_response, callback=self._unhandled_cb)
         responses.add_callback(responses.HEAD, default_response, callback=self._unhandled_cb)
         responses.add_callback(responses.POST, default_response, callback=self._unhandled_cb)
@@ -129,7 +128,7 @@ class IntegrationTests(BaseTest):
         self.mock_output("tests/resources/output_drupal.txt")
 
         self.add_argv(['scan', 'drupal', '-u', self.base_url, '-n', '100', '-o',
-            'json'])
+            'json', '-t', '1'])
 
         with Capture() as out:
             self.app.run()
@@ -142,7 +141,7 @@ class IntegrationTests(BaseTest):
             raise
 
         assert len(j['interesting urls']['finds']) == 2
-        assert len(j['plugins']['finds']) == 17
+        assert len(j['plugins']['finds']) == 17, str(len(j['plugins']['finds']))
         assert len(j['themes']['finds']) == 0
 
     def test_ss_multisite(self):
