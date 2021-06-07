@@ -65,7 +65,7 @@ def test_human():
 
 def changelog(version):
     header = '%s\n%s\n\n*' % (version, ('='*len(version)))
-    with tempfile.NamedTemporaryFile(suffix=".tmp") as temp:
+    with tempfile.NamedTemporaryFile(mode='w+t', suffix=".tmp") as temp:
       temp.write(header)
 
       temp.flush()
