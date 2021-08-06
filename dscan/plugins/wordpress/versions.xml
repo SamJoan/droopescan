@@ -282,6 +282,7 @@
       <version md5="ad4c696c2b7a3971393d00c67bac0d05" nb="5.6.1" />
       <version md5="9348da52c104f75fe1befc73609020cf" nb="4.9.17" />
       <version md5="ad4c696c2b7a3971393d00c67bac0d05" nb="5.5.4" />
+      <version md5="f05adecf7b9a0053d867ab9144a184e3" nb="5.8" />
     </file>
     <file url="wp-includes/js/tinymce/tiny_mce_popup.js">
       <version md5="554bc76c70351187f4ce05ddc012aaed" nb="3.6.1" />
@@ -504,6 +505,7 @@
       <version md5="4237af4931ba3003048f8eb5b98364c7" nb="5.6.1" />
       <version md5="4237af4931ba3003048f8eb5b98364c7" nb="4.9.17" />
       <version md5="4237af4931ba3003048f8eb5b98364c7" nb="5.5.4" />
+      <version md5="4237af4931ba3003048f8eb5b98364c7" nb="5.8" />
     </file>
     <file url="wp-includes/js/quicktags.js">
       <version md5="2a040163533eceee9b05c95216bf6764" nb="3.6.1" />
@@ -726,6 +728,7 @@
       <version md5="3a7dd5f21f0185d288509c11dad9adcc" nb="5.6.1" />
       <version md5="bb36c516f8fd9ecc5d05b750f92cc1ae" nb="4.9.17" />
       <version md5="3a7dd5f21f0185d288509c11dad9adcc" nb="5.5.4" />
+      <version md5="8ccab5c603d93e0925856e4ba47b3c35" nb="5.8" />
     </file>
     <file url="wp-includes/js/tinymce/utils/validate.js">
       <version md5="2d73c0757ea622f65738ea71433ca8e4" nb="3.6.1" />
@@ -948,6 +951,7 @@
       <version md5="434cc20c313f6f2b033b84f8fb7b5986" nb="5.6.1" />
       <version md5="434cc20c313f6f2b033b84f8fb7b5986" nb="4.9.17" />
       <version md5="434cc20c313f6f2b033b84f8fb7b5986" nb="5.5.4" />
+      <version md5="434cc20c313f6f2b033b84f8fb7b5986" nb="5.8" />
     </file>
     <changelog url="readme.html">
       <version md5="80c4ecc8630395baeb7363a7cf4dad33" nb="2.9.1" />
@@ -1178,6 +1182,7 @@
       <version md5="ad262162850a9a80bf78ce0f52a3e629" nb="5.6.1" />
       <version md5="55d27f1f9f7f79fa2593a5b32907ee44" nb="4.9.17" />
       <version md5="ad262162850a9a80bf78ce0f52a3e629" nb="5.5.4" />
+      <version md5="5c5fb2fc92934133f676ab414579b55b" nb="5.8" />
     </changelog>
   </files>
 </cms>
