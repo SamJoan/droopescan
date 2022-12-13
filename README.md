@@ -171,7 +171,7 @@ You can also omit the `drupal` argument. This will trigger “CMS identification
     droopescan scan -u example.org
 ```
 
-Multiple URLs may be scanned utilising the `-U` or `--url-file` parameter. This
+Multiple URLs may be scanned using the `-U` or `--url-file` parameter. This
 parameter should be set to the path of a file which contains a list of URLs.
 
 ```
