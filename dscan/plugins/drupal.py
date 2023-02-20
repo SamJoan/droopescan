@@ -24,6 +24,7 @@ class Drupal(BasePlugin):
     interesting_urls = [
             ("CHANGELOG.txt", "Default changelog file"),
             ("user/login", "Default admin"),
+            ("core/install.php", "Default installation page"),
         ]
 
     interesting_module_urls = [
