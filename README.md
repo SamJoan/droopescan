@@ -1,9 +1,3 @@
-# This Project is Orphaned
-
-This project is no longer maintained or developed. Github issue tracking and pull requests are therefore no longer monitored. 
-
-If you would like to take over this project, you are welcome to do so. Please fork it and develop the fork for a while. Once there has been 6 months of reasonable activity, please contact sam@roque-worcel.com and I'll be happy to give you ownership of this repository or replace with a pointer to the fork.
-
 # droopescan
 
 [![Build Status](https://api.travis-ci.org/droope/droopescan.svg?branch=master)](https://travis-ci.org/droope/droopescan)
