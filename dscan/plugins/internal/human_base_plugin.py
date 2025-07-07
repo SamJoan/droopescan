@@ -1,6 +1,6 @@
 from __future__ import print_function
 from cement.core import handler, controller
-from distutils.util import strtobool
+from setuptools._distutils.util import strtobool
 import dscan.common.functions as f
 import sys
 
