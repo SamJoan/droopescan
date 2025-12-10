@@ -1,0 +1,16 @@
+---
+
+exclude:
+    - '^(.*)[\/\\\\]extension[\/\\\\]{{ label }}[\/\\\\]templates[\/\\\\](.*)$'
+
+ignore:
+    - '^(.*)pyc(.*)$'
+    - '^(.*)pyo(.*)$'
+    - '^(.*)__pycache__(.*)$'
+
+variables:
+    -   name: label
+        prompt: "Extension Label"
+        default: "myextension"
+        case: lower
+        validate: "^[a-zA-Z0-9]+$"

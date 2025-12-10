@@ -1,0 +1,3 @@
+{% for item in items %}
+{{ item.doc_id }} [{% if item.state == 'complete' %}X{% else %} {% endif %}] {{ item.text }}
+{% endfor %}

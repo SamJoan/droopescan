@@ -1,0 +1,20 @@
+---
+
+exclude:
+    - '^(.*)[\/\\\\]plugin[\/\\\\]{{ label }}[\/\\\\]templates[\/\\\\]plugins[\/\\\\]{{ label }}[\/\\\\]command1.jinja2$'
+
+ignore:
+    - '^(.*)pyc(.*)$'
+    - '^(.*)pyo(.*)$'
+    - '^(.*)__pycache__(.*)$'
+
+variables:
+    -   name: label
+        prompt: "Plugin Label"
+        case: "lower"
+        default: "myplugin"
+
+    -   name: class_name
+        prompt: "Plugin Class Name"
+        validate: "^[a-zA-Z0-9]+$"
+        default: "MyPlugin"

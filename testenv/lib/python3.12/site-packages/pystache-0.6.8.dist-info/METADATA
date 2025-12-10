@@ -1,0 +1,409 @@
+Metadata-Version: 2.2
+Name: pystache
+Version: 0.6.8
+Summary: Mustache for Python
+Author-email: Chris Wanstrath <chris@ozmm.org>
+Maintainer-email: Thomas David Baker <bakert@gmail.com>
+License: Copyright (C) 2012 Chris Jerdonek.  All rights reserved.
+        
+        Copyright (c) 2009 Chris Wanstrath
+        
+        Permission is hereby granted, free of charge, to any person obtaining
+        a copy of this software and associated documentation files (the
+        "Software"), to deal in the Software without restriction, including
+        without limitation the rights to use, copy, modify, merge, publish,
+        distribute, sublicense, and/or sell copies of the Software, and to
+        permit persons to whom the Software is furnished to do so, subject to
+        the following conditions:
+        
+        The above copyright notice and this permission notice shall be
+        included in all copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+        NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/PennyDreadfulMTG/pystache
+Project-URL: Documentation, http://mustache.github.io/
+Project-URL: Repository, https://github.com/PennyDreadfulMTG/pystache.git
+Project-URL: Changelog, https://github.com/PennyDreadfulMTG/pystache/blob/master/CHANGELOG.rst
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Libraries
+Requires-Python: >=3.8
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: importlib-metadata>=4.6; python_version < "3.10"
+Provides-Extra: cov
+Requires-Dist: coverage; extra == "cov"
+Requires-Dist: coverage_python_version; extra == "cov"
+Provides-Extra: doc
+Requires-Dist: sphinx; extra == "doc"
+Requires-Dist: sphinx_git; extra == "doc"
+Requires-Dist: recommonmark; extra == "doc"
+Requires-Dist: sphinx_rtd_theme; extra == "doc"
+Requires-Dist: sphinxcontrib-apidoc; extra == "doc"
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+
+Pystache
+========
+
+|ci| |conda| |coverage| |bandit| |release|
+
+|pre| |cov| |pylint|
+
+|tag| |license| |python|
+
+
+This updated fork of Pystache is currently tested on Python 3.8+ and in
+Conda, on Linux, Macos, and Windows.
+
+|logo|
+
+`Pystache <https://github.com/PennyDreadfulMTG/pystache>`__ is a Python
+implementation of `Mustache <https://github.com/mustache/mustache/>`__.
+Mustache is a framework-agnostic, logic-free templating system inspired
+by `ctemplate <https://code.google.com/p/google-ctemplate/>`__ and
+et. Like ctemplate, Mustache "emphasizes separating logic from presentation:
+it is impossible to embed application logic in this template language."
+
+The `mustache(5) <https://mustache.github.io/mustache.5.html>`__ man
+page provides a good introduction to Mustache's syntax. For a more
+complete (and more current) description of Mustache's behavior, see the
+official `Mustache spec <https://github.com/mustache/spec>`__.
+
+Pystache is `semantically versioned <https://semver.org>`__ and older
+versions can still be found on `PyPI <https://pypi.python.org/pypi/pystache>`__.
+This version of Pystache now passes all tests in `version 1.1.3
+<https://github.com/mustache/spec/tree/v1.1.3>`__ of the spec.
+
+
+Requirements
+============
+
+Pystache is tested with:
+
+-  Python 3.8
+-  Python 3.9
+-  Python 3.10
+-  Python 3.11
+-  Python 3.12
+-  Python 3.13
+-  Conda (py38 and py310)
+
+JSON support is needed only for the command-line interface and to run
+the spec tests; PyYAML can still be used (see the Develop section).
+
+Official support for Python 2 has ended with Pystache version 0.6.0.
+
+
+.. note:: This project uses setuptools_scm_ to generate and maintain the
+          version file, which only gets included in the sdist/wheel
+          packages. In a fresh clone, running any of the tox_ commands
+          should generate the current version file.
+
+.. _setuptools_scm: https://github.com/pypa/setuptools_scm
+.. _tox: https://github.com/tox-dev/tox
+
+
+Quick Start
+===========
+
+Be sure to get the latest release from either Pypi or Github.
+
+Install It
+----------
+
+From Pypi::
+
+  $ pip install pystache
+
+Or Github::
+
+  $ pip install -U pystache -f https://github.com/PennyDreadfulMTG/pystache/releases/
+
+
+And test it::
+
+  $ pystache-test
+
+To install and test from source (e.g. from GitHub), see the Develop
+section.
+
+Use It
+------
+
+Open a python console::
+
+  >>> import pystache
+  >>> print(pystache.render('Hi {{person}}!', {'person': 'Mom'}))
+  Hi Mom!
+
+You can also create dedicated view classes to hold your view logic.
+
+Here's your view class (in ../pystache/tests/examples/readme.py):
+
+::
+
+  class SayHello(object):
+      def to(self):
+          return "Pizza"
+
+Instantiating like so:
+
+::
+
+  >>> from pystache.tests.examples.readme import SayHello
+  >>> hello = SayHello()
+
+Then your template, say_hello.mustache (by default in the same directory
+as your class definition):
+
+::
+
+  Hello, {{to}}!
+
+Pull it together:
+
+::
+
+  >>> renderer = pystache.Renderer()
+  >>> print(renderer.render(hello))
+  Hello, Pizza!
+
+For greater control over rendering (e.g. to specify a custom template
+directory), use the ``Renderer`` class like above. One can pass
+attributes to the Renderer class constructor or set them on a Renderer
+instance. To customize template loading on a per-view basis, subclass
+``TemplateSpec``. See the docstrings of the
+`Renderer <https://github.com/PennyDreadfulMTG/pystache/blob/master/pystache/renderer.py>`__
+class and
+`TemplateSpec <https://github.com/PennyDreadfulMTG/pystache/blob/master/pystache/template_spec.py>`__
+class for more information.
+
+You can also pre-parse a template:
+
+::
+
+  >>> parsed = pystache.parse(u"Hey {{#who}}{{.}}!{{/who}}")
+  >>> print(parsed)
+  ['Hey ', _SectionNode(key='who', index_begin=12, index_end=18, parsed=[_EscapeNode(key='.'), '!'])]
+
+And then:
+
+::
+
+  >>> print(renderer.render(parsed, {'who': 'Pops'}))
+  Hey Pops!
+  >>> print(renderer.render(parsed, {'who': 'you'}))
+  Hey you!
+
+
+Unicode
+-------
+
+This section describes how Pystache handles unicode, strings, and
+encodings.
+
+Internally, Pystache uses `only unicode strings`_ (``str`` in Python 3).
+For input, Pystache accepts byte strings (``bytes`` in Python 3).
+For output, Pystache's template rendering methods return only unicode.
+
+.. _only unicode strings: https://docs.python.org/howto/unicode.html#tips-for-writing-unicode-aware-programs
+
+Pystache's ``Renderer`` class supports a number of attributes to control
+how Pystache converts byte strings to unicode on input. These include
+the ``file_encoding``, ``string_encoding``, and ``decode_errors`` attributes.
+
+The ``file_encoding`` attribute is the encoding the renderer uses to
+convert to unicode any files read from the file system. Similarly,
+``string_encoding`` is the encoding the renderer uses to convert any other
+byte strings encountered during the rendering process into unicode (e.g.
+context values that are encoded byte strings).
+
+The ``decode_errors`` attribute is what the renderer passes as the
+``errors`` argument to Python's built-in unicode-decoding function
+(``str()`` in Python 3). The valid values for this argument are
+``strict``, ``ignore``, and ``replace``.
+
+Each of these attributes can be set via the ``Renderer`` class's
+constructor using a keyword argument of the same name. See the Renderer
+class's docstrings for further details. In addition, the ``file_encoding``
+attribute can be controlled on a per-view basis by subclassing the
+``TemplateSpec`` class. When not specified explicitly, these attributes
+default to values set in Pystache's ``defaults`` module.
+
+
+Develop
+=======
+
+To test from a source distribution (without installing)::
+
+  $ python test_pystache.py
+
+To test Pystache with multiple versions of Python (with a single
+command!) and different platforms, you can use [tox](https://pypi.python.org/pypi/tox)::
+
+  $ pip install tox
+  $ tox -e py
+
+To run tests on multiple versions with coverage, run::
+
+  $ tox -e py38-linux,py39-linux  # for example
+
+(substitute your platform above, eg, macos or windows)
+
+The source distribution tests also include doctests and tests from the
+Mustache spec. To include tests from the Mustache spec in your test
+runs::
+
+  $ git submodule update --init
+
+The test harness parses the spec's (more human-readable) yaml files if
+`PyYAML <http://pypi.python.org/pypi/PyYAML>`__ is present. Otherwise,
+it parses the json files. To install PyYAML::
+
+  $ pip install pyyaml  # note this is installed automatically by tox
+
+Once the submodule is available, you can run the full test set with::
+
+  $ tox -e setup -- ext/spec/specs
+
+
+Making Changes & Contributing
+-----------------------------
+
+We use the gitchangelog_ action to generate our github Release page, as
+well as the gitchangelog message format to help it categorize/filter
+commits for a tidier release page. Please use the appropriate ACTION
+modifiers in any Pull Requests.
+
+This repo is also pre-commit_ enabled for various linting and format
+checks.  The checks run automatically on commit and will fail the
+commit (if not clean) with some checks performing simple file corrections.
+
+If other checks fail on commit, the failure display should explain the error
+types and line numbers. Note you must fix any fatal errors for the
+commit to succeed; some errors should be fixed automatically (use
+``git status`` and ``git diff`` to review any changes).
+
+Note ``pylint`` is the primary check that requires your own input, as well
+as a decision as to the appropriate fix action.  You must fix any ``pylint``
+warnings (relative to the baseline config score) for the commit to succeed.
+
+See the following pages for more information on gitchangelog and pre-commit.
+
+.. inclusion-marker-1
+
+* generate-changelog_
+* pre-commit-config_
+* pre-commit-usage_
+
+.. _generate-changelog:  docs/source/dev/generate-changelog.rst
+.. _pre-commit-config: docs/source/dev/pre-commit-config.rst
+.. _pre-commit-usage: docs/source/dev/pre-commit-usage.rst
+.. inclusion-marker-2
+
+You will need to install pre-commit before contributing any changes;
+installing it using your system's package manager is recommended,
+otherwise install with pip into your usual virtual environment using
+something like::
+
+  $ sudo emerge pre-commit  --or--
+  $ pip install pre-commit
+
+then install it into the repo you just cloned::
+
+  $ git clone https://github.com/PennyDreadfulMTG/pystache
+  $ cd pystache/
+  $ pre-commit install
+
+It's usually a good idea to update the hooks to the latest version::
+
+    pre-commit autoupdate
+
+.. _gitchangelog: https://github.com/sarnold/gitchangelog-action
+.. _pre-commit: https://pre-commit.com/
+
+
+Credits
+=======
+
+  >>> import pystache
+  >>> context = { 'author': 'Chris Wanstrath', 'maintainer': 'Chris Jerdonek','refurbisher': 'Steve Arnold', 'new_maintainer': 'Thomas David Baker' }
+  >>> print(pystache.render("Author: {{author}}\nMaintainer: {{maintainer}}\nRefurbisher: {{refurbisher}}\nNew maintainer: {{new_maintainer}}", context))
+  Author: Chris Wanstrath
+  Maintainer: Chris Jerdonek
+  Refurbisher: Steve Arnold
+  New maintainer: Thomas David Baker
+
+
+Pystache logo by `David Phillips <http://davidphillips.us/>`__ is
+licensed under a `Creative Commons Attribution-ShareAlike 3.0 Unported
+License <https://creativecommons.org/licenses/by-sa/3.0/deed.en_US>`__.
+
+|ccbysa|
+
+
+.. |ci| image:: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/ci.yml
+    :alt: CI Status
+
+.. |conda| image:: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/conda.yml/badge.svg
+    :target: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/conda.yml
+    :alt: Conda Status
+
+.. |coverage| image:: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/coverage.yml/badge.svg
+    :target: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/coverage.yml
+    :alt: Coverage workflow
+
+.. |bandit| image:: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/bandit.yml/badge.svg
+    :target: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/bandit.yml
+    :alt: Security check - Bandit
+
+.. |release| image:: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/release.yml/badge.svg
+    :target: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/release.yml
+    :alt: Release Status
+
+.. |cov| image:: https://raw.githubusercontent.com/PennyDreadfulMTG/pystache/badges/master/test-coverage.svg
+    :target: https://github.com/PennyDreadfulMTG/pystache/
+    :alt: Test coverage
+
+.. |pylint| image:: https://raw.githubusercontent.com/PennyDreadfulMTG/pystache/badges/master/pylint-score.svg
+    :target: https://github.com/PennyDreadfulMTG/pystache/actions/workflows/pylint.yml
+    :alt: Pylint Score
+
+.. |license| image:: https://img.shields.io/github/license/PennyDreadfulMTG/pystache
+    :target: https://github.com/PennyDreadfulMTG/pystache/blob/master/LICENSE
+    :alt: License
+
+.. |tag| image:: https://img.shields.io/github/v/tag/PennyDreadfulMTG/pystache?color=green&include_prereleases&label=latest%20release
+    :target: https://github.com/PennyDreadfulMTG/pystache/releases
+    :alt: GitHub tag
+
+.. |python| image:: https://img.shields.io/badge/python-3.6+-blue.svg
+    :target: https://www.python.org/downloads/
+    :alt: Python
+
+.. |pre| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&amp;logoColor=white
+   :target: https://github.com/pre-commit/pre-commit
+   :alt: pre-commit
+
+.. |logo| image:: gh/images/logo_phillips_small.png
+
+.. |ccbysa| image:: https://i.creativecommons.org/l/by-sa/3.0/88x31.png

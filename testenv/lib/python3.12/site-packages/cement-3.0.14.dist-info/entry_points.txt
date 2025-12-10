@@ -1,0 +1,5 @@
+[console_scripts]
+cement = cement.cli.main:main
+
+[gui_scripts]
+

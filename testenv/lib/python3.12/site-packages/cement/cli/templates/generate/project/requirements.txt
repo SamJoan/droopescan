@@ -1,0 +1,4 @@
+cement=={{ cement.version }}
+cement[jinja2]
+cement[yaml]
+cement[colorlog]

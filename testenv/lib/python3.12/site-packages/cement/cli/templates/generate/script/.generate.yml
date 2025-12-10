@@ -1,0 +1,16 @@
+---
+
+exclude:
+    - '^(.*)[\/\\\\]script[\/\\\\]{{ label }}[\/\\\\]templates[\/\\\\](.*)$'
+
+ignore:
+    - '^(.*)pyc(.*)$'
+    - '^(.*)pyo(.*)$'
+    - '^(.*)__pycache__(.*)$'
+
+
+variables:
+    -   name: label
+        prompt: "Script Name"
+        default: "myscript"
+        validate: "^[a-zA-Z0-9-_]+$"
