@@ -1,5 +1,6 @@
 from __future__ import print_function
 from cement.core import handler, controller
+from cement import Controller
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from datetime import datetime
@@ -36,7 +37,7 @@ except:
 
 DEFAULT_UA = 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
 
-class BasePluginInternal(controller.CementBaseController):
+class BasePluginInternal(Controller):
     DEFAULT_UA = DEFAULT_UA
     NUMBER_DEFAULT = 'number_default'
     NUMBER_THEMES_DEFAULT = 350
@@ -96,6 +97,9 @@ class BasePluginInternal(controller.CementBaseController):
         timeout = pargs.timeout
         timeout_host = pargs.timeout_host
         user_agent = pargs.user_agent
+        cookie = pargs.cookie
+        if cookie and cookie.lower().startswith("cookie: "):
+            cookie = cookie[8:]
         hide_progressbar = pargs.hide_progressbar
         debug_requests = pargs.debug_requests
         follow_redirects = pargs.follow_redirects
@@ -104,6 +108,7 @@ class BasePluginInternal(controller.CementBaseController):
         debug = pargs.debug
         resume = pargs.resume
         number = pargs.number if not pargs.number == 'all' else 100000
+        no_fingerprint_fallback = pargs.no_fingerprint_fallback
         if pargs.error_log:
             error_log = self._path(pargs.error_log, pwd)
         else:
@@ -177,7 +182,8 @@ class BasePluginInternal(controller.CementBaseController):
                     'verb': opts['verb'],
                     'threads': opts['threads_enumerate'],
                     'timeout': opts['timeout'],
-                    'headers': opts['headers']
+                    'headers': opts['headers'],
+                    'no_fingerprint_fallback': opts['no_fingerprint_fallback']
                 }
             },
             'interesting urls': {
@@ -259,7 +265,8 @@ class BasePluginInternal(controller.CementBaseController):
             a = requests.adapters.HTTPAdapter(pool_maxsize=5000)
             self.session.mount('http://', a)
             self.session.mount('https://', a)
-            self.session.cookies.set_policy(BlockAll())
+            if not opts['cookie']:
+                self.session.cookies.set_policy(BlockAll())
         except AttributeError:
             old_req = """Running a very old version of requests! Please `pip
                 install -U requests`."""
@@ -267,6 +274,9 @@ class BasePluginInternal(controller.CementBaseController):
 
         self.session.verify = False
         self.session.headers['User-Agent'] = opts["user_agent"]
+        self.session.headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        if opts['cookie']:
+            self.session.headers['Cookie'] = opts['cookie']
 
         debug_requests = opts['debug_requests']
         if debug_requests:
@@ -476,7 +486,7 @@ class BasePluginInternal(controller.CementBaseController):
             base_supplied = base_url(url)
 
             same_base = base_redir == base_supplied
-            if same_base:
+            if not same_base:
                 url_new = url
 
         return url_new
@@ -530,14 +540,22 @@ class BasePluginInternal(controller.CementBaseController):
                     ok_200 = True
                     break
 
-        len_content = len(ok_resp.content)
+        if len(ok_resp.content) == 0 and 'Content-Length' in ok_resp.headers:
+            len_content = int(ok_resp.headers['Content-Length'])
+        else:
+            len_content = len(ok_resp.content)
 
         return ok_200, len_content
 
     def _determine_fake_200(self, requests_verb, url):
         response = requests_verb(url + self.not_found_url)
 
-        return response.status_code == 200, len(response.content)
+        if len(response.content) == 0 and 'Content-Length' in response.headers:
+            len_content = int(response.headers['Content-Length'])
+        else:
+            len_content = len(response.content)
+
+        return response.status_code == 200, len_content
 
     def _determine_fake_200_module(self, requests_verb, url_template, url):
         fake_200_url = url_template % (url, self.not_found_module)
@@ -765,7 +783,7 @@ class BasePluginInternal(controller.CementBaseController):
         return found, len(found) == 0
 
     def enumerate_version(self, url, threads=10, verb='head',
-            timeout=15, hide_progressbar=False, headers={}):
+            timeout=15, hide_progressbar=False, headers={}, no_fingerprint_fallback=False):
         """
         Determines which version of CMS is installed at url. This is done by
         comparing file hashes against the database of hashes in
@@ -776,6 +794,7 @@ class BasePluginInternal(controller.CementBaseController):
         @param timeout: time, in seconds, before timing out a request.
         @param hide_progressbar: should the function hide the progressbar?
         @param headers: a dict of headers to pass to requests.get.
+        @param no_fingerprint_fallback: if True, only use file fingerprinting (no fallbacks).
         @return (possible_versions, is_empty)
         """
 
@@ -953,10 +972,18 @@ class BasePluginInternal(controller.CementBaseController):
         return f.process_host_line(line)
 
     def _generate_headers(self, host_header):
+        headers = {}
+
+        # Include session headers (User-Agent, Cookie, etc.)
+        if hasattr(self, 'session') and self.session and hasattr(self.session, 'headers'):
+            for k, v in self.session.headers.items():
+                headers[k] = v
+
+        # Override Host header if provided
         if host_header:
-            return {'Host': host_header}
-        else:
-            return None
+            headers['Host'] = host_header
+
+        return headers if headers else None
 
     def check_file_empty(self, file_location):
         """

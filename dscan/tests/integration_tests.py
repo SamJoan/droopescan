@@ -28,7 +28,10 @@ class MultiMockHash():
     def mock_func(self, *args, **kwargs):
         file_url = kwargs['file_url']
         version = _vfu(args[0])
-        return self.files[version][file_url]
+        try:
+            return self.files[version][file_url]
+        except KeyError:
+            raise RuntimeError("File not found in mock data: %s" % file_url)
 
 def _vfu(url):
     """
@@ -162,5 +165,4 @@ class IntegrationTests(BaseTest):
             j = json.loads(line)
             real_version = _vfu(j['host'])
 
-            print(real_version, j['version']['finds'])
             assert real_version in j['version']['finds']

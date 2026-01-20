@@ -8,3 +8,12 @@ dscan/.coverage
 dscan/.noseids
 dscan/cover
 _trial_temp*
+
+# Python virtual environments and dependencies
+venv/
+env/
+.venv/
+cement/
+
+# Python cache
+__pycache__/

@@ -44,7 +44,7 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     install_requires=[
-        'cement>=2.6,<2.6.99',
+        'cement>=3.0',
         'requests',
         'pystache',
     ],

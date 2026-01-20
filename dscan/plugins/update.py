@@ -1,5 +1,6 @@
 from __future__ import print_function
 from cement.core import handler, controller
+from cement import ex
 from dscan.plugins import HumanBasePlugin
 import dscan.common.plugins_util as pu
 import sys
@@ -64,7 +65,7 @@ class Update(HumanBasePlugin):
         else:
             self.msg('%s modules don\'t need updating.' % plugin_name.capitalize())
 
-    @controller.expose(help='', hide=True)
+    @ex(help='', hide=True)
     def default(self):
         plugins = pu.plugins_base_get()
 
@@ -85,4 +86,4 @@ class Update(HumanBasePlugin):
                 self.update_plugins(plugin, plugin_name)
 
 def load(app=None):
-    handler.register(Update)
+    app.handler.register(Update)

@@ -89,6 +89,20 @@ Because droopescan:
 * allows simultaneous scanning of multiple sites
 * is 100% python
 
+# Python Version Support
+
+This fork has been updated to support **Python 3.12** by upgrading from Cement 2.x to Cement 3.x. The following changes were made:
+
+* **Cement 3.0.14**: Updated from cement 2.6.x to 3.0.14 for Python 3.12 compatibility
+* **API Changes**: Updated to use cement 3.x APIs (Controller, App, ex decorator)
+* **Plugin Loading**: Migrated plugin loading mechanism to cement 3.x style
+
+**Supported Python versions:**
+* Python 3.8+
+* Python 3.12+ (fully supported)
+
+**Note:** The original droopescan using cement 2.6.x will fail on Python 3.12 with `ModuleNotFoundError: No module named 'imp'` because the `imp` module was removed in Python 3.12.
+
 # Installation
 
 ## With pip (recommended)
@@ -111,6 +125,83 @@ pip install -r requirements.txt
 
 The master branch corresponds to the latest release (what is in pypi).
 Development branch is unstable and all pull requests must be made against it.
+
+## Development Setup (Recommended)
+
+For development work, it's recommended to use a Python virtual environment to isolate dependencies:
+
+### Step 1: Create a virtual environment
+
+```bash
+# Clone the repository
+git clone https://github.com/droope/droopescan.git
+cd droopescan
+
+# Create a virtual environment
+python3 -m venv venv
+```
+
+### Step 2: Activate the virtual environment
+
+```bash
+# On Linux/Mac
+source venv/bin/activate
+
+# On Windows
+venv\Scripts\activate
+```
+
+Once activated, your shell prompt will show `(venv)` prefix.
+
+### Step 3: Install dependencies
+
+```bash
+# Install droopescan in editable mode with dependencies
+pip install -e .
+
+# Or install dependencies manually
+pip install -r requirements.txt
+```
+
+**Note:** During installation, you may see an error message about building a wheel for the cement dependency:
+```
+ERROR: Failed building wheel for cement
+```
+This is expected and harmless. The installation will automatically fall back to using `setup.py install` and complete successfully. The cement package will work correctly despite this warning.
+
+### Step 4: Verify installation
+
+```bash
+# Test the installation
+droopescan --help
+./droopescan scan --help
+```
+
+### What gets installed
+
+The setup automatically installs these core dependencies:
+- **cement** (>=2.6,<2.6.99): CLI framework for building command-line applications
+- **requests**: HTTP library for making web requests
+- **pystache**: Mustache template engine for Python
+
+### Deactivating the virtual environment
+
+When you're done working:
+
+```bash
+deactivate
+```
+
+### Git Ignore
+
+The following directories should NOT be committed to git:
+- `venv/` - Virtual environment
+- `cement/` - Installed dependency (managed by pip)
+- `__pycache__/` - Python bytecode cache
+- `droopescan.egg-info/` - Package metadata
+- `build/` and `dist/` - Build artifacts
+
+These are already configured in `.gitignore`.
 
 ## BlackArch
 BlackArch [package](https://github.com/BlackArch/blackarch/blob/master/packages/droopescan/PKGBUILD) installation (maintained by a third party):
@@ -159,10 +250,11 @@ parameter:
 ```
     droopescan scan drupal -u example.org
 ```
-You can also omit the `drupal` argument. This will trigger “CMS identification”, like so:
+You can also omit the `drupal` argument. This will trigger "CMS identification" which automatically tests all available scanners to detect the CMS type:
 
 ```
     droopescan scan -u example.org
+    droopescan scan -u example.org -e v  # with version enumeration
 ```
 
 Multiple URLs may be scanned utilising the `-U` or `--url-file` parameter. This
@@ -237,6 +329,37 @@ droopescan scan drupal --url http://localhost/drupal
 *WARNING:* By design, to allow intercepting proxies and the testing of
 applications with bad SSL, droopescan allows self-signed or otherwise invalid
 certificates. ˙ ͜ʟ˙
+
+## Cookie Authentication
+
+You can also bypass authentication by passing a valid session cookie using the `--cookie` argument.
+This is useful if you want to login via a browser and then use the session cookie for scanning.
+
+```
+    droopescan scan drupal -u http://example.org --cookie "SESSd06e232=...; other=..."
+```
+
+## Version Detection
+
+By default, droopescan uses a multi-layered approach for version detection to provide the most accurate results:
+
+1. **File fingerprinting** (most accurate) - Compares MD5 hashes of static files against known versions
+2. **HTML-based fallbacks** - Parses version information from HTML meta tags and query parameters when fingerprinting returns multiple versions
+
+### Fingerprint-Only Mode
+
+You can disable the HTML-based fallback methods and rely solely on file fingerprinting by using the `--no-fingerprint-fallback` flag:
+
+```
+    droopescan scan drupal -u http://example.org --no-fingerprint-fallback
+```
+
+This is useful when:
+- You want more deterministic results based only on file checksums
+- Fingerprinting returns multiple versions and you don't want automatic narrowing via HTML parsing
+- You're scanning sites where HTML meta tags may be misleading or modified
+
+**Note:** With this flag enabled, if fingerprinting identifies multiple possible versions, all possibilities will be returned without attempting to narrow them down.
 
 ## Output
 
@@ -460,7 +583,8 @@ rather than the master. Issues can be raised on the issue tracker here
 on GitHub.
 
 To run tests, some dependencies must be installed. Running the following
-commands will result in them being installed and the tests being ran:
+commands will result in them being installed and the tests being ran.
+Please ensure that `nosetests` is in your PATH:
 
 ```
     apt-get install libxslt1-dev libxml2-dev zlib1g-dev python python-pip python-dev python3 python3-pip python3-dev

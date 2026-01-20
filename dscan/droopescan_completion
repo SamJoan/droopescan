@@ -5,7 +5,7 @@ _droopescan()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    opts="--url --url-file --enumerate --help --hide-progressbar --user-agent --debug-requests --threads --output"
+    opts="--url --url-file --enumerate --help --hide-progressbar --user-agent --cookie --debug-requests --threads --output"
     commands="scan stats"
     cms="drupal silverstripe"
     enumerations="p t v u a"

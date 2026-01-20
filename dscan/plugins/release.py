@@ -1,4 +1,5 @@
 from cement.core import handler, controller
+from cement import ex
 from dscan.common import template
 from dscan.common.plugins_util import Plugin, plugins_get
 from dscan.plugins import HumanBasePlugin
@@ -59,10 +60,10 @@ class Release(HumanBasePlugin):
             c(['git', 'checkout', 'development'])
             c(['git', 'merge', 'master'])
 
-    @controller.expose(help='', hide=True)
+    @ex(help='', hide=True)
     def default(self):
         self.ship()
 
 def load(app=None):
-    handler.register(Release)
+    app.handler.register(Release)
 

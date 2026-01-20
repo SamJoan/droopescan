@@ -1,3 +1,11 @@
+1.46.0
+======
+
+* Updated Drupal fingerprinting upto Drupal 11.3
+* Make Drupal patch version identification more precise.
+* Updated Wordpress upto Wordpress 6.9
+* Support --cookie to bypass authentication.
+
 1.45.1
 ======
 

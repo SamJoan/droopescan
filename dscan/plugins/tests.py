@@ -1,4 +1,5 @@
 from cement.core import handler, controller
+from cement import ex
 from dscan.plugins import HumanBasePlugin
 from subprocess import call
 import os, sys, dscan
@@ -20,53 +21,58 @@ def recursive_grep(directory, needle):
 
     return return_file
 
+def which(program):
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return program
+
 class Tests(HumanBasePlugin):
     class Meta:
         label = 'test'
         stacked_on = 'base'
         stacked_type = 'nested'
-        hide = True
         arguments = [
             (['-s', '--single-test'], dict(action='store', help='Name of test to run',
-                required=False, default=None)),
-            (['-3', '--just-three'], dict(action='store_true', help='Just run python 3 tests.',
-                required=False, default=True)),
-            (['-2', '--just-two'], dict(action='store_true', help='Just run python 2 tests.',
                 required=False, default=None)),
             (['-c', '--with-coverage'], dict(action='store_true', help='Do test coverage',
                 required=False, default=False)),
         ]
 
-    @controller.expose(help='', hide=True)
+    def _default(self):
+        self.default()
+
+    @ex(help='Run unit tests')
     def default(self):
         env = {}
         single_test = self.app.pargs.single_test
         with_coverage = self.app.pargs.with_coverage
-        just_three = self.app.pargs.just_three
-        just_two = self.app.pargs.just_two
 
         if single_test and with_coverage:
             self.error('Cannot run with both -c and -s.')
 
+        nosetests = which('nosetests')
         exit = 0
         if not single_test:
-            call_base = ['/usr/local/bin/nosetests', '--exclude=async']
+            call_base = [nosetests, '--exclude=async']
 
             if with_coverage:
                 call_base += ['--with-coverage', '--cover-package', 'dscan',
                         '--cover-inclusive', '--cover-html']
 
-            if not just_three:
-                e1 = call(['python2'] + call_base, env=env)
-            else:
-                e1 = 0
-
-            if not just_two:
-                e2 = call(['python3'] + call_base, env=env)
-            else:
-                e2 = 0
-
-            if e1 != 0 or e2 != 0:
+            # Run tests using the found nosetests executable
+            if call(call_base, env=env) != 0:
                 exit = 1
 
         else:
@@ -81,13 +87,10 @@ class Tests(HumanBasePlugin):
 
             test = 'dscan.tests.%s_tests:%sTests.%s' % (underscore, upper, single_test)
 
-            if just_two:
-                exit = call(['python2', '/usr/local/bin/nosetests', '--nocapture', test], env=env)
-            else:
-                exit = call(['python3', '/usr/local/bin/nosetests', '--nocapture', test], env=env)
+            exit = call([nosetests, '--nocapture', test], env=env)
 
         sys.exit(exit)
 
 def load(app=None):
-    handler.register(Tests)
+    app.handler.register(Tests)
 

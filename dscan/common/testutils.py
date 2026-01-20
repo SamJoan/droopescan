@@ -23,11 +23,11 @@ def _validate(xmlparser, xmlfilename):
     """
     Raises an exception if the XML file doesn't validate.
     """
-    with open(xmlfilename, 'r') as f:
+    with open(xmlfilename, 'rb') as f:
         etree.fromstring(f.read(), xmlparser)
 
 def xml_validate(xml_file, xsd_file):
-    with open(xsd_file, 'r') as f:
+    with open(xsd_file, 'rb') as f:
         schema_root = etree.XML(f.read())
 
     schema = etree.XMLSchema(schema_root)

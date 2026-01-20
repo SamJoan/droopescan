@@ -1,6 +1,6 @@
 # Dockerfile for droope/droopescan
 # License AGPL
-FROM python:3
+FROM python:3.14
 
 LABEL org.label-schema.name="droopescan" \
     org.label-schema.description="A plugin-based scanner that aids security researchers in identifying issues with several CMS." \
@@ -11,6 +11,8 @@ LABEL org.label-schema.name="droopescan" \
 
 COPY . /app
 WORKDIR /app
-RUN pip install -r requirements.txt
+RUN pip install setuptools && \
+    pip install -r requirements.txt 
+ENV PYTHONPATH=/app
 ENTRYPOINT ["droopescan"]
 CMD ["--help"]

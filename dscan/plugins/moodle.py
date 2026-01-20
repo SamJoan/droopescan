@@ -1,4 +1,5 @@
 from cement.core import handler, controller
+from cement import ex
 from dscan import common
 from dscan.plugins import BasePlugin
 import dscan.common.update_api as ua
@@ -32,7 +33,7 @@ class Moodle(BasePlugin):
     class Meta:
         label = 'moodle'
 
-    @controller.expose(help='Moodle scanner')
+    @ex(help='Moodle scanner')
     def moodle(self):
         self.plugin_init()
 
@@ -70,5 +71,5 @@ class Moodle(BasePlugin):
         """
 
 def load(app=None):
-    handler.register(Moodle)
+    app.handler.register(Moodle)
 

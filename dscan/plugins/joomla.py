@@ -1,4 +1,5 @@
 from cement.core import handler, controller
+from cement import ex
 from dscan.common.update_api import GitRepo
 from dscan.plugins import BasePlugin
 import dscan.common.update_api as ua
@@ -32,7 +33,7 @@ class Joomla(BasePlugin):
         label = 'joomla'
 
     # This function is the entry point for the CMS.
-    @controller.expose(help='joomla related scanning tools')
+    @ex(help='joomla related scanning tools')
     def joomla(self):
         self.plugin_init()
 
@@ -69,5 +70,5 @@ class Joomla(BasePlugin):
         pass
 
 def load(app=None):
-    handler.register(Joomla)
+    app.handler.register(Joomla)
 

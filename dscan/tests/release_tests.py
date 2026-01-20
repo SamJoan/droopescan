@@ -16,7 +16,7 @@ class ReleaseTests(BaseTest):
     def setUp(self):
         super(ReleaseTests, self).setUp()
         self._init_scanner()
-        self.add_argv(['release'])
+        self.add_argv(['release', 'default'])
         self.release = plugins.release.Release()
 
     def p(self, *args, **kwargs):
@@ -81,7 +81,8 @@ class ReleaseTests(BaseTest):
         assert raised
 
     def test_skips_external(self):
-        self.add_argv(['--skip-external'])
+        self.clear_argv()
+        self.add_argv(['release', '--skip-external', 'default'])
         internal, external, _ = self.mock_tests(raise_human=True)
 
         raised = False
@@ -109,7 +110,7 @@ class ReleaseTests(BaseTest):
             self.app.run()
 
     def test_read_first_line(self):
-        real_version = "1.33.7"
+        real_version = "1.46.0"
 
         with patch('dscan.common.release_api.open', create=True) as mock_open:
              mock_open.return_value = MagicMock()
@@ -144,7 +145,7 @@ class ReleaseTests(BaseTest):
                 assert response == return_value
 
     def test_changelog(self):
-        version = "1.33.7"
+        version = "1.46.0"
         changes = " Change stuff."
         with patch("tempfile.NamedTemporaryFile") as ntf:
             with patch('subprocess.call', return_value=0) as c:

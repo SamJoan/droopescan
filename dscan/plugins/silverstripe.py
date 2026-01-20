@@ -1,4 +1,5 @@
 from cement.core import handler, controller
+from cement import ex
 from concurrent.futures import ThreadPoolExecutor
 from dscan import common
 from dscan.plugins import BasePlugin
@@ -33,14 +34,14 @@ class Silverstripe(BasePlugin):
     regular_file_url = ['cms/css/layout.css', 'framework/css/UploadField.css',
             "framework/CONTRIBUTING.md"]
     module_common_file = 'README.md'
-    update_majors = ['3.1', '3.0', '3.2', '3.3', '3.4', '2.4', '4.0', '4.1', '4.2', '4.3', '4.4', '4.6', '4.7', '4.8']
+    update_majors = ['3.1', '3.0', '3.2', '3.3', '3.4', '2.4', '4.0', '4.1', '4.2', '4.3', '4.4', '4.6', '4.7', '4.8', '5.0', '5.1', '5.2', '6.0', '6.1']
 
     interesting_urls = [
-            ('framework/docs/en/changelogs/index.md', 'Changelogs, there are other files in same dir, but \'index.md\' is frequently outdated.'),
-            ('Security/login', 'Administrative interface.'),
-            ('composer.json', 'Contains detailed, sensitive dependency information.'),
-            ('vendor/composer/installed.json', 'Contains detailed, sensitive dependency information.'),
-        ]
+        ('framework/docs/en/changelogs/index.md', 'Changelogs, there are other files in same dir, but \'index.md\' is frequently outdated.'),
+        ('Security/login', 'Administrative interface.'),
+        ('composer.json', 'Contains detailed, sensitive dependency information.'),
+        ('vendor/composer/installed.json', 'Contains detailed, sensitive dependency information.'),
+    ]
 
     interesting_module_urls = [
         ('README.md', 'Default README file'),
@@ -54,11 +55,11 @@ class Silverstripe(BasePlugin):
     class Meta:
         label = 'silverstripe'
 
-    @controller.expose(help='silverstripe related scanning tools')
+    @ex(help='silverstripe related scanning tools')
     def silverstripe(self):
         self.plugin_init()
 
-    @controller.expose(help='alias for "silverstripe"', hide=True)
+    @ex(help='alias for "silverstripe"', hide=True)
     def ss(self):
         self.silverstripe()
 
@@ -118,6 +119,78 @@ class Silverstripe(BasePlugin):
 
         return plugins_folder, themes_folder
 
+    def enumerate_version_from_html(self, url, timeout=15, headers={}):
+        """
+        Extract exact version from HTML meta generator tag.
+
+        @param url: the base URL to check
+        @param timeout: request timeout in seconds
+        @param headers: headers to pass to requests.get()
+        @return: version string (e.g., "6.1") or None if not found
+        """
+        try:
+            response = self.session.get(url, timeout=timeout, headers=headers, verify=False)
+
+            if response.status_code in [200, 403]:
+                # Pattern matches: <meta name="generator" content="Silverstripe CMS 6.1">
+                pattern = r'meta\s+name=["\']generator["\']\s+content=["\']Silverstripe\s+CMS\s+([0-9.]+)["\']'
+                match = re.search(pattern, response.text, re.IGNORECASE)
+
+                if match:
+                    return match.group(1)
+
+        except Exception:
+            pass
+
+        return None
+
+    def enumerate_version(self, url, threads=10, verb='head',
+            timeout=15, hide_progressbar=False, headers={}, no_fingerprint_fallback=False):
+        """
+        Override parent method to try HTML parsing first, then fall back to fingerprinting.
+
+        @param url: the url to check
+        @param threads: number of threads for fingerprinting
+        @param verb: HTTP verb to use
+        @param timeout: request timeout in seconds
+        @param hide_progressbar: whether to hide progress bar
+        @param headers: headers to pass to requests
+        @param no_fingerprint_fallback: if True, only use file fingerprinting (no HTML fallbacks)
+        @return: (possible_versions, is_empty)
+        """
+        # Always do fingerprinting
+        fingerprint_versions, is_empty = super(Silverstripe, self).enumerate_version(
+            url, threads, verb, timeout, hide_progressbar, headers, no_fingerprint_fallback
+        )
+
+        # If no_fingerprint_fallback mode is enabled, return fingerprint results without HTML fallbacks
+        if no_fingerprint_fallback:
+            return fingerprint_versions, is_empty
+
+        # Try to get exact version from HTML generator tag
+        html_version = self.enumerate_version_from_html(url, timeout, headers)
+
+        if html_version:
+            # Filter fingerprint versions that start with the HTML version
+            # We want to match "6.1" against "6.1.0", "6.1.1", "6.1.0-beta1"
+            # But NOT "6.10.0"
+            filtered_versions = [
+                v for v in fingerprint_versions
+                if v == html_version or v.startswith(html_version + '.') or v.startswith(html_version + '-')
+            ]
+
+            if filtered_versions:
+                return filtered_versions, False
+
+            # If fingerprinting returned nothing, but we have HTML version, return HTML version
+            if not fingerprint_versions:
+                return [html_version], False
+
+            # HTML version conflicts with fingerprinting - trust fingerprinting
+            return fingerprint_versions, is_empty
+
+        return fingerprint_versions, is_empty
+
     def _get(self, url, package):
         retry = Retrying(wait_exponential_multiplier=2000, wait_exponential_max=120000,
             retry_on_exception=_retry_msg)
@@ -169,5 +242,5 @@ class Silverstripe(BasePlugin):
         return folders
 
 def load(app=None):
-    handler.register(Silverstripe)
+    app.handler.register(Silverstripe)
 

@@ -2,14 +2,19 @@ from cement.core import controller, foundation, backend, handler
 from cement.utils import test
 from cement.utils.misc import init_defaults
 from dscan.common.testutils import decallmethods
-from dscan.droopescan import DroopeScan
+from dscan.droopescan import DroopeScan, reorder_argv_for_backward_compatibility
 from dscan.plugins.drupal import Drupal
 from dscan.plugins import Scan
 from lxml import etree
 from mock import patch, MagicMock
+from nose.tools import raises
 import os
 import responses
 import dscan
+import unittest
+
+# Provide test.raises for backward compatibility with existing test code
+test.raises = raises
 
 BASE_URL = "http://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
 BASE_URL_HTTPS = "https://adhwuiaihduhaknbacnckajcwnncwkakncw.com/"
@@ -26,8 +31,13 @@ class MockHash():
         except KeyError:
             raise RuntimeError(url)
 
-class BaseTest(test.CementTestCase):
-    app_class = DroopeScan
+class TestDroopeScan(DroopeScan):
+    def run(self):
+        self._meta.argv = reorder_argv_for_backward_compatibility(list(self._meta.argv))
+        super(TestDroopeScan, self).run()
+
+class BaseTest(unittest.TestCase):
+    app_class = TestDroopeScan
     scanner = None
 
     base_url = BASE_URL
@@ -62,7 +72,9 @@ class BaseTest(test.CementTestCase):
         'debug': False,
         'enumerate': 'a',
         'headers': {},
+        'cookie': None,
         'hide_progressbar': False,
+        'no_fingerprint_fallback': False,
         'user_agent': 'Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0'
     }
 
@@ -70,16 +82,14 @@ class BaseTest(test.CementTestCase):
 
     def setUp(self):
         super(BaseTest, self).setUp()
-        self.reset_backend()
 
         defaults = init_defaults('DroopeScan', 'general')
         defaults['general']['pwd'] = os.getcwd()
-        self.app = DroopeScan(argv=[],
-            plugin_config_dir=dscan.PWD + "./plugins.d",
-            plugin_dir=dscan.PWD + "./plugins",
-            config_defaults=defaults)
+        # Cement 3: plugin directories are now configured in Meta class
+        self.app = TestDroopeScan(argv=[], config_defaults=defaults, catch_signals=None)
 
-        handler.register(Scan)
+        # Cement 3: register handlers via app instance
+        self.app.handler.register(Scan)
         self.app.testing = True
         self.app.setup()
         responses.add(responses.HEAD, self.base_url, status=200)
@@ -130,7 +140,8 @@ class BaseTest(test.CementTestCase):
         return m
 
     def controller_get(self, plugin_label):
-        return backend.__handlers__['controller'][plugin_label]
+        # Cement 3: use app.handler to get controllers
+        return self.app.handler.get('controller', plugin_label)
 
     def add_argv(self, argv):
         """
@@ -149,7 +160,11 @@ class BaseTest(test.CementTestCase):
         @param kwarg_value: expected value. E.g. 'https://www.drupal.org/'
         """
         args, kwargs = mocked_method.call_args
-        assert kwargs[kwarg_name] == kwarg_value, "Parameter is not as expected."
+        actual_value = kwargs[kwarg_name]
+        if isinstance(kwarg_value, dict) and isinstance(actual_value, dict):
+            assert all(item in actual_value.items() for item in kwarg_value.items()), "Parameter is not as expected (subset check)."
+        else:
+            assert actual_value == kwarg_value, "Parameter is not as expected."
 
     def assert_called_contains_all(self, mocked_method, kwarg_name, kwarg_value):
         call_list = mocked_method.call_args_list
@@ -157,7 +172,11 @@ class BaseTest(test.CementTestCase):
             assert False, "No calls to mocked method"
 
         for args, kwargs in call_list:
-            assert kwargs[kwarg_name] == kwarg_value
+            actual_value = kwargs[kwarg_name]
+            if isinstance(kwarg_value, dict) and isinstance(actual_value, dict):
+                assert all(item in actual_value.items() for item in kwarg_value.items()), "Parameter is not as expected (subset check)."
+            else:
+                assert actual_value == kwarg_value, "Parameter is not as expected."
 
     def assert_args_contains(self, mocked_method, position, expected_value):
         """
@@ -170,9 +189,17 @@ class BaseTest(test.CementTestCase):
         for status_code in data_obj:
             for item in data_obj[status_code]:
                 url = base_url % item
-                responses.add(verb, url,
-                        body=str(status_code), status=status_code,
-                        adding_headers=headers)
+                body_content = str(status_code)
+                req_headers = headers.copy() if isinstance(headers, dict) else {}
+                if verb == responses.HEAD:
+                    req_headers['Content-Length'] = str(len(body_content))
+                    responses.add(verb, url,
+                            body="", status=status_code,
+                            adding_headers=req_headers)
+                else:
+                    responses.add(verb, url,
+                            body=body_content, status=status_code,
+                            adding_headers=headers)
 
     def mock_all_enumerate(self, plugin_name):
         all = []

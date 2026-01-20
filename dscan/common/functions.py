@@ -214,7 +214,7 @@ def version_get():
     Returns current droopescan version. Not. It was broken and not a useful
     feature, so I replaced it with a way more elite version.
     """
-    version = '1.33.7'
+    version = '1.46.0'
     return version
 
 def error(msg):

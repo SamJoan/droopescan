@@ -1,5 +1,6 @@
 from __future__ import print_function
 from cement.core import controller
+from cement import ex
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from datetime import datetime
@@ -65,6 +66,13 @@ class Scan(BasePlugin):
                     with this value.""", default=None)),
                 (['--user-agent'], dict(action='store', help='''Override User Agent
                 header performing the scan requests.''', default=BasePluginInternal.DEFAULT_UA, type=str)),
+                (['--cookie'], dict(action='store', help='''(HTTP) Pass the data
+                    to the HTTP server in the Cookie header. It is supposedly
+                    the data previously received from the server in a
+                    "Set-Cookie:" line. The data should be in the format
+                    "NAME1=VALUE1; NAME2=VALUE2". This way you can bypass
+                    Drupal authentication e.g. (login to Drupal, copy session
+                    cookie, run droopescan)''', default=None, type=str)),
                 (['--massscan-override'], dict(action='store_true',
                     help="""Overrides defaults with defaults convenient for
                     mass-scanning of hosts.""", default=False)),
@@ -90,9 +98,13 @@ class Scan(BasePlugin):
                 (['--resume'], dict(action='store_true', help='''Resume the url_file
                     scan as of the last known scanned url. Must be used in
                     conjunction with --error-log.''', default=None)),
+                (['--no-fingerprint-fallback'], dict(action='store_true', help='''Only use
+                    file fingerprinting for version detection. Disables HTML-based
+                    fallback methods when fingerprinting returns multiple versions.
+                    Use this for more deterministic results.''', default=False)),
             ]
 
-    @controller.expose(hide=True)
+    @ex(hide=True)
     def default(self):
         opts = self._options(self.app.pargs)
         url_file_input = 'url_file' in opts
@@ -214,10 +226,13 @@ class Scan(BasePlugin):
 
     def _process_cms_identify(self, url, opts, instances, follow_redirects):
         self.out.debug('scan._process_cms_identify -> %s' % url)
-        try:
-            url, host_header = url, opts['headers']['Host']
-        except:
+        if isinstance(url, tuple):
+            url, host_header = url
+        else:
             url, host_header = self._process_host_line(url)
+
+        if not host_header and 'Host' in opts['headers']:
+            host_header = opts['headers']['Host']
 
         url = f.repair_url(url)
 

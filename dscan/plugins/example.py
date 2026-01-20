@@ -1,4 +1,5 @@
 from cement.core import handler, controller
+from cement import ex
 from dscan.plugins import BasePlugin
 from dscan import common
 
@@ -48,7 +49,7 @@ class Example(BasePlugin):
         label = 'example'
 
     # This function is the entry point for the CMS.
-    @controller.expose(help='example scanner')
+    @ex(help='example scanner')
     def example(self):
         self.plugin_init()
 
@@ -81,5 +82,5 @@ class Example(BasePlugin):
         """
 
 def load(app=None):
-    handler.register(Example)
+    app.handler.register(Example)
 
