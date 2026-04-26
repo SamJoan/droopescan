@@ -1,6 +1,20 @@
 from __future__ import print_function
-from distutils.util import strtobool
 import dscan.common.functions as f
+
+
+def strtobool(val):
+    """Replacement for ``distutils.util.strtobool`` (removed in Python 3.12).
+
+    Returns 1 for truthy strings, 0 for falsy ones, and raises ``ValueError``
+    otherwise.
+    """
+    val = str(val).lower()
+    if val in ("y", "yes", "t", "true", "on", "1"):
+        return 1
+    if val in ("n", "no", "f", "false", "off", "0"):
+        return 0
+    raise ValueError("invalid truth value %r" % (val,))
+
 import dscan
 import os.path
 import subprocess

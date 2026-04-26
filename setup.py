@@ -40,17 +40,19 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
     ],
+    python_requires='>=3.8',
     install_requires=[
-        'cement>=2.6,<2.6.99',
         'requests',
         'pystache',
     ],
-    extras_require={
-        ':python_version == "2.7"': ['futures']
-    },
     cmdclass={'install': PostInstall}
 )
 

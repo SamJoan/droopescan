@@ -91,6 +91,16 @@ Because droopescan:
 
 # Installation
 
+## Python compatibility
+
+Droopescan supports **Python 3.8 – 3.13** (and likely newer 3.x releases).
+
+Older releases depended on the unmaintained `cement` 2.6 framework, which used
+the standard-library `imp` module (removed in Python 3.12) and `distutils`
+(also removed in 3.12). Both have been replaced with `importlib`-based
+equivalents, and a patched copy of `cement` 2.6 is vendored under
+`dscan/vendor/cement` so no external `cement` install is required.
+
 ## With pip (recommended)
 Installation is easy using pip:
 
