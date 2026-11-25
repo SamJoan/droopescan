@@ -1,5 +1,4 @@
 from __future__ import print_function
-from distutils.util import strtobool
 import dscan.common.functions as f
 import dscan
 import os.path
@@ -97,6 +96,15 @@ def get_input(question):
         inp = input()
 
     return inp
+
+def strtobool(val):
+    """Same as the removed distutils.util.strtobool."""
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    raise ValueError("invalid truth value %r" % (val,))
 
 def confirm(question):
     sys.stdout.write('%s [y/n]\n' % question)
